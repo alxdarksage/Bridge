@@ -16,7 +16,7 @@
 	<dependencies>
 	    <dependency>
    	    	<groupId>org.sagebionetworks.bridge</groupId>
-   	    	<artifactId>common</artifactId>
+   	    	<artifactId>lib-shared</artifactId>
 	    	<version>${project.version}</version>
 	    </dependency>
 	    
