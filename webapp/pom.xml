@@ -12,7 +12,7 @@
 	<artifactId>webapp</artifactId>
 	<packaging>war</packaging>
 	<name>Bridge Web Application</name>
-	
+			
 	<dependencies>
 	    <dependency>
    	    	<groupId>org.sagebionetworks.bridge</groupId>
@@ -20,14 +20,16 @@
 	    	<version>${project.version}</version>
 	    </dependency>
 	    
-	    <!-- This concrete servlet implementation is required for the Spring MVC tests. I haven't 
-	    	seen this documented anywhere so it could be that something is configured incorrectly. -->
+	    <!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
+	    	the only other place the servlet API is provided is in Spring's portlet project, which we're 
+	    	explicitly excluding. -->
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.servlet</artifactId>
 			<version>3.0</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
