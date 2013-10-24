@@ -1,7 +1,7 @@
 target
 .maven
-/.classpath
-/.project
-/.settings
-/.gwt
+.classpath
+.project
+.settings
+.gwt
 .DS_Store
