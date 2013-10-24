@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+	    <groupId>org.sagebionetworks</groupId>
+	    <artifactId>bridge</artifactId>
+	    <version>develop-SNAPSHOT</version>
+	</parent>
+		
+	<groupId>org.sagebionetworks.bridge</groupId>
+	<artifactId>webapp</artifactId>
+	<packaging>war</packaging>
+	<name>Bridge Web Application</name>
+	
+	<dependencies>
+	    <dependency>
+   	    	<groupId>org.sagebionetworks.bridge</groupId>
+   	    	<artifactId>common</artifactId>
+	    	<version>${project.version}</version>
+	    </dependency>
+	    
+	    <!-- This concrete servlet implementation is required for the Spring MVC tests. I haven't 
+	    	seen this documented anywhere so it could be that something is configured incorrectly. -->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.servlet</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<finalName>bridge-webapp</finalName>
+		
+		<plugins>
+	        <plugin>
+	            <groupId>org.apache.tomcat.maven</groupId>
+	            <artifactId>tomcat7-maven-plugin</artifactId>
+	            <version>2.0</version>
+	            <configuration>
+	                <port>8888</port>
+	            </configuration>
+	        </plugin>	    
+		</plugins>
+	</build>
+</project>
