@@ -13,9 +13,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
+		<commons-collections.version>3.2.1</commons-collections.version>
 		<jackson.version>1.9.13</jackson.version>
    		<junit.version>4.11</junit.version>
 		<log4j.version>2.0-beta8</log4j.version>
+		<quartz.version>1.6.3</quartz.version>
    		<spring.version>3.2.4.RELEASE</spring.version>
    		<synapse.version>develop-SNAPSHOT</synapse.version>
 	</properties>
@@ -69,6 +71,11 @@
 		<!-- SPRING -->
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
         </dependency>
@@ -94,13 +101,33 @@
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<!-- Provides the S3 log sweeper 
+		
+		<!-- SYNAPSE -->
 		<dependency>
 			<groupId>org.sagebionetworks</groupId>
 			<artifactId>lib-logging</artifactId>
 			<version>${synapse.version}</version>
-		</dependency>	
-        -->
+			<exclusions>
+			    <exclusion>
+			        <!-- This appears to pull in the servlet API. -->
+					<groupId>org.springframework</groupId>			        
+			        <artifactId>org.springframework.web.portlet</artifactId>
+			    </exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>quartz-all</artifactId>
+			<version>${quartz.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- This is also referenced in services/repository and can be removed when we bring that in. -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>${commons-collections.version}</version>
+		</dependency>
         
         <!-- JSON between tiers -->
 		<dependency>
@@ -121,7 +148,7 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 	</dependencies>
 	
 	<build>
