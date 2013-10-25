@@ -17,7 +17,7 @@ public class HelloWorldServiceController {
 	private static final Logger logger = LogManager.getLogger(HelloWorldServiceController.class.getName());
 
 	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = "/getHelloMessage", method = RequestMethod.GET, produces = "application/json")	
+	@RequestMapping(value = "/getHelloMessage", method = RequestMethod.GET)	
 	public @ResponseBody HelloMessage getHelloMessage() throws Exception {
 		logger.debug("Calling HelloWorldServiceController.getHelloMessage()");
 		
