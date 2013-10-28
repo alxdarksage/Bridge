@@ -20,6 +20,18 @@
 	    	<version>${project.version}</version>
 	    </dependency>
 	    
+        <!-- Client-side resource pre-processors -->
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-core</artifactId>
+            <version>${wro4j.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-extensions</artifactId>
+            <version>${wro4j.version}</version>
+        </dependency>	
+	    
 	    <!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
 	    	the only other place the servlet API is provided is in Spring's portlet project, which we're 
 	    	explicitly excluding. -->
