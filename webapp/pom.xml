@@ -20,8 +20,19 @@
 	    	<version>${project.version}</version>
 	    </dependency>
 	    
-        <!-- Client-side resource pre-processors -->
-        <dependency>
+        <!-- Client-side resource pre-processors/JSP -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+			<scope>runtime</scope>
+		</dependency>        
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
+		</dependency>        
+		<dependency>
             <groupId>ro.isdc.wro4j</groupId>
             <artifactId>wro4j-core</artifactId>
             <version>${wro4j.version}</version>
