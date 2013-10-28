@@ -18,6 +18,17 @@
    	    	<groupId>org.sagebionetworks.bridge</groupId>
    	    	<artifactId>lib-shared</artifactId>
 	    	<version>${project.version}</version>
+			<exclusions>
+			    <exclusion>
+			        <!-- This appears to pull in the servlet API. -->
+					<groupId>org.springframework</groupId>			        
+			        <artifactId>org.springframework.web.portlet</artifactId>
+			    </exclusion>
+				<exclusion>
+					<groupId>com.google.gwt</groupId>
+					<artifactId>gwt-user</artifactId>
+		        </exclusion>
+			</exclusions>
 	    </dependency>
 	    
         <!-- Client-side resource pre-processors/JSP -->
@@ -60,7 +71,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>bridge-webapp</finalName>
 		
