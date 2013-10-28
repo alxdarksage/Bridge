@@ -32,4 +32,9 @@
 	
    	<!-- Import other business-related bean files here. -->
  
+	<bean id="authFilter" class="org.sagebionetworks.bridge.services.auth.AuthenticationFilter" />
+	<bean id="authenticationService" class="org.sagebionetworks.bridge.services.auth.services.AuthenticationServiceImpl" />
+	<bean id="authenticationManager" class="org.sagebionetworks.bridge.services.auth.services.AuthenticationManagerImpl" />
+	<bean id="userManager" class="org.sagebionetworks.bridge.services.auth.services.UserManagerImpl" />
+
 </beans>
