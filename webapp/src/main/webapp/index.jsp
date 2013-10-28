@@ -1,5 +1,2 @@
-<html>
-<body>
-	<h2>This is a default home page. Change me.</h2>
-</body>
-</html>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:redirect url="portal/home.jsp"/>

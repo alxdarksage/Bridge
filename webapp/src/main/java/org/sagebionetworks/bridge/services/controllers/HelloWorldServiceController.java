@@ -1,6 +1,7 @@
 package org.sagebionetworks.bridge.services.controllers;
 
 import org.apache.logging.log4j.LogManager;
+
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.common.HelloMessage;
 import org.springframework.http.HttpStatus;
@@ -13,13 +14,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 public class HelloWorldServiceController {
 	
-	// private static Logger logger = Logger.getLogger(HelloWorldServiceController.class.getName());
-	private static Logger logger = LogManager.getLogger(HelloWorldServiceController.class.getName());
+	private static final Logger logger = LogManager.getLogger(HelloWorldServiceController.class.getName());
 
 	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = "/getHelloMessage", method = RequestMethod.GET, produces = "application/json")	
+	@RequestMapping(value = "/getHelloMessage", method = RequestMethod.GET)	
 	public @ResponseBody HelloMessage getHelloMessage() throws Exception {
-		logger.info("Calling HelloWorldServiceController.getHelloMessage()");
+		logger.debug("Calling HelloWorldServiceController.getHelloMessage()");
 		
 		return new HelloMessage();
 	}

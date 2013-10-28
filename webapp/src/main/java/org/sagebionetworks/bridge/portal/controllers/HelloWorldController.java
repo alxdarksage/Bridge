@@ -1,9 +1,9 @@
 package org.sagebionetworks.bridge.portal.controllers;
 
-import java.util.logging.Logger;
-
 import javax.annotation.Resource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.common.HelloMessage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/hello")
 public class HelloWorldController {
 	
-	private static Logger logger = Logger.getLogger(HelloWorldController.class.getName());
+	private static final Logger logger = LogManager.getLogger(HelloWorldController.class.getName());
 
 	private String serviceUrl;
 	private RestTemplate helloMessageRestCall;
@@ -32,7 +32,7 @@ public class HelloWorldController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String helloWorld(ModelMap model) throws Exception {
-		logger.info("Gratuitous logging message that proves log4j is working through adapter to JDK logging");
+		logger.debug("Gratuitous logging message that proves log4j is working through adapter to JDK logging");
 		
 		HelloMessage result = helloMessageRestCall.getForObject(serviceUrl, HelloMessage.class);
 		model.addAttribute("message", result.getMessage());	

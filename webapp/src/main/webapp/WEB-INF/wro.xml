@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
+        
+    <!-- 
+    	This file describes combination/minification policies for wro4j.
+    	You can link to these processed output files in your JSPs.
+     -->
+    
+	<group name="header">
+		<css>/static/bootstrap/css/bootstrap.css</css>
+		<css>/static/bootstrap/css/bootstrap-theme.css</css>
+		<css>/static/bridge/css/main.css</css>
+	</group>
+	
+	<group name="footer">
+		<js>/static/jquery/jquery-1.10.2.js</js>
+   		<js>/static/bootstrap/js/bootstrap.js</js>
+		<js>/static/bridge/js/main.js</js>
+	</group>
+</groups>
