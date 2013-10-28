@@ -11,6 +11,7 @@
 	<group name="header">
 		<css>/static/bootstrap/css/bootstrap.css</css>
 		<css>/static/bootstrap/css/bootstrap-theme.css</css>
+		<css>/static/bridge/css/main.css</css>
 	</group>
 	
 	<group name="footer">
