@@ -44,7 +44,7 @@
 <!-- 		<url-pattern>/service/auth/v1/apiPasswordEmail</url-pattern> -->
 <!-- 		<url-pattern>/service/auth/v1/secretKey</url-pattern> -->
 <!-- 		<url-pattern>/service/repo/v1/*</url-pattern> -->
-		<url-pattern>/services/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<listener>
