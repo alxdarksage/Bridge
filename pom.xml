@@ -28,6 +28,7 @@
 	
 	<modules>
 	    <module>lib-shared</module>
+            <module>services</module>
 	    <module>webapp</module>
 	</modules>
 	
