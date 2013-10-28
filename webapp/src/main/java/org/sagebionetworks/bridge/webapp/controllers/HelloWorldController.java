@@ -1,4 +1,4 @@
-package org.sagebionetworks.bridge.portal.controllers;
+package org.sagebionetworks.bridge.webapp.controllers;
 
 import javax.annotation.Resource;
 

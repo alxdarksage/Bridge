@@ -1,4 +1,4 @@
-package org.sagebionetworks.bridge.portal.forms;
+package org.sagebionetworks.bridge.webapp.forms;
 
 import org.hibernate.validator.constraints.NotEmpty;
 

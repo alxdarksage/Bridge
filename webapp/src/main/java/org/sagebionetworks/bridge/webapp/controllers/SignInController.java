@@ -1,10 +1,10 @@
-package org.sagebionetworks.bridge.portal.controllers;
+package org.sagebionetworks.bridge.webapp.controllers;
 
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.portal.forms.SignInForm;
+import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;

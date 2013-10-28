@@ -17,7 +17,7 @@
 		<property name="lockExpiresMs" value="300000" />
 		<property name="appendersToSweep">
 			<list>
-				<value>webapp</value>
+				<value>services</value>
 			</list>
 		</property>
 	</bean>
