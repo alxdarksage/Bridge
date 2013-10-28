@@ -2,8 +2,8 @@ package org.sagebionetworks.bridge.portal.controllers;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.portal.forms.SignInForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -18,15 +18,12 @@ public class SignInController {
 	private static final Logger logger = LogManager.getLogger(SignInController.class.getName());
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String get(@ModelAttribute SignInForm signInForm) throws Exception {
-		logger.debug("GET: This logging statement is actually not being shown or configured correctly.");
+	public String get(@ModelAttribute SignInForm signInForm) {
 		return "signIn";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String post(@ModelAttribute @Valid SignInForm signInForm, BindingResult result) {
-		logger.debug("POST: This logging statement is actually not being shown or configured correctly.");
-		
 		if (result.hasErrors()) {
 			return "signIn";	
 		}
