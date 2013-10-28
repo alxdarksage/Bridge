@@ -3,12 +3,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
-	<title>Login test</title>
+	<title>Sign In</title>
 	<link rel="stylesheet" type="text/css" href="../assets/header.css" />
 </head>
 <body>
 	<div class="container" style="width: 300px; margin: 0 auto">
-		<h3><span class="glyphicon glyphicon-asterisk"></span> Login Test</h3>
+		<h3>Sign In</h3>
 		<form:form role="form" modelAttribute="signInForm" method="post">
 			<spring:bind path="userName">
 				<div class="form-group ${status.error ? 'has-error' : ''}">
