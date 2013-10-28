@@ -10,11 +10,7 @@
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 		
-   	<context:component-scan base-package="org.sagebionetworks.bridge.portal.controllers" />
-   	
-   	<mvc:annotation-driven/>
-   	
-   	<import resource="bridge-shared-log-sweeper.spb.xml" />
+   	<import resource="bridge-log-sweeper.spb.xml" />
 
    	<bean id="serviceUrl" class="java.lang.String">
 		<constructor-arg value="http://localhost:8888/webapp/services/getHelloMessage"/>

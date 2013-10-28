@@ -4,7 +4,7 @@
 <html>
 <head>
 	<title>Sign In</title>
-	<link rel="stylesheet" type="text/css" href="../assets/header.css" />
+	<link rel="stylesheet" type="text/css" href="assets/header.css" />
 </head>
 <body>
 	<div class="container" style="width: 300px; margin: 0 auto">
@@ -27,6 +27,6 @@
 			<button type="submit" class="btn btn-default">Sign In</button>
 		</form:form>
 	</div>
-    <script type="text/javascript" src="../assets/footer.js"></script>
+    <script type="text/javascript" src="assets/footer.js"></script>
 </body>
 </html>

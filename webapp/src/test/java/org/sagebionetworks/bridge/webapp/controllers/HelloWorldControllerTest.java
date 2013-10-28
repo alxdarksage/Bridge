@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sagebionetworks.bridge.common.HelloMessage;
-import org.sagebionetworks.bridge.portal.controllers.HelloWorldController;
+import org.sagebionetworks.bridge.webapp.controllers.HelloWorldController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,8 +23,8 @@ import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { 
-	"file:src/main/resources/portal-dispatcher-servlet.xml",
-	"file:src/test/resources/test-portal-dispatcher-servlet.xml"
+	"file:src/main/webapp/WEB-INF/applicationContext.xml",
+	"file:src/test/resources/test-bridge-webapp-application-context.spb.xml"
 })
 public class HelloWorldControllerTest {
 	
