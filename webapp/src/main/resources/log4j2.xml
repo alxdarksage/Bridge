@@ -18,7 +18,6 @@
 				<SizeBasedTriggeringPolicy size="250 MB" />
 			</Policies>
 		</RollingFile>
-		<!-- 
 		<RollingFile name="webapp-http-out"
 			fileName="${bridge.logging.dir}/webapp-http-out.log"
 			filePattern="${bridge.logging.dir}/webapp-http-out.%d{yyyy-MM-dd-hh-mm}.log.gz">
@@ -30,18 +29,16 @@
 				<SizeBasedTriggeringPolicy size="250 MB" />
 			</Policies>
 		</RollingFile>
-		 -->		
 	</appenders>
 	<loggers>
-		<!-- This allows us to track outgoing http connection issues. See: http://blog.nigelsim.org/2011/06/17/debugging-connection-pool-leak-in-apache-http-client/ 
+		<!-- This allows us to track outgoing http connection issues. See: http://blog.nigelsim.org/2011/06/17/debugging-connection-pool-leak-in-apache-http-client/--> 
 		<logger name="org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager" level="debug" additivity="false">
 			<appender-ref ref="webapp-http-out" />
 		</logger>	
-		-->
 		<logger name="org.sagebionetworks" level="all" additivity="true">
 			<appender-ref ref="webapp" />
 		</logger>
-		<root level="error">
+		<root level="debug">
 			<appender-ref ref="console" />
 		</root>
 	</loggers>

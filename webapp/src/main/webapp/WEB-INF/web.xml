@@ -24,7 +24,7 @@
         <servlet-name>spring-dispatcher</servlet-name>
         <url-pattern>*.html</url-pattern>
     </servlet-mapping>
-
+    
     <filter>
         <filter-name>WebResourceOptimizer</filter-name>
         <filter-class>ro.isdc.wro.http.WroFilter</filter-class>
@@ -35,6 +35,6 @@
     </filter-mapping>
      
     <welcome-file-list>
-        <welcome-file>signIn.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 </web-app>
