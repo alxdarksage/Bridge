@@ -21,7 +21,7 @@
    	<import resource="bridge-log-sweeper.spb.xml" />
 
    	<bean id="serviceUrl" class="java.lang.String">
-		<constructor-arg value="http://localhost:8888/webapp/services/getHelloMessage"/>
+		<constructor-arg value="http://localhost:8889/services/getHelloMessage"/>
 	</bean>
 
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
