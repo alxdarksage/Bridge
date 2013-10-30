@@ -42,7 +42,12 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernate-validator.version}</version>
-		</dependency>        
+		</dependency>
+        <dependency> <!-- gzip filter. -->
+            <groupId>net.sourceforge.pjl-comp-filter</groupId>
+            <artifactId>pjl-comp-filter</artifactId>
+            <version>1.7</version>
+        </dependency>
 		<dependency>
             <groupId>ro.isdc.wro4j</groupId>
             <artifactId>wro4j-core</artifactId>
@@ -52,7 +57,7 @@
             <groupId>ro.isdc.wro4j</groupId>
             <artifactId>wro4j-extensions</artifactId>
             <version>${wro4j.version}</version>
-        </dependency>	
+        </dependency>
 	    
 	    <!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
 	    	the only other place the servlet API is provided is in Spring's portlet project, which we're 
