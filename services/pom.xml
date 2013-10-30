@@ -30,6 +30,26 @@
 		        </exclusion>
 			</exclusions>
 	    </dependency>
+		<dependency>
+			<groupId>org.sagebionetworks</groupId>
+			<artifactId>synapseJavaClient</artifactId>
+			<version>${synapse.version}</version>
+			<exclusions>
+			    <exclusion>
+			        <!-- This appears to pull in the servlet API. -->
+					<groupId>org.springframework</groupId>			        
+			        <artifactId>org.springframework.web.portlet</artifactId>
+			    </exclusion>
+				<exclusion>
+					<groupId>com.google.gwt</groupId>
+					<artifactId>gwt-servlet</artifactId>
+		        </exclusion>
+				<exclusion>
+					<groupId>com.google.gwt</groupId>
+					<artifactId>gwt-user</artifactId>
+		        </exclusion>
+			</exclusions>
+		</dependency>
 	    
         <!-- Client-side resource pre-processors/JSP -->
 		<dependency>
@@ -70,6 +90,7 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>

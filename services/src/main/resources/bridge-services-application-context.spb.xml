@@ -10,18 +10,12 @@
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
     
-   	<context:component-scan base-package="org.sagebionetworks.bridge.services.controllers" />
+   	<context:component-scan base-package="org.sagebionetworks.bridge.services" />
 	
    	<mvc:annotation-driven />
    	
    	<import resource="bridge-log-sweeper.spb.xml" />
    	
-   	<!-- 
-		This serializer (handler mapping) is defined in org.sagebionetworks:services-repository
-		and that's a war project. We'd have to pull it apart and copy over the files to get at the 
-		same serializer, as part of the build. But as you'd suspect, there's already a JSON serializer 
-		that Spring supports, so why. Let's use that for the moment.
-
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
 		<property name="messageConverters">
 			<list>
@@ -29,8 +23,7 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="objectTypeSerializer" class="org.sagebionetworks.repo.web.controller.ObjectTypeSerializerImpl" />
-	-->
+	<bean id="objectTypeSerializer" class="org.sagebionetworks.bridge.util.ObjectTypeSerializerImpl" />
 	
    	<!-- Import other business-related bean files here. -->
  
@@ -38,5 +31,7 @@
 	<bean id="authenticationService" class="org.sagebionetworks.bridge.services.auth.services.AuthenticationServiceImpl" />
 	<bean id="authenticationManager" class="org.sagebionetworks.bridge.services.auth.services.AuthenticationManagerImpl" />
 	<bean id="userManager" class="org.sagebionetworks.bridge.services.auth.services.UserManagerImpl" />
+	<bean id="tokenProvider" class="org.sagebionetworks.bridge.services.auth.TokenProviderImpl" />
+	<bean id="synapseClientProvider" class="org.sagebionetworks.bridge.services.auth.SynapseClientProviderImpl" />
 
 </beans>
