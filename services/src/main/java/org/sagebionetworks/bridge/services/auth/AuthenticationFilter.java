@@ -131,12 +131,14 @@ public class AuthenticationFilter implements Filter {
 		}
 		if (username == null) {
 			username = AuthorizationConstants.ANONYMOUS_USER_ID;
+			sessionToken = null;
 		}
 
 		// Pass along, including the user ID
 		@SuppressWarnings("unchecked")
 		Map<String, String[]> modParams = new HashMap<String, String[]>(req.getParameterMap());
 		modParams.put(AuthorizationConstants.USER_ID_PARAM, new String[] { username });
+		modParams.put(AuthorizationConstants.SESSION_TOKEN_PARAM, new String[] { sessionToken });
 		HttpServletRequest modRqst = new ModParamHttpServletRequest(req, modParams);
 		filterChain.doFilter(modRqst, servletResponse);
 	}
@@ -186,4 +188,5 @@ public class AuthenticationFilter implements Filter {
         }
   	}
 }
+
 
