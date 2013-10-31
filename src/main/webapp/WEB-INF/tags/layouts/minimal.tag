@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
 <!DOCTYPE html>
@@ -19,18 +21,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header row">
-            <div class="col-sm-6 community-header">
-                ${title}
-            </div>
-            <div class="col-sm-6 portal-header visible-sm visible-md visible-lg">
-                <div class="portal-subheader">
-                    <a href="<c:url value='/portal/index.html'/>">Bridge Community Portal</a>
-                </div>
-                <div class="portal-links">
-                </div>
-            </div>
-        </div>
+        <layout:header title="${title}"/>
         <div class="row main-pane">
             <c:choose>
                 <c:when test="${boxSize != ''}">
@@ -48,5 +39,6 @@
         </div>
     </div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <sage:notifications/>
 </body>
 </html>

@@ -30,19 +30,20 @@ a, a:visited, a:active {
 		line-height: 5rem;
 	}
 	.portal-header {
-		height: 5rem;
-		line-height: 5rem;
-		text-align: right;
 		font-family: 'Archivo Narrow', sans-serif;
 	}
 		.portal-subheader {
-			line-height: 2.5rem;
 			font-size: 1.4rem;
 		}
 		.portal-links {
-			line-height: 2.5rem;
+            color: rgb(42,120,81);
 			font-size: 1.1rem;
+			line-height:3rem;
+			margin-top: -.5rem;
 		}
+		  .portal-links a {
+		      padding: .5rem 0;
+		  }
 
 .main-pane {
 	padding-top: 3rem;

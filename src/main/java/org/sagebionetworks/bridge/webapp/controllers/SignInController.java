@@ -54,6 +54,14 @@ public class SignInController {
 	            BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 	            session.setAttribute(BridgeUser.KEY, user);
 	            logger.info("User #{} signed in.", user.getOwnerId());
+	            
+	            // TODO: If the user signed in from the signIn page, they cannot go to their origin
+	            // page. In this case we need their community as a default, but until then:
+	            
+	            // It's the same case with the signOut page, we need to redirect.
+	            if ("/signIn.html".equals(signInForm.getOrigin())) {
+	                return "redirect:/communities/index.html";
+	            }
 	            return "redirect:"+signInForm.getOrigin();
 	        } catch(Throwable e) {
                 logger.error("User could not be signed in: {}", e.getMessage());

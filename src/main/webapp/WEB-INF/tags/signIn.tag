@@ -15,6 +15,8 @@
         <div class="alert alert-danger">Unable to sign you in.</div>
     </c:if>
     <button type="submit" class="btn btn-sm btn-default">Sign In</button>
-    <c:url var="signUpUrl" value="/signUp.html"/>
-    <a href="${signUpUrl}" class="btn">Sign Up</a>
+    <a href='<c:url value="/signUp.html"/>' class="btn">Sign Up</a>
 </form:form>
+<p style="margin-top:1rem; margin-bottom: -.25rem">
+    <a href='<c:url value="/resetPassword.html"/>'>I forgot my password</a>
+</p>

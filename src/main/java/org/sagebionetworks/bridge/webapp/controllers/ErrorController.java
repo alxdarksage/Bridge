@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/error")
 public class ErrorController {
+    
+    private static final Logger logger = LogManager.getLogger(ErrorController.class.getName());
     
     private static Map<Integer, String> errorCodes = new HashMap<Integer, String>();
     static {
@@ -52,7 +56,11 @@ public class ErrorController {
         String message = "";
         Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
         if (throwable != null) {
-            message = "(The server reported: <em>" + throwable.getMessage() + "</em>)";    
+            logger.error("Server error", throwable);
+            while (throwable.getCause() != null) {
+                throwable = throwable.getCause();
+            }
+            message = (throwable.getMessage()).replaceAll("\"", "'");
         }
         
         request.setAttribute("title", title);

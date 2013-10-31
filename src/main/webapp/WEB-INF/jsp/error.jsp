@@ -12,5 +12,5 @@
     <a href="mailto:synapseInfo@sagebase.org?subject=Bridge Error">contact us</a> 
     and let us know. Thanks!</p>
     
-    <p>${requestScope.message}</p>        
+    <script>console.error("${requestScope.message}");</script>        
 </layout:minimal>

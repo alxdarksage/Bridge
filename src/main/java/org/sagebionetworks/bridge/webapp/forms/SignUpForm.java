@@ -21,6 +21,12 @@ public class SignUpForm {
     public NewUser getNewUser() {
         NewUser user = new NewUser();
         user.setEmail(this.email);
+        // You have to set all this shit to register?
+        user.setFirstName("Alx");
+        user.setLastName("Dark");
+        user.setPassword("password");
+        user.setDisplayName("displayname");
+        user.setAcceptsTermsOfUse(true);
         return user;
     }
     

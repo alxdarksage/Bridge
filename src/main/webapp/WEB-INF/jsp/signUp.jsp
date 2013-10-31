@@ -8,10 +8,7 @@
     
     <c:url var="signUpUrl" value="/signUp.html"/>
     <form:form role="form" modelAttribute="signUpForm" method="post" action="${signUpUrl}">
-        <div class="form-group">
-            <sgf:text field="email" label="Your email address"/>
-        </div>
-        <p><em>Password setup instructions will be sent via email.</em></p>
+        <sgf:text field="email" label="Your email address"/>
         <button type="submit" class="btn btn-sm btn-default">Sign Up</button>
     </form:form>
 </layout:minimal>
