@@ -8,6 +8,7 @@ public class SignInForm {
 	private String userName;
 	@NotEmpty
 	private String password;
+	private String origin;
 
 	public String getUserName() {
 		return userName;
@@ -21,5 +22,11 @@ public class SignInForm {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+    public String getOrigin() {
+        return origin;
+    }
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
 	
 }

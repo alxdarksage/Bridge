@@ -35,6 +35,28 @@
     </filter-mapping>
     
     <filter>
+        <filter-name>OriginFilter</filter-name>
+        <filter-class>org.sagebionetworks.bridge.webapp.filters.OriginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>OriginFilter</filter-name>  
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>org.sagebionetworks.bridge.webapp.filters.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <!-- Should not pass static resources through the auth filter, although we do want 
+            to authenticate access to images coming through the community portion of the 
+            site (this is data when it occurs). -->
+        <filter-name>AuthenticationFilter</filter-name>  
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>/communities/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
         <filter-name>CompressingFilter</filter-name>
         <filter-class>com.planetj.servlet.filter.compression.CompressingFilter</filter-class>
         <init-param>

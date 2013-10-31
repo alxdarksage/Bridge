@@ -15,5 +15,8 @@
     <bean id="helloMessageRestCall" class="org.mockito.Mockito" factory-method="mock">
     	<constructor-arg value="org.springframework.web.client.RestTemplate" />
 	</bean>
-	
+
+    <bean id="synapseClient" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.sagebionetworks.client.SynapseClientImpl" />
+    </bean>
 </beans>

@@ -36,9 +36,10 @@
 			<appender-ref ref="webapp-http-out" />
 		</logger>	
 		<logger name="org.sagebionetworks" level="all" additivity="true">
+            <appender-ref ref="console" />
 			<appender-ref ref="webapp" />
 		</logger>
-		<root level="error">
+		<root level="debug">
 			<appender-ref ref="console" />
 		</root>
 	</loggers>
