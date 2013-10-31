@@ -1,15 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.sagebionetworks</groupId>
-    <artifactId>bridge</artifactId>
+    
+    <groupId>org.sagebionetworks.bridge</groupId>
+    <artifactId>webapp</artifactId>
     <version>develop-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
-    <name>Bridge</name>
-    <url>http://sagebase.org/bridge/</url>
-
+    <packaging>war</packaging>
+    <name>Bridge Web Application</name>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
@@ -17,20 +15,14 @@
         <hibernate-validator.version>5.0.1.Final</hibernate-validator.version>
         <jackson.version>1.9.13</jackson.version>
         <jstl.version>1.2</jstl.version>
-           <junit.version>4.11</junit.version>
+        <junit.version>4.11</junit.version>
         <log4j.version>2.0-beta8</log4j.version>
         <quartz.version>1.6.3</quartz.version>
-           <!-- <spring.version>3.2.4.RELEASE</spring.version> -->
-           <spring.version>3.0.5.RELEASE</spring.version>
-           <synapse.version>develop-SNAPSHOT</synapse.version>
-           <wro4j.version>1.6.3</wro4j.version>
+        <!-- <spring.version>3.2.4.RELEASE</spring.version> -->
+        <spring.version>3.0.5.RELEASE</spring.version>
+        <synapse.version>develop-SNAPSHOT</synapse.version>
+        <wro4j.version>1.6.3</wro4j.version>
     </properties>
-    
-    <modules>
-        <module>lib-shared</module>
-            <module>services</module>
-        <module>webapp</module>
-    </modules>
     
     <repositories>
         <repository>
@@ -39,40 +31,75 @@
             <url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local
             </url>
         </repository>
-        <!-- Unknown if we need these, copied from SWC
-        <repository>
-            <id>sagebionetworks-ext</id>
-            <name>sagebionetworks-releases-ext</name>
-            <url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/ext-releases-local
-            </url>
-        </repository>
-        <repository>
-            <id>atlassian-m2-repository</id>
-            <url>https://m2proxy.atlassian.com/repository/public</url>
-        </repository>
-        <repository>
-            <id>mvn-gae-plugin-repo</id>
-            <url>http://maven-gae-plugin.googlecode.com/svn/repository/</url>
-        </repository>
-        <repository>
-            <id>maven-central-rep-1</id>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        -->
         <repository>
             <id>sun-maven-repository</id>
             <url>http://download.java.net/maven/2/</url>
         </repository>
-        <!-- 
-        <repository>
-            <id>apache-repo-releases</id>
-            <url>https://repository.apache.org/content/repositories/releases/
-            </url>
-        </repository>
-         -->
     </repositories>
-    
+        
     <dependencies>
+        <dependency>
+               <groupId>org.sagebionetworks.bridge</groupId>
+               <artifactId>lib-shared</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <!-- This appears to pull in the servlet API. -->
+                    <groupId>org.springframework</groupId>                    
+                    <artifactId>org.springframework.web.portlet</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-user</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- Client-side resource pre-processors/JSP -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>${jstl.version}</version>
+            <scope>runtime</scope>
+        </dependency>        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+        </dependency>
+        <dependency> <!-- gzip filter. -->
+            <groupId>net.sourceforge.pjl-comp-filter</groupId>
+            <artifactId>pjl-comp-filter</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-core</artifactId>
+            <version>${wro4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-extensions</artifactId>
+            <version>${wro4j.version}</version>
+        </dependency>
+        
+        <!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
+            the only other place the servlet API is provided is in Spring's portlet project, which we're 
+            explicitly excluding. -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>3.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        
         <!-- SPRING -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -89,11 +116,6 @@
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
         </dependency>
-<!--         <dependency> -->
-<!--             <groupId>org.springframework</groupId> -->
-<!--             <artifactId>spring-webmvc</artifactId> -->
-<!--             <version>${spring.version}</version> -->
-<!--         </dependency> -->
 
         <!-- LOGGING (log4j with JDK Logging statements, using the adapter) -->
         <dependency>
@@ -114,7 +136,6 @@
             <version>${synapse.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- This appears to pull in the servlet API. -->
                     <groupId>org.springframework</groupId>                    
                     <artifactId>org.springframework.web.portlet</artifactId>
                 </exclusion>
@@ -127,6 +148,11 @@
                     <artifactId>gwt-user</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.sagebionetworks</groupId>
+            <artifactId>synapseJavaClient</artifactId>
+            <version>${synapse.version}</version>
         </dependency>
         <dependency>
             <groupId>org.sagebionetworks</groupId>
@@ -134,7 +160,6 @@
             <version>${synapse.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- This appears to pull in the servlet API. -->
                     <groupId>org.springframework</groupId>                    
                     <artifactId>org.springframework.web.portlet</artifactId>
                 </exclusion>
@@ -148,13 +173,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- 
         <dependency>
             <groupId>org.sagebionetworks</groupId>
             <artifactId>lib-securityUtilities</artifactId>
             <version>${synapse.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- This appears to pull in the servlet API. -->
                     <groupId>org.springframework</groupId>                    
                     <artifactId>org.springframework.web.portlet</artifactId>
                 </exclusion>
@@ -174,12 +199,10 @@
             <version>${synapse.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- This appears to pull in the servlet API. -->
                     <groupId>org.springframework</groupId>                    
                     <artifactId>org.springframework.web.portlet</artifactId>
                 </exclusion>
                 <exclusion>
-                    <!-- This appears to pull in the servlet API. -->
                     <groupId>org.springframework</groupId>                    
                     <artifactId>org.springframework.web</artifactId>
                 </exclusion>
@@ -193,26 +216,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.sagebionetworks</groupId>
-            <artifactId>repository-managers</artifactId>
-            <version>${synapse.version}</version>
-            <exclusions>
-                <exclusion>
-                    <!-- This appears to pull in the servlet API. -->
-                    <groupId>org.springframework</groupId>                    
-                    <artifactId>org.springframework.web.portlet</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.gwt</groupId>
-                    <artifactId>gwt-servlet</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.gwt</groupId>
-                    <artifactId>gwt-user</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+         -->
 
         <dependency>
             <groupId>opensymphony</groupId>
@@ -228,12 +232,13 @@
             <version>${commons-collections.version}</version>
         </dependency>
         
-        <!-- JSON between tiers -->
+        <!-- JSON between tiers 
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson.version}</version>
-        </dependency>        
+        </dependency>
+        -->
         
         <!-- TEST -->
         <dependency>
@@ -249,8 +254,10 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <build>
+        <finalName>bridge-webapp</finalName>
+        
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -263,6 +270,16 @@
                 </plugin>
             </plugins>
         </pluginManagement>    
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <port>8888</port>
+                </configuration>
+            </plugin>        
+        </plugins>
     </build>
     
     <distributionManagement>
@@ -278,5 +295,5 @@
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
-
+    
 </project>

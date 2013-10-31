@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+
+    <!-- 
+        May have to downgrade from version 3.0, because we had to downgrade Spring to 3.0.5.
+     -->
+        
+    <display-name>Bridge Web Application</display-name>
+    
+	<servlet>
+        <servlet-name>spring-dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	    <init-param>
+	        <param-name>contextConfigLocation</param-name>
+	        <param-value>/WEB-INF/applicationContext.xml</param-value>
+	    </init-param>        
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+        
+    <servlet-mapping>
+        <servlet-name>spring-dispatcher</servlet-name>
+        <url-pattern>*.html</url-pattern>
+    </servlet-mapping>
+    
+    <filter>
+        <filter-name>WebResourceOptimizer</filter-name>
+        <filter-class>ro.isdc.wro.http.WroFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>WebResourceOptimizer</filter-name>
+        <url-pattern>/assets/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>OriginFilter</filter-name>
+        <filter-class>org.sagebionetworks.bridge.webapp.filters.OriginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>OriginFilter</filter-name>  
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>org.sagebionetworks.bridge.webapp.filters.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <!-- Should not pass static resources through the auth filter, although we do want 
+            to authenticate access to images coming through the community portion of the 
+            site (this is data when it occurs). -->
+        <filter-name>AuthenticationFilter</filter-name>  
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>/communities/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>CompressingFilter</filter-name>
+        <filter-class>com.planetj.servlet.filter.compression.CompressingFilter</filter-class>
+        <init-param>
+            <param-name>includeContentTypes</param-name>
+            <param-value>text/html,text/css,text/javascript</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CompressingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

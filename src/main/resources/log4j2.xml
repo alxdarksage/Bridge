@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration  status="WARN">
+	<properties>
+		<property name="bridge.logging.dir">${sys:java.io.tmpdir}/bridge/logs</property>
+	</properties>
+	<appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601}{GMT+0} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<RollingFile name="webapp"
+			fileName="${bridge.logging.dir}/webapp.log"
+			filePattern="${bridge.logging.dir}/webapp.%d{yyyy-MM-dd-hh-mm}.log.gz">
+			<PatternLayout>
+				<pattern>%d{ISO8601}{GMT+0} %X{sessionId} %-5p [%15.15t] [%c] - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+				<SizeBasedTriggeringPolicy size="250 MB" />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="webapp-http-out"
+			fileName="${bridge.logging.dir}/webapp-http-out.log"
+			filePattern="${bridge.logging.dir}/webapp-http-out.%d{yyyy-MM-dd-hh-mm}.log.gz">
+			<PatternLayout>
+				<pattern>%d{ISO8601}{GMT+0} %X{sessionId} %-5p [%15.15t] [%c] - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+				<SizeBasedTriggeringPolicy size="250 MB" />
+			</Policies>
+		</RollingFile>
+	</appenders>
+	<loggers>
+		<!-- This allows us to track outgoing http connection issues. See: http://blog.nigelsim.org/2011/06/17/debugging-connection-pool-leak-in-apache-http-client/--> 
+		<logger name="org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager" level="debug" additivity="false">
+			<appender-ref ref="webapp-http-out" />
+		</logger>	
+		<logger name="org.sagebionetworks" level="all" additivity="true">
+            <appender-ref ref="console" />
+			<appender-ref ref="webapp" />
+		</logger>
+		<root level="debug">
+			<appender-ref ref="console" />
+		</root>
+	</loggers>
+</configuration>
