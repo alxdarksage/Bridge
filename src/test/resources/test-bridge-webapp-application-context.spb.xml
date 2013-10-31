@@ -10,12 +10,6 @@
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-	<!-- This works, but only if the controllers use @Resource and not @Autowired in their 
-		DI annotations. Not sure why. -->
-    <bean id="helloMessageRestCall" class="org.mockito.Mockito" factory-method="mock">
-    	<constructor-arg value="org.springframework.web.client.RestTemplate" />
-	</bean>
-
     <bean id="synapseClient" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="org.sagebionetworks.client.SynapseClientImpl" />
     </bean>

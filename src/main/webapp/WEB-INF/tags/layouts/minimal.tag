@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ attribute name="title" required="true" %>
+<%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,13 +32,18 @@
             </div>
         </div>
         <div class="row main-pane">
-            <div class="col-md-3 visible-md visible-lg nav-pane">
-            </div>
-            <div class="col-md-9 content-pane">
-                <c:if test="${pageTitle}">
-                    <h3>${pageTitle}</h3>
-                </c:if>
-                <jsp:doBody/>
+            <c:choose>
+                <c:when test="${boxSize != ''}">
+                    <div class="main-pane-box" style="max-width: ${boxSize}">
+                </c:when>
+                <c:otherwise>
+                    <div class="main-pane-box">
+                </c:otherwise>
+            </c:choose>
+            <c:if test="${pageTitle}">
+                <h3>${pageTitle}</h3>
+            </c:if>
+            <jsp:doBody/>
             </div>
         </div>
     </div>

@@ -39,8 +39,8 @@
         
     <dependencies>
         <dependency>
-               <groupId>org.sagebionetworks.bridge</groupId>
-               <artifactId>lib-shared</artifactId>
+            <groupId>org.sagebionetworks.bridge</groupId>
+            <artifactId>lib-shared</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -53,6 +53,11 @@
                     <artifactId>gwt-user</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.sagebionetworks</groupId>
+            <artifactId>lib-auto-generated</artifactId>
+            <version>${synapse.version}</version>
         </dependency>
         
         <!-- Client-side resource pre-processors/JSP -->
