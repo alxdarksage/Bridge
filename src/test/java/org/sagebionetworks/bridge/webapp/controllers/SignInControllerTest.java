@@ -10,11 +10,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
+import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,7 +41,7 @@ public class SignInControllerTest {
     private UserSessionData userSessionData;
     
     SignInForm form;
-    MockHttpSession session;
+    BridgeRequest request;
     BindingResult binding;    
     
     @Before
@@ -50,8 +52,10 @@ public class SignInControllerTest {
         userSessionData.setProfile(new UserProfile());
         
         form = createSignInForm();
-        session = new MockHttpSession();
-        session.setAttribute(BridgeUser.KEY, BridgeUser.PUBLIC_USER);
+        
+        request = new BridgeRequest(new MockHttpServletRequest());
+        request.setBridgeUser(BridgeUser.PUBLIC_USER);
+        
         binding = new BeanPropertyBindingResult(form, "signInForm");        
     }
     
@@ -65,25 +69,25 @@ public class SignInControllerTest {
     
     @Test
     public void testSuccessfulLogin() throws Exception {
-        when(synapseClient.login("tim.powers@sagebase.org", "password")).thenReturn(userSessionData);
+        when(synapseClient.login("tim.powers@sagebase.org", "password", true)).thenReturn(userSessionData);
         
-        String result = controller.post(form, binding, session);
-        
+        String result = controller.post(form, binding, request);
+
         assertFalse("No errors", binding.hasGlobalErrors());
-        assertEquals("Redirect to origin", "redirect:communities/index", result);
-        assertTrue("User was stored in session", session.getAttribute(BridgeUser.KEY) != null);
-        assertTrue("User is not public user", session.getAttribute(BridgeUser.KEY) != BridgeUser.PUBLIC_USER);
+        assertEquals("Redirect to origin", "redirect:/portal/index.html", result);
+        assertTrue("User was stored in session", request.getBridgeUser() != null);
+        assertTrue("User is not public user", request.getBridgeUser() != BridgeUser.PUBLIC_USER);
     }
 
     @Test
     public void testFailedLogin() throws Exception {
-        when(synapseClient.login("tim.powers@sagebase.org", "password")).thenThrow(new SynapseException());
+        when(synapseClient.login("tim.powers@sagebase.org", "password", true)).thenThrow(new SynapseException());
         
-        String result = controller.post(form, binding, session);
+        String result = controller.post(form, binding, request);
         
         assertTrue("Has an error", binding.hasGlobalErrors());
-        assertEquals("Redirect to origin with error", "redirect:communities/index?login=error", result);
-        assertTrue("Public user still in session", session.getAttribute(BridgeUser.KEY) == BridgeUser.PUBLIC_USER);
+        assertEquals("Redirect to origin with error", "redirect:/portal/index.html?login=error", result);
+        assertTrue("Public user still in session", request.getBridgeUser() == BridgeUser.PUBLIC_USER);
     }
     
 

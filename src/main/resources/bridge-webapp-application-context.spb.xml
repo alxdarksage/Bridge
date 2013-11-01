@@ -20,10 +20,6 @@
     
    	<import resource="bridge-log-sweeper.spb.xml" />
 
-   	<bean id="serviceUrl" class="java.lang.String">
-		<constructor-arg value="http://localhost:8889/services/getHelloMessage"/>
-	</bean>
-
     <!-- TODO: This class requires construction on every request for every user, retrieving their session 
         token. Actually I kinda don't believe that, it might be safe for one user to reuse this client 
         between requests.
@@ -41,6 +37,9 @@
             <bean class="org.sagebionetworks.StackConfiguration"
                 factory-method="getFileServiceEndpoint"/>
         </property>
+        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property? 
+        <property name="appendUserAgent" value="Bridge-Service/0.1"/>
+        -->
     </bean>
     
     <bean id="bridgeUser" class="org.sagebionetworks.bridge.webapp.forms.BridgeUser" scope="prototype"/>

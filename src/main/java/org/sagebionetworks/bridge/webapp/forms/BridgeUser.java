@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class BridgeUser {
     
-    public static final String KEY = BridgeUser.class.getSimpleName();
     public static final BridgeUser PUBLIC_USER = new BridgeUser();
     
     @Autowired
@@ -17,6 +16,7 @@ public class BridgeUser {
     private String sessionToken;
     private String displayName;
     private String ownerId;
+    private String communityId;
     
     public String getSessionToken() {
         return sessionToken;
@@ -36,6 +36,12 @@ public class BridgeUser {
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
     }
+    public String getCommunityId() {
+        return communityId;
+    }
+    public void setCommunityId(String communityId) {
+        this.communityId = communityId;
+    }
     public boolean isAuthenticated() {
         return sessionToken != null;
     }
@@ -46,10 +52,19 @@ public class BridgeUser {
         if (this.synapseClient == null) {
             this.synapseClient = (SynapseClient)beanFactory.getBean("synapseClient");
             this.synapseClient.setSessionToken(getSessionToken());
-            // TODO: Grrr, not a Spring bean compatible method.
+            // TODO: Not a Spring bean compatible method, so set it here.
             this.synapseClient.appendUserAgent("Bridge-Service/0.1");
         }
         return synapseClient;
+    }
+    public String getStartURL() {
+        // TODO: This will eventually use the communityId value that'st the default for 
+        // this user.
+        if (this == PUBLIC_USER) {
+            return "redirect:/portal/index.html";
+        } else {
+            return "redirect:/communities/index.html";
+        }
     }
     public void cleanup() {
         this.synapseClient = null;

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,21 +47,20 @@ public class ErrorController {
     }
     
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
-    public void handleError(HttpServletRequest request) {
-        Integer statusCode = (Integer)request.getAttribute("javax.servlet.error.status_code");
+    public void handleError(BridgeRequest request) {
+        
+        // TODO: Yet more of this can be bug in BridgeRequest
+        Integer statusCode = request.getErrorStatusCode();
         String title = errorCodes.get(statusCode);
         if (title == null) {
             title = errorCodes.get(500);
         }
 
         String message = "";
-        Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
+        Throwable throwable = request.getErrorThrowableCause();
         if (throwable != null) {
-            logger.error("Server error", throwable);
-            while (throwable.getCause() != null) {
-                throwable = throwable.getCause();
-            }
             message = (throwable.getMessage()).replaceAll("\"", "'");
+            logger.error(throwable);
         }
         
         request.setAttribute("title", title);

@@ -2,16 +2,16 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="sgf" tagdir="/WEB-INF/tags/form" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
-<layout:minimal title="Reset Password" boxSize="30rem">
-    <c:url var="resetPasswordUrl" value="/resetPassword.html"/>
-    <form:form role="form" modelAttribute="signUpForm" method="post" action="${resetPasswordUrl}">
-        <spring:hasBindErrors name="signUpForm">
+<sage:minimal title="Reset Password" boxSize="30rem">
+    <spring:bind path="resetPasswordForm">
+        <c:if test="${not empty status.errorMessages}">
             <div class="alert alert-danger">
-                <form:errors></form:errors>
+                <form:errors path="resetPasswordForm"></form:errors>
             </div>
-        </spring:hasBindErrors>
+        </c:if>
+    </spring:bind>
+    <c:url var="resetPasswordUrl" value="/resetPassword.html"/>
+    <form:form role="form" modelAttribute="resetPasswordForm" method="post" action="${resetPasswordUrl}">
         <spring:bind path="email">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <label class="control-label" for="email">Your email address</label>
@@ -20,7 +20,6 @@
                 <form:errors path="email" />
             </div>
         </spring:bind>
-        <!-- <input type="hidden" name="origin" value="${requestScope['origin']}"/> -->
         <button type="submit" class="btn btn-default">Reset Password</button>
     </form:form>
-</layout:minimal>
+</sage:minimal>

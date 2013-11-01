@@ -1,9 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
-<%@ taglib prefix="sgf" tagdir="/WEB-INF/tags/form" %>
-<layout:minimal title="">
+<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
+<sage:minimal title="">
     <h3>${requestScope.title}</h3>
     <p>We&#8217;re sorry, Bridge encountered an issue and couldn&#8217;t fulfill 
     your request.</p>
@@ -13,4 +12,4 @@
     and let us know. Thanks!</p>
     
     <script>console.error("${requestScope.message}");</script>        
-</layout:minimal>
+</sage:minimal>

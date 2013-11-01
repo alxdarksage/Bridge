@@ -36,16 +36,20 @@
     
     <filter>
         <filter-name>OriginFilter</filter-name>
-        <filter-class>org.sagebionetworks.bridge.webapp.filters.OriginFilter</filter-class>
+        <filter-class>org.sagebionetworks.bridge.webapp.servlet.OriginFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>OriginFilter</filter-name>  
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>        
     </filter-mapping>
     
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
-        <filter-class>org.sagebionetworks.bridge.webapp.filters.AuthenticationFilter</filter-class>
+        <filter-class>org.sagebionetworks.bridge.webapp.servlet.AuthenticationFilter</filter-class>
     </filter>
     <filter-mapping>
         <!-- Should not pass static resources through the auth filter, although we do want 

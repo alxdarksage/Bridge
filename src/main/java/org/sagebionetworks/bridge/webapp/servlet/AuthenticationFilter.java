@@ -1,4 +1,4 @@
-package org.sagebionetworks.bridge.webapp.filters;
+package org.sagebionetworks.bridge.webapp.servlet;
 
 import java.io.IOException;
 
@@ -8,7 +8,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 
@@ -22,6 +21,20 @@ public class AuthenticationFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws ServletException, IOException {
         
+        BridgeRequest request = (BridgeRequest)req;
+        
+        if (!request.isUserAuthenticated()) {
+            request.setBridgeUser(BridgeUser.PUBLIC_USER);
+        }
+        
+        chain.doFilter(request, res);
+        
+        BridgeUser user = request.getBridgeUser();
+        if (user != null) {
+            user.cleanup();
+        }
+
+        /*
         HttpServletRequest request = (HttpServletRequest)req;
         BridgeUser user = (BridgeUser)request.getSession().getAttribute(BridgeUser.KEY);
         
@@ -41,6 +54,7 @@ public class AuthenticationFilter implements Filter {
         if (user != null) {
             user.cleanup();
         }
+        */
     }
 
     @Override

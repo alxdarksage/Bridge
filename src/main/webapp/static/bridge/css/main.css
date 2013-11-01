@@ -1,6 +1,9 @@
 .has-error span[id] {
 	color: #973C3A;
 }
+.has-error .help-block { /* But don't color this... duh */
+    color: #737373;
+}
 body {
 	background-color: rgb(239,239,239);
 	font-family: Open Sans, sans-serif;

@@ -1,6 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
 <!DOCTYPE html>
@@ -21,7 +20,7 @@
 </head>
 <body>
     <div class="container">
-        <layout:header title="${title}"/>
+        <sage:header title="${title}"/>
         <div class="row main-pane">
             <c:choose>
                 <c:when test="${boxSize != ''}">

@@ -2,7 +2,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="layout" tagdir="/WEB-INF/tags/layouts" %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="pageTitle" required="false" %>
 <!DOCTYPE html>
@@ -23,7 +22,7 @@
 </head>
 <body>
 	<div class="container">
-        <layout:header title="${title}"/>
+        <sage:header title="${title}"/>
 		<div class="row main-pane">
 			<div class="col-md-3 visible-md visible-lg nav-pane">
                 <div class="well">
@@ -57,6 +56,7 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <sage:notifications/>
 </body>
 </html>
