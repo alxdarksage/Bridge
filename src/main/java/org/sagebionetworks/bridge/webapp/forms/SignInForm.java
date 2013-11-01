@@ -13,20 +13,25 @@ public class SignInForm {
 	public String getUserName() {
 		return userName;
 	}
+
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-    public String getOrigin() {
-        return origin;
-    }
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-	
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
 }

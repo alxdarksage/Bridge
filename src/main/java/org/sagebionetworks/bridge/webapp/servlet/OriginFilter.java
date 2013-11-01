@@ -17,41 +17,42 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.controllers.SignInController;
 
 public class OriginFilter implements Filter {
-    
-    private static final Logger logger = LogManager.getLogger(OriginFilter.class.getName());
-    
-    private static Set<String> excludedURLs = new HashSet<String>();
-    static {
-        excludedURLs.add("/error.html");
-        excludedURLs.add("/signIn.html");
-        excludedURLs.add("/signOut.html");
-        excludedURLs.add("/signUp.html");
-        excludedURLs.add("/resetPassword.html");
-    }
 
-    @Override
-    public void init(FilterConfig config) throws ServletException {
-    }
+	private static final Logger logger = LogManager.getLogger(OriginFilter.class.getName());
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
-            ServletException {
-        // Store the origin URL so after authentication, we can direct the user to where
-        // they came from. This isn't excellent but it'll do until we know the user's home community. 
-        HttpServletRequest request = (HttpServletRequest)req;
-        BridgeRequest bridgeRequest = new BridgeRequest(request);
-        
-        String servletPath = request.getServletPath();
-        
-        if (!excludedURLs.contains(servletPath) && servletPath.endsWith(".html")) {
-            logger.debug("Setting the origin URL as: " + servletPath);
-            bridgeRequest.setOriginURL(servletPath);    
-        }
+	private static Set<String> excludedURLs = new HashSet<String>();
+	static {
+		excludedURLs.add("/error.html");
+		excludedURLs.add("/signIn.html");
+		excludedURLs.add("/signOut.html");
+		excludedURLs.add("/signUp.html");
+		excludedURLs.add("/resetPassword.html");
+	}
 
-        chain.doFilter(bridgeRequest, res);
-    }
+	@Override
+	public void init(FilterConfig config) throws ServletException {
+	}
 
-    @Override
-    public void destroy() {
-    }
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
+			ServletException {
+		// Store the origin URL so after authentication, we can direct the user
+		// to where they came from. This isn't excellent but it'll do until we
+		// know the user's home community.
+		HttpServletRequest request = (HttpServletRequest) req;
+		BridgeRequest bridgeRequest = new BridgeRequest(request);
+
+		String servletPath = request.getServletPath();
+
+		if (!excludedURLs.contains(servletPath) && servletPath.endsWith(".html")) {
+			logger.debug("Setting the origin URL as: " + servletPath);
+			bridgeRequest.setOriginURL(servletPath);
+		}
+
+		chain.doFilter(bridgeRequest, res);
+	}
+
+	@Override
+	public void destroy() {
+	}
 }

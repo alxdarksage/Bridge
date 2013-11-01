@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(value = "/communities")
 public class CommunityController {
 
-    @ModelAttribute("signInForm")
-    public SignInForm signInForm() {
-        return new SignInForm();
-    }
-    
+	@ModelAttribute("signInForm")
+	public SignInForm signInForm() {
+		return new SignInForm();
+	}
+
 	@RequestMapping(value = "/{communityId}", method = RequestMethod.GET)
 	public String get(BridgeRequest request, @PathVariable("communityId") String communityId, ModelMap map) {
 		return "communities/index";
 	}
-	
+
 }

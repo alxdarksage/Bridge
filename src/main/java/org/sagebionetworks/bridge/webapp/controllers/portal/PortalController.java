@@ -13,5 +13,5 @@ public class PortalController {
 	public String index(BridgeRequest request) {
 		return "portal/index";
 	}
-	
+
 }
