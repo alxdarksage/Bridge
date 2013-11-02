@@ -28,5 +28,6 @@
             I agree to the <a href='<c:url value="/tos.html"/>' target="_blank">terms &amp; conditions</a>
         </sage:checkbox>
         <button type="submit" class="btn btn-sm btn-default">Sign Up</button>
+        <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>Cancel</a>
     </form:form>
 </sage:minimal>

@@ -38,40 +38,53 @@ public class SignInController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String get(@ModelAttribute SignInForm signInForm) {
+	public String get(@ModelAttribute SignInForm signInForm, BridgeRequest request) {
+		if (request.isUserAuthenticated()) {
+			return request.getBridgeUser().getStartURL();
+		}
 		return "signIn";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String post(@ModelAttribute @Valid SignInForm signInForm, BindingResult result, BridgeRequest request)
 			throws SynapseException {
-		if (request.isUserAuthenticated()) {
-			return "redirect:" + signInForm.getOrigin();
+		if (result.hasErrors()) {
+			return getOnErrorReturnPage(signInForm, request);
 		}
-		if (!result.hasErrors()) {
+		// Shouldn't happen that user is authenticated, but.
+		if (!request.isUserAuthenticated()) {
 			try {
 
 				// They accept the terms of use when creating their account,
 				// they do not need to do it here.
-				UserSessionData userSessionData = synapseClient.login(signInForm.getUserName(),
+				UserSessionData userSessionData = synapseClient.login(signInForm.getEmail(),
 						signInForm.getPassword(), true);
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
 				logger.info("User #{} signed in.", user.getOwnerId());
-				if ("/signIn.html".equals(signInForm.getOrigin())) {
-					return user.getStartURL();
-				}
-				return "redirect:" + request.getOriginURL();
+				
 			} catch (SynapseException e) {
-				ClientUtils.globalFormError(result, "signInForm", e.getMessage());
+				ClientUtils.globalFormError(result, "signInForm", "IncorrectLogin");
+				return getOnErrorReturnPage(signInForm, request);
 			}
 		}
-		if ("/signOut.html".equals(request.getServletPath())) {
-			return "redirect:/signOut.html?login=error";
+		return getOnSuccessPage(signInForm, request);
+	}
+	
+	private String getOnErrorReturnPage(SignInForm signInForm, BridgeRequest request) {
+		if (signInForm.getErrorView() == null) {
+			return "redirect:"+request.getOriginURL()+"?login=error";
 		}
-		return "redirect:" + request.getOriginURL() + "?login=error";
+		return signInForm.getErrorView();
 	}
 
+	private String getOnSuccessPage(SignInForm signInForm, BridgeRequest request) {
+		if (("signIn".equals(signInForm.getErrorView()) || "signedOut".equals(signInForm.getErrorView()))) {
+			return request.getBridgeUser().getStartURL();
+		}
+		return "redirect:" + request.getOriginURL();
+	}
+	
 	private BridgeUser createBridgeUserFromUserSessionData(UserSessionData data) {
 		BridgeUser user = (BridgeUser) beanFactory.getBean("bridgeUser");
 		user.setDisplayName(data.getProfile().getDisplayName());

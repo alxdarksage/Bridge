@@ -5,7 +5,7 @@
 <c:url var="signInUrl" value="/signIn.html"/>
 <form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
     <div class="form-group">
-        <form:input cssClass="form-control input-sm" id="userName" path="userName" placeholder="User Name"/>
+        <form:input cssClass="form-control input-sm" id="email" path="email" placeholder="Email"/>
     </div>
     <div class="form-group">
         <form:password cssClass="form-control input-sm" id="password" path="password" placeholder="Password"/>

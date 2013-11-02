@@ -59,9 +59,8 @@ public class SignInControllerTest {
 
 	private SignInForm createSignInForm() {
 		SignInForm form = new SignInForm();
-		form.setUserName("tim.powers@sagebase.org");
+		form.setEmail("tim.powers@sagebase.org");
 		form.setPassword("password");
-		form.setOrigin("communities/index");
 		return form;
 	}
 

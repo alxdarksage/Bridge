@@ -25,6 +25,7 @@ public class OriginFilter implements Filter {
 		excludedURLs.add("/error.html");
 		excludedURLs.add("/signIn.html");
 		excludedURLs.add("/signOut.html");
+		excludedURLs.add("/signedOut.html");
 		excludedURLs.add("/signUp.html");
 		excludedURLs.add("/resetPassword.html");
 	}
@@ -43,7 +44,7 @@ public class OriginFilter implements Filter {
 		BridgeRequest bridgeRequest = new BridgeRequest(request);
 
 		String servletPath = request.getServletPath();
-
+		
 		if (!excludedURLs.contains(servletPath) && servletPath.endsWith(".html")) {
 			logger.debug("Setting the origin URL as: " + servletPath);
 			bridgeRequest.setOriginURL(servletPath);

@@ -18,7 +18,6 @@ public class SignOutController {
 
 	private static final Logger logger = LogManager.getLogger(SignOutController.class.getName());
 
-	// TODO: This is going to be very common. Possibly a base class thing.
 	@ModelAttribute("signInForm")
 	public SignInForm signInForm() {
 		return new SignInForm();

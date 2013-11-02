@@ -68,9 +68,8 @@ public class BridgeUser {
 	}
 
 	public String getStartURL() {
-		// TODO: This will eventually use the communityId value that'st the
-		// default for
-		// this user.
+		// TODO: This will eventually use the communityId value that's the
+		// default for this user.
 		if (this == PUBLIC_USER) {
 			return "redirect:/portal/index.html";
 		} else {
