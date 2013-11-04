@@ -3,7 +3,7 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <c:choose>

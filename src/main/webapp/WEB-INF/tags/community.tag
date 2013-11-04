@@ -5,7 +5,7 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="pageTitle" required="false" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <c:choose>

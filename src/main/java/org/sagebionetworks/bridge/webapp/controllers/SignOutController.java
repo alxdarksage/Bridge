@@ -1,5 +1,7 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
@@ -24,12 +26,12 @@ public class SignOutController {
 	}
 
 	@RequestMapping(method = { RequestMethod.GET, RequestMethod.POST })
-	public String get(BridgeRequest request) throws SynapseException {
+	public String get(BridgeRequest request, HttpSession session) throws SynapseException {
 		BridgeUser user = request.getBridgeUser();
 		if (user.isAuthenticated()) {
 			SynapseClient client = user.getSynapseClient();
 			client.logout();
-			request.setBridgeUser(null);
+			session.invalidate();
 			logger.info("User #{} signed off.", user.getOwnerId());
 		}
 		return "signedOut";

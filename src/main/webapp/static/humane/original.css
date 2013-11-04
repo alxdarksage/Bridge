@@ -25,7 +25,6 @@ body {
   min-height: 40px;
   padding: 10px;
   text-align: center;
-  background-color: #000;
   color: #555;
   -webkit-border-radius: 15px;
   border-radius: 15px;
@@ -43,15 +42,12 @@ body {
 }
 .humane.humane-original-info,
 .humane-original.humane-original-info {
-  background-color: #030;
 }
 .humane.humane-original-success,
 .humane-original.humane-original-success {
-  background-color: #030;
 }
 .humane.humane-original-error,
 .humane-original.humane-original-error {
-  background-color: #300;
 }
 .humane.humane-animate,
 .humane-original.humane-original-animate {

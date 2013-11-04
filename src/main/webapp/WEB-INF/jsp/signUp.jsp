@@ -24,8 +24,8 @@
             <span class="help-block">For example, &#147;tinkerbell&#148;. Don&#8217;t user your real name 
             if you wish to remain anonymous (Bridge won&#8217;t show your email address to other users). </span>
         </sage:text>
-        <sage:checkbox field="acceptsTermsOfUse">
-            I agree to the <a href='<c:url value="/tos.html"/>' target="_blank">terms &amp; conditions</a>
+        <sage:checkbox field="acceptTermsOfUse">
+            I agree to the <a href='<c:url value="/tou.html"/>' target="_blank">terms of use</a>
         </sage:checkbox>
         <button type="submit" class="btn btn-sm btn-default">Sign Up</button>
         <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>Cancel</a>

@@ -2,7 +2,7 @@
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
 <%@ attribute name="title" required="true" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <c:choose>
