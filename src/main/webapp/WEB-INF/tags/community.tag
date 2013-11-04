@@ -22,18 +22,7 @@
 </head>
 <body>
 	<div class="container">
-		<div class="header row">
-			<div class="col-sm-6 community-header">
-				${title}
-			</div>
-			<div class="col-sm-6 portal-header visible-sm visible-md visible-lg">
-				<div class="portal-subheader">
-					<a href="<c:url value='/portal/index.html'/>">Bridge Community Portal</a>
-				</div>
-				<div class="portal-links">
-				</div>
-			</div>
-		</div>
+        <sage:header title="${title}"/>
 		<div class="row main-pane">
 			<div class="col-md-3 visible-md visible-lg nav-pane">
                 <div class="well">
@@ -67,6 +56,7 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <sage:notifications/>
 </body>
 </html>

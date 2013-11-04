@@ -36,16 +36,20 @@
     
     <filter>
         <filter-name>OriginFilter</filter-name>
-        <filter-class>org.sagebionetworks.bridge.webapp.filters.OriginFilter</filter-class>
+        <filter-class>org.sagebionetworks.bridge.webapp.servlet.OriginFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>OriginFilter</filter-name>  
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>        
     </filter-mapping>
     
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
-        <filter-class>org.sagebionetworks.bridge.webapp.filters.AuthenticationFilter</filter-class>
+        <filter-class>org.sagebionetworks.bridge.webapp.servlet.AuthenticationFilter</filter-class>
     </filter>
     <filter-mapping>
         <!-- Should not pass static resources through the auth filter, although we do want 
@@ -68,6 +72,21 @@
         <filter-name>CompressingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <!-- This is a last ditch thing. Controllers attempt to handle errors and stay 
+        on the current page. -->
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/error.html</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error.html</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.html</location>
+    </error-page>
     
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

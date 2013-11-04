@@ -12,11 +12,14 @@
 		<css>/static/bootstrap/css/bootstrap.css</css>
 		<css>/static/bootstrap/css/bootstrap-theme.css</css>
 		<css>/static/bridge/css/main.css</css>
+        <css>/static/bridge/css/large.css</css>
+        <css>/static/humane/original.css</css>
 	</group>
-	
+
 	<group name="footer">
 		<js>/static/jquery/jquery-1.10.2.js</js>
    		<js>/static/bootstrap/js/bootstrap.js</js>
 		<js>/static/bridge/js/main.js</js>
+        <js>/static/humane/humane.js</js>
 	</group>
 </groups>

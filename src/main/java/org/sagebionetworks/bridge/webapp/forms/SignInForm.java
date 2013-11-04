@@ -1,32 +1,39 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class SignInForm {
 
+	@Email
 	@NotEmpty
-	private String userName;
+	private String email;
 	@NotEmpty
 	private String password;
-	private String origin;
+	private String errorView;
 
-	public String getUserName() {
-		return userName;
+	public String getEmail() {
+		return email;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-    public String getOrigin() {
-        return origin;
-    }
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-	
+
+	public String getErrorView() {
+		return errorView;
+	}
+
+	public void setErrorView(String errorView) {
+		this.errorView = errorView;
+	}
+
 }

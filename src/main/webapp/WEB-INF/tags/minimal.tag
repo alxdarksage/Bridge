@@ -1,5 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
 <%@ attribute name="title" required="true" %>
+<%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,29 +20,24 @@
 </head>
 <body>
     <div class="container">
-        <div class="header row">
-            <div class="col-sm-6 community-header">
-                ${title}
-            </div>
-            <div class="col-sm-6 portal-header visible-sm visible-md visible-lg">
-                <div class="portal-subheader">
-                    <a href="<c:url value='/portal/index.html'/>">Bridge Community Portal</a>
-                </div>
-                <div class="portal-links">
-                </div>
-            </div>
-        </div>
+        <sage:header title="${title}"/>
         <div class="row main-pane">
-            <div class="col-md-3 visible-md visible-lg nav-pane">
-            </div>
-            <div class="col-md-9 content-pane">
-                <c:if test="${pageTitle}">
-                    <h3>${pageTitle}</h3>
-                </c:if>
-                <jsp:doBody/>
+            <c:choose>
+                <c:when test="${boxSize != ''}">
+                    <div class="main-pane-box" style="max-width: ${boxSize}">
+                </c:when>
+                <c:otherwise>
+                    <div class="main-pane-box">
+                </c:otherwise>
+            </c:choose>
+            <c:if test="${pageTitle}">
+                <h3>${pageTitle}</h3>
+            </c:if>
+            <jsp:doBody/>
             </div>
         </div>
     </div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <sage:notifications/>
 </body>
 </html>
