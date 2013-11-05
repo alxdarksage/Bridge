@@ -7,6 +7,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class NotificationTag extends SimpleTagSupport {
 
 	public void doTag() throws JspException, IOException {
@@ -16,8 +18,7 @@ public class NotificationTag extends SimpleTagSupport {
 		BridgeRequest request = (BridgeRequest) pageContext.getRequest();
 		String notice = request.getNotification();
 
-		// TODO: Commons util for this.
-		if (notice != null && !"".equals(notice)) {
+		if (StringUtils.isNotBlank(notice)) {
 			out.write("<script>humane.log(\"" + notice + "\");</script>");
 		}
 

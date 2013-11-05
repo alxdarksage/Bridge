@@ -28,6 +28,10 @@ public class OriginFilter implements Filter {
 		excludedURLs.add("/signedOut.html");
 		excludedURLs.add("/signUp.html");
 		excludedURLs.add("/resetPassword.html");
+		excludedURLs.add("/termsOfUse.html");
+		excludedURLs.add("/termsOfUse/cancel.html");
+		excludedURLs.add("/openId.html");
+		excludedURLs.add("/openIdCallback.html");
 	}
 
 	@Override

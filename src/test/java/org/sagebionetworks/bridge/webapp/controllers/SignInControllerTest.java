@@ -64,11 +64,13 @@ public class SignInControllerTest {
 		return form;
 	}
 
+	// TODO: Need to test case where user has not accepted TOU.
+	
 	@Test
 	public void testSuccessfulLogin() throws Exception {
-		when(synapseClient.login("tim.powers@sagebase.org", "password", true)).thenReturn(userSessionData);
+		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenReturn(userSessionData);
 
-		String result = controller.post(form, binding, request);
+		String result = controller.post(request, form, binding);
 
 		assertFalse("No errors", binding.hasGlobalErrors());
 		assertEquals("Redirect to origin", "redirect:/portal/index.html", result);
@@ -78,9 +80,9 @@ public class SignInControllerTest {
 
 	@Test
 	public void testFailedLogin() throws Exception {
-		when(synapseClient.login("tim.powers@sagebase.org", "password", true)).thenThrow(new SynapseException());
+		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenThrow(new SynapseException());
 
-		String result = controller.post(form, binding, request);
+		String result = controller.post(request, form, binding);
 
 		assertTrue("Has an error", binding.hasGlobalErrors());
 		assertEquals("Redirect to origin with error", "redirect:/portal/index.html?login=error", result);

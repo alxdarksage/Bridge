@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
+import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 
 /**
  * A convenience wrapper to hide some of the ick of casting and using map keys
@@ -19,6 +20,7 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	public static final String BRIDGE_USER_KEY = "BridgeUser";
 	public static final String NOTICE_KEY = "notice";
 	public static final String ORIGIN_KEY = "origin";
+	public static final String SIGN_IN_FORM = "credentials";
 
 	private HttpServletRequest request;
 
@@ -85,6 +87,16 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 			return true;
 		}
 		return false;
+	}
+	
+	public void saveSignInForm(SignInForm signInForm) {
+		getSession().setAttribute(SIGN_IN_FORM, signInForm);
+	}
+	
+	public SignInForm restoreSignInForm() {
+		SignInForm form = (SignInForm)getSession().getAttribute(SIGN_IN_FORM);
+		getSession().removeAttribute(SIGN_IN_FORM);
+		return form;
 	}
 
 	public Integer getErrorStatusCode() {

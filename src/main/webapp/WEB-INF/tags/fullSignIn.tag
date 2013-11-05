@@ -21,3 +21,4 @@
     <button type="submit" class="btn btn-default">Sign In</button> 
     <a class="btn" href='<c:url value="/resetPassword.html"/>'>I forgot my password</a>
 </form:form>
+<sage:oauth/>

@@ -1,74 +1,7 @@
-.has-error span[id] {
-	color: #973C3A;
-}
-.has-error .help-block { /* But don't color this... duh */
-    color: #737373;
-}
 body {
 	background-color: rgb(239,239,239);
 	font-family: Open Sans, sans-serif;
 }
 a, a:visited, a:active {
 	color: rgb(54,108,183);
-}
-
-.container {
-	
-}
-
-/* Header Element */
-.header {
-	background-color: rgb(118,172,105);
-	/*background-color: rgb(67,67,67);*/
-	color: white;
-	font-family: 'Archivo Narrow', sans-serif;
-	letter-spacing: 1px;
-}
-	.header a, .header a:visited, .header a:active {
-		color: white;
-	}
-	.community-header {
-		height: 5rem;
-		font-size: 2.2rem;
-		line-height: 5rem;
-	}
-	.portal-header {
-		font-family: 'Archivo Narrow', sans-serif;
-	}
-		.portal-subheader {
-			font-size: 1.4rem;
-		}
-		.portal-links {
-            color: rgb(42,120,81);
-			font-size: 1.1rem;
-			line-height:3rem;
-			margin-top: -.5rem;
-		}
-		  .portal-links a {
-		      padding: .5rem 0;
-		  }
-
-.main-pane {
-	padding-top: 3rem;
-	background-color: white;
-	min-height: 50rem;
-	box-shadow: 0px 1px 3px silver inset;
-}		
-    .main-pane-box {
-        max-width: 70rem; 
-        padding: 0 1rem; 
-        margin: 2rem auto;
-    }
-	.nav-pane {
-	}
-	.content-pane {
-	}
-		h3 {
-			margin: 0 0 1rem 0;
-			font: normal 2.1rem 'Archivo Narrow', sans-serif;
-		}
-		
-		
-.narrow-box {
-    max-width: 30rem;
 }

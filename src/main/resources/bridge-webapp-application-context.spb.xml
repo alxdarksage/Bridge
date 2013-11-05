@@ -23,6 +23,9 @@
     <!-- TODO: This class requires construction on every request for every user, retrieving their session 
         token. Actually I kinda don't believe that, it might be safe for one user to reuse this client 
         between requests.
+        
+        Also, this is the publicSynapseClient, you can configure a privateSynapseClient that uses 
+        the private auth URL.
     -->
     <bean id="synapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
         <property name="repositoryEndpoint">
@@ -32,6 +35,24 @@
         <property name="authEndpoint">
             <bean class="org.sagebionetworks.StackConfiguration"
                 factory-method="getAuthenticationServicePublicEndpoint"/>
+        </property>
+        <property name="fileEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getFileServiceEndpoint"/>
+        </property>
+        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property? 
+        <property name="appendUserAgent" value="Bridge-Service/0.1"/>
+        -->
+    </bean>
+    
+    <bean id="privateSynapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
+        <property name="repositoryEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getRepositoryServiceEndpoint"/>
+        </property>
+        <property name="authEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getAuthenticationServicePrivateEndpoint"/>
         </property>
         <property name="fileEndpoint">
             <bean class="org.sagebionetworks.StackConfiguration"
