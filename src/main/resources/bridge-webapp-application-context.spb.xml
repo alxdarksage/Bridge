@@ -45,6 +45,24 @@
         -->
     </bean>
     
+    <bean id="privateSynapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
+        <property name="repositoryEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getRepositoryServiceEndpoint"/>
+        </property>
+        <property name="authEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getAuthenticationServicePrivateEndpoint"/>
+        </property>
+        <property name="fileEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getFileServiceEndpoint"/>
+        </property>
+        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property? 
+        <property name="appendUserAgent" value="Bridge-Service/0.1"/>
+        -->
+    </bean>
+    
     <bean id="bridgeUser" class="org.sagebionetworks.bridge.webapp.forms.BridgeUser" scope="prototype"/>
     
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

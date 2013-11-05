@@ -24,6 +24,6 @@
             I agree to the terms of use
         </sage:checkbox>
         <button type="submit" class="btn btn-sm btn-default">Continue</button>
-        <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>Cancel</a>
+        <a class="btn" href='<c:url value="/termsOfUse/cancel.html"/>'>Cancel</a>
     </form:form>
 </sage:minimal>

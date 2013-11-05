@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
 <h3>Sign In</h3>
 <c:url var="signInUrl" value="/signIn.html"/>
 <form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
@@ -20,3 +21,4 @@
 <p style="margin-top:1rem; margin-bottom: -.25rem">
     <a href='<c:url value="/resetPassword.html"/>'>I forgot my password</a>
 </p>
+<sage:oauth/>

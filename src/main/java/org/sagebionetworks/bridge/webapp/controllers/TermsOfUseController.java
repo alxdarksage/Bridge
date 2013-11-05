@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TermsOfUseController extends AuthenticateBaseController {
 	
 	private static final Logger logger = LogManager.getLogger(TermsOfUseController.class.getName());
-
+	
 	@RequestMapping(value = "/tou", method = RequestMethod.GET)
 	public String getWithoutCheckbox(BridgeRequest request, @ModelAttribute TermsOfUseForm termsOfUseForm) throws Exception {
 		// Throws exception because I can't imagine what we'd do that was better 
@@ -63,4 +63,8 @@ public class TermsOfUseController extends AuthenticateBaseController {
 		return "termsOfUse";
 	}
 
+	@RequestMapping(value = "/termsOfUse/cancel", method = RequestMethod.GET)
+	public String cancelTermsOfUse(BridgeRequest request) {
+		return "redirect:"+request.getOriginURL();
+	}
 }
