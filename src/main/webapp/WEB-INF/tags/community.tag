@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sage-lib" uri="http://sagebase.org/bridge" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="pageTitle" required="false" %>
@@ -57,6 +58,6 @@
 		</div>
 	</div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
-    <sage:notifications/>
+    <sage-lib:notification/>
 </body>
 </html>

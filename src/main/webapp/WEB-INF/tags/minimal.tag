@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sage-lib" uri="http://sagebase.org/bridge" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
@@ -24,10 +25,10 @@
         <div class="row main-pane">
             <c:choose>
                 <c:when test="${boxSize != ''}">
-                    <div class="main-pane-box" style="max-width: ${boxSize}">
+                    <div class="box" style="max-width: ${boxSize}">
                 </c:when>
                 <c:otherwise>
-                    <div class="main-pane-box">
+                    <div class="box">
                 </c:otherwise>
             </c:choose>
             <c:if test="${pageTitle}">
@@ -38,6 +39,6 @@
         </div>
     </div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
-    <sage:notifications/>
+    <sage-lib:notification/>
 </body>
 </html>

@@ -27,27 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class OpenIdController extends AuthenticateBaseController {
-	
-	/*
-	sessionToken: ac0036ca-8815-4fd2-8b73-9e1ee928a426
-	User-Agent: Synpase-Java-Client/develop-SNAPSHOT
-	Accept: application/json
-	Content-Type: application/json
-Request Content: org.apache.http.entity.StringEntity@38156964
-Response Content: {"reason":"org.openid4java.message.MessageException: 0x100: Required parameter missing: openid.return_to\n"}
-	at org.sagebionetworks.client.SynapseClientImpl.dispatchSynapseRequest(SynapseClientImpl.java:3602)
-	at org.sagebionetworks.client.SynapseClientImpl.signAndDispatchSynapseRequest(SynapseClientImpl.java:3501)
-	at org.sagebionetworks.client.SynapseClientImpl.createJSONObjectEntity(SynapseClientImpl.java:3268)
-	at org.sagebionetworks.client.SynapseClientImpl.createAuthEntity(SynapseClientImpl.java:3228)
-	at org.sagebionetworks.client.SynapseClientImpl.passThroughOpenIDParameters(SynapseClientImpl.java:5161)
-	at org.sagebionetworks.bridge.webapp.controllers.OpenIdController.openIDCallback(OpenIdController.java:123)
-	at org.sagebionetworks.bridge.webapp.controllers.OpenIdController.openIdCallback(OpenIdController.java:81)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:606)
-	at org.springframework.web.bind.annotation.support.HandlerMethodInvoker.invokeHandlerMethod(HandlerMethodInvoker.java:176)
-	 */
+
 	
 	private static final Logger logger = LogManager.getLogger(OpenIdController.class.getName());
 
