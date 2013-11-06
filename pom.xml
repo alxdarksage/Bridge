@@ -10,17 +10,27 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<applicationContext.path>classpath:bridge-webapp-application-context.spb.xml</applicationContext.path>
 		
 		<commons-collections.version>3.2.1</commons-collections.version>
+		<commons-io.version>2.4</commons-io.version>
+		<gzip.filter>1.7</gzip.filter>
 		<hibernate-validator.version>5.0.1.Final</hibernate-validator.version>
 		<jackson.version>1.9.13</jackson.version>
+		<jsp.version>2.2</jsp.version>
+		<jsp-impl.version>2.2.1</jsp-impl.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
 		<log4j.version>2.0-beta8</log4j.version>
+		<mockito.version>1.9.5</mockito.version>
+		<phantomdriver.version>1.0.4</phantomdriver.version>
 		<quartz.version>1.6.3</quartz.version>
-		<!-- <spring.version>3.2.4.RELEASE</spring.version> -->
+		<selenium.version>2.34.0</selenium.version>
+		<servlet.version>3.0</servlet.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<synapse.version>develop-SNAPSHOT</synapse.version>
+		<tomcat.version>7.0.32</tomcat.version>
 		<wro4j.version>1.6.3</wro4j.version>
 	</properties>
 	
@@ -75,7 +85,7 @@
 		<dependency> <!-- gzip filter. -->
 			<groupId>net.sourceforge.pjl-comp-filter</groupId>
 			<artifactId>pjl-comp-filter</artifactId>
-			<version>1.7</version>
+			<version>${gzip.filter}</version>
 		</dependency>
 		<dependency>
 			<groupId>ro.isdc.wro4j</groupId>
@@ -91,7 +101,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>${commons-io.version}</version>
         </dependency>	
 		
 		<!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
@@ -100,26 +110,26 @@
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.servlet</artifactId>
-			<version>3.0</version>
+			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
+			<version>${jsp.version}</version>
 			<scope>provided</scope>
 		</dependency>		
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>jsp-impl</artifactId>
-			<version>2.2.1</version>
+			<version>${jsp-impl.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		
@@ -196,50 +206,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>org.sagebionetworks</groupId>
-			<artifactId>lib-securityUtilities</artifactId>
-			<version>${synapse.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>					
-					<artifactId>org.springframework.web.portlet</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.gwt</groupId>
-					<artifactId>gwt-servlet</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.gwt</groupId>
-					<artifactId>gwt-user</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.sagebionetworks</groupId>
-			<artifactId>auth-util</artifactId>
-			<version>${synapse.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>					
-					<artifactId>org.springframework.web.portlet</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>					
-					<artifactId>org.springframework.web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.gwt</groupId>
-					<artifactId>gwt-servlet</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.gwt</groupId>
-					<artifactId>gwt-user</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		 -->
 
 		<dependency>
 			<groupId>opensymphony</groupId>
@@ -255,14 +221,6 @@
 			<version>${commons-collections.version}</version>
 		</dependency>
 		
-		<!-- JSON between tiers 
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		-->
-		
 		<!-- TEST -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -276,11 +234,35 @@
 			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium.version}</version>
+		</dependency>  		
+		<dependency>
+            <groupId>com.github.detro.ghostdriver</groupId>
+            <artifactId>phantomjsdriver</artifactId>
+            <version>${phantomdriver.version}</version>
+            <!-- Brings in wrong version of servlet API. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mortbay.jetty</groupId>                  
+                    <artifactId>servlet-api-2.5</artifactId>
+                </exclusion>
+            </exclusions>            
+        </dependency>
+		<!-- Tomcat7 needs this when running integration tests. -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>		
+		
 	</dependencies>
 
 	<build>
-		<finalName>bridge-webapp</finalName>
-		
+		<finalName>webapp</finalName>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -294,17 +276,153 @@
 			</plugins>
 		</pluginManagement>	
 		<plugins>
+            <!-- If this is not included, Tomcat doesn't use the Maven-filtered version of web.xml, which 
+               means it doesn't have a hard reference to the application context file. This is bad. The 
+               downside to using the target dir version is 1) you need to build before you run 
+               'mvn tomcat7:run' and 2) no "hot reloading" of src/main/resources.
+            -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.0</version>
 				<configuration>
 					<port>8888</port>
+					<warSourceDirectory>
+                        ${project.build.directory}/${project.build.finalName}
+                    </warSourceDirectory>
 				</configuration>
-			</plugin>		
+			</plugin>
+            <!--  By default, integration tests will fail unless you run them as part of the integration 
+                profile. Use 'mvn clean install -P integration' to run all the unit/integration tests. 
+                Unit tests are still run as part of the normal build.
+            -->
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.6</version>
+                <configuration>
+                    <skipITs>true</skipITs>
+                </configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+    						<goal>verify</goal>
+						</goals>
+					</execution>
+                    <execution> 
+                        <id>fail-build</id> 
+                        <phase>verify</phase> 
+                        <goals> 
+                            <goal>verify</goal> 
+                        </goals> 
+                    </execution> 					
+				</executions>
+			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+	                <webResources>
+	                    <resource>
+		                    <directory>src/main/webapp</directory>
+		                    <filtering>true</filtering>
+	                    </resource>
+	                </webResources>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 	
+	<profiles>
+	    <profile>
+	        <id>integration</id>
+	        <properties>
+                <applicationContext.path>classpath:test-bridge-webapp-application-context.spb.xml</applicationContext.path>
+	        </properties>
+	        <build>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.apache.maven.plugins</groupId>
+	                    <artifactId>maven-war-plugin</artifactId>
+	                    <version>2.4</version>
+	                    <configuration>
+	                        <webResources>
+	                            <resource>
+	                                <directory>src/main/webapp</directory>
+	                                <filtering>true</filtering>
+	                            </resource>
+	                            <resource>
+	                                <directory>src/test/resources</directory>
+	                                <targetPath>WEB-INF/classes</targetPath>
+	                                <filtering>false</filtering>
+	                            </resource>
+                            </webResources>
+	                    </configuration>
+	                </plugin>
+		            <plugin>
+		                <artifactId>maven-failsafe-plugin</artifactId>
+		                <version>2.6</version>
+		                <configuration>
+		                    <skipITs>false</skipITs>
+		                </configuration>
+		            </plugin>
+		            <plugin>
+		                <groupId>org.codehaus.cargo</groupId>
+		                <artifactId>cargo-maven2-plugin</artifactId>
+		                <version>1.3.1</version>
+		                <configuration>
+		                    <wait>false</wait>
+		                    <container>
+		                        <timeout>360000</timeout>
+		                        <containerId>tomcat7x</containerId>
+		                        <zipUrlInstaller>
+		                            <url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local/apache-tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip</url>
+		                            <extractDir>${project.build.directory}/tomcat7x/container</extractDir>
+		                        </zipUrlInstaller>
+		                    </container>
+		                    <configuration>
+		                        <properties>
+		                            <cargo.jvmargs>-Xmx2g -Xms128m -XX:MaxPermSize=850m</cargo.jvmargs>
+		                            <cargo.servlet.port>8888</cargo.servlet.port>
+		                            <cargo.tomcat.ajp.port>8889</cargo.tomcat.ajp.port>
+		                        </properties>
+		                    </configuration>
+		                    <type>standalone</type>
+		                    <home>${project.build.directory}/tomcat7x/container/apache-tomcat-${tomcat.version}/bin</home>
+		                    <deployables>
+		                        <deployable>
+		                            <groupId>org.sagebionetworks.bridge</groupId>
+		                            <artifactId>webapp</artifactId>
+		                            <type>war</type>
+		                        </deployable>
+		                    </deployables>
+		                    <packager>
+		                        <outputLocation>${project.build.directory}/tomcat-packaged</outputLocation>
+		                    </packager>
+		                </configuration>
+		                <executions>
+		                    <execution>
+		                        <id>start-container</id>
+		                        <phase>pre-integration-test</phase>
+		                        <goals>
+		                            <goal>start</goal>
+		                        </goals>
+		                    </execution>
+		                    <execution>
+		                        <id>stop-container</id>
+		                        <phase>post-integration-test</phase>
+		                        <goals>
+		                            <goal>stop</goal>
+		                        </goals>
+		                    </execution>
+		                </executions>
+		            </plugin>
+	            </plugins>
+	        </build>
+	    </profile>
+	</profiles>
+
 	<distributionManagement>
 		<repository>
 			<id>sagebionetworks</id>

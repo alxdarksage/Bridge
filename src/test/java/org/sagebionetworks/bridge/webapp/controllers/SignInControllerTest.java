@@ -12,6 +12,7 @@ import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
@@ -26,11 +27,12 @@ import org.springframework.validation.BindingResult;
 import com.google.inject.Binder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/applicationContext.xml",
-		"file:src/test/resources/test-bridge-webapp-application-context.spb.xml" })
+@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/applicationContext.xml" })
 public class SignInControllerTest {
 
-	@Autowired
+	// Can't autowire because I'm using the same test application context XML file for 
+	// the integration tests. I'm not sure how much unit testing I'm going to do in 
+	// a project that's all webapp.
 	private SynapseClient synapseClient;
 
 	@Autowired
@@ -44,8 +46,9 @@ public class SignInControllerTest {
 
 	@Before
 	public void setUp() {
-		reset(synapseClient);
-
+		synapseClient = Mockito.mock(SynapseClientImpl.class);
+		controller.setSynapseClient(synapseClient);
+		
 		userSessionData = new UserSessionData();
 		userSessionData.setProfile(new UserProfile());
 
@@ -56,7 +59,7 @@ public class SignInControllerTest {
 
 		binding = new BeanPropertyBindingResult(form, "signInForm");
 	}
-
+	
 	private SignInForm createSignInForm() {
 		SignInForm form = new SignInForm();
 		form.setEmail("tim.powers@sagebase.org");
@@ -64,14 +67,12 @@ public class SignInControllerTest {
 		return form;
 	}
 
-	// TODO: Need to test case where user has not accepted TOU.
-	
 	@Test
 	public void testSuccessfulLogin() throws Exception {
 		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenReturn(userSessionData);
 
 		String result = controller.post(request, form, binding);
-
+		
 		assertFalse("No errors", binding.hasGlobalErrors());
 		assertEquals("Redirect to origin", "redirect:/portal/index.html", result);
 		assertTrue("User was stored in session", request.getBridgeUser() != null);
@@ -91,7 +92,7 @@ public class SignInControllerTest {
 
 	// So, what doesn't happen is that it doesn't get validated... so then you
 	// get a crap redirect.
-	// This is why it would be better if we were using Spring 3.4.x. I can'f
+	// This is why it would be better if we were using Spring 3.4.x. I can't
 	// find guidance on how to
 	// get this to work in Spring 3.0. Will have to use integration tests, which
 	// will require a mock

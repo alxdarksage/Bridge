@@ -27,6 +27,7 @@
         Also, this is the publicSynapseClient, you can configure a privateSynapseClient that uses 
         the private auth URL.
     -->
+    
     <bean id="synapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
         <property name="repositoryEndpoint">
             <bean class="org.sagebionetworks.StackConfiguration"
@@ -40,7 +41,7 @@
             <bean class="org.sagebionetworks.StackConfiguration"
                 factory-method="getFileServiceEndpoint"/>
         </property>
-        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property? 
+        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property?  
         <property name="appendUserAgent" value="Bridge-Service/0.1"/>
         -->
     </bean>
@@ -58,11 +59,11 @@
             <bean class="org.sagebionetworks.StackConfiguration"
                 factory-method="getFileServiceEndpoint"/>
         </property>
-        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property? 
+        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property?  
         <property name="appendUserAgent" value="Bridge-Service/0.1"/>
         -->
     </bean>
-    
+
     <bean id="bridgeUser" class="org.sagebionetworks.bridge.webapp.forms.BridgeUser" scope="prototype"/>
     
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
