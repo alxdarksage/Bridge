@@ -6,7 +6,7 @@
 	<div class="form-group ${status.error ? 'has-error' : ''}">
 		<label class="control-label" for="${field}">${label}</label>
 		<form:input cssClass="form-control input-sm" id="${field}" path="${field}"/>
-        <form:errors path="${field}" />
+        <form:errors id="${field}_errors" path="${field}" />
         <jsp:doBody/>
 	</div>
 </spring:bind>

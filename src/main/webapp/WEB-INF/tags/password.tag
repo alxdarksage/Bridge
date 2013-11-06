@@ -6,6 +6,6 @@
     <div class="form-group ${status.error ? 'has-error' : ''}">
         <label class="control-label" for="${field}">${label}</label>
         <form:password cssClass="form-control input-sm" id="${field}" path="${field}"/>
-        <form:errors path="${field}" />
+        <form:errors id="${field}_errors" path="${field}" />
     </div>
 </spring:bind>

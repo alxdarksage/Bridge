@@ -6,17 +6,19 @@
 <spring:bind path="signInForm">
     <c:if test="${not empty status.errorMessages}">
         <div class="alert alert-danger">
-            <form:errors path="signInForm"></form:errors>
+            <form:errors id="signInForm_errors" path="signInForm"></form:errors>
         </div>
     </c:if>
 </spring:bind>
+    <c:if test="${not empty param.login}">
+        <div class="alert alert-danger">
+            Unable to sign you in. Email or password may be incorrect.
+        </div>
+    </c:if>
 <c:url var="signInUrl" value="/signIn.html"/> <!-- Required for Spring form -->
 <form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
     <sage:text field="email" label="Email"/>
     <sage:password field="password" label="Password"/>
-    <c:if test="${not empty param.login}">
-        <div class="alert alert-danger">Unable to sign you in.</div>
-    </c:if>
     <input type="hidden" name="errorView" value="${errorView}"/>
     <button type="submit" class="btn btn-default">Sign In</button> 
     <a class="btn" href='<c:url value="/resetPassword.html"/>'>I forgot my password</a>

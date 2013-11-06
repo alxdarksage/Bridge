@@ -10,7 +10,12 @@
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <bean id="synapseClient" class="org.mockito.Mockito" factory-method="mock">
-        <constructor-arg value="org.sagebionetworks.client.SynapseClientImpl" />
+    <import resource="classpath:bridge-webapp-application-context.spb.xml"/>
+    
+    <bean id="synapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="prototype">
     </bean>
+
+    <bean id="privateSynapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="prototype">
+    </bean>
+    
 </beans>
