@@ -1,8 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
+<fmt:setBundle basename="messages"/>
 <%@ attribute name="errorView" required="true" %>
+
 <spring:bind path="signInForm">
     <c:if test="${not empty status.errorMessages}">
         <div class="alert alert-danger">
@@ -12,7 +15,7 @@
 </spring:bind>
     <c:if test="${not empty param.login}">
         <div class="alert alert-danger">
-            Unable to sign you in. Email or password may be incorrect.
+            <fmt:message key="IncorrectLogin"/>
         </div>
     </c:if>
 <c:url var="signInUrl" value="/signIn.html"/> <!-- Required for Spring form -->
@@ -20,7 +23,10 @@
     <sage:text field="email" label="Email"/>
     <sage:password field="password" label="Password"/>
     <input type="hidden" name="errorView" value="${errorView}"/>
-    <button type="submit" class="btn btn-default">Sign In</button> 
-    <a class="btn" href='<c:url value="/resetPassword.html"/>'>I forgot my password</a>
+    <button type="submit" class="btn btn-default">Sign In</button>
+    <a id="signUpLink" href='<c:url value="/signUp.html"/>' class="btn">Sign Up</a> 
 </form:form>
+<p class="forgotLinkWrapper">
+    <a id="forgotPasswordLink" href='<c:url value="/resetPassword.html"/>'>I forgot my password</a>
+</p>
 <sage:oauth/>

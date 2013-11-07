@@ -4,8 +4,8 @@
 <spring:bind path="${field}">
     <div class="checkbox ${status.error ? 'has-error' : ''}">
         <label>
-            <form:checkbox path="${field}"/><jsp:doBody/>
-            <div><form:errors path="${field}" /></div>
+            <form:checkbox id="${field}" path="${field}"/><jsp:doBody/>
+            <div><form:errors id="${field}_errors" path="${field}" /></div>
         </label>
     </div>
 </spring:bind>

@@ -5,3 +5,7 @@ body {
 a, a:visited, a:active {
 	color: rgb(54,108,183);
 }
+.forgotLinkWrapper {
+	margin-top:1rem; 
+	margin-bottom: -.25rem;
+}

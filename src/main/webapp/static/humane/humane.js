@@ -49,7 +49,7 @@
       this.queue = []
       this.baseCls = "alert alert-info humane"// o.baseCls || 'humane'
       this.addnCls = '' // o.addnCls || ''
-      this.timeout = 'timeout' in o ? o.timeout : 2500
+      this.timeout = 'timeout' in o ? o.timeout : 4000
       this.waitForMove = o.waitForMove || false
       this.clickToClose = o.clickToClose || false
       this.timeoutAfterMove = o.timeoutAfterMove || false 

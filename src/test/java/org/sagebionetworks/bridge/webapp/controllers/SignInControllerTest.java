@@ -27,7 +27,7 @@ import org.springframework.validation.BindingResult;
 import com.google.inject.Binder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/applicationContext.xml" })
+@ContextConfiguration(locations = { "file:src/main/resources/bridge-webapp-application-context.spb.xml" })
 public class SignInControllerTest {
 
 	// Can't autowire because I'm using the same test application context XML file for 

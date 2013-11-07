@@ -33,7 +33,7 @@
                             <c:url var="signOutUrl" value="/signOut.html"/>
                             <form:form role="form" modelAttribute="signInForm" method="post" action="${signOutUrl}">
                                 <input type="hidden" name="origin" value="${requestScope['origin']}"/>
-                                <button type="submit" class="btn btn-sm btn-default">Sign Out</button>
+                                <button id="signOutButton" type="submit" class="btn btn-sm btn-default">Sign Out</button>
                             </form:form>
                         </c:when>
                         <c:otherwise>
