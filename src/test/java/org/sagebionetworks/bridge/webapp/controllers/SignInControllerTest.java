@@ -1,8 +1,8 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
 import static org.junit.Assert.*;
+
 import static org.mockito.Mockito.when;
-import static org.mockito.BDDMockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +18,10 @@ import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-
-import com.google.inject.Binder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:src/main/resources/bridge-webapp-application-context.spb.xml" })
@@ -89,26 +86,4 @@ public class SignInControllerTest {
 		assertEquals("Redirect to origin with error", "redirect:/portal/index.html?login=error", result);
 		assertTrue("Public user still in session", request.getBridgeUser() == BridgeUser.PUBLIC_USER);
 	}
-
-	// So, what doesn't happen is that it doesn't get validated... so then you
-	// get a crap redirect.
-	// This is why it would be better if we were using Spring 3.4.x. I can't
-	// find guidance on how to
-	// get this to work in Spring 3.0. Will have to use integration tests, which
-	// will require a mock
-	// version of synapseClient, then perhaps I can run these tests against that
-	// client as well.
-	/*
-	 * @Test public void testEmptyLogin() throws Exception {
-	 * when(synapseClient.login(null, null)).thenThrow(new SynapseException());
-	 * form = new SignInForm();
-	 * 
-	 * String result = controller.post(form, binding, session);
-	 * 
-	 * assertTrue("Has an error", binding.hasGlobalErrors());
-	 * assertEquals("Redirect to origin with error",
-	 * "redirect:communities/index?login=error", result);
-	 * assertTrue("Public user still in session",
-	 * session.getAttribute(BridgeUser.KEY) == BridgeUser.PUBLIC_USER); }
-	 */
 }

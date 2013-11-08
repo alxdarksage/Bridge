@@ -29,11 +29,16 @@
                 <div id="profile-pane" class="well">
                     <c:choose>
                         <c:when test="${sessionScope.BridgeUser.isAuthenticated()}">
+                            <c:if test="${sessionScope['BridgeUser'].avatarUrl}">
+                                <p><img src="${sessionScope['BridgeUser'].avatarUrl}"/>
+                            </c:if>
                             <p>${sessionScope['BridgeUser'].displayName}</p>
                             <c:url var="signOutUrl" value="/signOut.html"/>
                             <form:form role="form" modelAttribute="signInForm" method="post" action="${signOutUrl}">
                                 <input type="hidden" name="origin" value="${requestScope['origin']}"/>
                                 <button id="signOutButton" type="submit" class="btn btn-sm btn-default">Sign Out</button>
+                                <c:url var="editProfileUrl" value="/profile.html"/>
+                                <a class="btn" id="editProfileLink" href="${editProfileUrl}">Edit Profile</a>
                             </form:form>
                         </c:when>
                         <c:otherwise>
@@ -42,11 +47,11 @@
                     </c:choose>
 				</div>
 				<ul class="list-group">
-					<li class="active list-group-item">Cras justo odio</li>
-					<li class="list-group-item"><a>Dapibus ac facilisis in</a></li>
-					<li class="list-group-item"><a>Morbi leo risus</a></li>
-					<li class="list-group-item"><a>Porta ac consectetur ac</a></li>
-					<li class="list-group-item"><a>Vestibulum at eros</a></li>
+					<li class="active list-group-item">Home</li>
+	                <c:if test="${sessionScope.BridgeUser.isAuthenticated()}">
+	                    <li class="list-group-item"><a>My Journal</a></li>
+	                </c:if>
+					<li class="list-group-item"><a>Forums</a></li>
 				</ul>
 			</div>
 			<div class="col-md-9 content-pane">

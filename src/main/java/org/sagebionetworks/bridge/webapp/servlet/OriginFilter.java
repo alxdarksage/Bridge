@@ -32,6 +32,7 @@ public class OriginFilter implements Filter {
 		excludedURLs.add("/termsOfUse/cancel.html");
 		excludedURLs.add("/openId.html");
 		excludedURLs.add("/openIdCallback.html");
+		excludedURLs.add("/profile.html");
 	}
 
 	@Override

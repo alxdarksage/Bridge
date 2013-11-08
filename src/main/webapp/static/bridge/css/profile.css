@@ -1,0 +1,26 @@
+.avatar_container {
+    width: 13.4rem;
+    height: 13.4rem;
+    border: 3px double #aaa;
+    margin: .5rem 0 .75rem;
+        
+    img {
+        display: block;
+	    max-width: 12.8rem;
+	    overflow: hidden;
+    }
+}
+#photoFileInput {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    filter: alpha(opacity=0); 
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    opacity: 0;
+    background-color: transparent;
+    color: transparent; 
+}

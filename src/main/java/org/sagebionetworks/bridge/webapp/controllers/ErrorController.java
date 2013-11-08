@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,6 +60,10 @@ public class ErrorController {
 		if (throwable != null) {
 			message = (throwable.getMessage()).replaceAll("\"", "'");
 			logger.error(throwable);
+		}
+		
+		if (throwable instanceof UnauthorizedException) {
+			title = errorCodes.get(401);
 		}
 
 		request.setAttribute("title", title);

@@ -114,7 +114,8 @@ public class SynapseClientStub implements SynapseClient {
 			data.setIsSSO(false);
 			data.setSessionToken("MOCK_SESSION_TOKEN");
 			data.setProfile(profile);
-			users.put("timpowers@timpowers.com:password", data);
+			users.put("timpowers@timpowers.com", data);
+			users.put("AAA", data);
 			
 			// Octavia butler has not.
 			profile = new UserProfile();
@@ -126,7 +127,8 @@ public class SynapseClientStub implements SynapseClient {
 			data.setIsSSO(false);
 			data.setSessionToken("MOCK_SESSION_TOKEN");
 			data.setProfile(profile);
-			users.put("octaviabutler@octaviabutler.com:password", data);
+			users.put("octaviabutler@octaviabutler.com", data);
+			users.put("BBB", data);
 		}
 	}
 	
@@ -213,7 +215,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public UserSessionData login(String username, String password) throws SynapseException {
-		UserSessionData data = users.get(username+":"+password);
+		UserSessionData data = users.get(username);
 		if (data == null) {
 			throw new SynapseException();
 		}
@@ -227,7 +229,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public UserSessionData login(String username, String password, boolean explicitlyAcceptsTermsOfUse) throws SynapseException {
-		UserSessionData data = users.get(username+":"+password);
+		UserSessionData data = users.get(username);
 		if (data == null) {
 			throw new SynapseException();
 		}
@@ -259,7 +261,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public String getCurrentSessionToken() {
-		return currentUserData.getSessionToken();
+		return sessionToken;
 	}
 
 	@Override
@@ -441,14 +443,13 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public void updateMyProfile(UserProfile userProfile) throws SynapseException {
-		// TODO Auto-generated method stub
-
+		UserSessionData data = users.get(userProfile.getOwnerId());
+		data.setProfile(userProfile);
 	}
 
 	@Override
 	public UserProfile getUserProfile(String ownerId) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		return users.get(ownerId).getProfile();
 	}
 
 	@Override

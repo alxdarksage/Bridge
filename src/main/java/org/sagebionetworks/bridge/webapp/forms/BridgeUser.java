@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.beans.factory.BeanFactory;
@@ -17,6 +18,7 @@ public class BridgeUser {
 	private String displayName;
 	private String ownerId;
 	private String communityId;
+	private String avatarUrl;
 
 	public String getSessionToken() {
 		return sessionToken;
@@ -54,6 +56,14 @@ public class BridgeUser {
 		return sessionToken != null;
 	}
 
+	public String getAvatarUrl() {
+		return (StringUtils.isNotBlank(avatarUrl)) ? avatarUrl : "images/default_avatar.png";
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+
 	public SynapseClient getSynapseClient() {
 		if (!isAuthenticated()) {
 			throw new UnauthorizedException("The user must be authenticated");
@@ -71,9 +81,9 @@ public class BridgeUser {
 		// TODO: This will eventually use the communityId value that's the
 		// default for this user.
 		if (this == PUBLIC_USER) {
-			return "redirect:/portal/index.html";
+			return "/portal/index.html";
 		} else {
-			return "redirect:/communities/index.html";
+			return "/communities/index.html";
 		}
 	}
 

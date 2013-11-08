@@ -14,7 +14,6 @@
     <div class="form-group">
         <form:password cssClass="form-control input-sm" id="password" path="password" placeholder="Password"/>
     </div>
-    <input type="hidden" name="origin" value="${requestScope['origin']}"/>
     <c:if test="${not empty param.login}">
         <div class="alert alert-danger">
             <fmt:message key="IncorrectLogin"/>

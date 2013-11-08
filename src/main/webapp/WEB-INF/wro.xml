@@ -16,6 +16,7 @@
 		<css>/static/bridge/css/contentPane.less</css>
 		<css>/static/bridge/css/header.less</css>
         <css>/static/bridge/css/termsOfUse.css</css>
+        <css>/static/bridge/css/profile.css</css>
         <css>/static/bridge/css/oauth.less</css>
 	</group>
 

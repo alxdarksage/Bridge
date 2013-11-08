@@ -16,6 +16,7 @@
 	    <init-param>
 	        <param-name>contextConfigLocation</param-name>
 	        <param-value>${applicationContext.path}</param-value>
+	        <!-- <param-value>classpath:test-bridge-webapp-application-context.spb.xml</param-value> -->
 	    </init-param>        
         <load-on-startup>1</load-on-startup>
     </servlet>
