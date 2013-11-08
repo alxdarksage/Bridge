@@ -63,12 +63,6 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		return origin;
 	}
 
-	/*
-	 * public void setOrigin(String origin) { if (origin == null) {
-	 * this.request.removeAttribute(ORIGIN_KEY); } else {
-	 * this.request.setAttribute(ORIGIN_KEY, origin); } } public String
-	 * getOrigin() { return (String)this.request.getAttribute(ORIGIN_KEY); }
-	 */
 	public void setBridgeUser(BridgeUser user) {
 		if (user == null) {
 			getSession().removeAttribute(BRIDGE_USER_KEY);

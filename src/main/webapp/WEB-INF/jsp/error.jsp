@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
 <sage:minimal title="">
-    <h3>${requestScope.title}</h3>
+    <h3 id="error-pane">${requestScope.title}</h3>
     <p>We&#8217;re sorry, Bridge encountered an issue and couldn&#8217;t fulfill 
     your request.</p>
 

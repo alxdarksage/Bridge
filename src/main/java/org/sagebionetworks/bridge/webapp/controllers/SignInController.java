@@ -26,7 +26,7 @@ public class SignInController extends AuthenticateBaseController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(@ModelAttribute SignInForm signInForm, BridgeRequest request) {
 		if (request.isUserAuthenticated()) {
-			return request.getBridgeUser().getStartURL();
+			return "redirect:"+request.getBridgeUser().getStartURL();
 		}
 		return "signIn";
 	}

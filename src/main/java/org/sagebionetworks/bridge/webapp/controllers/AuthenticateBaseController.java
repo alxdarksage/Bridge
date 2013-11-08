@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.controllers;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -39,9 +40,15 @@ public class AuthenticateBaseController {
 	}
 
 	protected String getOnSuccessPage(SignInForm signInForm, BridgeRequest request) {
+		if (StringUtils.isNotBlank(request.getOriginURL())) {
+			return "redirect:" + request.getOriginURL();
+		}
+		return "redirect:"+request.getBridgeUser().getStartURL();
+		/*
 		if (("signIn".equals(signInForm.getErrorView()) || "signedOut".equals(signInForm.getErrorView()))) {
 			return request.getBridgeUser().getStartURL();
 		}
 		return "redirect:" + request.getOriginURL();
+		*/
 	}
 }

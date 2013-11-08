@@ -95,8 +95,41 @@ import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
 public class SynapseClientStub implements SynapseClient {
 
+	private String sessionToken;
+	private Map<String, UserSessionData> users;
+	
+	
 	public SynapseClientStub() {
 		System.out.println("---------------------------------------- BEING CREATED");
+		if (users == null) {
+			users = new HashMap<>();
+			
+			// Tim powers has signed the terms of use.
+			UserProfile profile = new UserProfile();
+			profile.setDisplayName("timpowers");
+			profile.setEmail("timpowers@timpowers.com");
+			profile.setOwnerId("AAA");
+			profile.setUserName("timpowers@timpowers.com");
+			UserSessionData data = new UserSessionData();
+			data.setIsSSO(false);
+			data.setSessionToken("MOCK_SESSION_TOKEN");
+			data.setProfile(profile);
+			users.put("timpowers@timpowers.com", data);
+			users.put("AAA", data);
+			
+			// Octavia butler has not.
+			profile = new UserProfile();
+			profile.setDisplayName("octaviabutler");
+			profile.setEmail("octaviabutler@octaviabutler.com");
+			profile.setOwnerId("BBB");
+			profile.setUserName("octaviabutler@octaviabutler.com");
+			data = new UserSessionData();
+			data.setIsSSO(false);
+			data.setSessionToken("MOCK_SESSION_TOKEN");
+			data.setProfile(profile);
+			users.put("octaviabutler@octaviabutler.com", data);
+			users.put("BBB", data);
+		}
 	}
 	
 	@Override
@@ -134,8 +167,6 @@ public class SynapseClientStub implements SynapseClient {
 	public String getFileEndpoint() {
 		return null;
 	}
-
-	private String sessionToken;
 	
 	@Override
 	public void setSessionToken(String sessionToken) {
@@ -182,44 +213,9 @@ public class SynapseClientStub implements SynapseClient {
 		return null;
 	}
 
-	private Map<String, UserSessionData> users;
-	
-	
-	private void initializeUsers() {
-		if (users == null) {
-			users = new HashMap<>();
-			
-			// Tim powers has signed the terms of use.
-			UserProfile profile = new UserProfile();
-			profile.setDisplayName("timpowers");
-			profile.setEmail("timpowers@timpowers.com");
-			profile.setOwnerId("AAA");
-			profile.setUserName("timpowers@timpowers.com");
-			UserSessionData data = new UserSessionData();
-			data.setIsSSO(false);
-			data.setSessionToken("MOCK_SESSION_TOKEN");
-			data.setProfile(profile);
-			users.put("timpowers@timpowers.com:password", data);
-			
-			// Octavia butler has not.
-			profile = new UserProfile();
-			profile.setDisplayName("octaviabutler");
-			profile.setEmail("octaviabutler@octaviabutler.com");
-			profile.setOwnerId("BBB");
-			profile.setUserName("octaviabutler@octaviabutler.com");
-			data = new UserSessionData();
-			data.setIsSSO(false);
-			data.setSessionToken("MOCK_SESSION_TOKEN");
-			data.setProfile(profile);
-			users.put("octaviabutler@octaviabutler.com:password", data);
-		}
-	}
-	
 	@Override
 	public UserSessionData login(String username, String password) throws SynapseException {
-		initializeUsers();
-		
-		UserSessionData data = users.get(username+":"+password);
+		UserSessionData data = users.get(username);
 		if (data == null) {
 			throw new SynapseException();
 		}
@@ -233,9 +229,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public UserSessionData login(String username, String password, boolean explicitlyAcceptsTermsOfUse) throws SynapseException {
-		initializeUsers();
-		
-		UserSessionData data = users.get(username+":"+password);
+		UserSessionData data = users.get(username);
 		if (data == null) {
 			throw new SynapseException();
 		}
@@ -267,7 +261,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public String getCurrentSessionToken() {
-		return currentUserData.getSessionToken();
+		return sessionToken;
 	}
 
 	@Override
@@ -339,7 +333,6 @@ public class SynapseClientStub implements SynapseClient {
 	@Override
 	public void setRequestProfile(boolean request) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -450,14 +443,13 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public void updateMyProfile(UserProfile userProfile) throws SynapseException {
-		// TODO Auto-generated method stub
-
+		UserSessionData data = users.get(userProfile.getOwnerId());
+		data.setProfile(userProfile);
 	}
 
 	@Override
 	public UserProfile getUserProfile(String ownerId) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		return users.get(ownerId).getProfile();
 	}
 
 	@Override

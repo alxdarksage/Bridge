@@ -42,6 +42,12 @@ public class TermsOfUseController extends AuthenticateBaseController {
 	public String post(BridgeRequest request, @ModelAttribute @Valid TermsOfUseForm termsOfUseForm, BindingResult result) throws Exception {
 		if (!result.hasErrors()) {
 			SignInForm signInForm = request.restoreSignInForm();
+			if (signInForm == null) {
+				// which can happen if the user is in the middle of signing up, and the session gets 
+				// destroyed, by a reboot or something. This happened while I was testing.
+				request.setNotification("We lost your sign in credentials while you were reading the terms of use. Please try signing in again.");
+				return "redirect:" + request.getOriginURL();
+			}
 			
 			try {
 				// They accept the terms of use when creating their account,

@@ -12,10 +12,12 @@
 
     <import resource="classpath:bridge-webapp-application-context.spb.xml"/>
     
-    <bean id="synapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="prototype">
+    <!-- These are *definitely* not singletons in the production configuration of the app, be aware of that. -->
+    
+    <bean id="synapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="singleton">
     </bean>
 
-    <bean id="privateSynapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="prototype">
+    <bean id="privateSynapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="singleton">
     </bean>
     
 </beans>

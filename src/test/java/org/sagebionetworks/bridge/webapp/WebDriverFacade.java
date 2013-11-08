@@ -16,7 +16,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class WebDriverFacade implements WebDriver {
 	
-	private WebDriver driver;
+	protected WebDriver driver;
 	
 	public WebDriverFacade(WebDriver driver) {
 		this.driver = driver;
@@ -33,6 +33,11 @@ public class WebDriverFacade implements WebDriver {
 		return this;
 	}
 	
+	public WebDriverFacade click(String cssSelector) {
+		driver.findElement(By.cssSelector(cssSelector)).click();
+		return this;
+	}
+	
 	public void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
@@ -41,6 +46,16 @@ public class WebDriverFacade implements WebDriver {
 		});	
 	}
 
+	public void assertExists(String cssSelector) {
+		WebElement element = driver.findElement(By.cssSelector(cssSelector));
+		Assert.assertNotNull("Should exist in page: " + cssSelector, element);
+	}
+	
+	public void assertMissing(String cssSelector) {
+		List<WebElement> list= driver.findElements(By.cssSelector(cssSelector));
+		Assert.assertTrue("Should not exist in page: " + cssSelector, list.isEmpty());
+	}
+	
 	public void assertErrorMessage(String cssSelector, String message) {
 		WebElement errors = driver.findElement(By.cssSelector(cssSelector));
 		Assert.assertEquals("Correct error ('"+message+"') in " + cssSelector, errors.getText(), message);		
