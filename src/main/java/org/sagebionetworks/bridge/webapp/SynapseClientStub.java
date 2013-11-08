@@ -19,6 +19,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.sagebionetworks.client.SharedClientConnection;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseTermsOfUseException;
@@ -1670,6 +1671,12 @@ public class SynapseClientStub implements SynapseClient {
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean acceptsTermsOfUse,
 			Boolean createUserIfNecessary) throws SynapseException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SharedClientConnection getSharedClientConnection() {
 		// TODO Auto-generated method stub
 		return null;
 	}

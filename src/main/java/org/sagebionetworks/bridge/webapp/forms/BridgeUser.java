@@ -1,7 +1,7 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
 import org.apache.commons.lang3.StringUtils;
-import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.*;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ public class BridgeUser {
 	@Autowired
 	private BeanFactory beanFactory;
 	private SynapseClient synapseClient;
+	private BridgeClient bridgeClient;
 
 	private String sessionToken;
 	private String displayName;
@@ -75,6 +76,14 @@ public class BridgeUser {
 			this.synapseClient.appendUserAgent("Bridge-Service/0.1");
 		}
 		return synapseClient;
+	}
+
+	public BridgeClient getBridgeClient() {
+		if (bridgeClient == null) {
+			SynapseClient synapseClient = getSynapseClient();
+			bridgeClient = new BridgeClientImpl(synapseClient);
+		}
+		return bridgeClient;
 	}
 
 	public String getStartURL() {

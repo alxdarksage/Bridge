@@ -189,6 +189,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.sagebionetworks</groupId>
+			<artifactId>bridgeJavaClient</artifactId>
+			<version>${synapse.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sagebionetworks</groupId>
 			<artifactId>lib-models</artifactId>
 			<version>${synapse.version}</version>
 			<exclusions>
