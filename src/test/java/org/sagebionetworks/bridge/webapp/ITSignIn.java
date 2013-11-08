@@ -99,7 +99,6 @@ public class ITSignIn {
 		driver.assertTitle("Bridge : Fanconi Anemia");
 	}
 	
-	/* TODO: This currently fails due to auth exception. It's safe, but unfriendly.
 	@Test
 	public void youAreRedirectedToLogInIfYouAreNot() {
 		driver.get("/profile.html");
@@ -109,7 +108,6 @@ public class ITSignIn {
 		driver.password("password");
 		driver.submit().waitUntil("#profileForm");
 	}
-	*/
 	
 	@Test
 	public void dedicatedSignInFormLinksToIForgotMyPassword() {
