@@ -17,7 +17,7 @@
                 <label class="control-label" for="email">Your email address</label>
                 <form:input cssClass="form-control input-sm" id="email" path="email"/>
                 <span class="help-block">Enter your email address, and we&#8217;ll mail you a link to reset your password.</span>
-                <form:errors path="email" />
+                <form:errors id="email_errors" path="email" />
             </div>
         </spring:bind>
         <button type="submit" class="btn btn-default">Reset Password</button>

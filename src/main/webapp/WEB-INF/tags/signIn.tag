@@ -15,7 +15,7 @@
         <form:password cssClass="form-control input-sm" id="password" path="password" placeholder="Password"/>
     </div>
     <c:if test="${not empty param.login}">
-        <div class="alert alert-danger">
+        <div class="alert alert-danger has-error">
             <fmt:message key="IncorrectLogin"/>
         </div>
     </c:if>

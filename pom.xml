@@ -287,7 +287,7 @@
 				<version>2.0</version>
 				<configuration>
 					<port>8888</port>
-					<!-- Right now this means JSPs can't be dynamically updated, which is a drag. --> 
+					<!-- Right now this means JSPs can't be dynamically updated, which is a drag. -->  
                     <warSourceDirectory>
                         ${project.build.directory}/${project.build.finalName}
                     </warSourceDirectory>

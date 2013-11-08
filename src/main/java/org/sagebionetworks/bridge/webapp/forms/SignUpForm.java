@@ -15,9 +15,6 @@ public class SignUpForm {
 	@NotEmpty
 	private String email;
 
-	@AssertTrue
-	private boolean acceptTermsOfUse;
-
 	public String getEmail() {
 		return email;
 	}
@@ -32,14 +29,6 @@ public class SignUpForm {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	public boolean getAcceptTermsOfUse() {
-		return acceptTermsOfUse;
-	}
-
-	public void setAcceptTermsOfUse(boolean acceptTermsOfUse) {
-		this.acceptTermsOfUse = acceptTermsOfUse;
 	}
 
 	public NewUser getNewUser() {

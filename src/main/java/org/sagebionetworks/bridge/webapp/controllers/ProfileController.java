@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
@@ -72,9 +71,6 @@ public class ProfileController {
 		client.updateMyProfile(oldProfile);
 		
 		request.setNotification("Profile Updated");
-		if (StringUtils.isNotBlank(request.getOriginURL())) {
-			return "redirect:" + request.getOriginURL();
-		}
 		return "redirect:"+request.getBridgeUser().getStartURL();
 	}
 	

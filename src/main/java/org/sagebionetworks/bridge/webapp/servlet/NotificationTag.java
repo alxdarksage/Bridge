@@ -19,7 +19,7 @@ public class NotificationTag extends SimpleTagSupport {
 		String notice = request.getNotification();
 
 		if (StringUtils.isNotBlank(notice)) {
-			out.write("<script>humane.log(\"" + notice + "\");</script>");
+			out.write("<div id=\"notice\">"+notice+"</div><script>humane.log(document.getElementById('notice').textContent);</script>");
 		}
 
 	}
