@@ -89,6 +89,8 @@ import org.sagebionetworks.repo.model.query.QueryTableResults;
 import org.sagebionetworks.repo.model.search.SearchResults;
 import org.sagebionetworks.repo.model.search.query.SearchQuery;
 import org.sagebionetworks.repo.model.status.StackStatus;
+import org.sagebionetworks.repo.model.storage.StorageUsageDimension;
+import org.sagebionetworks.repo.model.storage.StorageUsageSummaryList;
 import org.sagebionetworks.repo.model.table.ColumnModel;
 import org.sagebionetworks.repo.model.table.PaginatedColumnModels;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
@@ -1677,6 +1679,13 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public SharedClientConnection getSharedClientConnection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public StorageUsageSummaryList getStorageUsageSummary(List<StorageUsageDimension> aggregation)
+			throws SynapseException {
 		// TODO Auto-generated method stub
 		return null;
 	}

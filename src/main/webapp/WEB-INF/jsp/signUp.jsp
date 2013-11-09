@@ -19,11 +19,11 @@
                 <form:errors></form:errors>
             </div>
         </spring:hasBindErrors>
-        <sage:text field="email" label="Your email address"/>
         <sage:text field="displayName" label="User name">
             <span class="help-block">For example, &#147;tinkerbell&#148;. Don&#8217;t user your real name 
             if you wish to remain anonymous (Bridge won&#8217;t show your email address to other users). </span>
         </sage:text>
+        <sage:text field="email" label="Your email address"/>
         <button type="submit" class="btn btn-sm btn-default">Sign Up</button>
         <c:if test="${not empty sessionScope['origin']}">
             <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>Cancel</a>

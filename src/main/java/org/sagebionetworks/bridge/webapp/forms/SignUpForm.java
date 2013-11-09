@@ -35,7 +35,6 @@ public class SignUpForm {
 		NewUser user = new NewUser();
 		user.setEmail(this.email);
 		user.setDisplayName(this.displayName);
-		user.setAcceptsTermsOfUse(false);
 		return user;
 	}
 }
