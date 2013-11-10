@@ -25,7 +25,7 @@
 	<div class="container">
         <sage:header title="${title}"/>
 		<div class="row main-pane">
-			<div class="col-md-3 visible-md visible-lg nav-pane">
+			<div class="col-md-3 visible-sm visible-md visible-lg nav-pane">
                 <div id="profile-pane" class="well">
                     <c:choose>
                         <c:when test="${sessionScope.BridgeUser.isAuthenticated()}">

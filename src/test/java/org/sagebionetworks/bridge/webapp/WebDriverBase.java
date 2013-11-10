@@ -3,24 +3,27 @@ package org.sagebionetworks.bridge.webapp;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver.Window;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 public class WebDriverBase {
 
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
-		// System.setProperty("phantomjs.binary.path", "/Users/alxdark/bin/phantomjs");
-		// driver = new SignInDriver(new WebDriverFacade(new PhantomJSDriver()));
+		// Because system properties with periods in them are not portable to Bash.
+		if (System.getProperty("phantomjs.binary.path") == null && 
+			System.getProperty("PHANTOMJS_BINARY_PATH") != null) {
+			System.setProperty("phantomjs.binary.path", System.getProperty("PHANTOMJS_BINARY_PATH"));
+		}
+		System.out.println( System.getProperty("phantomjs.binary.path") );
+		_driver = new WebDriverFacade(new PhantomJSDriver());
 		// System.setProperty("webdriver.chrome.driver", "/Users/alxdark/bin/chromedriver");
-		_driver = new WebDriverFacade(new FirefoxDriver());
 		//_driver = new WebDriverFacade(new ChromeDriver());
+		// _driver = new WebDriverFacade(new FirefoxDriver());
+		Window window = _driver.manage().window();
+		window.setSize(new Dimension(968,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
 		return _driver;
 	}

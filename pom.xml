@@ -10,8 +10,6 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<applicationContext.path>classpath:bridge-webapp-application-context.spb.xml</applicationContext.path>
 		
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<commons-io.version>2.4</commons-io.version>
@@ -46,7 +44,21 @@
 			<url>http://download.java.net/maven/2/</url>
 		</repository>
 	</repositories>
-		
+
+    <distributionManagement>
+        <repository>
+            <id>sagebionetworks</id>
+            <name>sagebionetworks-releases</name>
+            <url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>sagebionetworks</id>
+            <name>sagebionetworks-snapshots</name>
+            <url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-snapshots-local</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+			
 	<dependencies>
 		<dependency>
 			<groupId>org.sagebionetworks.bridge</groupId>
@@ -211,7 +223,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>quartz-all</artifactId>
@@ -281,24 +292,12 @@
 			</plugins>
 		</pluginManagement>	
 		<plugins>
-            <!-- If this is not included, Tomcat doesn't use the Maven-filtered version of web.xml, which 
-               means it doesn't have a hard reference to the application context file. This is bad. The 
-               downside to using the target dir version is 1) you need to build before you run 
-               'mvn tomcat7:run' and 2) no "hot reloading" of src/main/resources.
-            -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.0</version>
 				<configuration>
 					<port>8888</port>
-					<!-- Right now this means JSPs can't be dynamically updated, which is a drag. -->  
-                    <warSourceDirectory>
-                        ${project.build.directory}/${project.build.finalName}
-                    </warSourceDirectory>
-                    <additionalClasspathDirs>
-                        <additionalClasspathDir>${basedir}/src/test/resources</additionalClasspathDir>
-                    </additionalClasspathDirs>
 				</configuration>
 			</plugin>
             <!--  By default, integration tests will fail unless you run them as part of the integration 
@@ -346,29 +345,19 @@
 	<profiles>
 	    <profile>
 	        <id>integration</id>
-	        <properties>
-                <applicationContext.path>classpath:test-bridge-webapp-application-context.spb.xml</applicationContext.path>
-	        </properties>
 	        <build>
 	            <plugins>
-	                <plugin>
-	                    <groupId>org.apache.maven.plugins</groupId>
-	                    <artifactId>maven-war-plugin</artifactId>
-	                    <version>2.4</version>
-	                    <configuration>
-	                        <webResources>
-	                            <resource>
-	                                <directory>src/main/webapp</directory>
-	                                <filtering>true</filtering>
-	                            </resource>
-	                            <resource>
-	                                <directory>src/test/resources</directory>
-	                                <targetPath>WEB-INF/classes</targetPath>
-	                                <filtering>false</filtering>
-	                            </resource>
-                            </webResources>
-	                    </configuration>
-	                </plugin>
+		            <plugin>
+		                <groupId>org.apache.tomcat.maven</groupId>
+		                <artifactId>tomcat7-maven-plugin</artifactId>
+		                <version>2.0</version>
+		                <configuration>
+		                    <port>8888</port>
+		                    <systemProperties>
+		                        <bridge-app-context>classpath:test-bridge-webapp-application-context.spb.xml</bridge-app-context>
+		                    </systemProperties>
+		                </configuration>
+		            </plugin>
 		            <plugin>
 		                <artifactId>maven-failsafe-plugin</artifactId>
 		                <version>2.6</version>
@@ -389,6 +378,9 @@
 		                            <url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local/apache-tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip</url>
 		                            <extractDir>${project.build.directory}/tomcat7x/container</extractDir>
 		                        </zipUrlInstaller>
+                                <systemProperties>
+                                    <bridge-app-context>classpath:test-bridge-webapp-application-context.spb.xml</bridge-app-context>
+                                </systemProperties>
 		                    </container>
 		                    <configuration>
 		                        <properties>
@@ -431,19 +423,5 @@
 	        </build>
 	    </profile>
 	</profiles>
-
-	<distributionManagement>
-		<repository>
-			<id>sagebionetworks</id>
-			<name>sagebionetworks-releases</name>
-			<url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local</url>
-		</repository>
-		<snapshotRepository>
-			<id>sagebionetworks</id>
-			<name>sagebionetworks-snapshots</name>
-			<url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-snapshots-local</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
 	
 </project>
