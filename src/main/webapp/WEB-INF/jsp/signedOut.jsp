@@ -1,5 +1,6 @@
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<sage:minimal title="Signed Out" boxSize="30rem">
-    <p>You have been signed out. Thanks for visiting us!</p>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<sage:minimal code="SignedOut" boxSize="30rem">
+    <p><spring:message code="SignedOutWelcome"/></p>
     <sage:fullSignIn errorView="signedOut"/>
 </sage:minimal>

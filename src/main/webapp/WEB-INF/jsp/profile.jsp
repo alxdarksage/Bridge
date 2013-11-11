@@ -1,13 +1,10 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<sage:minimal title="Profile">
-    <h3>Profile for ${profileForm.displayName}</h3>
+<%@ include file="directives.jsp" %>
+<sage:minimal code="Profile">
+    <h3><spring:message code="ProfileFor"/> ${profileForm.displayName}</h3>
     <spring:bind path="profileForm">
         <c:if test="${not empty status.errorMessages}">
             <div class="alert alert-danger">
-                <form:errors path="profileForm"></form:errors>
+                <form:errors path="profileForm" htmlEscape="false"></form:errors>
             </div>
         </c:if>
     </spring:bind>
@@ -15,29 +12,34 @@
     <form:form role="form" modelAttribute="profileForm" method="post" action="${profileUrl}" enctype="multipart/form-data">
         <spring:hasBindErrors name="*">
             <div class="alert alert-danger">
-                <form:errors></form:errors>
+                <form:errors htmlEscape="false"></form:errors>
             </div>
         </spring:hasBindErrors>
         
-        <b>Photo or Avatar</b>
+        <b><spring:message code="PhotoOrAvatar"/></b>
         <div class="avatar_container">
             <img id="photoImg" src=""/>
         </div>
         
         <div style="position:relative; margin-bottom: 2rem">
-            <a class='btn btn-sm btn-default' href='javascript:;'>Choose File...
+            <a class='btn btn-sm btn-default' href='javascript:;'><spring:message code="ChooseFile"/>
                 <input id="photoFileInput" type="file" name="photoFile" size="40"/>
             </a>
         </div>
         
-        <sage:text field="displayName" label="Your display name">
-        <span class="help-block">Your display name must be unique, but it does not need to be your name
-        or even to identify you.</span>
+        <sage:text field="displayName">
+        <span class="help-block">
+            <spring:message code="displayName.help2"/>
+        </span>
         </sage:text>
-        <sage:text field="firstName" label="First Name"/>
-        <sage:text field="lastName" label="Last Name"/>
-        <sage:textarea field="summary" label="Something about yourself"/>
-        <button type="submit" class="btn btn-sm btn-primary">Save</button>
-        <a class="btn" href='<c:url value="${sessionScope.BridgeUser.getStartURL()}"/>'>Cancel</a>
+        <sage:text field="firstName"/>
+        <sage:text field="lastName"/>
+        <sage:textarea field="summary"/>
+        <button type="submit" class="btn btn-sm btn-primary">
+            <spring:message code="Save"/>
+        </button>
+        <a class="btn" href='<c:url value="${sessionScope.BridgeUser.getStartURL()}"/>'>
+            <spring:message code="Cancel"/>
+        </a>
     </form:form>
 </sage:minimal>

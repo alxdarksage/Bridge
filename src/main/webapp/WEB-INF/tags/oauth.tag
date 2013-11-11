@@ -1,6 +1,6 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="../jsp/directives.jsp" %>
 <div class="auth-divider">
-    <div></div> OR <div></div>
+    <div></div> <spring:message code="OR"/> <div></div>
 </div>
 <c:url var="authUrl" value="/openId.html"/>
 <form action="${authUrl}" method="post" class="google-button">

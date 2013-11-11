@@ -6,12 +6,18 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.sagebionetworks.client.SharedClientConnection;
 import org.sagebionetworks.client.SynapseClient;
@@ -83,6 +89,8 @@ import org.sagebionetworks.repo.model.query.QueryTableResults;
 import org.sagebionetworks.repo.model.search.SearchResults;
 import org.sagebionetworks.repo.model.search.query.SearchQuery;
 import org.sagebionetworks.repo.model.status.StackStatus;
+import org.sagebionetworks.repo.model.storage.StorageUsageDimension;
+import org.sagebionetworks.repo.model.storage.StorageUsageSummaryList;
 import org.sagebionetworks.repo.model.table.ColumnModel;
 import org.sagebionetworks.repo.model.table.PaginatedColumnModels;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
@@ -95,42 +103,47 @@ import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
 public class SynapseClientStub implements SynapseClient {
+	
+	private static final Logger logger = LogManager.getLogger(SynapseClientStub.class.getName());
 
 	private String sessionToken;
-	private Map<String, UserSessionData> users;
+	private Map<String, UserSessionData> users = new HashMap<>();
+	// private List<String> userIds = new LinkedList<>();
+	private Set<String> agreedTOUs = new HashSet<>();
+	private int idCount;
 	
+	private String newId() {
+		return Integer.toString(++idCount);
+	}
 	
 	public SynapseClientStub() {
 		System.out.println("---------------------------------------- BEING CREATED");
-		if (users == null) {
-			users = new HashMap<>();
-			
-			// Tim powers has signed the terms of use.
-			UserProfile profile = new UserProfile();
-			profile.setDisplayName("timpowers");
-			profile.setEmail("timpowers@timpowers.com");
-			profile.setOwnerId("AAA");
-			profile.setUserName("timpowers@timpowers.com");
-			UserSessionData data = new UserSessionData();
-			data.setIsSSO(false);
-			data.setSessionToken("MOCK_SESSION_TOKEN");
-			data.setProfile(profile);
-			users.put("timpowers@timpowers.com", data);
-			users.put("AAA", data);
-			
-			// Octavia butler has not.
-			profile = new UserProfile();
-			profile.setDisplayName("octaviabutler");
-			profile.setEmail("octaviabutler@octaviabutler.com");
-			profile.setOwnerId("BBB");
-			profile.setUserName("octaviabutler@octaviabutler.com");
-			data = new UserSessionData();
-			data.setIsSSO(false);
-			data.setSessionToken("MOCK_SESSION_TOKEN");
-			data.setProfile(profile);
-			users.put("octaviabutler@octaviabutler.com", data);
-			users.put("BBB", data);
-		}
+		
+		UserProfile profile = new UserProfile();
+		agreedTOUs.add("AAA"); // Tim powers has signed the terms of use.
+		profile.setDisplayName("timpowers");
+		profile.setEmail("timpowers@timpowers.com");
+		profile.setOwnerId("AAA");
+		profile.setUserName("timpowers@timpowers.com");
+		UserSessionData data = new UserSessionData();
+		data.setIsSSO(false);
+		data.setSessionToken("MOCK_SESSION_TOKEN");
+		data.setProfile(profile);
+		users.put("timpowers@timpowers.com", data);
+		users.put("AAA", data);
+		
+		profile = new UserProfile();
+		// Octavia butler has not.
+		profile.setDisplayName("octaviabutler");
+		profile.setEmail("octaviabutler@octaviabutler.com");
+		profile.setOwnerId("BBB");
+		profile.setUserName("octaviabutler@octaviabutler.com");
+		data = new UserSessionData();
+		data.setIsSSO(false);
+		data.setSessionToken("MOCK_SESSION_TOKEN");
+		data.setProfile(profile);
+		users.put("octaviabutler@octaviabutler.com", data);
+		users.put("BBB", data);
 	}
 	
 	@Override
@@ -220,7 +233,7 @@ public class SynapseClientStub implements SynapseClient {
 		if (data == null) {
 			throw new SynapseException();
 		}
-		if ("octaviabutler".equals(data.getProfile().getDisplayName())) {
+		if (!agreedTOUs.contains(data.getProfile().getOwnerId())) {
 			throw new SynapseTermsOfUseException();
 		}
 		return data;
@@ -234,7 +247,11 @@ public class SynapseClientStub implements SynapseClient {
 		if (data == null) {
 			throw new SynapseException();
 		}
-		if ("octaviabutler".equals(data.getProfile().getDisplayName()) && explicitlyAcceptsTermsOfUse == false) {
+		// Keep octavia butler forever not-accepting the terms of use, for test purposes.
+		if (explicitlyAcceptsTermsOfUse && !"octaviabutler@octaviabutler.com".equals(username)) {
+			agreedTOUs.add(data.getProfile().getOwnerId());
+		}
+		if (!agreedTOUs.contains(data.getProfile().getOwnerId())) {
 			throw new SynapseTermsOfUseException();
 		}
 		currentUserData = data;
@@ -243,6 +260,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public void loginWithNoProfile(String userName, String password) throws SynapseException {
+		
 	}
 
 	@Override
@@ -450,6 +468,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public UserProfile getUserProfile(String ownerId) throws SynapseException {
+		logger.info("--> getUserProfile: " + ownerId);
 		return users.get(ownerId).getProfile();
 	}
 
@@ -1580,18 +1599,23 @@ public class SynapseClientStub implements SynapseClient {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public void createUser(NewUser user) throws SynapseException {
+		String USER_ID = newId();
+		
 		UserProfile profile = new UserProfile();
 		profile.setDisplayName(user.getDisplayName());
 		profile.setEmail(user.getEmail());
 		profile.setFirstName(user.getFirstName());
 		profile.setLastName(user.getLastName());
+		profile.setOwnerId(USER_ID);
 		UserSessionData data = new UserSessionData();
-		data.setSessionToken("CCC");
+		data.setSessionToken(USER_ID);
 		data.setProfile(profile);
-		users.put(user.getEmail() + ":" + user.getPassword(), data);
+		// ARGH!
+		users.put(user.getEmail(), data);
+		users.put(USER_ID, data);
 	}
 
 	@Override
@@ -1655,6 +1679,13 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public SharedClientConnection getSharedClientConnection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public StorageUsageSummaryList getStorageUsageSummary(List<StorageUsageDimension> aggregation)
+			throws SynapseException {
 		// TODO Auto-generated method stub
 		return null;
 	}

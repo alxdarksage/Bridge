@@ -2,7 +2,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<sage:minimal title="Terms of Use" boxSize="90%">
+<sage:minimal code="TermsOfUse" boxSize="90%">
     <c:url var="termsOfUseUrl" value="/termsOfUse.html"/>
     <div class="tou">
         ${termsOfUseForm.termsOfUse}
@@ -10,20 +10,24 @@
     <spring:bind path="termsOfUseForm">
         <c:if test="${not empty status.errorMessages}">
             <div class="alert alert-danger">
-                <form:errors path="termsOfUseForm"></form:errors>
+                <form:errors path="termsOfUseForm" htmlEscape="false"></form:errors>
             </div>
         </c:if>
     </spring:bind>
     <form:form role="form" modelAttribute="termsOfUseForm" method="post" action="${termsOfUseUrl}">
         <spring:hasBindErrors name="*">
             <div class="alert alert-danger">
-                <form:errors></form:errors>
+                <form:errors htmlEscape="false"></form:errors>
             </div>
         </spring:hasBindErrors>
         <sage:checkbox field="acceptTermsOfUse">
-            I agree to the terms of use
+            <spring:message code="AgreeToTOU"/>
         </sage:checkbox>
-        <button type="submit" class="btn btn-sm btn-default">Continue</button>
-        <a class="btn" href='<c:url value="/termsOfUse/cancel.html"/>'>Cancel</a>
+        <button type="submit" class="btn btn-sm btn-default">
+            <spring:message code="Continue"/>
+        </button>
+        <a id="cancelButton" class="btn" href='<c:url value="/termsOfUse/cancel.html"/>'>
+            <spring:message code="Cancel"/>
+        </a>
     </form:form>
 </sage:minimal>

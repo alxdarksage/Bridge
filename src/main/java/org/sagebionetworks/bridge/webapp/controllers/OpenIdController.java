@@ -82,7 +82,7 @@ public class OpenIdController extends AuthenticateBaseController {
 		if ("cancel".equals(request.getParameter("openid.mode"))) {
 			// This is a funny one. This is if the user hits the cancel button on the Google auth form. 
 			// I'm not sure if this value can be passed through or not.
-			request.setNotification("Sign in cancelled.");
+			request.setNotification("SignInCancelled");
 			response.sendRedirect(request.getContextPath() + request.getOriginURL());
 			return;
 		}

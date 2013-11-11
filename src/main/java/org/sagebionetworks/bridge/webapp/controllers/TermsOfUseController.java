@@ -45,7 +45,7 @@ public class TermsOfUseController extends AuthenticateBaseController {
 			if (signInForm == null) {
 				// which can happen if the user is in the middle of signing up, and the session gets 
 				// destroyed, by a reboot or something. This happened while I was testing.
-				request.setNotification("We lost your sign in credentials while you were reading the terms of use. Please try signing in again.");
+				request.setNotification("SessionError");
 				return "redirect:" + request.getOriginURL();
 			}
 			

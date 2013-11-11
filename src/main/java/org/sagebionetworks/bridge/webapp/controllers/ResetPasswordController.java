@@ -38,7 +38,7 @@ public class ResetPasswordController {
 		if (!result.hasErrors()) {
 			try {
 				synapseClient.sendPasswordResetEmail(resetPasswordForm.getEmail());
-				request.setNotification("We&#8217;ve sent you an email. Follow the link in your email to reset your password.");
+				request.setNotification("ResetEmailSent");
 				return "redirect:" + request.getOriginURL();
 			} catch (SynapseNotFoundException e) {
 				ClientUtils.globalFormError(result, "resetPasswordForm", "UserNotFoundException");

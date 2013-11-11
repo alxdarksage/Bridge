@@ -16,53 +16,118 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class WebDriverFacade implements WebDriver {
 	
-	protected WebDriver driver;
+	private WebDriver driver;
 	
 	public WebDriverFacade(WebDriver driver) {
 		this.driver = driver;
 	}
+	public WebDriverFacade(WebDriverFacade facade) {
+		this.driver = facade.driver;
+	}
 
-	public WebDriverFacade enterForm(String cssSelector, String value) {
+	protected WebDriverFacade enterField(String cssSelector, String value) {
 		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
 		return this;
 	}
 	
-	public WebDriverFacade submit(String cssSelector) {
+	protected void submit(String cssSelector) {
 		WebElement form = driver.findElement(By.cssSelector(cssSelector));
 		form.findElement(By.cssSelector("button[type=submit]")).click();
-		return this;
 	}
 	
-	public WebDriverFacade click(String cssSelector) {
+	protected void click(String cssSelector) {
 		driver.findElement(By.cssSelector(cssSelector)).click();
-		return this;
+	}
+
+	protected void assertExists(String cssSelector) {
+		WebElement element = driver.findElement(By.cssSelector(cssSelector));
+		Assert.assertNotNull("Should exist in page: " + cssSelector, element);
 	}
 	
-	public void waitUntil(final String cssSelector) {
+	protected void assertMissing(String cssSelector) {
+		List<WebElement> list= driver.findElements(By.cssSelector(cssSelector));
+		Assert.assertTrue("Should not exist in page: " + cssSelector, list.isEmpty());
+	}
+	
+	protected void assertErrorMessage(String cssSelector, String message) {
+		WebElement errors = driver.findElement(By.cssSelector(cssSelector));
+		Assert.assertEquals("Correct error ('"+message+"') in " + cssSelector, errors.getText(), message);		
+	}
+	
+	protected void waitForPortalPage() {
+		waitForTitle("Patients & Researchers in Partnership");
+	}
+	protected void waitForCommunityPage() {
+		waitForTitle("Fanconi Anemia");
+	}
+	protected void waitForTOUPage() {
+		waitForTitle("Terms of Use");
+	}
+	protected void waitForSignInPage() {
+		waitForTitle("Sign In");
+	}
+	protected void waitForSignedOutPage() {
+		waitForTitle("Signed Out");
+	}
+	protected void waitForSignUpPage() {
+		waitForTitle("Sign Up");
+	}
+	protected void waitForResetPasswordPage() {
+		waitForTitle("Reset Password");
+	}
+	protected void waitForProfilePage() {
+		waitForTitle("Profile");
+	}
+	protected void waitForError() {
+		waitUntil("div.has-error");
+	}
+	protected void waitForError(String error) {
+		waitForError();
+		assertErrorMessage(".has-error", error);
+	}	
+	protected void waitForErrorOn(String field) {
+		if (field.substring(0,1).equals("#")) {
+			throw new RuntimeException("waitForErrorOn() doesn't take css selector; use an id token");
+		}
+		waitUntil("#"+field+"_errors");
+	}
+	protected void waitForErrorOn(String field, String error) {
+		if (field.substring(0,1).equals("#")) {
+			throw new RuntimeException("waitForErrorOn() doesn't take css selector; use an id token");
+		}
+		waitUntil("#"+field+"_errors");
+		assertErrorMessage("#"+field+"_errors", error);
+	}
+	protected void waitForNotice(String message) {
+		// TODO: This doesn't verify the message in either Firefox or Chrome, and I really can't figure out why.
+		// It's a drag and it's weird.
+		/*
+		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				return (d.findElement(By.id("notice")) != null);
+			}
+		});
+		WebElement element = driver.findElement(By.id("notice"));
+		Assert.assertTrue("Notice was shown", element.getText().contains(message));
+		*/
+		List<WebElement> scriptTags = driver.findElements(By.tagName("script"));
+		Assert.assertEquals("User notified that email sent", 2, scriptTags.size());
+	}
+	
+	private void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return (d.findElement(By.cssSelector(cssSelector)) != null);
 			}
 		});	
 	}
-
-	public void assertExists(String cssSelector) {
-		WebElement element = driver.findElement(By.cssSelector(cssSelector));
-		Assert.assertNotNull("Should exist in page: " + cssSelector, element);
-	}
 	
-	public void assertMissing(String cssSelector) {
-		List<WebElement> list= driver.findElements(By.cssSelector(cssSelector));
-		Assert.assertTrue("Should not exist in page: " + cssSelector, list.isEmpty());
-	}
-	
-	public void assertErrorMessage(String cssSelector, String message) {
-		WebElement errors = driver.findElement(By.cssSelector(cssSelector));
-		Assert.assertEquals("Correct error ('"+message+"') in " + cssSelector, errors.getText(), message);		
-	}
-	
-	public void assertTitle(String title) {
-		Assert.assertTrue("Title contains: " + title, driver.getTitle().contains(title));
+	private void waitForTitle(final String title) {
+		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				return d.getTitle().contains(title);
+			}
+		});
 	}
 	
 	// Pass-throughs to the driver object.
@@ -77,7 +142,7 @@ public class WebDriverFacade implements WebDriver {
 	}
 	@Override
 	public List<WebElement> findElements(By arg0) {
-		return findElements(arg0);
+		return driver.findElements(arg0);
 	}
 	@Override
 	public void get(String arg0) {
