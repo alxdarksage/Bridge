@@ -70,7 +70,7 @@ public class ProfileController {
 		BeanUtils.copyProperties(profileForm, oldProfile);
 		client.updateMyProfile(oldProfile);
 		
-		request.setNotification("Profile Updated");
+		request.setNotification("ProfileUpdated");
 		return "redirect:"+request.getBridgeUser().getStartURL();
 	}
 	

@@ -1,13 +1,9 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.util.Date;
-import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 public class ITSignUp extends WebDriverBase {
 	

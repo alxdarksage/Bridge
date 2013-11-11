@@ -5,7 +5,7 @@
     <div class="checkbox ${status.error ? 'has-error' : ''}">
         <label>
             <form:checkbox id="${field}" path="${field}"/><jsp:doBody/>
-            <div><form:errors id="${field}_errors" path="${field}" /></div>
+            <br/><form:errors id="${field}_errors" path="${field}" htmlEscape="false"/>
         </label>
     </div>
 </spring:bind>

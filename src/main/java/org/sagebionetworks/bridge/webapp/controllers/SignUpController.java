@@ -46,7 +46,7 @@ public class SignUpController {
 					newUser.setPassword("password");
 				}
 				synapseClient.createUser(newUser);
-				request.setNotification("We&#8217;ve sent you an email with instructions on completing your registration.");
+				request.setNotification("RegistrationEmailSent");
 				return "redirect:"+request.getOriginURL();
 			} catch (UnauthorizedException | SynapseUnauthorizedException e) {
 				ClientUtils.globalFormError(result, "signUpForm", "UnauthorizedException");

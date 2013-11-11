@@ -2,31 +2,34 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<sage:minimal title="Sign Up for Bridge" boxSize="40rem">
-    <p>It&#8217;s simple to get started! </p>
+<sage:minimal code="SignUpForBridge" boxSize="40rem">
+    <p><spring:message code="SignUpWelcome"/></p>
+    
     <c:url var="signUpUrl" value="/signUp.html"/>
-        
     <spring:bind path="signUpForm">
         <c:if test="${not empty status.errorMessages}">
             <div class="alert alert-danger">
-                <form:errors path="signUpForm"></form:errors>
+                <form:errors path="signUpForm" htmlEscape="false"></form:errors>
             </div>
         </c:if>
     </spring:bind>
     <form:form role="form" modelAttribute="signUpForm" method="post" action="${signUpUrl}">
         <spring:hasBindErrors name="*">
             <div class="alert alert-danger">
-                <form:errors></form:errors>
+                <form:errors htmlEscape="false"></form:errors>
             </div>
         </spring:hasBindErrors>
-        <sage:text field="displayName" label="User name">
-            <span class="help-block">For example, &#147;tinkerbell&#148;. Don&#8217;t user your real name 
-            if you wish to remain anonymous (Bridge won&#8217;t show your email address to other users). </span>
+        <sage:text field="displayName">
+            <span class="help-block"><spring:message code="displayName.help"/></span>
         </sage:text>
-        <sage:text field="email" label="Your email address"/>
-        <button type="submit" class="btn btn-sm btn-default">Sign Up</button>
+        <sage:text field="email"/>
+        <button type="submit" class="btn btn-sm btn-default">
+            <spring:message code="SignUp"/>
+        </button>
         <c:if test="${not empty sessionScope['origin']}">
-            <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>Cancel</a>
+            <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>
+                <spring:message code="Continue"/>
+            </a>
         </c:if>
     </form:form>
 </sage:minimal>
