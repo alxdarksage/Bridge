@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
-import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +31,10 @@ public class TagBuilder {
 		}
 		return this;
 	}
+	
+	public void fullTag(String tagName, String content) {
+		this.startTag(tagName).append(content).endTag(tagName);
+	}
 
 	public void addAttribute(String localName, String value) {
 		if (localName == null) {
@@ -43,8 +46,8 @@ public class TagBuilder {
 		sb.append(" ").append(localName).append("=\"").append(value).append("\"");
 	}
 
-	public void addStyleClass(Set<String> styleClasses) {
-		if (styleClasses != null && !styleClasses.isEmpty()) {
+	public void addStyleClass(String... styleClasses) {
+		if (styleClasses != null & styleClasses.length > 0) {
 			addAttribute("class", StringUtils.join(styleClasses, " "));
 		}
 	}
@@ -128,13 +131,10 @@ public class TagBuilder {
 		}
 		return this;
 	}
-
-	public void endTag(String endTag) {
-		if (tagStack.size() == 0 || endTag == null) {
+/*
+	public void endTag() {
+		if (tagStack.size() == 0) {
 			return;
-		}
-		if (!endTag.equals(tagStack.peek())) {
-			throw new RuntimeException("End tag for: " + endTag + ", when stack is on: " + tagStack.peek());
 		}
 		if (withinTag) {
 			tagStack.pop();
@@ -144,7 +144,24 @@ public class TagBuilder {
 		}
 		withinTag = false;
 	}
-
+*/
+    
+    public void endTag(String endTag) {
+        if (tagStack.size() == 0 || endTag == null) {
+            return;
+        }
+        if (!endTag.equals(tagStack.peek())) {
+            throw new RuntimeException("End tag for: " + endTag + ", when stack is on: " + tagStack.peek());
+        }
+        if (withinTag) {
+            tagStack.pop();
+            sb.append(" />");
+        } else {
+            sb.append("</").append((String) tagStack.pop()).append(">");
+        }
+        withinTag = false;
+    }
+	
 	public int length() {
         if (tagStack.size() == 0) {
             return sb.length();
@@ -156,7 +173,7 @@ public class TagBuilder {
 
 	public String toString() {
 		while (tagStack.size() > 0) {
-			endTag((String) tagStack.peek());
+			endTag((String)tagStack.peek());
 		}
 		return sb.toString();
 	}

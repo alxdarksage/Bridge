@@ -1,5 +1,9 @@
 package org.sagebionetworks.bridge.webapp.controllers.communities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.springframework.stereotype.Controller;
@@ -22,6 +26,22 @@ public class CommunityController {
 	public ModelAndView get(BridgeRequest request, @PathVariable("communityId") String communityId, ModelAndView model) throws Exception {
 		//Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
 		//model.addObject("community", community);
+		
+		Community c1 = new Community();
+		c1.setId("syn1");
+		c1.setName("Fanconia Anemia");
+		c1.setDescription("This is very rare genetic disorder");
+		
+		Community c2 = new Community();
+		c2.setId("syn2");
+		c2.setName("Diabetes (Type II)");
+		c2.setDescription("This disease can be caused by lifestyle factors");
+		
+		List<Community> communities = new ArrayList<>();
+		communities.add(c1);
+		communities.add(c2);
+		model.addObject("communities", communities);
+		
 		model.setViewName("communities/index");
 		return model;
 	}
