@@ -5,9 +5,11 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -51,7 +53,7 @@ public class WebDriverFacade implements WebDriver {
 	
 	protected void assertErrorMessage(String cssSelector, String message) {
 		WebElement errors = driver.findElement(By.cssSelector(cssSelector));
-		Assert.assertEquals("Correct error ('"+message+"') in " + cssSelector, errors.getText(), message);		
+		Assert.assertTrue("Correct error ('"+message+"') in " + cssSelector, errors.getText().contains(message));		
 	}
 	
 	protected void waitForPortalPage() {
@@ -98,22 +100,12 @@ public class WebDriverFacade implements WebDriver {
 		waitUntil("#"+field+"_errors");
 		assertErrorMessage("#"+field+"_errors", error);
 	}
-	protected void waitForNotice(String message) {
-		// TODO: This doesn't verify the message in either Firefox or Chrome, and I really can't figure out why.
-		// It's a drag and it's weird.
-		/*
-		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
-			public Boolean apply(WebDriver d) {
-				return (d.findElement(By.id("notice")) != null);
-			}
-		});
-		WebElement element = driver.findElement(By.id("notice"));
-		Assert.assertTrue("Notice was shown", element.getText().contains(message));
-		*/
-		List<WebElement> scriptTags = driver.findElements(By.tagName("script"));
-		Assert.assertEquals("User notified that email sent", 2, scriptTags.size());
+	protected void waitForAndAssertNotice(String message) {
+		// This is the only way I've found to extract this information from the page.
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert-info.humane")));
+		String content = (String)((JavascriptExecutor)driver).executeScript("return document.querySelector('#notice').textContent");
+		Assert.assertTrue("User notified with message '"+message+"'", content.contains(message));
 	}
-	
 	private void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
@@ -122,8 +114,8 @@ public class WebDriverFacade implements WebDriver {
 		});	
 	}
 	
-	private void waitForTitle(final String title) {
-		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+	protected void waitForTitle(final String title) {
+		(new WebDriverWait(driver, 20)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return d.getTitle().contains(title);
 			}

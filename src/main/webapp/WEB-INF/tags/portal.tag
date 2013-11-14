@@ -18,6 +18,6 @@
 <body>
     <jsp:doBody/>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
-    <sage-lib:notification/>
+    <sage:notifications/>
 </body>
 </html>

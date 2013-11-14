@@ -8,6 +8,8 @@ public class TermsOfUseForm {
 
 	@AssertTrue
 	private boolean acceptTermsOfUse;
+	
+	private boolean oauthRedirect;
 
 	public String getTermsOfUse() {
 		return termsOfUse;
@@ -20,5 +22,11 @@ public class TermsOfUseForm {
 	}
 	public void setAcceptTermsOfUse(boolean acceptTermsOfUse) {
 		this.acceptTermsOfUse = acceptTermsOfUse;
+	}
+	public boolean isOauthRedirect() {
+		return oauthRedirect;
+	}
+	public void setOauthRedirect(boolean oauthRedirect) {
+		this.oauthRedirect = oauthRedirect;
 	}
 }
