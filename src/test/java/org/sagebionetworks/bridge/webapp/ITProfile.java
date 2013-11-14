@@ -18,7 +18,7 @@ public class ITProfile extends WebDriverBase {
 		driver.get("/profile.html");
 		driver.submit("#profileForm");
 		driver.waitForCommunityPage();
-		driver.waitForNotice("Profile updated");
+		driver.waitForAndAssertNotice("Profile updated");
 	}
 	
 }

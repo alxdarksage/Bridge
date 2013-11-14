@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +48,7 @@ import org.sagebionetworks.repo.model.MembershipInvtnSubmission;
 import org.sagebionetworks.repo.model.MembershipRequest;
 import org.sagebionetworks.repo.model.MembershipRqstSubmission;
 import org.sagebionetworks.repo.model.ObjectType;
+import org.sagebionetworks.repo.model.OriginatingClient;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.Reference;
 import org.sagebionetworks.repo.model.RestrictableObjectDescriptor;
@@ -1602,20 +1600,7 @@ public class SynapseClientStub implements SynapseClient {
 	
 	@Override
 	public void createUser(NewUser user) throws SynapseException {
-		String USER_ID = newId();
-		
-		UserProfile profile = new UserProfile();
-		profile.setDisplayName(user.getDisplayName());
-		profile.setEmail(user.getEmail());
-		profile.setFirstName(user.getFirstName());
-		profile.setLastName(user.getLastName());
-		profile.setOwnerId(USER_ID);
-		UserSessionData data = new UserSessionData();
-		data.setSessionToken(USER_ID);
-		data.setProfile(profile);
-		// ARGH!
-		users.put(user.getEmail(), data);
-		users.put(USER_ID, data);
+		throw new RuntimeException("Do not use this method from bridge");
 	}
 
 	@Override
@@ -1630,8 +1615,7 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public void changePassword(String newPassword) throws SynapseException {
-		// TODO Auto-generated method stub
-
+		// We don't do anything, however.
 	}
 
 	@Override
@@ -1660,21 +1644,18 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public Session passThroughOpenIDParameters(String queryString) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalArgumentException("Don't use this API method in Bridge");
 	}
 
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean acceptsTermsOfUse) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalArgumentException("Don't use this API method in Bridge");
 	}
 
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean acceptsTermsOfUse,
 			Boolean createUserIfNecessary) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalArgumentException("Don't use this API method in Bridge");
 	}
 
 	@Override
@@ -1688,6 +1669,53 @@ public class SynapseClientStub implements SynapseClient {
 			throws SynapseException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void createUser(NewUser user, OriginatingClient originClient) throws SynapseException {
+		String USER_ID = newId();
+		
+		UserProfile profile = new UserProfile();
+		profile.setDisplayName(user.getDisplayName());
+		profile.setEmail(user.getEmail());
+		profile.setFirstName(user.getFirstName());
+		profile.setLastName(user.getLastName());
+		profile.setOwnerId(USER_ID);
+		UserSessionData data = new UserSessionData();
+		data.setSessionToken(USER_ID);
+		data.setProfile(profile);
+		// ARGH!
+		users.put(user.getEmail(), data);
+		users.put(USER_ID, data);
+	}
+
+	@Override
+	public void resendPasswordEmail(String email, OriginatingClient originClient) throws SynapseException {
+	}
+
+	@Override
+	public void sendPasswordResetEmail(OriginatingClient originClient) throws SynapseException {
+	}
+
+	@Override
+	public void sendPasswordResetEmail(String email, OriginatingClient originClient) throws SynapseException {
+	}
+
+	@Override
+	public Session passThroughOpenIDParameters(String queryString, Boolean acceptsTermsOfUse,
+			Boolean createUserIfNecessary, OriginatingClient originClient) throws SynapseException {
+		
+		// We'd like to test three scenarios here:
+		// 1. Brand new user, needs to sign TOU
+		// 2. Returning user who hasn't signed TOU?
+		// 3. Returning user who should just be logged in to default start page
+		
+		System.out.println(queryString);
+		// The user will always be Tim Powers, session AAA.
+		currentUserData = users.get("AAA");
+		Session session = new Session();
+		session.setSessionToken("AAA");
+		return session;
 	}
 
 }

@@ -44,11 +44,5 @@ public class AuthenticateBaseController {
 			return "redirect:" + request.getOriginURL();
 		}
 		return "redirect:"+request.getBridgeUser().getStartURL();
-		/*
-		if (("signIn".equals(signInForm.getErrorView()) || "signedOut".equals(signInForm.getErrorView()))) {
-			return request.getBridgeUser().getStartURL();
-		}
-		return "redirect:" + request.getOriginURL();
-		*/
 	}
 }

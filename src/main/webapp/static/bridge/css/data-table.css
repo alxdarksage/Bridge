@@ -1,0 +1,97 @@
+.table {
+    border: 1px solid #ccc;
+    
+    caption {
+        display:none;
+    }
+	th {
+	    border-bottom-color: #aaa ! important;
+	}
+	th:last-child, td:last-child {
+	    border-right: 1px solid #ccc;
+	}
+	tbody tr:last-child td {
+	    border-bottom: 2px solid #aaa;
+	}
+	thead {
+	    th {
+	        padding: 4px 8px ! important;
+	        background-color: #f4f4f4;
+	        text-shadow: 0px 1px 1px white;
+	        color: #222;
+	        font-variant: small-caps;
+	        font-size: 1.5rem;
+	        cursor: pointer;
+	        
+	        span {
+				font-variant: normal; /* Fixing icon render in Chrome */
+				font-size: smaller;
+				color: #aaa;
+	        }
+	    }
+	    th:hover {
+	        text-decoration: underline;
+	    }
+	}
+    .checkrow {
+        width: 1rem;
+    }
+	.table-buttons {
+	    display: table;
+	    width: 100% ! important;
+	    margin-bottom: .75rem;
+	    
+        .pagination {
+            display: block;
+            float: right;
+            margin: 2px;
+        }
+	}
+	    .table-buttons > * {
+	        display: table-cell;
+	        line-height: 30px;
+	        height: 30px;
+	        vertical-align: middle;
+	        padding: 0;
+	    }
+	.hidden {
+	    display: none;
+	}
+}
+
+/* Better responsive table layout. */
+@media (max-width: 600px) {
+    .table {
+	    thead {
+	        display: none;
+	    }
+	    td {
+	        border: none ! important;
+	        padding: .5rem 0 .5rem 3rem ! important;
+	        display: block ! important;
+	        width: 100% ! important;
+	    }
+	    tbody {
+	        td:first-child {
+	            position: absolute ! important;
+	            margin-left: -2rem;
+	            z-index: -1;
+	        }
+	        td:last-child {
+	            border-bottom: 2px solid #aaa ! important;
+	        }
+        }
+        tfoot {
+	        td:first-child {
+	            display: none ! important;
+	        }
+    	}
+	    .pagination {
+	        width: 7.8rem;
+	        
+	        .m {
+	           display: none;
+	        }
+	    }
+    }
+}

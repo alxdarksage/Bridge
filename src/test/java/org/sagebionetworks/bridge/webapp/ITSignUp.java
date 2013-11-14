@@ -1,9 +1,8 @@
 package org.sagebionetworks.bridge.webapp;
 
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 
 public class ITSignUp extends WebDriverBase {
 	
@@ -57,7 +56,7 @@ public class ITSignUp extends WebDriverBase {
 		driver.submit();
 		
 		driver.waitForPortalPage();
-		driver.waitForNotice("");
+		driver.waitForAndAssertNotice("sent you an email with instructions on completing your registration");
 	}
 	
 	@Test
@@ -66,7 +65,7 @@ public class ITSignUp extends WebDriverBase {
 		
 		// Needs to be random because server is not being start/stopped when 
 		// I'm testing during development, only when Maven does the thing.
-		String email = "test" + Long.toString(new Date().getTime()) + "@test.com";
+		String email = getUniqueEmail();
 		
 		driver.email(email);
 		driver.userName("testdude");
@@ -76,19 +75,20 @@ public class ITSignUp extends WebDriverBase {
 		signOut();
 		signIn(email, "testdude");
 		driver.waitForTOUPage();
-		
+
 		// cancel
 		driver.click("#cancelButton");
 		driver.waitForCommunityPage();
 		
 		// continue without accepting terms of use
-		signIn(email, "testdue");
+		signIn(email, "testdude");
 		driver.waitForTOUPage();
 		driver.submit("#termsOfUseForm");
 		driver.waitForErrorOn("acceptTermsOfUse", "You must accept the terms of use before signing in to Bridge.");
 		
 		// check and continue
-		driver.click("#acceptTermsOfUse");
+		driver.findElement(By.id("acceptTermsOfUse")).click();
+		// driver.click("#acceptTermsOfUse");
 		driver.submit("#termsOfUseForm");
 		driver.waitForCommunityPage();
 

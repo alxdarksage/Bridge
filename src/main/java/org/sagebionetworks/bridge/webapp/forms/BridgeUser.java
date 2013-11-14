@@ -1,7 +1,9 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
 import org.apache.commons.lang3.StringUtils;
-import org.sagebionetworks.client.*;
+import org.sagebionetworks.client.BridgeClient;
+import org.sagebionetworks.client.BridgeClientImpl;
+import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +74,7 @@ public class BridgeUser {
 		if (this.synapseClient == null) {
 			this.synapseClient = (SynapseClient) beanFactory.getBean("synapseClient");
 			this.synapseClient.setSessionToken(getSessionToken());
-			// TODO: Not a Spring bean compatible method, so set it here.
-			this.synapseClient.appendUserAgent("Bridge-Service/0.1");
+			this.synapseClient.appendUserAgent("Bridge/0.1");
 		}
 		return synapseClient;
 	}

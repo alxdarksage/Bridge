@@ -1,11 +1,6 @@
 package org.sagebionetworks.bridge.webapp.controllers.portal;
 
-import java.util.List;
-
-import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
-import org.sagebionetworks.client.BridgeClient;
-import org.sagebionetworks.client.exceptions.SynapseException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

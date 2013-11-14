@@ -60,8 +60,6 @@
 		</div>
 	</div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
-    <c:if test="${sessionScope['notice'] != null}">
-        <script id="notice">humane.log("<spring:message code="${pageContext.request.getNotification()}"/>");</script>
-    </c:if>
+    <sage:notifications/>
 </body>
 </html>

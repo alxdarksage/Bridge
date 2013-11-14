@@ -26,6 +26,7 @@
         <button type="submit" class="btn btn-sm btn-default">
             <spring:message code="Continue"/>
         </button>
+        <input type="hidden" name="oauthRedirect" value="${param.oauth ? param.oauth : 'false'}"/>
         <a id="cancelButton" class="btn" href='<c:url value="/termsOfUse/cancel.html"/>'>
             <spring:message code="Cancel"/>
         </a>

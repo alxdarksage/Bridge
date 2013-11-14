@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.webapp.controllers.SignInController;
 
 public class OriginFilter implements Filter {
 
@@ -27,6 +26,7 @@ public class OriginFilter implements Filter {
 		excludedURLs.add("/signOut.html");
 		excludedURLs.add("/signedOut.html");
 		excludedURLs.add("/signUp.html");
+		excludedURLs.add("/requestResetPassword.html");
 		excludedURLs.add("/resetPassword.html");
 		excludedURLs.add("/termsOfUse.html");
 		excludedURLs.add("/termsOfUse/cancel.html");

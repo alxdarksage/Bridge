@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers.communities;
 
-import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.springframework.stereotype.Controller;

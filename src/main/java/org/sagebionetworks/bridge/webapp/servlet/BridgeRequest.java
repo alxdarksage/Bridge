@@ -2,7 +2,6 @@ package org.sagebionetworks.bridge.webapp.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
@@ -19,6 +18,7 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	private static final String DEFAULT_ORIGIN_URL = "/portal/index.html";
 	public static final String BRIDGE_USER_KEY = "BridgeUser";
 	public static final String NOTICE_KEY = "notice";
+	public static final String OAUTH_KEY = "oauth";
 	public static final String ORIGIN_KEY = "origin";
 	public static final String SIGN_IN_FORM = "credentials";
 
@@ -28,11 +28,19 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		super(request);
 		this.request = request;
 	}
+	
+	public void setOauthRedirect(String redirectUrl) {
+		if (redirectUrl == null) {
+			getSession().removeAttribute(OAUTH_KEY);
+		} else {
+			getSession().setAttribute(OAUTH_KEY, redirectUrl);
+		}
+	}
 
-	// Newer versions of Spring include a flash feature (a la Rails), but we
-	// don't
-	// have that here, so notifications does something similar.
-
+	public String getOauthRedirect() {
+		return (String)getSession().getAttribute(OAUTH_KEY);
+	}
+	
 	public void setNotification(String notice) {
 		if (notice == null) {
 			getSession().removeAttribute(NOTICE_KEY);

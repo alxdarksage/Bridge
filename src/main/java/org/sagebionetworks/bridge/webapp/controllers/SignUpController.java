@@ -9,6 +9,7 @@ import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseUnauthorizedException;
+import org.sagebionetworks.repo.model.OriginatingClient;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.springframework.stereotype.Controller;
@@ -45,7 +46,7 @@ public class SignUpController {
 				if (!StackConfiguration.isProductionStack()) {
 					newUser.setPassword("password");
 				}
-				synapseClient.createUser(newUser);
+				synapseClient.createUser(newUser, OriginatingClient.BRIDGE);
 				request.setNotification("RegistrationEmailSent");
 				return "redirect:"+request.getOriginURL();
 			} catch (UnauthorizedException | SynapseUnauthorizedException e) {
