@@ -9,6 +9,7 @@ public class DataTableColumnTag extends SimpleTagSupport {
 
 	private String label;
 	private String field;
+	private String link;
 	
 	@Override
 	public void doTag() throws JspException, IOException {
@@ -30,6 +31,14 @@ public class DataTableColumnTag extends SimpleTagSupport {
 
 	public void setField(String field) {
 		this.field = field;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 	
 }

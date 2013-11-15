@@ -80,6 +80,10 @@
         <location>/error.html</location>
     </error-page>
     <error-page>
+        <error-code>403</error-code>
+        <location>/signIn.html</location>
+    </error-page>
+    <error-page>
         <error-code>404</error-code>
         <location>/error.html</location>
     </error-page>
@@ -91,4 +95,18 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+    
+    <!-- 
+    <security-constraint>
+        <display-name>Admin</display-name>
+        <web-resource-collection>
+            <web-resource-name>Admin Stuff WTF</web-resource-name>
+            <url-pattern>/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>            
+        </auth-constraint>
+    </security-constraint>
+     -->
+    
 </web-app>

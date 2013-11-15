@@ -17,6 +17,11 @@ a, a:visited {
 #notice {
     display: none;
 }
+h5 {
+    font-size: 12px;
+    font-weight: normal;
+    margin: 0;
+}
 @media (max-width: 600px) {
 	.main-pane {
 	    padding-right: 15px;

@@ -57,6 +57,11 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>link</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
         <!-- formatter to be added -->
     </tag>
     <tag>

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
@@ -13,6 +14,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.web.util.ExpressionEvaluationUtils;
 
 public class DataTableTag extends SimpleTagSupport {
 
@@ -59,10 +61,8 @@ public class DataTableTag extends SimpleTagSupport {
 	
 	@Override
 	public void doTag() throws JspException, IOException {
-		if (this.items == null || this.items.size() == 0) {
-			// Probably need to have something here...
-			return;
-		}
+		boolean noData = (this.items == null || this.items.size() == 0);
+		
 		if (getJspBody() != null) {
 			getJspBody().invoke(null);
 		}
@@ -72,7 +72,7 @@ public class DataTableTag extends SimpleTagSupport {
 
 		tb.startTag("form");
 		tb.addAttribute("role", "role");
-		tb.addAttribute("method", "get");
+		tb.addAttribute("method", "post");
 		if (this.formId != null) {
 			tb.addAttribute("id", this.formId);	
 		}
@@ -85,9 +85,13 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.addStyleClass("table", "table-hover");
 		}
 		tb.fullTag("caption", this.caption);
-		createTableHead();
-		createTableBody();
-		createTableFooter();
+		createTableHead(noData);
+		if (noData) {
+			createEmptyTableBody();
+		} else {
+			createTableBody();
+			createTableFooter();
+		}
 		tb.endTag("table");
 		tb.endTag("form");
 		getJspContext().getOut().write(tb.toString());
@@ -119,6 +123,17 @@ public class DataTableTag extends SimpleTagSupport {
 		}
 		tb.endTag("div");
 	}
+	protected void createEmptyTableBody() {
+		tb.startTag("tbody");
+		tb.startTag("tr");
+		tb.startTag("td");
+		tb.addAttribute("colspan", Integer.toString(this.columns.size()));
+		tb.addAttribute("class", "empty");
+		tb.append("There are currently no items.");
+		tb.endTag("td");
+		tb.endTag("tr");
+		tb.endTag("tbody");
+	}	
 	protected void createTableBody() {
 		tb.startTag("tbody");
 		for (Object object : items) {
@@ -131,10 +146,24 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.startTag("tr");
 			String objectId = BeanUtils.getProperty(object, this.itemId);
 			addCheckboxIfSelectable(objectId);
+			boolean first = false;
 			for (DataTableColumnTag column : columns) {
 				tb.startTag("td");
+				if (first) {
+					tb.addAttribute("class", "nowrap");
+					first = !first;
+				}
 				Object value = (".".equals(column.getField())) ? object : BeanUtils.getProperty(object, column.getField());
-				tb.append(value);
+				if (StringUtils.isNotBlank(column.getLink())) {
+					// TODO: Figure out how to do this correctly so there can be any expression here.
+					String output = column.getLink().replace("{id}", objectId);
+					tb.startTag("a");
+					tb.addAttribute("href", getContextPath() + output);
+					tb.append(value);
+					tb.endTag("a");
+				} else {
+					tb.append(value);	
+				}
 				tb.endTag("td");
 			}
 			tb.endTag("tr");
@@ -154,10 +183,10 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.endTag("td");
 		}
 	}
-	protected void createTableHead() {
+	protected void createTableHead(boolean noData) {
 		tb.startTag("thead");
 		tb.startTag("tr");
-		if (this.selectable) {
+		if (this.selectable && !noData) {
 			tb.startTag("th");
 			tb.addAttribute("class", "checkrow");
 			tb.endTag("th");
@@ -169,9 +198,9 @@ public class DataTableTag extends SimpleTagSupport {
 		tb.endTag("thead");
 	}
 	protected void createTableFooter() {
-		tb.startTag("tfoot");
-		tb.startTag("tr");
 		if (this.selectable) {
+			tb.startTag("tfoot");
+			tb.startTag("tr");
 			tb.startTag("td");
 			tb.startTag("input");
 			tb.addAttribute("type", "checkbox");
@@ -179,31 +208,31 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.addAttribute("title", "Select All Rows");
 			tb.endTag("input");
 			tb.endTag("td");
+			tb.startTag("td");
+			tb.addAttribute("colspan", Integer.toString(this.columns.size()));
+			
+			for (DataTableButtonTag button : buttons) {
+				tb.startTag("button");
+				tb.addAttribute("type", "submit");
+				tb.addAttribute("id", button.getId());
+				tb.addAttribute("name", button.getAction());
+				tb.addAttribute("value", button.getAction());
+				tb.addStyleClass("btn", "btn-xs", "disabled", "btn-"+button.getType());
+				if (StringUtils.isNotBlank(button.getIcon())) {
+					tb.startTag("span");
+					tb.addStyleClass("glyphicon", "glyphicon-"+button.getIcon());
+					tb.append(""); // force non-empty closing tag.
+					tb.endTag("span");
+					tb.append(" ");
+				}
+				tb.append(button.getLabel());
+				tb.endTag("button");
+			}		
+			
+			tb.endTag("td");
+			tb.endTag("tr");
+			tb.endTag("tfoot");
 		}
-		tb.startTag("td");
-		tb.addAttribute("colspan", Integer.toString(this.columns.size()));
-		
-		for (DataTableButtonTag button : buttons) {
-			tb.startTag("button");
-			tb.addAttribute("type", "submit");
-			tb.addAttribute("id", button.getId());
-			tb.addAttribute("name", button.getAction());
-			tb.addAttribute("value", button.getAction());
-			tb.addStyleClass("btn", "btn-xs", "disabled", "btn-"+button.getType());
-			if (StringUtils.isNotBlank(button.getIcon())) {
-				tb.startTag("span");
-				tb.addStyleClass("glyphicon", "glyphicon-"+button.getIcon());
-				tb.append(""); // force non-empty closing tag.
-				tb.endTag("span");
-				tb.append(" ");
-			}
-			tb.append(button.getLabel());
-			tb.endTag("button");
-		}		
-		
-		tb.endTag("td");
-		tb.endTag("tr");
-		tb.endTag("tfoot");
 	}
 	private String getContextPath() {
 		PageContext pageContext = (PageContext)getJspContext();

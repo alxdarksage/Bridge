@@ -5,6 +5,6 @@
     </p>
     <ul>
         <li><a href='<c:url value="/communities/index.html"/>'>Fanconi Anemia</a></li>
-        <!-- <li><a href='<c:url value="/admin/index.html"/>'>Admin Section</a></li> -->
+        <li><a href='<c:url value="/admin/index.html"/>'>Admin Section</a></li>
     </ul>
 </sage:portal>

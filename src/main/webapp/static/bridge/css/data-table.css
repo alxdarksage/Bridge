@@ -13,6 +13,13 @@
 	tbody tr:last-child td {
 	    border-bottom: 2px solid #aaa;
 	}
+	td.empty {
+       padding: 4rem 0rem;
+       text-align: center;
+    }
+    td.nowrap {
+        white-space: nowrap;
+    }
 	thead {
 	    th {
 	        padding: 4px 8px ! important;
