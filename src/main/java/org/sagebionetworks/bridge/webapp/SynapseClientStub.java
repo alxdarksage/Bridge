@@ -110,7 +110,7 @@ public class SynapseClientStub implements SynapseClient {
 	private Set<String> agreedTOUs = new HashSet<>();
 	private int idCount;
 	
-	private String newId() {
+	public String newId() {
 		return Integer.toString(++idCount);
 	}
 	

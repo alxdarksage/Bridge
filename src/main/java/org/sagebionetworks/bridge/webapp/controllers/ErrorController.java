@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,9 @@ public class ErrorController {
 		String message = "";
 		Throwable throwable = request.getErrorThrowableCause();
 		if (throwable != null) {
+			while (throwable.getCause() != null) {
+				throwable = throwable.getCause();
+			}
 			message = (throwable.getMessage()).replaceAll("\"", "'");
 		}
 		
@@ -36,7 +40,7 @@ public class ErrorController {
 
 		request.setAttribute("title", title);
 		request.setAttribute("message", message);
-		
+
 		return "error";
 	}
 

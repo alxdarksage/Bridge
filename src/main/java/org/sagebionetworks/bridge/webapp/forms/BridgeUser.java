@@ -80,9 +80,13 @@ public class BridgeUser {
 	}
 
 	public BridgeClient getBridgeClient() {
-		if (bridgeClient == null) {
-			SynapseClient synapseClient = getSynapseClient();
-			bridgeClient = new BridgeClientImpl(synapseClient);
+		if (!isAuthenticated()) {
+			throw new UnauthorizedException("The user must be authenticated");
+		}
+		if (this.bridgeClient == null) {
+			this.bridgeClient = (BridgeClient) beanFactory.getBean("bridgeClient");
+			this.bridgeClient.setSessionToken(getSessionToken());
+			this.bridgeClient.appendUserAgent("Bridge/0.1");
 		}
 		return bridgeClient;
 	}

@@ -15,12 +15,14 @@ public class WebDriverBase {
 
 	protected WebDriverFacade initDriver() {
 		// Because system properties with periods in them are not portable to Bash.
+		/*
 		if (System.getProperty("phantomjs.binary.path") == null && 
 			System.getProperty("PHANTOMJS_BINARY_PATH") != null) {
 			System.setProperty("phantomjs.binary.path", System.getProperty("PHANTOMJS_BINARY_PATH"));
 		}
 		_driver = new WebDriverFacade(new PhantomJSDriver());
-		//_driver = new WebDriverFacade(new FirefoxDriver());
+		*/
+		_driver = new WebDriverFacade(new FirefoxDriver());
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(968,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);

@@ -12,6 +12,7 @@
 		
    	<context:component-scan base-package="
 		org.sagebionetworks.bridge.webapp.controllers, 
+        org.sagebionetworks.bridge.webapp.controllers.admin, 
 		org.sagebionetworks.bridge.webapp.controllers.portal,
 		org.sagebionetworks.bridge.webapp.controllers.communities
 	"/>
@@ -41,9 +42,6 @@
             <bean class="org.sagebionetworks.StackConfiguration"
                 factory-method="getFileServiceEndpoint"/>
         </property>
-        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property?  
-        <property name="appendUserAgent" value="Bridge-Service/0.1"/>
-        -->
     </bean>
     
     <bean id="privateSynapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
@@ -59,9 +57,13 @@
             <bean class="org.sagebionetworks.StackConfiguration"
                 factory-method="getFileServiceEndpoint"/>
         </property>
-        <!-- When used for log in, this is not set (can't set it, not a Spring-compatible property?  
-        <property name="appendUserAgent" value="Bridge-Service/0.1"/>
-        -->
+    </bean>
+    
+    <!-- TODO: This needs to have its endpoint set to work on localhost:8080 through the 
+        StackConfiguration stuff.
+     -->
+    <bean id="bridgeClient" class="org.sagebionetworks.client.BridgeClientImpl" scope="prototype">
+        <constructor-arg ref="synapseClient"/>
     </bean>
 
     <bean id="bridgeUser" class="org.sagebionetworks.bridge.webapp.forms.BridgeUser" scope="prototype"/>

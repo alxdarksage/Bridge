@@ -2,13 +2,31 @@ body {
 	background-color: rgb(239,239,239);
 	font-family: Open Sans, sans-serif;
 }
-a, a:visited, a:active {
+/*
+a, a:visited {
 	color: rgb(54,108,183);
+}
+*/
+h1, h2, h3, h4 {
+	font-family: 'Archivo Narrow', sans-serif;
 }
 .forgotLinkWrapper {
 	margin-top:1rem; 
 	margin-bottom: -.25rem;
 }
+.main-pane {
+    padding-right: 2rem;
+}
 #notice {
     display: none;
+}
+h5 {
+    font-size: 12px;
+    font-weight: normal;
+    margin: 0;
+}
+@media (max-width: 600px) {
+	.main-pane {
+	    padding-right: 15px;
+	}
 }
