@@ -86,7 +86,12 @@
 			<artifactId>lib-auto-generated</artifactId>
 			<version>${synapse.version}</version>
 		</dependency>
-		
+        <dependency>
+            <groupId>org.sagebionetworks</groupId>
+            <artifactId>lib-stackConfiguration</artifactId>
+            <version>${synapse.version}</version>
+        </dependency>
+				
 		<!-- Client-side resource pre-processors/JSP -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

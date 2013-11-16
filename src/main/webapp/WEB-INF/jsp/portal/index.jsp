@@ -1,10 +1,12 @@
 <%@ include file="../directives.jsp" %>
 <sage:portal code="Tagline">
     <p id="portal-page">
-        This is the portal page. It isn't i18nalized. It has anonymous access, but needs to know if you are authenticated or not. 
+        This is the portal page. It isn't i18nalized. It has anonymous access, but needs to know if you are authenticated or not.
+        We'll see if getCommunities() works when you are not authenticated. 
     </p>
     <ul>
-        <li><a href='<c:url value="/communities/index.html"/>'>Fanconi Anemia</a></li>
-        <li><a href='<c:url value="/admin/index.html"/>'>Admin Section</a></li>
+        <c:forEach var="cty" items="${communities}">
+            <li><a href='<c:url value="/communities/${cty.id}.html"/>'>${cty.name}</a></li>
+        </c:forEach>
     </ul>
 </sage:portal>

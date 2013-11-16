@@ -187,7 +187,6 @@ public class TagBuilderTest {
         tb.fullTag("b", "test");
         // tb.startTag("b").append("test").endTag("b");
         
-        System.out.println("|"+tb.toString()+"|");
         assertEquals("<div><tag>Red Dwarf<b>test</b></tag></div>", tb.toString());
         tb = new TagBuilder();
         assertEquals(0, tb.length());

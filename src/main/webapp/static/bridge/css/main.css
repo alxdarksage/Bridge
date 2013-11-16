@@ -7,6 +7,9 @@ a, a:visited {
 	color: rgb(54,108,183);
 }
 */
+h1, h2, h3, h4 {
+	font-family: 'Archivo Narrow', sans-serif;
+}
 .forgotLinkWrapper {
 	margin-top:1rem; 
 	margin-bottom: -.25rem;
