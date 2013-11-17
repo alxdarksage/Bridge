@@ -1,5 +1,4 @@
 <%@ include file="../jsp/directives.jsp" %>
-<%@ attribute name="errorView" required="true" %>
 <spring:bind path="signInForm">
     <c:if test="${not empty status.errorMessages}">
         <div class="alert alert-danger">
@@ -16,7 +15,6 @@
 <form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
     <sage:text field="email"/>
     <sage:password field="password"/>
-    <input type="hidden" name="errorView" value="${errorView}"/>
     <button type="submit" class="btn btn-default"><spring:message code="SignIn"/></button>
     <a id="signUpLink" href='<c:url value="/signUp.html"/>' class="btn"><spring:message code="SignUp"/></a> 
 </form:form>

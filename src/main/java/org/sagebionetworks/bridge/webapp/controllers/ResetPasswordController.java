@@ -5,13 +5,11 @@ import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.RequestResetPasswordForm;
 import org.sagebionetworks.bridge.webapp.forms.ResetPasswordForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.OriginatingClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -33,19 +31,13 @@ public class ResetPasswordController {
 	}
 
 	@RequestMapping(value="/requestResetPassword", method = RequestMethod.POST)
-	public String post(
+	public String post(BridgeRequest request,
 			@ModelAttribute("requestResetPasswordForm") @Valid RequestResetPasswordForm requestResetPasswordForm,
-			BindingResult result, BridgeRequest request) {
+			BindingResult result) throws SynapseException {
 		if (!result.hasErrors()) {
-			try {
-				synapseClient.sendPasswordResetEmail(requestResetPasswordForm.getEmail(), OriginatingClient.BRIDGE);
-				request.setNotification("ResetEmailSent");
-				return "redirect:" + request.getOriginURL();
-			} catch (SynapseNotFoundException e) {
-				ClientUtils.globalFormError(result, "resetPasswordForm", "UserNotFoundException");
-			} catch (SynapseException e) {
-				ClientUtils.formError(result, "signUpForm", e.getMessage());
-			}
+			synapseClient.sendPasswordResetEmail(requestResetPasswordForm.getEmail(), OriginatingClient.BRIDGE);
+			request.setNotification("ResetEmailSent");
+			return "redirect:" + request.getOrigin();
 		}
 		return "requestResetPassword";
 	}
@@ -57,16 +49,11 @@ public class ResetPasswordController {
 
 	@RequestMapping(value="/resetPassword", method = RequestMethod.POST)
 	public String post(@ModelAttribute("resetPasswordForm") @Valid ResetPasswordForm resetPasswordForm,
-			BindingResult result, BridgeRequest request) throws Exception {
-
+			BindingResult result, BridgeRequest request) throws SynapseException {
 		if (!result.hasErrors()) {
-			try {
-				synapseClient.changePassword(resetPasswordForm.getToken(), resetPasswordForm.getPassword());
-				request.setNotification("PasswordChanged");
-				return "redirect:" + request.getOriginURL();
-			} catch(Exception e) {
-				ClientUtils.globalFormError(result, "resetPasswordForm", "RestFailed");
-			}
+			synapseClient.changePassword(resetPasswordForm.getToken(), resetPasswordForm.getPassword());
+			request.setNotification("PasswordChanged");
+			return "redirect:" + BridgeRequest.DEFAULT_ORIGIN_URL;
 		}
 		return "resetPassword";
 	}

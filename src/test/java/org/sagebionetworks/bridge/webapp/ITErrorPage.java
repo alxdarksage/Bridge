@@ -32,7 +32,7 @@ public class ITErrorPage extends WebDriverBase {
 	
 	@Test
 	public void noPageReturnsIndexPageNotErrorPage() {
-		driver.get("/communities/");
-		driver.waitForCommunityPage();
+		driver.get("/portal/");
+		driver.waitForPortalPage();
 	}
 }

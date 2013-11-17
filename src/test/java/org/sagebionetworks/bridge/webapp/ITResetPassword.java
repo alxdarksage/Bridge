@@ -33,7 +33,7 @@ public class ITResetPassword extends WebDriverBase {
 	public void forgotPasswordFromEmbeddedSignIn() {
 		// This doesn't work in Chrome because Chrome opens the page narrow enough that the sidebar
 		// does not show, and then it throws an error. Which is odd, but it makes sense.
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.click("#forgotPasswordLink");
 		driver.waitForResetPasswordPage();
 		

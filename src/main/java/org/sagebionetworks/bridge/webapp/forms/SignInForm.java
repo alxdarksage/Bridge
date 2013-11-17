@@ -10,7 +10,6 @@ public class SignInForm {
 	private String email;
 	@NotEmpty
 	private String password;
-	private String errorView;
 
 	public String getEmail() {
 		return email;
@@ -27,13 +26,4 @@ public class SignInForm {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public String getErrorView() {
-		return errorView;
-	}
-
-	public void setErrorView(String errorView) {
-		this.errorView = errorView;
-	}
-
 }

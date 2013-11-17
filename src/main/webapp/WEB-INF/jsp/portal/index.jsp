@@ -9,4 +9,5 @@
             <li><a href='<c:url value="/communities/${cty.id}.html"/>'>${cty.name}</a></li>
         </c:forEach>
     </ul>
+    <p><a href='<c:url value="/admin/"/>'>Admin</a></p>
 </sage:portal>

@@ -80,6 +80,10 @@ public class WebDriverFacade implements WebDriver {
 	protected void waitForProfilePage() {
 		waitForTitle("Profile");
 	}
+	protected void waitForErrorPage(String error) {
+		waitUntil("h3#error-pane");
+		assertErrorMessage("#error-pane", error);
+	}
 	protected void waitForError() {
 		waitUntil("div.has-error");
 	}

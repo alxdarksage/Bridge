@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/portal/")
 public class PortalController {
 	
 	@Resource(name = "bridgeClient")
@@ -24,7 +23,12 @@ public class PortalController {
 		this.bridgeClient = bridgeClient;
 	}
 	
-	@RequestMapping(value = "index", method = RequestMethod.GET)
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public String index() throws SynapseException {
+		return "redirect:/portal/index.html";
+	}
+	
+	@RequestMapping(value = "/portal/index", method = RequestMethod.GET)
 	public ModelAndView index(BridgeRequest request, ModelAndView model) throws SynapseException {
 		List<Community> communities = bridgeClient.getCommunities();
 		model.addObject("communities", communities);

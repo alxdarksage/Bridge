@@ -32,17 +32,15 @@ public class AuthenticateBaseController {
 		return user;
 	}
 	
+	protected String getOnSuccessPage(SignInForm signInForm, BridgeRequest request) {
+		return request.getOrigin();
+	}
+	
 	protected String getOnErrorReturnPage(SignInForm signInForm, BridgeRequest request) {
-		if (signInForm.getErrorView() == null) {
-			return "redirect:"+request.getOriginURL()+"?login=error";
+		if (StringUtils.isBlank(request.getServletPath())) {
+			return ""; // test only, I believe
 		}
-		return signInForm.getErrorView();
+		return request.getServletPath().substring(1).replace(".html", "");
 	}
 
-	protected String getOnSuccessPage(SignInForm signInForm, BridgeRequest request) {
-		if (StringUtils.isNotBlank(request.getOriginURL())) {
-			return "redirect:" + request.getOriginURL();
-		}
-		return "redirect:"+request.getBridgeUser().getStartURL();
-	}
 }

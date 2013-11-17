@@ -26,10 +26,8 @@
         <button type="submit" class="btn btn-sm btn-default">
             <spring:message code="SignUp"/>
         </button>
-        <c:if test="${not empty sessionScope['origin']}">
-            <a class="btn" href='<c:url value="${sessionScope['origin']}"/>'>
-                <spring:message code="Continue"/>
-            </a>
-        </c:if>
+        <a class="btn" href='<c:url value="${pageContext.request.origin}"/>'>
+            <spring:message code="Continue"/>
+        </a>
     </form:form>
 </sage:minimal>

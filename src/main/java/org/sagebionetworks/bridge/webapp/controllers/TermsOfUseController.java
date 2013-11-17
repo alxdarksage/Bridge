@@ -67,7 +67,7 @@ public class TermsOfUseController extends AuthenticateBaseController {
 			} else {
 				request.setNotification("SessionError");
 			}
-			return "redirect:" + request.getOriginURL();
+			return "redirect:" + request.getOrigin();
 		}
 		termsOfUseForm.setTermsOfUse(synapseClient.getSynapseTermsOfUse());
 		return "termsOfUse";
@@ -75,6 +75,6 @@ public class TermsOfUseController extends AuthenticateBaseController {
 
 	@RequestMapping(value = "/termsOfUse/cancel", method = RequestMethod.GET)
 	public String cancelTermsOfUse(BridgeRequest request) {
-		return "redirect:"+request.getOriginURL();
+		return "redirect:"+request.getOrigin();
 	}
 }

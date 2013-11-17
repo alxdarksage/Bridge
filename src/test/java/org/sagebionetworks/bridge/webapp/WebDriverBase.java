@@ -24,7 +24,7 @@ public class WebDriverBase {
 		*/
 		_driver = new WebDriverFacade(new FirefoxDriver());
 		Window window = _driver.manage().window();
-		window.setSize(new Dimension(968,400));
+		window.setSize(new Dimension(1024,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
 		return _driver;
 	}
@@ -37,7 +37,7 @@ public class WebDriverBase {
 	}
 	
 	protected void signIn(String email, String password) {
-		_driver.get("/communities/index.html");
+		_driver.get("/communities/1.html");
 		_driver.get("/signIn.html");
 		
 		_driver.enterField("#email", email);

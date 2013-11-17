@@ -1,11 +1,8 @@
 package org.sagebionetworks.bridge.webapp.servlet;
 
-import java.security.Principal;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.http.auth.BasicUserPrincipal;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 
@@ -18,7 +15,7 @@ import org.sagebionetworks.bridge.webapp.forms.SignInForm;
  */
 public class BridgeRequest extends HttpServletRequestWrapper {
 
-	private static final String DEFAULT_ORIGIN_URL = "/portal/index.html";
+	public static final String DEFAULT_ORIGIN_URL = "/portal/index.html";
 	public static final String BRIDGE_USER_KEY = "BridgeUser";
 	public static final String NOTICE_KEY = "notice";
 	public static final String OAUTH_KEY = "oauth";
@@ -81,7 +78,7 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		return notice;
 	}
 
-	public void setOriginURL(String origin) {
+	public void setOrigin(String origin) {
 		if (origin == null) {
 			getSession().removeAttribute(ORIGIN_KEY);
 		} else {
@@ -89,14 +86,14 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		}
 	}
 
-	public String getOriginURL() {
+	public String getOrigin() {
 		String origin = (String) getSession().getAttribute(ORIGIN_KEY);
 		if (origin == null) {
 			origin = DEFAULT_ORIGIN_URL;
 		}
 		return origin;
 	}
-
+	
 	public void setBridgeUser(BridgeUser user) {
 		if (user == null) {
 			getSession().removeAttribute(BRIDGE_USER_KEY);

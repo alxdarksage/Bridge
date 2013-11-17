@@ -26,7 +26,7 @@ public class SignInController extends AuthenticateBaseController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(@ModelAttribute SignInForm signInForm, BridgeRequest request) {
 		if (request.isUserAuthenticated()) {
-			return "redirect:"+request.getBridgeUser().getStartURL();
+			return "redirect:" + request.getOrigin();
 		}
 		return "signIn";
 	}
@@ -37,6 +37,7 @@ public class SignInController extends AuthenticateBaseController {
 		if (result.hasErrors()) {
 			return getOnErrorReturnPage(signInForm, request);
 		}
+		
 		// Shouldn't happen that user is authenticated, but.
 		if (!request.isUserAuthenticated()) {
 			try {
@@ -56,7 +57,7 @@ public class SignInController extends AuthenticateBaseController {
 				return getOnErrorReturnPage(signInForm, request);
 			}
 		}
-		return getOnSuccessPage(signInForm, request);
+		return "redirect:"+getOnSuccessPage(signInForm, request);
 	}
 
 }

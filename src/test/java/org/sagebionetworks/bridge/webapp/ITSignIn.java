@@ -63,7 +63,7 @@ public class ITSignIn extends WebDriverBase {
 	
 	@Test
 	public void dedicatedSignInFormRedirectsCorrectly() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.get("/signIn.html");
 		
 		driver.email("timpowers@timpowers.com");
@@ -84,7 +84,9 @@ public class ITSignIn extends WebDriverBase {
 		driver.email("timpowers@timpowers.com");
 		driver.password("password");
 		driver.submit();
-		driver.waitForProfilePage();
+		// This isn't ideal; portal doesn't record as the current URL, so origin 
+		// can be used to cancel from the page.
+		driver.waitForPortalPage();
 	}
 	
 	@Test
@@ -103,7 +105,7 @@ public class ITSignIn extends WebDriverBase {
 	
 	@Test
 	public void dedicatedSignInFormRedirectsForTOU() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.get("/signIn.html");
 		
 		driver.email("octaviabutler@octaviabutler.com");
@@ -116,33 +118,37 @@ public class ITSignIn extends WebDriverBase {
 	
 	@Test
 	public void embeddedSignInFormRejectsEmptyForm() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.submit();
-		driver.waitForError("Unable to sign in. Email or password may be incorrect.");
+		driver.waitForSignInPage();
+		driver.assertErrorMessage("#email_errors", "Enter a valid email address");
+		driver.assertErrorMessage("#password_errors", "Enter your password");
 	}
 	
 	@Test
 	public void embeddedSignInFormRejectsInvalidEmailAddress() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.email("timpowers");
-		// This really isn't ideal, why are we redirecting? I can't remember.
 		driver.submit();
-		driver.waitForError("Unable to sign in. Email or password may be incorrect.");	
+		driver.waitForSignInPage();
+		driver.assertErrorMessage("#email_errors", "Enter a valid email address");
+		driver.assertErrorMessage("#password_errors", "Enter your password");
 	}
 	
 	@Test
 	public void embeddedSignInFormRejectsUnregisteredUser() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.email("dudeski@dudeski.com");
 		driver.password("password");
 		driver.submit();
-		driver.waitForError("Unable to sign in. Email or password may be incorrect.");		
+		driver.waitForSignInPage();
+		driver.assertErrorMessage("#signInForm_errors", "Unable to sign in. Email or password may be incorrect.");
 	}
 	
 	@Test
 	public void embeddedSignInFormRedirectsCorrectly() {
 		driver.get("/index.html");
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.email("timpowers@timpowers.com");
 		driver.password("password");
 		driver.submit();
@@ -151,21 +157,21 @@ public class ITSignIn extends WebDriverBase {
 	
 	@Test
 	public void embeddedSignInFormLinksToIForgotMyPassword() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.click("#forgotPasswordLink");
 		driver.waitForResetPasswordPage();
 	}
 	
 	@Test
 	public void embeddedSignInFormToSignUp() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.click("#signUpLink");
 		driver.waitForSignUpPage();
 	}
 	
 	@Test
 	public void embeddedSignInFormRedirectsForTOU() {
-		driver.get("/communities/index.html");
+		driver.get("/communities/1.html");
 		driver.enterField("#email", "octaviabutler@octaviabutler.com");
 		driver.enterField("#password", "password");
 		driver.submit();

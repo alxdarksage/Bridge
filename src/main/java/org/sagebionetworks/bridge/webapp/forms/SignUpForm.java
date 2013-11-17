@@ -8,7 +8,6 @@ public class SignUpForm {
 
 	@NotEmpty
 	private String displayName;
-
 	@Email
 	@NotEmpty
 	private String email;
@@ -27,12 +26,5 @@ public class SignUpForm {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	public NewUser getNewUser() {
-		NewUser user = new NewUser();
-		user.setEmail(this.email);
-		user.setDisplayName(this.displayName);
-		return user;
 	}
 }

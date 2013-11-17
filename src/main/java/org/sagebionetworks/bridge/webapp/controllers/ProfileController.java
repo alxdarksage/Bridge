@@ -39,7 +39,6 @@ public class ProfileController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String post(BridgeRequest request, ProfileForm profileForm, BindingResult result) throws Exception {
-		//ServletContext context = request.getServletContext();
 		SynapseClient client = request.getBridgeUser().getSynapseClient();
 		
 		String userId = request.getBridgeUser().getOwnerId();
