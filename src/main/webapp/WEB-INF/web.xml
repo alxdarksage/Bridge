@@ -33,6 +33,18 @@
         <filter-name>WebResourceOptimizer</filter-name>
         <url-pattern>/assets/*</url-pattern>
     </filter-mapping>
+
+    <!-- 
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+	 -->
     
     <filter>
         <filter-name>OriginFilter</filter-name>
@@ -46,7 +58,7 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>        
     </filter-mapping>
-    
+
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
         <filter-class>org.sagebionetworks.bridge.webapp.servlet.AuthenticationFilter</filter-class>
@@ -96,11 +108,12 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
     
-    <!-- 
+    <!-- This occurs before the origin filter. So the origin is not captured
+        for login, and the Spring context isn't available, etc.
     <security-constraint>
         <display-name>Admin</display-name>
         <web-resource-collection>
-            <web-resource-name>Admin Stuff WTF</web-resource-name>
+            <web-resource-name>Admin</web-resource-name>
             <url-pattern>/admin/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>

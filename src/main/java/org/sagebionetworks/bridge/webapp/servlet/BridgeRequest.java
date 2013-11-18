@@ -1,8 +1,11 @@
 package org.sagebionetworks.bridge.webapp.servlet;
 
+import java.security.Principal;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.http.auth.BasicUserPrincipal;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 
@@ -33,7 +36,6 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	// Going to hard-code some admin IDs here at some point for the admin
 	// role.
 	
-	/*  
 	@Override
 	public boolean isUserInRole(String role) {
 		if (getBridgeUser().isAuthenticated()) {
@@ -50,7 +52,6 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		}
 		return null;
 	}
-	*/
 	
 	public void setOauthRedirect(String redirectUrl) {
 		if (redirectUrl == null) {
