@@ -28,6 +28,10 @@ public class SignOutController {
 	@RequestMapping(method = { RequestMethod.GET, RequestMethod.POST })
 	public String get(BridgeRequest request, HttpSession session, SignInForm signInForm) throws SynapseException {
 		BridgeUser user = request.getBridgeUser();
+		
+		// You're about to delete this, so copy it to the request and refer to it there.
+		request.setAttribute("origin", request.getOrigin());
+		
 		if (user.isAuthenticated()) {
 			SynapseClient client = user.getSynapseClient();
 			client.logout();

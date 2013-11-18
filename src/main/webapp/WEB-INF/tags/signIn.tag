@@ -16,9 +16,9 @@
         </div>
     </c:if>
     <button id="signInButton" type="submit" class="btn btn-sm btn-default"><spring:message code="SignIn"/></button>
-    <a id="signUpLink" href='<c:url value="/signUp.html?origin=${pageContext.request.origin}"/>' class="btn"><spring:message code="SignUp"/></a>
+    <a id="signUpLink" href='<c:url value="/signUp.html"/>' class="btn"><spring:message code="SignUp"/></a>
 </form:form>
 <p class="forgotLinkWrapper">
-    <a id="forgotPasswordLink" href='<c:url value="/requestResetPassword.html?origin=${pageContext.request.origin}"/>'><spring:message code="ForgotPassword"/></a>
+    <a id="forgotPasswordLink" href='<c:url value="/requestResetPassword.html"/>'><spring:message code="ForgotPassword"/></a>
 </p>
 <sage:oauth/>

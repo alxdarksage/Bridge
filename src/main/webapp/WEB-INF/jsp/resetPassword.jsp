@@ -20,7 +20,7 @@
         <sage:password field="password"/>
         <sage:password field="passwordConfirm"/>
         <input type="hidden" name="token" value="${param.token}"/> 
-        <button type="submit" class="btn btn-default">
+        <button id="submitAct" type="submit" class="btn btn-default">
             <spring:message code="ResetPassword"/>
         </button>
     </form:form>

@@ -41,7 +41,6 @@ public class SignInController extends AuthenticateBaseController {
 		// Shouldn't happen that user is authenticated, but.
 		if (!request.isUserAuthenticated()) {
 			try {
-
 				// They accept the terms of use when creating their account,
 				// they do not need to do it here.
 				UserSessionData userSessionData = synapseClient.login(signInForm.getEmail(), signInForm.getPassword());

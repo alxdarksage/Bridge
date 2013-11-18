@@ -15,6 +15,7 @@
 <form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
     <sage:text field="email"/>
     <sage:password field="password"/>
+    <input type="hidden" name="origin" value="${requestScope.origin}"/>
     <button type="submit" class="btn btn-default"><spring:message code="SignIn"/></button>
     <a id="signUpLink" href='<c:url value="/signUp.html"/>' class="btn"><spring:message code="SignUp"/></a> 
 </form:form>

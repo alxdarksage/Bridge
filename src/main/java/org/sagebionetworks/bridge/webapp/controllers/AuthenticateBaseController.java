@@ -33,6 +33,11 @@ public class AuthenticateBaseController {
 	}
 	
 	protected String getOnSuccessPage(SignInForm signInForm, BridgeRequest request) {
+		// This would be carried over from the sign out page, even as the user's 
+		// session has been destroyed.
+		if (StringUtils.isNotBlank(request.getParameter("origin"))) {
+			return request.getParameter("origin");
+		}
 		return request.getOrigin();
 	}
 	

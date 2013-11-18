@@ -1,4 +1,4 @@
-package org.sagebionetworks.bridge.webapp;
+package org.sagebionetworks.bridge.webapp.integration.auth;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -6,6 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
+import org.sagebionetworks.bridge.webapp.integration.pages.ErrorPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class ITErrorPage extends WebDriverBase {
 	
@@ -26,8 +29,9 @@ public class ITErrorPage extends WebDriverBase {
 	@Test
 	public void errorPageFor404() {
 		driver.get("/foo.html");
-		WebElement element = driver.findElement(By.tagName("h3"));
-		Assert.assertEquals("User-friendly error page", "Not Found", element.getText());
+		
+		ErrorPage page = driver.getErrorPage();
+		page.assertErrorTitle("Not Found");
 	}
 	
 	@Test

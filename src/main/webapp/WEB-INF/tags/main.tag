@@ -31,8 +31,8 @@
 	                                <td><img src='<c:url value="/images/default_avatar.png"/>'/></td>
 	                                <td>
 	                                    <div class="userName">${sessionScope['BridgeUser'].displayName}</div>
-	                                    <c:url var="signOutUrl" value="/signOut.html?origin=${pageContext.request.origin}"/>
-                                        <c:url var="editProfileUrl" value="/profile.html?origin=${pageContext.request.origin}"/>
+	                                    <c:url var="signOutUrl" value="/signOut.html"/>
+                                        <c:url var="editProfileUrl" value="/profile.html"/>
                                         <a id="signOutButton" href="${signOutUrl}">
                                             <spring:message code="SignOut"/>
                                         </a> <span class="div">&bull;</span> 
