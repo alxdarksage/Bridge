@@ -56,16 +56,28 @@ public class WebDriverFacade implements WebDriver {
 		});
 	}	
 	
+	public AdminPage waitForAdminPage() {
+		waitForTitle(AdminPage.TITLE);
+		return new AdminPage(this);
+	}
+	public CommunitiesAdminPage waitForCommunitiesAdminPage() {
+		waitForTitle(CommunitiesAdminPage.TITLE);
+		return new CommunitiesAdminPage(this);
+	}
 	public CommunityPage waitForCommunityPage() {
 		waitForTitle(CommunityPage.TITLE);
 		return new CommunityPage(this);
+	}
+	public CommunityAdminPage waitForCommunityAdminPage() {
+		waitForTitle(CommunityAdminPage.TITLE);
+		return new CommunityAdminPage(this);
 	}
 	public ErrorPage waitForErrorPage() {
 		waitUntil("h3#error-pane");
 		return new ErrorPage(this);
 	}
 	public PortalPage waitForPortalPage() {
-		waitForTitle("Patients & Researchers in Partnership");
+		waitForTitle(PortalPage.TITLE);
 		return new PortalPage(this);
 	}
 	public ProfilePage waitForProfilePage() {
@@ -77,11 +89,11 @@ public class WebDriverFacade implements WebDriver {
 		return new RequestResetPasswordPage(this);
 	}
 	public ResetPasswordPage waitForResetPasswordPage() {
-		waitForTitle("Reset Password");
+		waitForTitle(ResetPasswordPage.TITLE);
 		return new ResetPasswordPage(this);
 	}
 	public TermsOfUsePage waitForTOUPage() {
-		waitForTitle("Terms of Use");
+		waitForTitle(TermsOfUsePage.TITLE);
 		return new TermsOfUsePage(this);
 	}
 	public SignInPage waitForSignInPage() {
@@ -97,10 +109,23 @@ public class WebDriverFacade implements WebDriver {
 		return new SignUpPage(this);
 	}
 	
+	public AdminPage getAdminPage() {
+		get("/admin/index.html");
+		return new AdminPage(this);
+	}
+	public CommunitiesAdminPage getCommunitiesAdminPage() {
+		get("/admin/communities.html");
+		return new CommunitiesAdminPage(this);
+	}
 	public CommunityPage getCommunityPage() {
 		get("/communities/1.html");
 		return new CommunityPage(this);
 	}
+	public CommunityAdminPage getCommunityAdminPage() {
+		get("/admin/communities/1.html");
+		return new CommunityAdminPage(this);
+	}
+	
 	public ErrorPage getErrorPage(){ 
 		waitUntil("h3#error-pane");
 		return new ErrorPage(this);
@@ -142,7 +167,7 @@ public class WebDriverFacade implements WebDriver {
 		// This is the only way I've found to extract this information from the page.
 		(new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert-info.humane")));
 		String content = (String)((JavascriptExecutor)driver).executeScript("return document.querySelector('#notice').textContent");
-		Assert.assertTrue("User notified with message '"+message+"'", content.contains(message));
+		Assert.assertTrue("User notified with message '"+message+"' was: " + content, content.contains(message));
 	}
 	
 	// Pass-throughs to the driver object.

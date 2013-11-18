@@ -10,12 +10,7 @@
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 		
-   	<context:component-scan base-package="
-		org.sagebionetworks.bridge.webapp.controllers, 
-        org.sagebionetworks.bridge.webapp.controllers.admin, 
-		org.sagebionetworks.bridge.webapp.controllers.portal,
-		org.sagebionetworks.bridge.webapp.controllers.communities
-	"/>
+   	<context:component-scan base-package="org.sagebionetworks.bridge.webapp.controllers"/>
 
     <mvc:annotation-driven />
 
