@@ -1,6 +1,6 @@
 <%@ include file="directives.jsp" %>
 <sage:minimal code="">
-    <h3 id="error-pane"><spring:message code="${requestScope.title}"/></h3>
+    <h3 id="error-pane"><spring:message code="${requestScope.errorCode}"/></h3>
     
     <p><spring:message code="ErrorWelcome"/></p>
 

@@ -19,10 +19,10 @@
                 <form:errors id="email_errors" path="email" htmlEscape="false"/>
             </div>
         </spring:bind>
-        <button type="submit" class="btn btn-default">
+        <button id="submitAct" type="submit" class="btn btn-default">
             <spring:message code="ResetPassword"/>
         </button>
-        <a class="btn btn-sm" href='<c:url value="/profile.html"/>'>
+        <a id="cancelAct" class="btn btn-sm" href='<c:url value="${pageContext.request.origin}"/>'>
             <spring:message code="Cancel"/>
         </a>
     </form:form>

@@ -70,13 +70,10 @@ public class DataTableTag extends SimpleTagSupport {
 		this.selectable = (this.buttons.size() > 0);
 		createPreTableSection();
 
-		tb.startTag("form");
-		tb.addAttribute("role", "role");
-		tb.addAttribute("method", "post");
+		tb.startTag("form", "role", "role", "method", "post", "action", getContextPath() + this.action);
 		if (this.formId != null) {
 			tb.addAttribute("id", this.formId);	
 		}
-		tb.addAttribute("action", getContextPath() + this.action);
 		
 		tb.startTag("table");
 		if (this.selectable) {
@@ -98,8 +95,7 @@ public class DataTableTag extends SimpleTagSupport {
 	}
 	
 	protected void createPreTableSection() {
-		tb.startTag("div");
-		tb.addAttribute("class", "table-buttons");
+		tb.startTag("div", "class", "table-buttons");
 		createGlobalTableButtons();
 		// Pagination goes here
 		tb.endTag("div");
@@ -126,9 +122,8 @@ public class DataTableTag extends SimpleTagSupport {
 	protected void createEmptyTableBody() {
 		tb.startTag("tbody");
 		tb.startTag("tr");
-		tb.startTag("td");
+		tb.startTag("td", "class", "empty");
 		tb.addAttribute("colspan", Integer.toString(this.columns.size()));
-		tb.addAttribute("class", "empty");
 		tb.append("There are currently no items.");
 		tb.endTag("td");
 		tb.endTag("tr");
@@ -157,8 +152,7 @@ public class DataTableTag extends SimpleTagSupport {
 				if (StringUtils.isNotBlank(column.getLink())) {
 					// TODO: Figure out how to do this correctly so there can be any expression here.
 					String output = column.getLink().replace("{id}", objectId);
-					tb.startTag("a");
-					tb.addAttribute("href", getContextPath() + output);
+					tb.startTag("a", "href", getContextPath() + output);
 					tb.append(value);
 					tb.endTag("a");
 				} else {
@@ -174,11 +168,7 @@ public class DataTableTag extends SimpleTagSupport {
 	protected void addCheckboxIfSelectable(String objectId) {
 		if (this.selectable) {
 			tb.startTag("td");
-			tb.startTag("input");
-			tb.addAttribute("type", "checkbox");
-			tb.addAttribute("name", "rowSelect");
-			tb.addAttribute("value", objectId);
-			tb.addAttribute("title", "Select Row");
+			tb.startTag("input", "type", "checkbox", "name", "rowSelect", "title", "Select Row", "value", objectId);
 			tb.endTag("input");
 			tb.endTag("td");
 		}
@@ -187,8 +177,7 @@ public class DataTableTag extends SimpleTagSupport {
 		tb.startTag("thead");
 		tb.startTag("tr");
 		if (this.selectable && !noData) {
-			tb.startTag("th");
-			tb.addAttribute("class", "checkrow");
+			tb.startTag("th", "class", "checkrow");
 			tb.endTag("th");
 		}
 		for (DataTableColumnTag column : columns) {
@@ -202,18 +191,14 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.startTag("tfoot");
 			tb.startTag("tr");
 			tb.startTag("td");
-			tb.startTag("input");
-			tb.addAttribute("type", "checkbox");
-			tb.addAttribute("name", "masterSelect");
-			tb.addAttribute("title", "Select All Rows");
+			tb.startTag("input", "type", "checkbox", "name", "masterSelect", "title", "Select All Rows");
 			tb.endTag("input");
 			tb.endTag("td");
 			tb.startTag("td");
 			tb.addAttribute("colspan", Integer.toString(this.columns.size()));
 			
 			for (DataTableButtonTag button : buttons) {
-				tb.startTag("button");
-				tb.addAttribute("type", "submit");
+				tb.startTag("button", "type", "submit");
 				tb.addAttribute("id", button.getId());
 				tb.addAttribute("name", button.getAction());
 				tb.addAttribute("value", button.getAction());

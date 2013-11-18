@@ -97,7 +97,8 @@ public class BridgeUser {
 		if (this == PUBLIC_USER) {
 			return "/portal/index.html";
 		} else {
-			return "/communities/index.html";
+			// # TODO: This should be defined when creating a user as a preference.
+			return "/communities/1.html?static=true";
 		}
 	}
 

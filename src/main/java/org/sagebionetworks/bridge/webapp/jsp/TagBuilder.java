@@ -20,7 +20,7 @@ public class TagBuilder {
 		withinTag = false;
 	}
 
-	public TagBuilder startTag(String tagName) {
+	public TagBuilder startTag(String tagName, String... atts) {
 		if (tagName != null) {
 			if (withinTag) {
 				sb.append(">");
@@ -28,6 +28,12 @@ public class TagBuilder {
 			tagStack.push(tagName);
 			withinTag = true;
 			sb.append("<").append(tagName);
+			
+			if (atts != null) {
+				for (int i=0; i < atts.length; i+=2) {
+					this.addAttribute(atts[i], atts[i+1]);
+				}
+			}
 		}
 		return this;
 	}

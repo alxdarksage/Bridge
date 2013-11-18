@@ -1,13 +1,9 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
@@ -86,7 +82,7 @@ public class CommunityAdminController {
 			map.setViewName("admin/community");
 		} else {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
-			Community community = createCommunity(communityForm, request.getBridgeUser().getDisplayName());
+			Community community = valuesToCommunity(new Community(), communityForm);
 			client.createCommunity(community);
 			map.setViewName("redirect:/admin/communities.html");
 		}
@@ -94,53 +90,42 @@ public class CommunityAdminController {
 	}
 	
 	@RequestMapping(value = "/communities/{communityId}", method = RequestMethod.GET)
-	public String viewCommunity(BridgeRequest request, @PathVariable String communityId, CommunityForm communityForm) throws SynapseException {
+	public String viewCommunity(BridgeRequest request, @PathVariable String communityId, CommunityForm communityForm)
+			throws SynapseException {
 		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
-		editCommunity(community, communityForm);
+		valuesToCommunityForm(communityForm, community);
+		communityForm.setId(community.getId());
 		return "admin/community";
 	}
 	
 	@RequestMapping(value = "/communities/{communityId}", method = RequestMethod.POST)
 	public ModelAndView updateCommunity(BridgeRequest request, @PathVariable String communityId,
-			@ModelAttribute @Valid CommunityForm communityForm, BindingResult result, ModelAndView map) throws SynapseException {
+			@ModelAttribute @Valid CommunityForm communityForm, BindingResult result, ModelAndView map)
+			throws SynapseException {
 		
 		if (result.hasErrors()) {
 			map.setViewName("admin/community");
 		} else {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
 			Community community = client.getCommunity(communityId);
-			modifyCommunity(community, communityForm, request.getBridgeUser().getDisplayName());
+			valuesToCommunity(community, communityForm);
 			client.updateCommunity(community);
 			map.setViewName("redirect:/admin/communities.html");
 		}
 		return map;
 	}
 	
-	private Community createCommunity(CommunityForm communityForm, String displayName) throws IllegalAccessException, InvocationTargetException {
-		Community community = new Community();
-		community.setCreatedOn(new Date());
-		community.setCreatedBy(displayName);
-		modifyCommunity(community, communityForm, displayName);
-		return community;
+	
+	private CommunityForm valuesToCommunityForm(CommunityForm communityForm, Community community) {
+		communityForm.setName(community.getName());
+		communityForm.setDescription(community.getDescription());
+		return communityForm;
 	}
 	
-	private void modifyCommunity(Community community, CommunityForm communityForm, String displayName) {
-		// There is no common interface for this that I can see.
+	private Community valuesToCommunity(Community community, CommunityForm communityForm) {
 		community.setName(communityForm.getName());
 		community.setDescription(communityForm.getDescription());
-		community.setModifiedBy(displayName);
-		community.setModifiedOn(new Date());
+		return community;
 	}
-	
-	private void editCommunity(Community community, CommunityForm communityForm) {
-		if (community != null) {
-			try {
-				BeanUtils.copyProperties(communityForm, community);	
-			} catch(Exception e) {
-				logger.error(e);
-			}
-		}
-	}
-		
 	
 }

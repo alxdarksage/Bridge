@@ -35,14 +35,14 @@
         <sage:text field="firstName"/>
         <sage:text field="lastName"/>
         <sage:textarea field="summary"/>
-        <a class="btn btn-sm btn-default" href='<c:url value="/requestResetPassword.html"/>'>
-            <spring:message code="ChangePassword"/>
-        </a>
         <button type="submit" class="btn btn-sm btn-primary">
             <spring:message code="Save"/>
         </button>
-        <a class="btn btn-sm" href='<c:url value="${sessionScope.BridgeUser.getStartURL()}"/>'>
+        <a class="btn btn-sm" href='<c:url value="${pageContext.request.origin}"/>'>
             <spring:message code="Cancel"/>
+        </a>
+        <a class="btn btn-sm btn-default right" href='<c:url value="/requestResetPassword.html"/>'>
+            <spring:message code="ChangePassword"/>
         </a>
     </form:form>
 </sage:minimal>

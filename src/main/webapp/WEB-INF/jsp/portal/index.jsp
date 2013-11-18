@@ -9,4 +9,11 @@
             <li><a href='<c:url value="/communities/${cty.id}.html"/>'>${cty.name}</a></li>
         </c:forEach>
     </ul>
+    <p>
+        <a id="adminAct" href='<c:url value="/admin/"/>'>Admin</a> &bull; 
+        <c:url var="signOutUrl" value="/signOut.html"/>
+        <a id="signOutAct" href="${signOutUrl}">
+            <spring:message code="SignOut"/>
+        </a> 
+    </p>
 </sage:portal>

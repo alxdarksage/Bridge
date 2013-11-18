@@ -31,7 +31,7 @@ public class SignUpController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String get() {
+	public String get(BridgeRequest request, @ModelAttribute SignUpForm signUpForm) {
 		return "signUp";
 	}
 
@@ -40,7 +40,7 @@ public class SignUpController {
 			throws Exception {
 		if (!result.hasErrors()) {
 			try {
-				NewUser newUser = signUpForm.getNewUser();
+				NewUser newUser = getNewUser(signUpForm);
 				// In development, you must supply a password and you get an error if you do not. In production, 
 				// you cannot supply a password. In fact, that's bad, and we don't allow it through signUpForm.
 				if (!StackConfiguration.isProductionStack()) {
@@ -48,7 +48,7 @@ public class SignUpController {
 				}
 				synapseClient.createUser(newUser, OriginatingClient.BRIDGE);
 				request.setNotification("RegistrationEmailSent");
-				return "redirect:"+request.getOriginURL();
+				return "redirect:"+request.getOrigin();
 			} catch (UnauthorizedException | SynapseUnauthorizedException e) {
 				ClientUtils.globalFormError(result, "signUpForm", "UnauthorizedException");
 			}
@@ -56,4 +56,13 @@ public class SignUpController {
 		return "signUp";
 	}
 
+	
+	private NewUser getNewUser(SignUpForm signUpForm) {
+		NewUser user = new NewUser();
+		user.setEmail(signUpForm.getEmail());
+		user.setDisplayName(signUpForm.getDisplayName());
+		return user;
+	}
+
+	
 }

@@ -80,7 +80,7 @@ public class OpenIdController extends AuthenticateBaseController {
 			// This is a funny one. This is if the user hits the cancel button on the Google auth form. 
 			// I'm not sure if this value can be passed through or not.
 			request.setNotification("SignInCancelled");
-			return "redirect:" + request.getOriginURL();
+			return "redirect:" + request.getOrigin();
 		}
 		return openIDCallback(request, response);
 	}

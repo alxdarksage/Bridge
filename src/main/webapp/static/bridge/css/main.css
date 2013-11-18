@@ -17,14 +17,46 @@ h1, h2, h3, h4 {
 .main-pane {
     padding-right: 2rem;
 }
+.right {
+    float: right;
+}
+#profile-pane {
+    padding: 1rem;
+    overflow: hidden;
+    
+    img {
+       width: 5.6rem;
+       height: 5.6rem;
+       margin-right: 1rem;
+    }
+    .userName {
+        font-size: 16px;
+        margin-bottom: .6rem;
+    }
+}
+.div {
+    color: #aaa;
+}
 #notice {
     display: none;
 }
-h5 {
-    font-size: 12px;
+.breadcrumb {
+    font-size: 13px;
     font-weight: normal;
     margin: 0;
 }
+.list-group-item {
+    padding: 0;
+    
+    &.active {
+        padding: 10px 15px;
+    }
+    a {
+        display: block;
+        padding: 10px 15px;
+    }
+}
+
 @media (max-width: 600px) {
 	.main-pane {
 	    padding-right: 15px;

@@ -8,7 +8,7 @@ public class RequestResetPasswordForm {
 	@Email
 	@NotEmpty
 	private String email;
-
+	
 	public String getEmail() {
 		return email;
 	}
@@ -16,5 +16,4 @@ public class RequestResetPasswordForm {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
 }

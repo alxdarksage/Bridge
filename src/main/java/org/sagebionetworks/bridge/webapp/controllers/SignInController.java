@@ -26,7 +26,7 @@ public class SignInController extends AuthenticateBaseController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(@ModelAttribute SignInForm signInForm, BridgeRequest request) {
 		if (request.isUserAuthenticated()) {
-			return "redirect:"+request.getBridgeUser().getStartURL();
+			return "redirect:" + request.getOrigin();
 		}
 		return "signIn";
 	}
@@ -37,10 +37,10 @@ public class SignInController extends AuthenticateBaseController {
 		if (result.hasErrors()) {
 			return getOnErrorReturnPage(signInForm, request);
 		}
+		
 		// Shouldn't happen that user is authenticated, but.
 		if (!request.isUserAuthenticated()) {
 			try {
-
 				// They accept the terms of use when creating their account,
 				// they do not need to do it here.
 				UserSessionData userSessionData = synapseClient.login(signInForm.getEmail(), signInForm.getPassword());
@@ -56,7 +56,7 @@ public class SignInController extends AuthenticateBaseController {
 				return getOnErrorReturnPage(signInForm, request);
 			}
 		}
-		return getOnSuccessPage(signInForm, request);
+		return "redirect:"+getOnSuccessPage(signInForm, request);
 	}
 
 }

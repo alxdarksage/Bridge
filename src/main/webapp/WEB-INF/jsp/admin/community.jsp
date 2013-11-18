@@ -1,5 +1,9 @@
 <%@ include file="../directives.jsp" %>
-<sage:community code="Admin Dashboard">
+<sage:admin code="AdminDashboard" active="Communities">
+    <h5>
+        <a href="<c:url value="/admin/index.html"/>">Admin Dashboard</a> &#187; 
+        <a href="<c:url value="/admin/communities.html"/>">Communities</a> &#187;
+    </h5>
     <h3><spring:message code="${communityForm.formName}"/></h3>
     <spring:bind path="communityForm">
         <c:if test="${not empty status.errorMessages}">
@@ -26,4 +30,4 @@
             Cancel
         </a>
     </form:form>
-</sage:community>
+</sage:admin>

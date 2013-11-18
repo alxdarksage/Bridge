@@ -15,7 +15,7 @@
             <spring:message code="IncorrectLogin"/>
         </div>
     </c:if>
-    <button type="submit" class="btn btn-sm btn-default"><spring:message code="SignIn"/></button>
+    <button id="signInButton" type="submit" class="btn btn-sm btn-default"><spring:message code="SignIn"/></button>
     <a id="signUpLink" href='<c:url value="/signUp.html"/>' class="btn"><spring:message code="SignUp"/></a>
 </form:form>
 <p class="forgotLinkWrapper">

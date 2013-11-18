@@ -32,6 +32,10 @@ public class OriginFilter implements Filter {
 		excludedURLs.add("/termsOfUse/cancel.html");
 		excludedURLs.add("/openId.html");
 		excludedURLs.add("/openIdCallback.html");
+		// TODO:
+		// You can't cold log in to profile and come back to it; but this makes 
+		// cancel on profile page == the origin url.
+		excludedURLs.add("/profile.html");
 	}
 
 	@Override
@@ -51,7 +55,7 @@ public class OriginFilter implements Filter {
 		
 		if (!excludedURLs.contains(servletPath) && servletPath.endsWith(".html")) {
 			logger.debug("Setting the origin URL as: " + servletPath);
-			bridgeRequest.setOriginURL(servletPath);
+			bridgeRequest.setOrigin(servletPath);
 		}
 
 		chain.doFilter(bridgeRequest, res);

@@ -1,6 +1,4 @@
 <%@ include file="../directives.jsp" %>
-<sage:community code="Admin Dashboard">
-
-    <p><a href='<c:url value="/admin/communities.html"/>'>Communities</a></p>
-    
-</sage:community>
+<sage:admin code="AdminDashboard" active="Home">
+    <h3>Administration</h3>
+</sage:admin>

@@ -1,5 +1,5 @@
 <%@ include file="../directives.jsp" %>
-<sage:community code="Admin Dashboard">
+<sage:admin code="AdminDashboard" active="Communities">
     <h5>
         <a href="index.html">Admin Dashboard</a> &#187; 
     </h5>
@@ -10,4 +10,4 @@
         <s:column label="Description" field="description"/>
         <%--<s:button id="deleteButton" type="danger" label="Delete" action="delete"/> --%>
     </s:table>
-</sage:community>
+</sage:admin>
