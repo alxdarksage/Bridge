@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.webapp.BridgeClientStub;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -57,12 +58,20 @@ public class CommunityAdminController {
 	// It's possible through the submit button name to have another method to process another 
 	// table-specific button in the same form. Very handy.
 	@RequestMapping(value = "/communities", method = RequestMethod.POST, params = "delete=delete")
-	public String batchCommunities(BridgeRequest request, @RequestParam("rowSelect") List<String> rowSelects) {
+	public String batchCommunities(BridgeRequest request, @RequestParam("rowSelect") List<String> rowSelects)
+			throws SynapseException {
 		if (rowSelects != null) {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
+			
 			int count = 0;
 			for (String id : rowSelects) {
-				// .... and you can't delete a community.
+				((BridgeClientStub)client).deleteCommunity(id);
+				count++;
+			}
+			if (count == 1) {
+				request.setNotification("CommunityDeleted");
+			} else if (count > 1) {
+				request.setNotification("CommunitiesDeleted");
 			}
 		}
 		return "redirect:/admin/communities.html";
@@ -85,6 +94,7 @@ public class CommunityAdminController {
 			Community community = valuesToCommunity(new Community(), communityForm);
 			client.createCommunity(community);
 			map.setViewName("redirect:/admin/communities.html");
+			request.setNotification("CommunityCreated");
 		}
 		return map;
 	}

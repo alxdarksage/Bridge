@@ -1,5 +1,5 @@
 <%@ include file="../directives.jsp" %>
-<sage:admin code="AdminDashboard" active="Communities">
+<sage:admin code="AdminCommunity" active="Communities">
     <h5>
         <a href="<c:url value="/admin/index.html"/>">Admin Dashboard</a> &#187; 
         <a href="<c:url value="/admin/communities.html"/>">Communities</a> &#187;
@@ -26,7 +26,7 @@
         <button type="submit" class="btn btn-sm btn-primary">
             <spring:message code="Save"/>
         </button>
-        <a href='<c:url value="/admin/communities.html"/>' class="btn btn-sm">
+        <a id="cancelAct" href='<c:url value="/admin/communities.html"/>' class="btn btn-sm">
             Cancel
         </a>
     </form:form>

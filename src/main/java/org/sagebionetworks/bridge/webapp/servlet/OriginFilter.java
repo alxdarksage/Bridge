@@ -53,6 +53,7 @@ public class OriginFilter implements Filter {
 
 		String servletPath = request.getServletPath();
 		
+		// If this was only done for requests, not forwards or includes, it would always be *.html?
 		if (!excludedURLs.contains(servletPath) && servletPath.endsWith(".html")) {
 			logger.debug("Setting the origin URL as: " + servletPath);
 			bridgeRequest.setOrigin(servletPath);

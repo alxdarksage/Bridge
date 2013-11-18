@@ -121,5 +121,12 @@ public class BridgeClientStub implements BridgeClient {
 		communities.put(community.getId(), community);
 		return community;
 	}
+	
+	public void deleteCommunity(String communityId) throws SynapseException {
+		if (communityId == null || !communities.containsKey(communityId)) {
+			throw new SynapseException(new NotFoundException("Could not find that community"));
+		}
+		communities.remove(communityId);
+	}
 
 }

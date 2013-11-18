@@ -8,6 +8,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 
@@ -22,36 +23,23 @@ public class AuthenticationFilter implements Filter {
 			IOException {
 
 		BridgeRequest request = (BridgeRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
 
 		if (!request.isUserAuthenticated()) {
 			request.setBridgeUser(BridgeUser.PUBLIC_USER);
 		}
-
+		
+		// This is pretty silly as a form of security, but Spring Security is overkill
+		if (request.getServletPath().startsWith("/admin/") && !request.isUserInRole("admin")) {
+			response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/signIn.html"));
+		}
+		
 		chain.doFilter(request, res);
 
 		BridgeUser user = request.getBridgeUser();
 		if (user != null) {
 			user.cleanup();
 		}
-
-		/*
-		 * HttpServletRequest request = (HttpServletRequest)req; BridgeUser user
-		 * = (BridgeUser)request.getSession().getAttribute(BridgeUser.KEY);
-		 * 
-		 * // Currently we have no reason to redirect if the user is not signed
-		 * in, // but the user is marked as a public user. if (user == null ||
-		 * !user.isAuthenticated()) { // This is not injected from a Spring
-		 * Context, but it's OK because // the public user has no need of any
-		 * injected services. request.getSession().setAttribute(BridgeUser.KEY,
-		 * BridgeUser.PUBLIC_USER); }
-		 * 
-		 * chain.doFilter(req, res);
-		 * 
-		 * // Destroy any injected services that were created during request
-		 * processing. // Is this necessary? Time/memory trade-off? user =
-		 * (BridgeUser)request.getSession().getAttribute(BridgeUser.KEY); if
-		 * (user != null) { user.cleanup(); }
-		 */
 	}
 
 	@Override
