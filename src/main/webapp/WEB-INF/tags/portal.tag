@@ -16,7 +16,10 @@
     <link rel="stylesheet" type="text/css" href='<c:url value="/assets/header.css"/>' />
 </head>
 <body>
-    <jsp:doBody/>
+    <div class="container">
+        <h2>Bridge</h2>
+	    <jsp:doBody/>
+    </div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
     <sage:notifications/>
 </body>

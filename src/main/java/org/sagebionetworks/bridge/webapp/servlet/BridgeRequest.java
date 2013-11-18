@@ -1,8 +1,11 @@
 package org.sagebionetworks.bridge.webapp.servlet;
 
+import java.security.Principal;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.http.auth.BasicUserPrincipal;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 
@@ -28,6 +31,29 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		super(request);
 		this.request = request;
 	}
+	
+	// Some adaptation so we can make use of standard container authorization. 
+	// Going to hard-code some admin IDs here at some point for the admin
+	// role.
+	
+	/*  
+	@Override
+	public boolean isUserInRole(String role) {
+		if (getBridgeUser().isAuthenticated()) {
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public Principal getUserPrincipal() {
+		BridgeUser user = getBridgeUser();
+		if (user != null && user.getDisplayName() != null) {
+			return new BasicUserPrincipal(user.getDisplayName());
+		}
+		return null;
+	}
+	*/
 	
 	public void setOauthRedirect(String redirectUrl) {
 		if (redirectUrl == null) {

@@ -29,4 +29,10 @@ public class ITErrorPage extends WebDriverBase {
 		WebElement element = driver.findElement(By.tagName("h3"));
 		Assert.assertEquals("User-friendly error page", "Not Found", element.getText());
 	}
+	
+	@Test
+	public void noPageReturnsIndexPageNotErrorPage() {
+		driver.get("/communities/");
+		driver.waitForCommunityPage();
+	}
 }

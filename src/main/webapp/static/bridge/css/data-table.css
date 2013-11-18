@@ -13,6 +13,13 @@
 	tbody tr:last-child td {
 	    border-bottom: 2px solid #aaa;
 	}
+	td.empty {
+       padding: 4rem 0rem;
+       text-align: center;
+    }
+    td.nowrap {
+        white-space: nowrap;
+    }
 	thead {
 	    th {
 	        padding: 4px 8px ! important;
@@ -33,30 +40,35 @@
 	        text-decoration: underline;
 	    }
 	}
+	tfoot {
+	   button {
+	       margin-right: .5rem;
+	   }
+	}
     .checkrow {
         width: 1rem;
     }
-	.table-buttons {
-	    display: table;
-	    width: 100% ! important;
-	    margin-bottom: .75rem;
-	    
-        .pagination {
-            display: block;
-            float: right;
-            margin: 2px;
-        }
-	}
-	    .table-buttons > * {
-	        display: table-cell;
-	        line-height: 30px;
-	        height: 30px;
-	        vertical-align: middle;
-	        padding: 0;
-	    }
 	.hidden {
 	    display: none;
 	}
+}
+.table-buttons {
+    display: table;
+    width: 100% ! important;
+    margin-bottom: .75rem;
+    
+    .pagination {
+        display: block;
+        float: right;
+        margin: 2px;
+    }
+}
+.table-buttons > * {
+    display: table-cell;
+    line-height: 30px;
+    height: 30px;
+    vertical-align: middle;
+    padding: 0;
 }
 
 /* Better responsive table layout. */
