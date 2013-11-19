@@ -1,5 +1,5 @@
 <%@ include file="directives.jsp" %>
-<sage:minimal code="ResetPassword" boxSize="30rem">
+<sage:minimal code="SetPassword" boxSize="30rem">
     <spring:bind path="resetPasswordForm">
         <c:if test="${not empty status.errorMessages}">
             <div class="alert alert-danger">
@@ -16,12 +16,12 @@
     </spring:bind>
     <c:url var="resetPasswordUrl" value="/resetPassword.html"/>
     <form:form role="form" id="resetPasswordForm" modelAttribute="resetPasswordForm" method="post" action="${resetPasswordUrl}">
-        <p>Enter a new password:</p> 
+        <p><spring:message code="EnterPassword"/></p> 
         <sage:password field="password"/>
         <sage:password field="passwordConfirm"/>
         <input type="hidden" name="token" value="${param.token}"/> 
         <button id="submitAct" type="submit" class="btn btn-default">
-            <spring:message code="ResetPassword"/>
+            <spring:message code="SetPassword"/>
         </button>
     </form:form>
 </sage:minimal>

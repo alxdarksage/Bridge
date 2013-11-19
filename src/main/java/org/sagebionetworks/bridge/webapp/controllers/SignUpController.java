@@ -3,12 +3,16 @@ package org.sagebionetworks.bridge.webapp.controllers;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import mx4j.log.Logger;
+
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseUnauthorizedException;
+import org.sagebionetworks.repo.model.NameConflictException;
 import org.sagebionetworks.repo.model.OriginatingClient;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.sagebionetworks.repo.model.auth.NewUser;
@@ -49,8 +53,10 @@ public class SignUpController {
 				synapseClient.createUser(newUser, OriginatingClient.BRIDGE);
 				request.setNotification("RegistrationEmailSent");
 				return "redirect:"+request.getOrigin();
-			} catch (UnauthorizedException | SynapseUnauthorizedException e) {
-				ClientUtils.globalFormError(result, "signUpForm", "UnauthorizedException");
+				
+			} catch (SynapseException e) {
+				String message = ClientUtils.parseSynapseException(e, 409);
+				ClientUtils.fieldError(result, "signUpForm", "email", message);
 			}
 		}
 		return "signUp";
