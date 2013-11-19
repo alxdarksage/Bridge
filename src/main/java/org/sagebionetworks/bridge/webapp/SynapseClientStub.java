@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -106,11 +107,12 @@ public class SynapseClientStub implements SynapseClient {
 	
 	private static final Logger logger = LogManager.getLogger(SynapseClientStub.class.getName());
 
-	private String sessionToken;
-	private Map<String, UserSessionData> users = new HashMap<>();
-	// private List<String> userIds = new LinkedList<>();
-	private Set<String> agreedTOUs = new HashSet<>();
-	private int idCount;
+	UserSessionData currentUserData;
+	String sessionToken;
+	Map<String, UserSessionData> users = new HashMap<>();
+	Map<String,AccessControlList> acls = new HashMap<>();
+	Set<String> agreedTOUs = new HashSet<>();
+	int idCount;
 	
 	public String newId() {
 		return Integer.toString(++idCount);
@@ -144,6 +146,18 @@ public class SynapseClientStub implements SynapseClient {
 		data.setProfile(profile);
 		users.put("octaviabutler@octaviabutler.com", data);
 		users.put("BBB", data);
+		
+		profile = new UserProfile();
+		profile.setDisplayName("test");
+		profile.setEmail("test@test.com");
+		profile.setOwnerId("CCC");
+		profile.setUserName("test@test.com");
+		data = new UserSessionData();
+		data.setIsSSO(false);
+		data.setSessionToken("MOCK_SESSION_TOKEN");
+		data.setProfile(profile);
+		users.put("test@test.com", data);
+		users.put("CCC", data);
 	}
 	
 	@Override
@@ -236,10 +250,9 @@ public class SynapseClientStub implements SynapseClient {
 		if (!agreedTOUs.contains(data.getProfile().getOwnerId())) {
 			throw new SynapseTermsOfUseException();
 		}
+		currentUserData = data;
 		return data;
 	}
-	
-	private UserSessionData currentUserData;
 
 	@Override
 	public UserSessionData login(String username, String password, boolean explicitlyAcceptsTermsOfUse) throws SynapseException {
@@ -438,14 +451,18 @@ public class SynapseClientStub implements SynapseClient {
 	@Override
 	public PaginatedResults<VersionInfo> getEntityVersions(String entityId, int offset, int limit)
 			throws SynapseException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public AccessControlList getACL(String entityId) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		if (currentUserData == null || currentUserData.getProfile() == null) {
+			logger.error("No user, no ACLs will be returned");
+			// Wonder if this is how it really works
+			return new AccessControlList();
+		}
+		logger.info("Looking for an ACL for: " + entityId+":"+currentUserData.getProfile().getOwnerId());
+		return acls.get(entityId+":"+currentUserData.getProfile().getOwnerId());
 	}
 
 	@Override
@@ -505,8 +522,8 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public AccessControlList createACL(AccessControlList acl) throws SynapseException {
-		// TODO Auto-generated method stub
-		return null;
+		acls.put(acl.getId()+":"+currentUserData.getProfile().getOwnerId(), acl);
+		return acl;
 	}
 
 	@Override

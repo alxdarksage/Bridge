@@ -1,10 +1,13 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.sagebionetworks.bridge.model.Community;
@@ -13,9 +16,19 @@ import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SharedClientConnection;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
+import org.sagebionetworks.repo.model.ACCESS_TYPE;
+import org.sagebionetworks.repo.model.AccessControlList;
+import org.sagebionetworks.repo.model.ResourceAccess;
 import org.sagebionetworks.repo.web.NotFoundException;
 
+import com.google.common.collect.Sets;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class BridgeClientStub implements BridgeClient {
+	
+	private static final Logger logger = LogManager.getLogger(BridgeClientStub.class.getName());
 
 	private Map<String,Community> communities = new HashMap<>();
 	private SynapseClientStub synapseClientStub;
@@ -24,16 +37,35 @@ public class BridgeClientStub implements BridgeClient {
 		if (synapseClientStub == null) {
 			throw new IllegalArgumentException("BridgeClientStub must be initialized with a synapseClientStub");
 		}
+		this.synapseClientStub = synapseClientStub;
+		
 		Community community = new Community();
 		community.setId(synapseClientStub.newId());
 		community.setName("Fanconi Anemia");
 		community.setDescription("This is a very rare but very serious disease, affecting about 1,000 people worldwide.");
-		community.setCreatedBy("alxdark");
+		community.setCreatedBy("timpowers@timpowers.com");
 		community.setCreatedOn(new Date());
-		community.setModifiedBy("alxdark");
+		community.setModifiedBy("timpowers@timpowers.com");
 		community.setModifiedOn(new Date());
 		communities.put(community.getId(), community);
-		this.synapseClientStub = synapseClientStub;
+		
+		// Give Mr. Powers the ability to edit this community.
+		makeAccessControlList("AAA", community.getId(), ACCESS_TYPE.UPDATE);
+	}
+	
+	private void makeAccessControlList(String userOwnerId, String entityId, ACCESS_TYPE... types) {
+		AccessControlList acl = new AccessControlList();
+		acl.setId(entityId);
+		ResourceAccess ra = new ResourceAccess();
+		if (types != null) {
+			ra.setAccessType( Sets.newHashSet(types) );
+		}
+		// Cannot set long id, so setting this directly in the stub implementation in a way where 
+		// we correctly retrieve the acls for a user/object combo
+		// ra.setPrincipalId();
+		acl.setResourceAccess( Sets.newHashSet(ra) );
+		logger.info("Setting an ACL for: " + acl.getId()+":"+userOwnerId);
+		synapseClientStub.acls.put(acl.getId()+":"+userOwnerId, acl);
 	}
 	
 	@Override
