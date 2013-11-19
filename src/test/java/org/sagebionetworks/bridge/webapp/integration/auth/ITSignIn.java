@@ -64,7 +64,7 @@ public class ITSignIn extends WebDriverBase {
 	public void dedicatedSignInFormLinksToIForgotMyPassword() {
 		SignInPage page = driver.getSignInPage();
 		page.clickForgotPassword();
-		driver.waitForResetPasswordPage();
+		driver.waitForRequestResetPasswordPage();
 	}
 	
 	@Test
@@ -129,7 +129,7 @@ public class ITSignIn extends WebDriverBase {
 	public void embeddedSignInFormLinksToIForgotMyPassword() {
 		CommunityPage cpage = driver.getCommunityPage();
 		cpage.getEmbeddedSignIn().clickForgotPassword();
-		driver.waitForResetPasswordPage();
+		driver.waitForRequestResetPasswordPage();
 	}
 	
 	@Test

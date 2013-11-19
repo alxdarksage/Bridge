@@ -130,6 +130,10 @@ public class WebDriverFacade implements WebDriver {
 		waitUntil("h3#error-pane");
 		return new ErrorPage(this);
 	}
+	public PortalPage getPortalPage() {
+		get("/portal/index.html");
+		return new PortalPage(this);
+	}
 	public ProfilePage getProfilePage() {
 		get("/profile.html");
 		return new ProfilePage(this);

@@ -2,11 +2,8 @@ package org.sagebionetworks.bridge.webapp.integration.auth;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.PortalPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignOutPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignUpPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.TermsOfUsePage;
@@ -40,6 +37,7 @@ public class ITSignUp extends WebDriverBase {
 	
 	@Test
 	public void signUpShowsNotice() {
+		driver.getPortalPage();
 		SignUpPage page = driver.getSignUpPage();
 		page.setEmail("bob@bobcat.com");
 		page.setUserName("bob");
@@ -61,8 +59,7 @@ public class ITSignUp extends WebDriverBase {
 		page.setUserName("testdude");
 		page.submit();
 		
-		PortalPage portalPage = driver.waitForPortalPage();
-		portalPage.clickSignOut();
+		driver.waitForPortalPage();
 		
 		CommunityPage communityPage = driver.getCommunityPage();
 		communityPage.getEmbeddedSignIn().login(email, "testdude");

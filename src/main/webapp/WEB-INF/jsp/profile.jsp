@@ -1,13 +1,7 @@
 <%@ include file="directives.jsp" %>
 <sage:minimal code="Profile">
     <h3><spring:message code="ProfileFor"/> ${profileForm.displayName}</h3>
-    <spring:bind path="profileForm">
-        <c:if test="${not empty status.errorMessages}">
-            <div class="alert alert-danger">
-                <form:errors path="profileForm" htmlEscape="false"></form:errors>
-            </div>
-        </c:if>
-    </spring:bind>
+    <sage:formErrors formName="profileForm"/>
     <c:url var="profileUrl" value="/profile.html"/>
     <form:form role="form" modelAttribute="profileForm" method="post" action="${profileUrl}" enctype="multipart/form-data">
         <spring:hasBindErrors name="*">
@@ -35,12 +29,8 @@
         <sage:text field="firstName"/>
         <sage:text field="lastName"/>
         <sage:textarea field="summary"/>
-        <button type="submit" class="btn btn-sm btn-primary">
-            <spring:message code="Save"/>
-        </button>
-        <a class="btn btn-sm" href='<c:url value="${pageContext.request.origin}"/>'>
-            <spring:message code="Cancel"/>
-        </a>
+        <sage:submit code="Save"/>
+        <sage:cancel url="${pageContext.request.origin}"/>
         <a class="btn btn-sm btn-default right" href='<c:url value="/requestResetPassword.html"/>'>
             <spring:message code="ChangePassword"/>
         </a>

@@ -5,29 +5,14 @@
         <a href="<c:url value="/admin/communities.html"/>">Communities</a> &#187;
     </h5>
     <h3><spring:message code="${communityForm.formName}"/></h3>
-    <spring:bind path="communityForm">
-        <c:if test="${not empty status.errorMessages}">
-            <div class="alert alert-danger">
-                <form:errors path="communityForm" htmlEscape="false"></form:errors>
-            </div>
-        </c:if>
-    </spring:bind>
+    
+    <sage:formErrors formName="communityForm"/>
     <c:url var="communityUrl" value="/admin/communities/${communityForm.formId}.html"/>
     <form:form role="form" modelAttribute="communityForm" method="post" action="${communityUrl}">
-        <spring:hasBindErrors name="*">
-            <div class="alert alert-danger">
-                <form:errors htmlEscape="false"></form:errors>
-            </div>
-        </spring:hasBindErrors>
-        
         <sage:text field="name"/>
         <sage:textarea field="description"/>
         <sage:hidden field="id"/>
-        <button type="submit" class="btn btn-sm btn-primary">
-            <spring:message code="Save"/>
-        </button>
-        <a id="cancelAct" href='<c:url value="/admin/communities.html"/>' class="btn btn-sm">
-            Cancel
-        </a>
+        <sage:submit code="Save"/>
+        <sage:cancel url="/admin/communities.html"/>
     </form:form>
 </sage:admin>

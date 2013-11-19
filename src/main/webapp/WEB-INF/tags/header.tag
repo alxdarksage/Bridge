@@ -2,7 +2,10 @@
 <%@ attribute name="code" required="true" %>
 <div class="header row">
     <div class="col-sm-6 community-header">
-        <spring:message code="${code}"/>
+        <c:url var="portalUrl" value="/portal/index.html"/>
+        <a href="${portalUrl}">
+            <spring:message code="${code}"/>
+        </a>
     </div>
     <div class="col-sm-6 portal-header">
         <div class="portal-subheader visible-sm visible-md visible-lg">

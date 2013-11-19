@@ -60,16 +60,12 @@ public class ClientUtils {
 		throw exception;
 	}
 	
-	public static void globalFormError(BindingResult result, String formName, String key) {
-		result.addError(new ObjectError(formName, new String[] { key }, null, key));
-	}
-
 	public static void formError(BindingResult result, String formName, String message) {
-		result.addError(new ObjectError(formName, message));
+		result.addError(new ObjectError(formName, new String[] { message }, null, message));
 	}
 	
 	public static void fieldError(BindingResult result, String formName, String fieldName, String message) {
-		result.addError(new FieldError(formName, fieldName, message));
+		result.addError(new FieldError(formName, fieldName, null, false, new String[] { message }, null, message));
 	}
 	
 	public static Throwable unwrapThrowable(Throwable throwable) {
@@ -80,11 +76,6 @@ public class ClientUtils {
 	}
 	
 	public static void dumpErrors(Logger logger, BindingResult result) {
-		/*
-		for (ObjectError error : result.getAllErrors()) {
-			logger.info(String.format("ALL ERROR: %s: %s: %s", error.getObjectName(), error.getCode(), error.getDefaultMessage()));
-		}
-		*/
 		for (ObjectError error : result.getGlobalErrors()) {
 			logger.info(String.format("GLOBAl ERROR: %s: %s: %s", error.getObjectName(), error.getCode(), error.getDefaultMessage()));
 		}

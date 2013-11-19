@@ -1675,6 +1675,10 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public void createUser(NewUser user, OriginatingClient originClient) throws SynapseException {
+		if (users.get(user.getEmail()) != null) {
+			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
+		}
+		
 		String USER_ID = newId();
 		
 		UserProfile profile = new UserProfile();
