@@ -1,8 +1,8 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.sagebionetworks.client.BridgeClient;
-import org.sagebionetworks.client.BridgeClientImpl;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.beans.factory.BeanFactory;
@@ -104,6 +104,7 @@ public class BridgeUser {
 
 	public void cleanup() {
 		this.synapseClient = null;
+		this.bridgeClient = null;
 	}
 
 }
