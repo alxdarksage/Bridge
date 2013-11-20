@@ -9,21 +9,22 @@
      -->
     
 	<group name="header">
-		<css>/static/bootstrap/css/bootstrap.css</css>
-		<css>/static/humane/original.css</css>
-		<css>/static/bridge/css/main.css</css>
-        <css>/static/bridge/css/errors.less</css>
-		<css>/static/bridge/css/contentPane.less</css>
-		<css>/static/bridge/css/header.less</css>
-        <css>/static/bridge/css/termsOfUse.css</css>
-        <css>/static/bridge/css/profile.css</css>
-        <css>/static/bridge/css/data-table.css</css>
-        <css>/static/bridge/css/oauth.less</css>
+		<css>/assets/bootstrap/css/bootstrap.css</css>
+		<css>/assets/humane/original.css</css>
+		<css>/assets/bridge/css/main.css</css>
+        <css>/assets/bridge/css/errors.less</css>
+		<css>/assets/bridge/css/contentPane.less</css>
+		<css>/assets/bridge/css/header.less</css>
+        <css>/assets/bridge/css/termsOfUse.css</css>
+        <css>/assets/bridge/css/profile.css</css>
+        <css>/assets/bridge/css/data-table.css</css>
+        <css>/assets/bridge/css/oauth.less</css>
 	</group>
 
 	<group name="footer">
-        <js>/static/humane/humane.js</js>
-		<js>/static/bridge/js/main.js</js>
-		<js>/static/bridge/js/data-table.js</js>
+        <js>/assets/humane/humane.js</js>
+		<js>/assets/bridge/js/main.js</js>
+		<js>/assets/bridge/js/data-table.js</js>
 	</group>
+	
 </groups>

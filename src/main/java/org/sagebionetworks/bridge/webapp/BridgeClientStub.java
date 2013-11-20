@@ -113,6 +113,8 @@ public class BridgeClientStub implements BridgeClient {
 		String id = synapseClientStub.newId();
 		community.setId(id);
 		communities.put(id, community);
+		// This person can edit the community.
+		makeAccessControlList(synapseClientStub.currentUserData.getProfile().getOwnerId(), community.getId(), ACCESS_TYPE.UPDATE);
 		return community;
 	}
 

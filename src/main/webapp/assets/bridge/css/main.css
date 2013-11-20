@@ -23,6 +23,9 @@ h1, h2, h3, h4 {
 .topSpaced {
     margin-top: 2rem;
 }
+.editable {
+    border: 1px solid #aaa;
+}
 #profile-pane {
     padding: 1rem;
     overflow: hidden;

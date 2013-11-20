@@ -28,7 +28,7 @@
 			            <div id="profile-pane" class="well hidden-sm">
 	                        <table cellspacing="0" cellpadding="0">
 	                            <tr>
-	                                <td><img src='<c:url value="/images/default_avatar.png"/>'/></td>
+	                                <td><img src='<c:url value="/static/images/default_avatar.png"/>'/></td>
 	                                <td>
 	                                    <div class="userName">${sessionScope['BridgeUser'].displayName}</div>
 	                                    <c:url var="signOutUrl" value="/signOut.html"/>
