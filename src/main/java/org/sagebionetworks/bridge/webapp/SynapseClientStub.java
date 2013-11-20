@@ -91,6 +91,8 @@ import org.sagebionetworks.repo.model.storage.StorageUsageDimension;
 import org.sagebionetworks.repo.model.storage.StorageUsageSummaryList;
 import org.sagebionetworks.repo.model.table.ColumnModel;
 import org.sagebionetworks.repo.model.table.PaginatedColumnModels;
+import org.sagebionetworks.repo.model.table.RowReferenceSet;
+import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHistorySnapshot;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
@@ -1673,6 +1675,10 @@ public class SynapseClientStub implements SynapseClient {
 
 	@Override
 	public void createUser(NewUser user, OriginatingClient originClient) throws SynapseException {
+		if (users.get(user.getEmail()) != null) {
+			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
+		}
+		
 		String USER_ID = newId();
 		
 		UserProfile profile = new UserProfile();
@@ -1716,6 +1722,12 @@ public class SynapseClientStub implements SynapseClient {
 		Session session = new Session();
 		session.setSessionToken("AAA");
 		return session;
+	}
+
+	@Override
+	public RowReferenceSet appendRowsToTable(RowSet toAppend) throws SynapseException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

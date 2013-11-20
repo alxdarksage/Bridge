@@ -52,7 +52,7 @@ public class SignInController extends AuthenticateBaseController {
 				request.saveSignInForm(signInForm);
 				return "redirect:/termsOfUse.html";
 			} catch (SynapseException e) {
-				ClientUtils.globalFormError(result, "signInForm", "IncorrectLogin");
+				ClientUtils.formError(result, "signInForm", "IncorrectLogin");
 				return getOnErrorReturnPage(signInForm, request);
 			}
 		}

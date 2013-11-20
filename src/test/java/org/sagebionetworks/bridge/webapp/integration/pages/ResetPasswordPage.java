@@ -2,7 +2,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 
 public class ResetPasswordPage {
 
-	public static final String TITLE = "Reset Password";
+	public static final String TITLE = "Set Password";
 	
 	private WebDriverFacade facade;
 	

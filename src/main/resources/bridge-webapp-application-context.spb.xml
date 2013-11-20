@@ -54,11 +54,12 @@
         </property>
     </bean>
     
-    <!-- TODO: This needs to have its endpoint set to work on localhost:8080 through the 
-        StackConfiguration stuff.
-     -->
     <bean id="bridgeClient" class="org.sagebionetworks.client.BridgeClientImpl" scope="prototype">
         <constructor-arg ref="synapseClient"/>
+        <property name="bridgeEndpoint">
+            <bean class="org.sagebionetworks.StackConfiguration"
+                factory-method="getBridgeServiceEndpoint"/>
+        </property>
     </bean>
 
     <bean id="bridgeUser" class="org.sagebionetworks.bridge.webapp.forms.BridgeUser" scope="prototype"/>

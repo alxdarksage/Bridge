@@ -1,12 +1,6 @@
 <%@ include file="directives.jsp" %>
 <sage:minimal code="ResetPassword" boxSize="30rem">
-    <spring:bind path="requestResetPasswordForm">
-        <c:if test="${not empty status.errorMessages}">
-            <div class="alert alert-danger">
-                <form:errors path="requestResetPasswordForm" htmlEscape="false"></form:errors>
-            </div>
-        </c:if>
-    </spring:bind>
+    <sage:formErrors formName="requestResetPasswordForm"/>
     <c:url var="requestResetPasswordUrl" value="/requestResetPassword.html"/>
     <form:form role="form" modelAttribute="requestResetPasswordForm" method="post" action="${requestResetPasswordUrl}">
         <spring:bind path="email">
@@ -19,11 +13,7 @@
                 <form:errors id="email_errors" path="email" htmlEscape="false"/>
             </div>
         </spring:bind>
-        <button id="submitAct" type="submit" class="btn btn-default">
-            <spring:message code="ResetPassword"/>
-        </button>
-        <a id="cancelAct" class="btn btn-sm" href='<c:url value="${pageContext.request.origin}"/>'>
-            <spring:message code="Cancel"/>
-        </a>
+        <sage:submit code="ResetPassword"/>
+        <sage:cancel url="${pageContext.request.origin}"/>
     </form:form>
 </sage:minimal>

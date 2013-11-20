@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * /admin/communities.html GET OR POST TO DELETE
  * /admin/communities/1.html GET OR POST TO UPDATE
  * /admin/communities/new.html GET OR POST TO CREATE
  * 
@@ -65,7 +64,7 @@ public class CommunityAdminController {
 			
 			int count = 0;
 			for (String id : rowSelects) {
-				((BridgeClientStub)client).deleteCommunity(id);
+				client.deleteCommunity(id);
 				count++;
 			}
 			if (count == 1) {

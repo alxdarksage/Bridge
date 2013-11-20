@@ -17,17 +17,26 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
+		_driver = createPhantomJSDriver();
+		//_driver = createFirefoxDriver();
+		
+		Window window = _driver.manage().window();
+		window.setSize(new Dimension(1024,400));
+		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
+		return _driver;
+	}
+	
+	private WebDriverFacade createPhantomJSDriver() {
 		// Because system properties with periods in them are not portable to Bash.
 		if (System.getProperty("phantomjs.binary.path") == null && 
 			System.getProperty("PHANTOMJS_BINARY_PATH") != null) {
 			System.setProperty("phantomjs.binary.path", System.getProperty("PHANTOMJS_BINARY_PATH"));
 		}
-		_driver = new WebDriverFacade(new PhantomJSDriver());
-		// _driver = new WebDriverFacade(new FirefoxDriver());
-		Window window = _driver.manage().window();
-		window.setSize(new Dimension(1024,400));
-		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
-		return _driver;
+		return new WebDriverFacade(new PhantomJSDriver());
+	}
+	
+	private WebDriverFacade createFirefoxDriver() {
+		return new WebDriverFacade(new FirefoxDriver());
 	}
 	
 	@After

@@ -21,7 +21,7 @@ public class TermsOfUsePage {
 	}
 	
 	public void cancel() {
-		facade.click("#cancelButton");
+		facade.click("#cancelAct");
 	}
 	
 	public void submit() {
