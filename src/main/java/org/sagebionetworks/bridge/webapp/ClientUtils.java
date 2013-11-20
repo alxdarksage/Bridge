@@ -1,7 +1,12 @@
 package org.sagebionetworks.bridge.webapp;
 
+import java.util.Set;
+
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.ACCESS_TYPE;
+import org.sagebionetworks.repo.model.AccessControlList;
+import org.sagebionetworks.repo.model.ResourceAccess;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -73,6 +78,36 @@ public class ClientUtils {
 			throwable = throwable.getCause();
 		}
 		return throwable;
+	}
+	
+	public static String dumpACL(AccessControlList acl) {
+		StringBuilder sb = new StringBuilder("ACL: ");
+		if (acl != null) {
+			Set<ResourceAccess> accesses = acl.getResourceAccess();
+			if (accesses != null) {
+				for(ResourceAccess ra: accesses) {
+					for (ACCESS_TYPE type : ra.getAccessType()) {
+						sb.append(type.toString()).append(", ");	
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
+	
+	public static boolean can(ACCESS_TYPE type, AccessControlList acl) {
+		// This is almost certainly not correct. We have to check the ID as well, don't we?
+		if (acl != null) {
+			Set<ResourceAccess> accesses = acl.getResourceAccess();
+			if (accesses != null) {
+				for(ResourceAccess ra: accesses) {
+					if (ra.getAccessType().contains(type)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	public static void dumpErrors(Logger logger, BindingResult result) {

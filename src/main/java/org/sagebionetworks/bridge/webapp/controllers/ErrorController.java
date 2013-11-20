@@ -41,12 +41,12 @@ public class ErrorController {
 	public ModelAndView handleError(BridgeRequest request, HttpServletResponse response, ModelAndView map) {
 		map.setViewName("error");
 
+		Integer statusCode = request.getErrorStatusCode();
+		map.addObject("errorCode", "Error." + Integer.toString(statusCode));
+
 		Throwable throwable = request.getErrorThrowableCause();
 		if (throwable != null) {
 			processThrowable(request, throwable, map);
-		} else {
-			Integer statusCode = request.getErrorStatusCode();
-			map.addObject("errorCode", "Error." + Integer.toString(statusCode));
 		}
 
 		return map;

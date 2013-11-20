@@ -43,10 +43,6 @@ public class TermsOfUseController extends AuthenticateBaseController {
 	public String post(BridgeRequest request, HttpServletResponse response, @ModelAttribute @Valid TermsOfUseForm termsOfUseForm, BindingResult result)
 			throws Exception {
 		
-		for (ObjectError error : result.getAllErrors()) {
-			System.out.println(error.getObjectName() + ": " + error.getCode());
-		}
-		
 		if (!result.hasErrors()) {
 			SignInForm signInForm = request.restoreSignInForm();
 			if (termsOfUseForm.isOauthRedirect()) {

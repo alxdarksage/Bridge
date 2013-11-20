@@ -125,13 +125,13 @@ public class CommunityAdminController {
 	}
 	
 	
-	private CommunityForm valuesToCommunityForm(CommunityForm communityForm, Community community) {
+	public CommunityForm valuesToCommunityForm(CommunityForm communityForm, Community community) {
 		communityForm.setName(community.getName());
 		communityForm.setDescription(community.getDescription());
 		return communityForm;
 	}
 	
-	private Community valuesToCommunity(Community community, CommunityForm communityForm) {
+	public Community valuesToCommunity(Community community, CommunityForm communityForm) {
 		community.setName(communityForm.getName());
 		community.setDescription(communityForm.getDescription());
 		return community;
