@@ -1,16 +1,19 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.client.exceptions.SynapseTermsOfUseException;
 import org.sagebionetworks.repo.model.UserSessionData;
+import org.sagebionetworks.repo.model.auth.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,16 +44,16 @@ public class SignInController extends AuthenticateBaseController {
 		// Shouldn't happen that user is authenticated, but.
 		if (!request.isUserAuthenticated()) {
 			try {
-				// They accept the terms of use when creating their account,
-				// they do not need to do it here.
-				UserSessionData userSessionData = synapseClient.login(signInForm.getEmail(), signInForm.getPassword());
+				Session session = synapseClient.login(signInForm.getEmail(), signInForm.getPassword());
+				if (!session.getAcceptsTermsOfUse()) {
+					request.saveSignInForm(signInForm);
+					return "redirect:/termsOfUse.html";
+				}
+				UserSessionData userSessionData = synapseClient.getUserSessionData();
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
 				logger.info("User #{} signed in.", user.getOwnerId());
 				
-			} catch (SynapseTermsOfUseException e) {
-				request.saveSignInForm(signInForm);
-				return "redirect:/termsOfUse.html";
 			} catch (SynapseException e) {
 				ClientUtils.formError(result, "signInForm", "IncorrectLogin");
 				return getOnErrorReturnPage(signInForm, request);

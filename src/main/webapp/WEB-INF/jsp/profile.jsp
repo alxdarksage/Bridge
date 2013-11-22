@@ -10,25 +10,51 @@
             </div>
         </spring:hasBindErrors>
         
-        <b><spring:message code="PhotoOrAvatar"/></b>
-        <div class="avatar_container">
-            <img id="photoImg" src=""/>
+        <div class="row">
+            <div class="col-sm-6">
+		        <b><spring:message code="PhotoOrAvatar"/></b>
+		        <div class="avatar_container">
+		            <img id="photoImg" src=""/>
+		        </div>
+		        
+		        <div style="position:relative; margin-bottom: 2rem">
+		            <a class='btn btn-sm btn-default' href='javascript:;'><spring:message code="ChooseFile"/>
+		                <input id="photoFileInput" type="file" name="photoFile" size="40"/>
+		            </a>
+		        </div>
+		        
+		        <div class="form-group">
+		            <label>Community Memberships</label>
+		            <div class="checkbox-box">
+		                <c:forEach items="${memberships}" var="community">
+		                    <div class="checkbox">
+		                        <label>
+		                            <c:choose>
+		                                <c:when test="${community.selected}">
+		                                    <input type="checkbox" name="memberships" value="${community.id}" checked/>
+		                                </c:when>
+		                                <c:otherwise>
+		                                    <input type="checkbox" name="memberships" value="${community.id}" />                
+		                                </c:otherwise>
+		                            </c:choose>
+		                            ${community.displayName}
+		                        </label>
+		                    </div>
+		                </c:forEach>
+		            </div>
+		        </div>
+            </div>
+            <div class="col-sm-6">
+		        <sage:text field="displayName">
+		        <span class="help-block">
+		            <spring:message code="displayName.help2"/>
+		        </span>
+		        </sage:text>
+		        <sage:text field="firstName"/>
+		        <sage:text field="lastName"/>
+		        <sage:textarea field="summary"/>
+            </div>
         </div>
-        
-        <div style="position:relative; margin-bottom: 2rem">
-            <a class='btn btn-sm btn-default' href='javascript:;'><spring:message code="ChooseFile"/>
-                <input id="photoFileInput" type="file" name="photoFile" size="40"/>
-            </a>
-        </div>
-        
-        <sage:text field="displayName">
-        <span class="help-block">
-            <spring:message code="displayName.help2"/>
-        </span>
-        </sage:text>
-        <sage:text field="firstName"/>
-        <sage:text field="lastName"/>
-        <sage:textarea field="summary"/>
         <sage:submit code="Save"/>
         <sage:cancel url="${pageContext.request.origin}"/>
         <a class="btn btn-sm btn-default right" href='<c:url value="/requestResetPassword.html"/>'>

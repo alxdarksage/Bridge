@@ -9,6 +9,10 @@ public class ProfilePage extends EmbeddedSignInPage {
 		super(facade);
 	}
 	
+	public void clickCancel() {
+		facade.click("#cancelAct");
+	}
+	
 	public void setDisplayName(String value) {
 		facade.enterField("#displayName", value);
 	}

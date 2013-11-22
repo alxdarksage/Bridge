@@ -94,10 +94,17 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-    <!-- This is a last ditch thing. Controllers attempt to handle errors and stay 
-        on the current page. -->
     <error-page>
+        <!-- Doesn't seem like this catches subclasses. -->
         <exception-type>java.lang.Throwable</exception-type>
+        <location>/error.html</location>
+    </error-page>
+    <error-page>
+        <exception-type>org.sagebionetworks.client.exceptions.SynapseException</exception-type>
+        <location>/error.html</location>
+    </error-page>
+    <error-page>
+        <exception-type>org.springframework.web.util.NestedServletException</exception-type>
         <location>/error.html</location>
     </error-page>
     <error-page>

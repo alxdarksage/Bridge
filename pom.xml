@@ -28,7 +28,7 @@
 		<servlet.version>3.0</servlet.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<!-- <synapse.version>develop-SNAPSHOT</synapse.version> -->
-		<synapse.version>2013-11-19-20382fe-813</synapse.version>
+		<synapse.version>2013-11-22-e4ac206-823</synapse.version>
 		<tomcat.version>7.0.32</tomcat.version>
 		<wro4j.version>1.6.3</wro4j.version>
 	</properties>

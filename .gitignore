@@ -6,3 +6,4 @@ target
 .gwt
 .DS_Store
 phantomjsdriver.log
+ckeditor/

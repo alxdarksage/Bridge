@@ -23,8 +23,26 @@ h1, h2, h3, h4 {
 .topSpaced {
     margin-top: 2rem;
 }
-.editable {
-    border: 1px solid #aaa;
+.bottomSpaced {
+    margin-bottom: 2rem;
+}
+.checkbox-box {
+    height: 107px; 
+    overflow-y: scroll; 
+    border: 1px solid #aaa; 
+    padding: 0 1rem;
+}
+.list-group-item.active {
+    background-color: #69995D;
+    border-color: #69995D;
+}
+.list-group-item.active:hover {
+    background-color: rgb(118,172,105);
+    border-color: #69995D;
+}
+.community-actions {
+    margin-top: -1rem; 
+    margin-bottom: 1rem;
 }
 #profile-pane {
     padding: 1rem;

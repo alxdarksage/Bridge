@@ -8,6 +8,7 @@
         <s:button id="newCommunityAct" type="primary" label="New Community" action="/admin/communities/new.html"/>
         <s:column label="Name" field="name" link="/admin/communities/{id}.html"/>
         <s:column label="Description" field="description"/>
+        <s:column label="Created" field="createdOn"/>
         <s:button id="deleteAct" type="danger" label="Delete" action="delete"/>
     </s:table>
 </sage:admin>

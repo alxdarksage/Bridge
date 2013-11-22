@@ -41,5 +41,4 @@ public class ProfileForm {
 	public void setPhotoFile(MultipartFile photoFile) {
 		this.photoFile = photoFile;
 	}
-	
 }
