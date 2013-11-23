@@ -17,6 +17,7 @@
 		<gzip.filter>1.7</gzip.filter>
 		<hibernate-validator.version>5.0.1.Final</hibernate-validator.version>
 		<jackson.version>1.9.13</jackson.version>
+		<jsoup.version>1.7.3</jsoup.version>
 		<jsp.version>2.2</jsp.version>
 		<jsp-impl.version>2.2.1</jsp-impl.version>
 		<jstl.version>1.2</jstl.version>
@@ -130,7 +131,12 @@
 		    <groupId>commons-beanutils</groupId>
 		    <artifactId>commons-beanutils</artifactId>
 		    <version>${commons-beanutils.version}</version>
-		</dependency>        
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>${jsoup.version}</version>
+		</dependency>		
 		
 		<!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
 			the only other place the servlet API is provided is in Spring's portlet project, which we're 

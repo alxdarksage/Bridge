@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
@@ -80,6 +82,28 @@ public class CommunityController {
 		return model;
 	}
 	
+	@RequestMapping(value = "/{communityId}/edit", method = RequestMethod.POST)
+	public ModelAndView update(BridgeRequest request, @PathVariable("communityId") String communityId,
+			@ModelAttribute CommunityForm communityForm, BindingResult result, ModelAndView map)
+			throws SynapseException {
+		
+		BridgeClient client = request.getBridgeUser().getBridgeClient();
+		Community community = client.getCommunity(communityId);
+		map.setViewName("communities/edit");
+		map.addObject("community", community);
+
+		// There are no errors that can occur here, actually.
+		if (!result.hasErrors()) {
+			String sanitizedHTML = Jsoup.clean(communityForm.getDescription(), getCustomWhitelist());
+			community.setDescription(sanitizedHTML);
+			client.updateCommunity(community);
+
+			map.setViewName("redirect:/communities/" + community.getId() + ".html");
+			request.setNotification("CommunityUpdated");
+		}
+		return map;
+	}
+	
 	@RequestMapping(value = "/{communityId}/join", method = RequestMethod.GET)
 	public String join(BridgeRequest request, @PathVariable("communityId") String communityId) throws Exception {
 		// We could verify that the user hasn't already joined, but why.
@@ -91,25 +115,9 @@ public class CommunityController {
 		return "redirect:/communities/"+communityId+".html";
 	}
 	
-	
-	@RequestMapping(value = "/{communityId}/edit", method = RequestMethod.POST)
-	public ModelAndView save(BridgeRequest request, @PathVariable("communityId") String communityId,
-			@ModelAttribute CommunityForm communityForm, BindingResult result, ModelAndView map)
-			throws SynapseException {
-		
-		Community community = bridgeClient.getCommunity(communityId);
-		map.setViewName("communities/edit");
-		map.addObject("community", community);
-
-		// There are no errors that can occur here, actually.
-		if (!result.hasErrors()) {
-			community.setDescription(communityForm.getDescription());
-			bridgeClient.updateCommunity(community);
-			
-			map.setViewName("redirect:/communities/" + community.getId() + ".html");
-			request.setNotification("CommunityUpdated");
-		}
-		return map;
+	private Whitelist getCustomWhitelist() {
+		return Whitelist.relaxed()
+			.addAttributes(":all", "class", "style", "width");
 	}
 
 }
