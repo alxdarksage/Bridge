@@ -62,7 +62,7 @@ public class ITSignUp extends WebDriverBase {
 		driver.waitForPortalPage();
 		
 		CommunityPage communityPage = driver.getCommunityPage();
-		communityPage.getEmbeddedSignIn().login(email, "testdude");
+		communityPage.getEmbeddedSignIn().signIn(email, "testdude");
 		
 		TermsOfUsePage touPage = driver.waitForTOUPage();
 
@@ -70,7 +70,7 @@ public class ITSignUp extends WebDriverBase {
 		touPage.cancel();
 		
 		communityPage = driver.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().login(email, "testdude");
+		communityPage.getEmbeddedSignIn().signIn(email, "testdude");
 		
 		// submit without accepting terms of use
 		touPage = driver.waitForTOUPage();

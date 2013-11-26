@@ -17,8 +17,8 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
-		//_driver = createPhantomJSDriver();
-		_driver = createFirefoxDriver();
+		_driver = createPhantomJSDriver();
+		//_driver = createFirefoxDriver();
 		
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));

@@ -21,19 +21,19 @@ public class ITSignOut extends WebDriverBase {
 	@Test
 	public void signOutReturnsSignOutPage() {
 		CommunityPage communityPage = facade.getCommunityPage();
-		communityPage.getEmbeddedSignIn().login();
+		communityPage.getEmbeddedSignIn().signIn();
 		
-		communityPage.getEmbeddedSignIn().logout();
+		communityPage.getEmbeddedSignIn().signOut();
 		facade.waitForSignedOutPage();
 	}
 	
 	@Test
 	public void signOutCausesAuthExceptions() {
 		CommunityPage communityPage = facade.getCommunityPage();
-		communityPage.getEmbeddedSignIn().login();
+		communityPage.getEmbeddedSignIn().signIn();
 		
 		communityPage = facade.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().logout();
+		communityPage.getEmbeddedSignIn().signOut();
 		
 		facade.getProfilePage();
 		facade.waitForSignInPage();

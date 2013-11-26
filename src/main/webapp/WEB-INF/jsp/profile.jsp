@@ -31,10 +31,10 @@
 		                        <label>
 		                            <c:choose>
 		                                <c:when test="${community.selected}">
-		                                    <input type="checkbox" name="memberships" value="${community.id}" checked/>
+		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" checked="checked" >
 		                                </c:when>
 		                                <c:otherwise>
-		                                    <input type="checkbox" name="memberships" value="${community.id}" />                
+		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" >
 		                                </c:otherwise>
 		                            </c:choose>
 		                            ${community.displayName}

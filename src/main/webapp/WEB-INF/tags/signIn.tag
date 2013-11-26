@@ -12,7 +12,7 @@
                         <c:url var="editProfileUrl" value="/profile.html"/>
                         <a id="signOutButton" href="${signOutUrl}">
                             <spring:message code="SignOut"/>
-                        </a> <span class="div">&bull;</span> 
+                        </a> <span class="divider-element">&bull;</span> 
                         <a id="editProfileLink" href="${editProfileUrl}">
                             <spring:message code="EditProfile"/>
                         </a>

@@ -21,7 +21,7 @@ public class ITCommunityAdmin extends WebDriverBase {
 	public void createDriver() {
 		driver = initDriver();
 		SignInPage signInPage = driver.getSignInPage();
-		signInPage.login();
+		signInPage.signIn();
 	}
 
 	@Test
@@ -62,9 +62,9 @@ public class ITCommunityAdmin extends WebDriverBase {
 		
 		CommunityAdminPage communityPage = driver.waitForCommunityAdminPage();
 		communityPage.submit();
-		
+
 		communityPage = driver.waitForCommunityAdminPage();
-		communityPage.assertEmailError();
+		communityPage.assertNameError();
 	}
 	
 	@Test

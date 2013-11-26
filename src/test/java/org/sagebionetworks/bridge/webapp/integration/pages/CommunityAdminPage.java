@@ -16,7 +16,7 @@ public class CommunityAdminPage extends AdminPages {
 		facade.enterField("#description", value);
 	}
 	
-	public void assertEmailError() {
+	public void assertNameError() {
 		facade.assertErrorMessage("#name_errors", "A name is required");
 	}
 	

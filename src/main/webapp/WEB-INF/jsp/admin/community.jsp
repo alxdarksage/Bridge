@@ -1,9 +1,9 @@
 <%@ include file="../directives.jsp" %>
 <sage:admin code="AdminCommunity" active="Communities">
-    <h5>
+    <div class="sage-crumbs">
         <a href="<c:url value="/admin/index.html"/>">Admin Dashboard</a> &#187; 
         <a href="<c:url value="/admin/communities.html"/>">Communities</a> &#187;
-    </h5>
+    </div>
     <h3><spring:message code="${communityForm.formName}"/></h3>
     
     <sage:formErrors formName="communityForm"/>

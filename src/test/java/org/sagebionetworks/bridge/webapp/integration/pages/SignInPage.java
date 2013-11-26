@@ -11,11 +11,11 @@ public class SignInPage {
 		this.facade = facade;
 	}
 	
-	public void login() {
-		login("timpowers@timpowers.com", "password");
+	public void signIn() {
+		signIn("timpowers@timpowers.com", "password");
 	}
 	
-	public void login(String email, String password) {
+	public void signIn(String email, String password) {
 		if (email != null) {
 			facade.enterField("#email", email);	
 		}
@@ -25,7 +25,7 @@ public class SignInPage {
 		facade.submit("#signInForm");
 	}
 	
-	public void logout() {
+	public void signOut() {
 		facade.click("#signOutButton");
 	}
 	

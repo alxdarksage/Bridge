@@ -1,4 +1,4 @@
 <%@ include file="../directives.jsp" %>
 <sage:admin code="AdminDashboard" active="Home">
-    <h3>Administration</h3>
+    <div class="sage-crumbs">Administration</div>
 </sage:admin>

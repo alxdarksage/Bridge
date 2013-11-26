@@ -32,55 +32,12 @@ h1, h2, h3, h4 {
     border: 1px solid #aaa; 
     padding: 0 1rem;
 }
-.list-group-item.active {
-    background-color: #69995D;
-    border-color: #69995D;
-}
-.list-group-item.active:hover {
-    background-color: rgb(118,172,105);
-    border-color: #69995D;
-}
-.community-actions {
-    margin-top: -1rem; 
-    margin-bottom: 1rem;
-}
-#profile-pane {
-    padding: 1rem;
-    overflow: hidden;
-    
-    img {
-       width: 5.6rem;
-       height: 5.6rem;
-       margin-right: 1rem;
-    }
-    .userName {
-        font-size: 16px;
-        margin-bottom: .6rem;
-    }
-}
-.div {
+.divider-element {
     color: #aaa;
 }
 #notice {
     display: none;
 }
-.breadcrumb {
-    font-size: 13px;
-    font-weight: normal;
-    margin: 0;
-}
-.list-group-item {
-    padding: 0;
-    
-    &.active {
-        padding: 10px 15px;
-    }
-    a {
-        display: block;
-        padding: 10px 15px;
-    }
-}
-
 @media (max-width: 600px) {
 	.main-pane {
 	    padding-right: 15px;

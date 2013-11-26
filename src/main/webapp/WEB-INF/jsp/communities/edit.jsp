@@ -12,14 +12,13 @@
         </div>
     </form:form>
     <script src="/webapp/assets/ckeditor/ckeditor.js"></script>
-    
 <script>
 CKEDITOR.replace( 'description', {
     toolbarGroups: [
         { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
         { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
         { name: 'insert' },
-        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align'/*, 'bidi'*/ ] },
+        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align' ] },
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
         { name: 'styles' },
         { name: 'colors' },
@@ -27,7 +26,5 @@ CKEDITOR.replace( 'description', {
         { name: 'source', groups: ['mode'] }
     ]
 });
-
-
 </script>
 </sage:community>
