@@ -10,7 +10,7 @@
                 </a>
             </c:if>
 	        <c:if test="${editable}">
-	            <c:url var="editUrl" value="/communities/${community.id}/edit.html"/>
+	            <c:url var="editUrl" value="/communities/${community.id}/wikis/${community.welcomePageWikiId}/edit.html"/>
 	            <a href="${editUrl}" class="btn btn-sm btn-block btn-default topSpaced">
 	                <spring:message code="EditPage"/>
 	            </a>

@@ -126,6 +126,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	String sessionToken; // when this isn't separate from UserSessionData.getProfile().getSession() there are errors.
 	Map<String, UserSessionData> users = new HashMap<>();
 	Map<String,AccessControlList> acls = new HashMap<>();
+	Map<String, V2WikiPage> wikiPages = new HashMap<>();
 	Map<String, Team> teams = new HashMap<>();
 	Map<Team,Set<String>> memberships = new HashMap<>();
 	Set<String> agreedTOUs = new HashSet<>();
@@ -179,6 +180,12 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		community.setModifiedBy(user.getProfile().getEmail());
 		community.setModifiedOn(new Date());
 		
+		V2WikiPage page = createWikiPage(user);
+		community.setWelcomePageWikiId(page.getId());
+		
+		page = createWikiPage(user);
+		community.setIndexPageWikiId(page.getId());
+		
 		communities.put(community.getId(), community);
 		
 		Team team = new Team();
@@ -191,6 +198,15 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		// Set user as an editor for this community
 		makeAccessControlList(user.getProfile().getOwnerId(), community.getId(), ACCESS_TYPE.UPDATE, ACCESS_TYPE.CHANGE_PERMISSIONS);
 		return community;
+	}
+
+	private V2WikiPage createWikiPage(UserSessionData user) {
+		V2WikiPage page = new V2WikiPage();
+		page.setCreatedBy(user.getProfile().getEmail());
+		page.setCreatedOn(new Date());
+		page.setId(newId());
+		wikiPages.put(page.getId(), page);
+		return page;
 	}
 	
 	private void makeAccessControlList(String userOwnerId, String entityId, ACCESS_TYPE... types) {
@@ -498,7 +514,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public WikiPage getWikiPage(WikiPageKey properKey) throws JSONObjectAdapterException, SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -1007,8 +1022,11 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public V2WikiPage getV2WikiPage(WikiPageKey key) throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
+		String realId = key.getWikiPageId();
+		if (!wikiPages.containsKey(realId)) {
+			throw new SynapseException("Wiki page not found");
+		}
+		return wikiPages.get(realId);
 	}
 
 	@Override

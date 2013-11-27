@@ -4,11 +4,16 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
+import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.ResourceAccess;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
+import org.sagebionetworks.repo.model.dao.WikiPageKey;
+import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
+import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -124,6 +129,12 @@ public class ClientUtils {
 	
 	public static UserEntityPermissions getPermits(BridgeRequest request, String id) throws SynapseException {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
+	}
+	
+	public static V2WikiPage getWikiPage(BridgeRequest request, String communityId, String wikiId) throws JSONObjectAdapterException, SynapseException {
+		SynapseClient client = request.getBridgeUser().getSynapseClient();
+		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
+		return client.getV2WikiPage(key);
 	}
 	
 	public static void dumpErrors(Logger logger, BindingResult result) {
