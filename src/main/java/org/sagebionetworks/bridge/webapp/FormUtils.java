@@ -6,7 +6,6 @@ import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
-import org.sagebionetworks.repo.model.wiki.WikiPage;
 
 /**
  * Manual copying of data from object to object. Not always wise to 

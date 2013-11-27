@@ -64,6 +64,7 @@ import org.sagebionetworks.repo.model.TeamMember;
 import org.sagebionetworks.repo.model.TeamMembershipStatus;
 import org.sagebionetworks.repo.model.TrashedEntity;
 import org.sagebionetworks.repo.model.UserGroup;
+import org.sagebionetworks.repo.model.UserGroupHeader;
 import org.sagebionetworks.repo.model.UserGroupHeaderResponsePage;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
@@ -264,24 +265,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public Community createCommunity(Community community) throws SynapseException {
 		return createCommunity(newId(), community.getName(), community.getDescription(), currentUserData);
-	}
-
-	@Override
-	public List<Community> getCommunities() throws SynapseException {
-		return new ArrayList<Community>(communities.values());
-	}
-
-	@Override
-	public List<Community> getCommunitiesByMember() throws SynapseException {
-		String userId = currentUserData.getProfile().getOwnerId();
-		List<Community> comms = new ArrayList<>();
-		for (Community community : communities.values()) {
-			Team team = teams.get(community.getTeamId());
-			if (memberships.get(team).contains( userId )) {
-				comms.add(community);
-			}
-		}
-		return comms;		
 	}
 
 	@Override
@@ -1957,6 +1940,79 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		BridgeVersionInfo info = new BridgeVersionInfo();
 		info.setVersion("1.0");
 		return info;
+	}
+
+	// Get communities FOR THIS USER ALONE.
+	@Override
+	public PaginatedResults<Community> getCommunities(long limit, long offset) throws SynapseException {
+		List<Community> memberCommunities = new ArrayList<>();
+		if (currentUserData != null && currentUserData.getProfile() != null) {
+			for (Community community : communities.values()) {
+				Team team = teams.get(community.getId());
+				Set<String> members = memberships.get(team);
+				if (members != null && members.contains(currentUserData.getProfile().getOwnerId())) {
+					memberCommunities.add(community);
+				}
+			}
+		}
+		PaginatedResults<Community> results = new PaginatedResults<>();
+		results.setResults(memberCommunities);
+		results.setTotalNumberOfResults(results.getResults().size());
+		return results;
+	}
+
+	@Override
+	public PaginatedResults<Community> getAllCommunities(long limit, long offset) throws SynapseException {
+		PaginatedResults<Community> results = new PaginatedResults<>();
+		results.setResults(paginate(new ArrayList<Community>(communities.values()), limit, offset));
+		results.setTotalNumberOfResults(results.getResults().size());
+		return results;
+	}
+
+	@Override
+	public PaginatedResults<UserGroupHeader> getCommunityMembers(String communityId, long limit, long offset)
+			throws SynapseException {
+		Community community = communities.get(communityId);
+		Team team = teams.get(community.getId());
+		Set<String> members = memberships.get(team);
+		
+		List<UserGroupHeader> headers = new ArrayList<>();
+		for (String memberId : members) {
+			UserProfile profile = users.get(memberId).getProfile();
+			
+			UserGroupHeader header = new UserGroupHeader();
+			header.setDisplayName(profile.getDisplayName());
+			header.setEmail(profile.getEmail());
+			header.setFirstName(profile.getFirstName());
+			header.setIsIndividual(true);
+			header.setLastName(profile.getLastName());
+			header.setOwnerId(profile.getOwnerId());
+			headers.add(header);
+		}
+		PaginatedResults<UserGroupHeader> results = new PaginatedResults<>();
+		results.setResults(paginate(headers, limit, offset));
+		results.setTotalNumberOfResults(results.getResults().size());
+		return results;
+	}
+	
+	@Override
+	public void addCommunityAdmin(String communityId, String memberName) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public void removeCommunityAdmin(String communityId, String memberName) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+	
+	private <T> List<T> paginate(List<T> list, long limit, long offset) {
+		int start = (int)offset;
+		int end = (int)limit;
+		int lastIndex = list.size()-1;
+		start = (start > lastIndex) ? lastIndex : (start < 0) ? 0 : start;
+		end = (end > lastIndex) ? lastIndex : (end < 0) ? 0 : end;
+		logger.info("Retrieving from " + start + " to " + (end+1) + " of " + list.size() + " items.");
+		return list.subList(start, end+1);
 	}
 
 }

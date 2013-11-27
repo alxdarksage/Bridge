@@ -4,9 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.ProfilePage;
-import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.SignOutPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class ITSignOut extends WebDriverBase {

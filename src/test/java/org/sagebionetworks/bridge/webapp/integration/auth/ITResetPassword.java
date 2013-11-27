@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.PortalPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.RequestResetPasswordPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.ResetPasswordPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;

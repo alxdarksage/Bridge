@@ -3,11 +3,7 @@ package org.sagebionetworks.bridge.webapp.integration.communities;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
-import org.sagebionetworks.bridge.webapp.integration.pages.CommunitiesAdminPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.CommunityAdminPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.ProfilePage;
-import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class ITCommunity extends WebDriverBase {

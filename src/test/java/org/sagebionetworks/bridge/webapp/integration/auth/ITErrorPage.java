@@ -1,11 +1,8 @@
 package org.sagebionetworks.bridge.webapp.integration.auth;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.ErrorPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;

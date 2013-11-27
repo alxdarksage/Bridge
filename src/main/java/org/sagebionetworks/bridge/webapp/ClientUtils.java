@@ -38,6 +38,8 @@ public class ClientUtils {
 		
 	}
 	
+	public static final long LIMIT = 1000L;
+	
 	/**
 	 * By the time exceptions get to the client across the REST interface, they are in 
 	 * very sorry shape. They no longer reflect the type of the original exception, and 
