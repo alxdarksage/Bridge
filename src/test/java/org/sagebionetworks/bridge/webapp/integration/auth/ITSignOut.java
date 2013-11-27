@@ -4,9 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.ProfilePage;
-import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.SignOutPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class ITSignOut extends WebDriverBase {
@@ -21,19 +18,19 @@ public class ITSignOut extends WebDriverBase {
 	@Test
 	public void signOutReturnsSignOutPage() {
 		CommunityPage communityPage = facade.getCommunityPage();
-		communityPage.getEmbeddedSignIn().login();
+		communityPage.getEmbeddedSignIn().signIn();
 		
-		communityPage.getEmbeddedSignIn().logout();
+		communityPage.getEmbeddedSignIn().signOut();
 		facade.waitForSignedOutPage();
 	}
 	
 	@Test
 	public void signOutCausesAuthExceptions() {
 		CommunityPage communityPage = facade.getCommunityPage();
-		communityPage.getEmbeddedSignIn().login();
+		communityPage.getEmbeddedSignIn().signIn();
 		
 		communityPage = facade.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().logout();
+		communityPage.getEmbeddedSignIn().signOut();
 		
 		facade.getProfilePage();
 		facade.waitForSignInPage();

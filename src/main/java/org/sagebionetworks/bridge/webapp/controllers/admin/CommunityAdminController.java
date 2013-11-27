@@ -1,31 +1,21 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
-import org.sagebionetworks.bridge.webapp.forms.CheckboxItem;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
-import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.ACCESS_TYPE;
-import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.PaginatedResults;
-import org.sagebionetworks.repo.model.ResourceAccess;
-import org.sagebionetworks.repo.model.Team;
-import org.sagebionetworks.repo.model.TeamMember;
-import org.sagebionetworks.repo.model.UserGroupHeader;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -61,7 +51,8 @@ public class CommunityAdminController {
 		ModelAndView map = new ModelAndView("admin/communities");
 		
 		List<Community> communities = new ArrayList<>();
-		for (Community community : request.getBridgeUser().getBridgeClient().getCommunities()) {
+		PaginatedResults<Community> results = request.getBridgeUser().getBridgeClient().getAllCommunities(ClientUtils.LIMIT, 0);
+		for (Community community : results.getResults()) {
 			UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
 			if (permits.getCanEdit()) {
 				communities.add(community);

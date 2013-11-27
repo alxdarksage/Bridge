@@ -12,6 +12,7 @@
 		<css>/assets/bootstrap/css/bootstrap.css</css>
 		<css>/assets/humane/original.css</css>
 		<css>/assets/bridge/css/main.css</css>
+		<css>/assets/bridge/css/navigation.less</css>
         <css>/assets/bridge/css/errors.less</css>
 		<css>/assets/bridge/css/contentPane.less</css>
 		<css>/assets/bridge/css/header.less</css>

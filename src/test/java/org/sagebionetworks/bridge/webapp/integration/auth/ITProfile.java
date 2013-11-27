@@ -19,7 +19,7 @@ public class ITProfile extends WebDriverBase {
 	@Test
 	public void profilePageRedirectsAfterSave() {
 		SignInPage page = driver.getSignInPage();
-		page.login();
+		page.signIn();
 		
 		driver.getCommunityPage();
 		
@@ -33,7 +33,7 @@ public class ITProfile extends WebDriverBase {
 	@Test
 	public void profilePageRedirectsAfterCancel() {
 		SignInPage page = driver.getSignInPage();
-		page.login();
+		page.signIn();
 		
 		driver.getCommunityPage();
 		
