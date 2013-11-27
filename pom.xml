@@ -39,9 +39,18 @@
 		<repository>
 			<id>sagebionetworks-releases-local</id>
 			<name>sagebionetworks-releases-local</name>
-			<url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local
-			</url>
+			<url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/libs-releases-local</url>
 		</repository>
+		<repository>
+			<id>sagebionetworks-ext</id>
+			<name>sagebionetworks-releases-ext</name>
+			<url>http://sagebionetworks.artifactoryonline.com/sagebionetworks/ext-releases-local</url>
+		</repository>
+		<repository>
+            <id>apache-repo-releases</id>
+			<name>apache-releases</name>
+			<url>https://repository.apache.org/content/repositories/releases/</url>
+        </repository>		
 		<repository>
 			<id>sun-maven-repository</id>
 			<url>http://download.java.net/maven/2/</url>
