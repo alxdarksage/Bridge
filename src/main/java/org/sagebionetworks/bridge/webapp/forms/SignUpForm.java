@@ -2,7 +2,6 @@ package org.sagebionetworks.bridge.webapp.forms;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.sagebionetworks.repo.model.auth.NewUser;
 
 public class SignUpForm {
 

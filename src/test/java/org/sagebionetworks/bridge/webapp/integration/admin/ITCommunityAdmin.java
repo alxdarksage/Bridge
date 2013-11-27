@@ -3,9 +3,6 @@ package org.sagebionetworks.bridge.webapp.integration.admin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.AdminPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunitiesAdminPage;
@@ -21,7 +18,7 @@ public class ITCommunityAdmin extends WebDriverBase {
 	public void createDriver() {
 		driver = initDriver();
 		SignInPage signInPage = driver.getSignInPage();
-		signInPage.login();
+		signInPage.signIn();
 	}
 
 	@Test
@@ -62,9 +59,9 @@ public class ITCommunityAdmin extends WebDriverBase {
 		
 		CommunityAdminPage communityPage = driver.waitForCommunityAdminPage();
 		communityPage.submit();
-		
+
 		communityPage = driver.waitForCommunityAdminPage();
-		communityPage.assertEmailError();
+		communityPage.assertNameError();
 	}
 	
 	@Test

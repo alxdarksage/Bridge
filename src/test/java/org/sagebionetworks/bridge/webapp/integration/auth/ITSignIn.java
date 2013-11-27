@@ -27,7 +27,7 @@ public class ITSignIn extends WebDriverBase {
 	@Test
 	public void dedicatedSignInFormRejectsInvalidEmailAddress() {
 		SignInPage page = driver.getSignInPage();
-		page.login("timpowers", null);
+		page.signIn("timpowers", null);
 		page.assertEmailError();
 		page.assertPasswordError();
 	}
@@ -35,7 +35,7 @@ public class ITSignIn extends WebDriverBase {
 	@Test
 	public void dedicatedSignInFormRejectsUnregisteredUser() {
 		SignInPage page = driver.getSignInPage();
-		page.login("dudeski@dudeski.com","password");
+		page.signIn("dudeski@dudeski.com","password");
 		page.assertGlobalError();
 	}
 	
@@ -44,7 +44,7 @@ public class ITSignIn extends WebDriverBase {
 		driver.getCommunityPage();
 		
 		SignInPage page = driver.getSignInPage();
-		page.login("timpowers@timpowers.com", "password");
+		page.signIn("timpowers@timpowers.com", "password");
 		driver.waitForCommunityPage();
 		
 		// Once logged in, you are always redirected from this page.
@@ -56,7 +56,7 @@ public class ITSignIn extends WebDriverBase {
 	public void youAreRedirectedToLogInIfYouAreNot() {
 		driver.get("/profile.html");
 		SignInPage page = driver.waitForSignInPage();
-		page.login("timpowers@timpowers.com","password");
+		page.signIn("timpowers@timpowers.com","password");
 		driver.waitForPortalPage();
 	}
 	
@@ -79,7 +79,7 @@ public class ITSignIn extends WebDriverBase {
 		driver.get("/communities/1.html");
 		
 		SignInPage page = driver.getSignInPage();
-		page.login("octaviabutler@octaviabutler.com", "password");
+		page.signIn("octaviabutler@octaviabutler.com", "password");
 		
 		// Octavia has not signed the TOU.
 		driver.waitForTOUPage();
@@ -100,7 +100,7 @@ public class ITSignIn extends WebDriverBase {
 	public void embeddedSignInFormRejectsInvalidEmailAddress() {
 		CommunityPage cpage = driver.getCommunityPage();
 		
-		cpage.getEmbeddedSignIn().login("timpowers", null);
+		cpage.getEmbeddedSignIn().signIn("timpowers", null);
 		
 		SignInPage spage = driver.waitForSignInPage();
 		spage.assertEmailError();
@@ -111,7 +111,7 @@ public class ITSignIn extends WebDriverBase {
 	public void embeddedSignInFormRejectsUnregisteredUser() {
 		CommunityPage cpage = driver.getCommunityPage();
 		
-		cpage.getEmbeddedSignIn().login("dudeski@dudeski.com", "password");
+		cpage.getEmbeddedSignIn().signIn("dudeski@dudeski.com", "password");
 		
 		SignInPage spage = driver.waitForSignInPage();
 		spage.assertGlobalError();
@@ -120,7 +120,7 @@ public class ITSignIn extends WebDriverBase {
 	@Test
 	public void embeddedSignInFormRedirectsCorrectly() {
 		CommunityPage cpage = driver.getCommunityPage();
-		cpage.getEmbeddedSignIn().login("timpowers@timpowers.com", "password");
+		cpage.getEmbeddedSignIn().signIn("timpowers@timpowers.com", "password");
 		
 		driver.waitForCommunityPage();
 	}
@@ -144,7 +144,7 @@ public class ITSignIn extends WebDriverBase {
 		CommunityPage cpage = driver.getCommunityPage();
 		
 		// Octavia will never sign the TOU (in the stub client).
-		cpage.getEmbeddedSignIn().login("octaviabutler@octaviabutler.com", "password");
+		cpage.getEmbeddedSignIn().signIn("octaviabutler@octaviabutler.com", "password");
 		driver.waitForTOUPage();
 	}
 	

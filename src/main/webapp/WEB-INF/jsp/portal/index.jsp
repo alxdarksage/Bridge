@@ -17,7 +17,7 @@
             </p>
         </div>
         <div class="col-md-3">
-            <ul class="list-group">
+            <ul class="list-group" id="communities">
                 <c:forEach var="cty" items="${communities}">
                     <li class="list-group-item"><a href='<c:url value="/communities/${cty.id}.html"/>'>${cty.name}</a></li>
                 </c:forEach>

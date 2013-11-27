@@ -1,8 +1,8 @@
 <%@ include file="../directives.jsp" %>
 <sage:admin code="AdminCommunities" active="Communities">
-    <h5>
+    <div class="sage-crumbs">
         <a href="index.html">Admin Dashboard</a> &#187; 
-    </h5>
+    </div>
     <h3>Communities</h3>
     <s:table formId="communityForm" action="/admin/communities.html" itemId="id" items="${communities}" caption="Communities">
         <s:button id="newCommunityAct" type="primary" label="New Community" action="/admin/communities/new.html"/>

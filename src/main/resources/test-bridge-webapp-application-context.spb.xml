@@ -14,13 +14,10 @@
     
     <!-- These are *definitely* not singletons in the production configuration of the app, be aware of that. -->
     
-    <bean id="synapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="singleton">
-    </bean>
-
-    <bean id="privateSynapseClient" class="org.sagebionetworks.bridge.webapp.SynapseClientStub" scope="singleton">
-    </bean>
+    <bean id="sageServices" class="org.sagebionetworks.bridge.webapp.SageServicesStub" scope="singleton"/>
     
-    <bean id="bridgeClient" class="org.sagebionetworks.bridge.webapp.BridgeClientStub" scope="singleton">
-        <constructor-arg ref="synapseClient"/>
-    </bean>
+    <alias name="sageServices" alias="bridgeClient"/>
+    <alias name="sageServices" alias="privateSynapseClient"/>
+    <alias name="sageServices" alias="synapseClient"/>
+    
 </beans>
