@@ -11,6 +11,7 @@ import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.forms.TermsOfUseForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.repo.model.UserSessionData;
+import org.sagebionetworks.repo.model.auth.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -50,12 +51,14 @@ public class TermsOfUseController extends AuthenticateBaseController {
 				Cookie cookie = new Cookie(OpenIdController.ACCEPTS_TERMS_OF_USE_COOKIE_NAME, "true");
 				cookie.setMaxAge(OpenIdController.COOKIE_MAX_AGE_SECONDS);
 				response.addCookie(cookie);
-				// They've accepted the TOU, do the OAuth thing again with that permission set. 
+				
 				return "redirect:"+request.getOauthRedirect();
 				
 			} else if (signInForm != null) {
 				
-				UserSessionData userSessionData = synapseClient.login(signInForm.getEmail(), signInForm.getPassword(), true);
+				Session session = synapseClient.login(signInForm.getEmail(), signInForm.getPassword());
+				synapseClient.signTermsOfUse(session.getSessionToken(), true);
+				UserSessionData userSessionData = synapseClient.getUserSessionData();
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
 				logger.info("User #{} signed in.", user.getOwnerId());

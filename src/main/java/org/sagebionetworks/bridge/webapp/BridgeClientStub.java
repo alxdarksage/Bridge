@@ -18,7 +18,10 @@ import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
+import org.sagebionetworks.repo.model.EntityHeader;
 import org.sagebionetworks.repo.model.ResourceAccess;
+import org.sagebionetworks.repo.model.Team;
+import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.web.NotFoundException;
 
 import com.google.common.collect.Sets;
@@ -47,6 +50,11 @@ public class BridgeClientStub implements BridgeClient {
 		community.setCreatedOn(new Date());
 		community.setModifiedBy("timpowers@timpowers.com");
 		community.setModifiedOn(new Date());
+		
+		Team team = new Team();
+		team.setId("synTeam");
+		community.setTeamId(team.getId());
+		
 		communities.put(community.getId(), community);
 		
 		// Give Mr. Powers the ability to edit this community.
@@ -172,4 +180,17 @@ public class BridgeClientStub implements BridgeClient {
 	public void leaveCommunity(String communityId) throws SynapseException {
 	}
 
+	@Override
+	public List<Community> getCommunitiesByMember() throws SynapseException {
+		UserProfile profile = synapseClientStub.currentUserData.getProfile();
+		List<Community> comms = new ArrayList<>();
+		for (Community community : communities.values()) {
+			// totally won't work. Need user o 
+			if (community.getCreatedBy().equals(profile.getOwnerId())) {
+				comms.add(community);	
+			}
+		}
+		return comms;
+	}
+	
 }

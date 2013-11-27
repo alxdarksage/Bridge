@@ -53,9 +53,8 @@ public class ErrorController {
 	}
 	
 	private void processThrowable(BridgeRequest request, Throwable throwable, ModelAndView map) {
-		
 		throwable = ClientUtils.unwrapThrowable(throwable);
-		logger.error(throwable);
+		logger.error("MESSAGE STRING: " + throwable.getMessage());
 		
 		if (throwable instanceof UnauthorizedException) {
 			map.setViewName("redirect:/signIn.html");

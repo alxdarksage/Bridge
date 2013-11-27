@@ -91,17 +91,6 @@ public class BridgeUser {
 		return bridgeClient;
 	}
 
-	public String getStartURL() {
-		// TODO: This will eventually use the communityId value that's the
-		// default for this user.
-		if (this == PUBLIC_USER) {
-			return "/portal/index.html";
-		} else {
-			// # TODO: This should be defined when creating a user as a preference.
-			return "/communities/1.html?static=true";
-		}
-	}
-
 	public void cleanup() {
 		this.synapseClient = null;
 		this.bridgeClient = null;

@@ -54,11 +54,21 @@
         </attribute>
         <attribute>
             <name>field</name>
-            <required>true</required>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>static</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>link</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>icon</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

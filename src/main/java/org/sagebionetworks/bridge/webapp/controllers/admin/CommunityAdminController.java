@@ -1,18 +1,32 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
-import org.sagebionetworks.bridge.webapp.BridgeClientStub;
+import org.sagebionetworks.bridge.webapp.ClientUtils;
+import org.sagebionetworks.bridge.webapp.FormUtils;
+import org.sagebionetworks.bridge.webapp.forms.CheckboxItem;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
+import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.ACCESS_TYPE;
+import org.sagebionetworks.repo.model.AccessControlList;
+import org.sagebionetworks.repo.model.PaginatedResults;
+import org.sagebionetworks.repo.model.ResourceAccess;
+import org.sagebionetworks.repo.model.Team;
+import org.sagebionetworks.repo.model.TeamMember;
+import org.sagebionetworks.repo.model.UserGroupHeader;
+import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,13 +36,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * /admin/communities/1.html GET OR POST TO UPDATE
- * /admin/communities/new.html GET OR POST TO CREATE
- * 
- * @author alxdark
- *
- */
+// TODO: So this is getting to be a pretty fat controller. It seems silly to create an 
+// application facade over the client over the rest service over the service object 
+// over the manager (over the DAO), so I'm leaving it for now.
 
 @Controller
 @RequestMapping("/admin")
@@ -49,7 +59,14 @@ public class CommunityAdminController {
 	@RequestMapping(value = "/communities", method = RequestMethod.GET)
 	public ModelAndView viewCommunities(BridgeRequest request) throws SynapseException {
 		ModelAndView map = new ModelAndView("admin/communities");
-		List<Community> communities = request.getBridgeUser().getBridgeClient().getCommunities();
+		
+		List<Community> communities = new ArrayList<>();
+		for (Community community : request.getBridgeUser().getBridgeClient().getCommunities()) {
+			UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
+			if (permits.getCanEdit()) {
+				communities.add(community);
+			}
+		}
 		map.addObject("communities", communities);
 		return map;
 	}
@@ -85,56 +102,79 @@ public class CommunityAdminController {
 	
 	@RequestMapping(value = "/communities/new", method = RequestMethod.POST)
 	public ModelAndView createCommunity(BridgeRequest request, @ModelAttribute @Valid CommunityForm communityForm,
-			BindingResult result, ModelAndView map) throws Exception {
-		if (result.hasErrors()) {
-			map.setViewName("admin/community");
-		} else {
-			BridgeClient client = request.getBridgeUser().getBridgeClient();
-			Community community = valuesToCommunity(new Community(), communityForm);
-			client.createCommunity(community);
-			map.setViewName("redirect:/admin/communities.html");
-			request.setNotification("CommunityCreated");
+			BindingResult result, ModelAndView map) throws SynapseException {
+		map.setViewName("admin/community");
+		if (!result.hasErrors()) {
+			try {
+				BridgeClient client = request.getBridgeUser().getBridgeClient();
+				Community community = FormUtils.valuesToCommunity(new Community(), communityForm);
+				client.createCommunity(community);
+				map.setViewName("redirect:/admin/communities.html");
+				request.setNotification("CommunityCreated");
+			} catch(SynapseException e) {
+				String message = ClientUtils.parseSynapseException(e, 500, "Invalid Entity name");
+				ClientUtils.fieldError(result, "communityForm", "name", message);
+			}
 		}
 		return map;
 	}
 	
 	@RequestMapping(value = "/communities/{communityId}", method = RequestMethod.GET)
-	public String viewCommunity(BridgeRequest request, @PathVariable String communityId, CommunityForm communityForm)
-			throws SynapseException {
+	public ModelAndView viewCommunity(BridgeRequest request, @PathVariable String communityId,
+			CommunityForm communityForm, ModelAndView map) throws SynapseException {
+		
 		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
-		valuesToCommunityForm(communityForm, community);
+		FormUtils.valuesToCommunityForm(communityForm, community);
 		communityForm.setId(community.getId());
-		return "admin/community";
+		/*
+		SynapseClient client = request.getBridgeUser().getSynapseClient();
+		AccessControlList acl = client.getACL(community.getId());
+		PaginatedResults<TeamMember> members = client.getTeamMembers(community.getTeamId(), null, 10000, 0);
+		
+		List<CheckboxItem> items = new ArrayList<>();
+		for (TeamMember member : members.getResults()) {
+			UserGroupHeader user = member.getMember();
+			CheckboxItem ci = new CheckboxItem(user.getDisplayName(), user.getOwnerId());
+			if (isUserAdmin(acl, user.getOwnerId())) {
+				ci.setSelected(true);
+			}
+			items.add(ci);
+		}
+		map.addObject("editors", items);
+		*/
+		map.setViewName("admin/community");
+		
+		return map;
 	}
+	
+	// TODO This should be in the CommunityManager
+	/*
+	private boolean isUserAdmin(AccessControlList acl, String userId) {
+		for (ResourceAccess ra : acl.getResourceAccess()) {
+			if (ra.getPrincipalId().toString().equals(userId) &&
+				ra.getAccessType().contains(ACCESS_TYPE.UPDATE)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	*/
 	
 	@RequestMapping(value = "/communities/{communityId}", method = RequestMethod.POST)
 	public ModelAndView updateCommunity(BridgeRequest request, @PathVariable String communityId,
-			@ModelAttribute @Valid CommunityForm communityForm, BindingResult result, ModelAndView map)
-			throws SynapseException {
+			@ModelAttribute @Valid CommunityForm communityForm, BindingResult result, ModelAndView map,
+			@RequestParam(value = "editors", required = false) List<String> editors) throws SynapseException {
 		
-		if (result.hasErrors()) {
-			map.setViewName("admin/community");
-		} else {
+		map.setViewName("admin/community");
+		if (!result.hasErrors()) {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
+			
 			Community community = client.getCommunity(communityId);
-			valuesToCommunity(community, communityForm);
+			FormUtils.valuesToCommunity(community, communityForm);
 			client.updateCommunity(community);
 			map.setViewName("redirect:/admin/communities.html");
 		}
 		return map;
-	}
-	
-	
-	public CommunityForm valuesToCommunityForm(CommunityForm communityForm, Community community) {
-		communityForm.setName(community.getName());
-		communityForm.setDescription(community.getDescription());
-		return communityForm;
-	}
-	
-	public Community valuesToCommunity(Community community, CommunityForm communityForm) {
-		community.setName(communityForm.getName());
-		community.setDescription(communityForm.getDescription());
-		return community;
 	}
 	
 }

@@ -125,22 +125,35 @@ public class OpenIdController extends AuthenticateBaseController {
 		String queryString = URLDecoder.decode(request.getQueryString(), "UTF-8");
 
 		// Send all the Open ID info to the repository services
-		Session session = privateSynapseClient.passThroughOpenIDParameters(queryString, acceptsTermsOfUse, true,
-				OriginatingClient.BRIDGE);
+		Session session = privateSynapseClient.passThroughOpenIDParameters(queryString, true, OriginatingClient.BRIDGE);
+		
+		if (session.getAcceptsTermsOfUse()) {
+			acceptsTermsOfUse = true;
+		}
 		
 		privateSynapseClient.setSessionToken(session.getSessionToken());
 		
 		String location = createRedirectForAuth(request, response, returnToURL, session.getSessionToken(), acceptsTermsOfUse);
-		try {
-
+		
+		privateSynapseClient.signTermsOfUse(session.getSessionToken(), acceptsTermsOfUse);
+		if (acceptsTermsOfUse) {
 			// Here we'd like to get the information necessary to create the user...
 			UserSessionData userSessionData = privateSynapseClient.getUserSessionData();
 			BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 			request.setBridgeUser(user);
-			
+		} else {
+			return "redirect:"+"/termsOfUse.html?oauth=true";
+		}
+		/*
+		try {
+			// Here we'd like to get the information necessary to create the user...
+			UserSessionData userSessionData = privateSynapseClient.getUserSessionData();
+			BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
+			request.setBridgeUser(user);
 		} catch (SynapseForbiddenException | SynapseUnauthorizedException | SynapseTermsOfUseException e) {
 			return "redirect:"+"/termsOfUse.html?oauth=true";
 		}
+		*/
 		return "redirect:"+location;
 	}
 

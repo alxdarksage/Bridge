@@ -21,6 +21,8 @@ public class ITProfile extends WebDriverBase {
 		SignInPage page = driver.getSignInPage();
 		page.login();
 		
+		driver.getCommunityPage();
+		
 		ProfilePage ppage = driver.getProfilePage();
 		ppage.submit();
 		
@@ -28,4 +30,16 @@ public class ITProfile extends WebDriverBase {
 		driver.assertNotice("Profile updated");
 	}
 	
+	@Test
+	public void profilePageRedirectsAfterCancel() {
+		SignInPage page = driver.getSignInPage();
+		page.login();
+		
+		driver.getCommunityPage();
+		
+		ProfilePage ppage = driver.getProfilePage();
+		ppage.clickCancel();
+		
+		driver.waitForCommunityPage();
+	}
 }

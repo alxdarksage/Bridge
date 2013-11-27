@@ -1,14 +1,18 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -17,6 +21,7 @@ import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
+import org.sagebionetworks.repo.model.auth.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,6 +42,8 @@ public class SignInControllerTest {
 	private SignInController controller;
 
 	private UserSessionData userSessionData;
+	
+	private Session session;
 
 	SignInForm form;
 	BridgeRequest request;
@@ -47,8 +54,13 @@ public class SignInControllerTest {
 		synapseClient = Mockito.mock(SynapseClientImpl.class);
 		controller.setSynapseClient(synapseClient);
 		
+		session = new Session();
+		session.setSessionToken("AAA");
+		session.setAcceptsTermsOfUse(true);
+		
 		userSessionData = new UserSessionData();
 		userSessionData.setProfile(new UserProfile());
+		userSessionData.setSession(session);
 
 		form = createSignInForm();
 
@@ -67,14 +79,19 @@ public class SignInControllerTest {
 
 	@Test
 	public void testSuccessfulLogin() throws Exception {
-		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenReturn(userSessionData);
+		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenReturn(session);
+		when(synapseClient.getUserSessionData()).thenReturn(userSessionData);
 
 		String result = controller.post(request, form, binding);
+		
+		Logger logger = LogManager.getLogger(SignInControllerTest.class.getName());
+		ClientUtils.dumpErrors(logger, binding);
 		
 		assertFalse("No errors", binding.hasGlobalErrors());
 		assertEquals("Redirect to origin", "redirect:/portal/index.html", result);
 		assertTrue("User was stored in session", request.getBridgeUser() != null);
 		assertTrue("User is not public user", request.getBridgeUser() != BridgeUser.PUBLIC_USER);
+		assertEquals("User assigned session token", "AAA", request.getBridgeUser().getSessionToken());
 	}
 
 	@Test

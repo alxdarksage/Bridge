@@ -11,11 +11,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
+		<commons-beanutils.version>1.8.3</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<commons-io.version>2.4</commons-io.version>
 		<gzip.filter>1.7</gzip.filter>
 		<hibernate-validator.version>5.0.1.Final</hibernate-validator.version>
 		<jackson.version>1.9.13</jackson.version>
+		<jsoup.version>1.7.3</jsoup.version>
 		<jsp.version>2.2</jsp.version>
 		<jsp-impl.version>2.2.1</jsp-impl.version>
 		<jstl.version>1.2</jstl.version>
@@ -27,8 +29,8 @@
 		<selenium.version>2.34.0</selenium.version>
 		<servlet.version>3.0</servlet.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
-		<!-- <synapse.version>develop-SNAPSHOT</synapse.version> -->
-		<synapse.version>2013-11-19-20382fe-813</synapse.version>
+		<synapse.version>develop-SNAPSHOT</synapse.version>
+		<!-- <synapse.version>2013-11-22-e4ac206-823</synapse.version> -->
 		<tomcat.version>7.0.32</tomcat.version>
 		<wro4j.version>1.6.3</wro4j.version>
 	</properties>
@@ -125,6 +127,16 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>	
+		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>${commons-beanutils.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>${jsoup.version}</version>
+		</dependency>		
 		
 		<!-- This concrete servlet implementation is required now to build and test (this doesn't seem correct), 
 			the only other place the servlet API is provided is in Spring's portlet project, which we're 

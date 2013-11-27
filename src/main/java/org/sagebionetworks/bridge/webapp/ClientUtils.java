@@ -3,10 +3,12 @@ package org.sagebionetworks.bridge.webapp;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.ResourceAccess;
+import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -42,24 +44,49 @@ public class ClientUtils {
 	 * Content-Type: application/json Request Content: org.apache.http.entity.StringEntity@5697454a 
 	 * Response Content: {"reason":"User 'test@test.com' already exists\n"}
 	 * 
-	 * We can parse out the 
+	 * Here's another example:
+	 * 
+	 * request content: {"concreteType":"org.sagebionetworks.bridge.model.Community","description":
+	 * "","name":"asdf / asdf"} exception content: Service Error(500):  FAILURE: Got HTTP 
+	 * status 500 for http://localhost:8080/services-repository-develop-SNAPSHOT/bridge/v1/community
+	 * 
+	 * We attempt to parse out the error code and message, however, not all messages follow this 
+	 * pattern. 
 	 *  
 	 * @param SynapseException exception
 	 */
 	public static ExceptionInfo parseSynapseException(SynapseException exception) {
-		String message = exception.getMessage();
-		if (message != null) {
-			message = message.split("\"reason\":\"")[1];
-			message = message.replace("\\n\"}", "");
+		String message = null;
+		int code = 500;
+		try {
+			message = exception.getMessage();
+			if (message != null) {
+				message = message.split("\"reason\":\"")[1];
+				message = message.split("\\\\n\"}")[0];
+			}
+		} catch(Throwable t) {
+			message = "Could not parse service message";
 		}
-		String code = exception.getMessage();
-		code = code.split(":")[0].replaceAll("\\D", "");
-		return new ExceptionInfo(Integer.parseInt(code), message);
+		try {
+			String codeString = exception.getMessage();
+			codeString = codeString.split(":")[0].replaceAll("\\D", "");
+			code = Integer.parseInt(codeString);
+		} catch(Throwable t) {
+		}
+		return new ExceptionInfo(code, message);
 	}
 
 	public static String parseSynapseException(SynapseException exception, int targetCode) throws SynapseException {
 		ExceptionInfo info = parseSynapseException(exception);
 		if (info.getCode() == targetCode) {
+			return info.getMessage();
+		}
+		throw exception;
+	}
+	
+	public static String parseSynapseException(SynapseException exception, int targetCode, String messageFragment) throws SynapseException {
+		ExceptionInfo info = parseSynapseException(exception);
+		if (info.getCode() == targetCode && info.getMessage().contains(messageFragment)) {
 			return info.getMessage();
 		}
 		throw exception;
@@ -95,19 +122,8 @@ public class ClientUtils {
 		return sb.toString();
 	}
 	
-	public static boolean can(ACCESS_TYPE type, AccessControlList acl) {
-		// This is almost certainly not correct. We have to check the ID as well, don't we?
-		if (acl != null) {
-			Set<ResourceAccess> accesses = acl.getResourceAccess();
-			if (accesses != null) {
-				for(ResourceAccess ra: accesses) {
-					if (ra.getAccessType().contains(type)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
+	public static UserEntityPermissions getPermits(BridgeRequest request, String id) throws SynapseException {
+		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
 	public static void dumpErrors(Logger logger, BindingResult result) {

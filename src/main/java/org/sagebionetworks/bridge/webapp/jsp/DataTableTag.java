@@ -1,26 +1,32 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
-import javax.servlet.jsp.JspApplicationContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.web.util.ExpressionEvaluationUtils;
 
 public class DataTableTag extends SimpleTagSupport {
 
 	private static final Logger logger = LogManager.getLogger(DataTableTag.class.getName());
 	
 	private TagBuilder tb = new TagBuilder();
+	
+	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, YYYY");
+	
+	private PropertyUtilsBean pub = new PropertyUtilsBean();
 	
 	private String formId;
 	private String itemId;
@@ -148,7 +154,13 @@ public class DataTableTag extends SimpleTagSupport {
 					tb.addAttribute("class", "nowrap");
 					first = !first;
 				}
-				Object value = (".".equals(column.getField())) ? object : BeanUtils.getProperty(object, column.getField());
+				if (column.getIcon() != null) {
+					tb.startTag("span", "class", "glyphicon glyphicon-"+column.getIcon());
+					tb.append(""); // force non-empty closing tag.
+					tb.endTag("span");
+					tb.append(" ");
+				}
+				Object value = getColumnValue(column, object);
 				if (StringUtils.isNotBlank(column.getLink())) {
 					// TODO: Figure out how to do this correctly so there can be any expression here.
 					String output = column.getLink().replace("{id}", objectId);
@@ -165,6 +177,25 @@ public class DataTableTag extends SimpleTagSupport {
 			logger.error(e);
 		}
 	}
+	protected Object getColumnValue(DataTableColumnTag column, Object object) {
+		Object value = "";
+		if (column.getStatic() != null) {
+			value = column.getStatic();
+		} else if (".".equals(column.getField())) {
+			value = column.getField();
+		} else {
+			try {
+				value = pub.getProperty(object, column.getField());
+			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+				logger.error(e);
+			}	
+		}
+		if (value instanceof Date) {
+			value = formatter.format(value);
+		}
+		return value;
+	}
+	
 	protected void addCheckboxIfSelectable(String objectId) {
 		if (this.selectable) {
 			tb.startTag("td");

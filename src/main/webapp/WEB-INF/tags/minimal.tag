@@ -1,6 +1,6 @@
 <%@ include file="../jsp/directives.jsp" %>
 <%@ attribute name="code" required="true" %>
-<%@ attribute name="boxSize" required="false" %> <!-- 70rem by default -->
+<%@ attribute name="boxSize" required="false" %> <%-- 70rem by default --%>
 <!DOCTYPE html>
 <html lang="en">
 <head>

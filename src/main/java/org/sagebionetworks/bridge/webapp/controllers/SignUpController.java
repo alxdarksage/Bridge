@@ -5,6 +5,7 @@ import javax.validation.Valid;
 
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
+import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
@@ -39,7 +40,7 @@ public class SignUpController {
 			throws Exception {
 		if (!result.hasErrors()) {
 			try {
-				NewUser newUser = getNewUser(signUpForm);
+				NewUser newUser = FormUtils.valuesToNewUser(new NewUser(), signUpForm);
 				// In development, you must supply a password and you get an error if you do not. In production, 
 				// you cannot supply a password. In fact, that's bad, and we don't allow it through signUpForm.
 				if (!StackConfiguration.isProductionStack()) {
@@ -56,14 +57,5 @@ public class SignUpController {
 		}
 		return "signUp";
 	}
-
-	
-	private NewUser getNewUser(SignUpForm signUpForm) {
-		NewUser user = new NewUser();
-		user.setEmail(signUpForm.getEmail());
-		user.setDisplayName(signUpForm.getDisplayName());
-		return user;
-	}
-
 	
 }
