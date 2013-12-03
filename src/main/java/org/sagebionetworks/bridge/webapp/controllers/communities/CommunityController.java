@@ -1,7 +1,12 @@
 package org.sagebionetworks.bridge.webapp.controllers.communities;
 
+import java.io.File;
+import java.net.URL;
+
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
@@ -11,9 +16,12 @@ import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.Team;
 import org.sagebionetworks.repo.model.TeamMembershipStatus;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
+import org.sagebionetworks.repo.model.dao.WikiPageKey;
+import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +42,13 @@ public class CommunityController {
 		this.bridgeClient = bridgeClient;
 	}
 
+	@Resource(name = "synapseClient")
+	protected SynapseClient synapseClient;
+
+	public void setSynapseClient(SynapseClient synapseClient) {
+		this.synapseClient = synapseClient;
+	}
+	
 	@ModelAttribute("signInForm")
 	public SignInForm signInForm() {
 		return new SignInForm();
@@ -50,6 +65,13 @@ public class CommunityController {
 		model.addObject("community", community);
 		model.setViewName("communities/index");
 		
+		// Get wiki.
+		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, community.getWelcomePageWikiId());
+		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
+		String markdown = FileUtils.readFileToString(markdownFile);
+		model.addObject("wikiContent", markdown);
+		
+		// and what are we supposed to do with this?
 		if (request.isUserAuthenticated()) {
 			UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
 			model.addObject("editable", permits.getCanEdit());

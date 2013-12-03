@@ -2015,4 +2015,33 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		return list.subList(start, end+1);
 	}
 
+	@Override
+	public V2WikiPage getVersionOfV2WikiPage(WikiPageKey key, Long version) throws JSONObjectAdapterException,
+			SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public FileHandleResults getVersionOfV2WikiAttachmentHandles(WikiPageKey key, Long version)
+			throws JSONObjectAdapterException, SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public File downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
+			IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public File downloadVersionOfV2WikiMarkdown(WikiPageKey key, Long version) throws ClientProtocolException,
+			FileNotFoundException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public TeamMember getTeamMember(String teamId, String memberId) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
 }

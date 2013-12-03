@@ -19,10 +19,8 @@
         
         <ul class="list-group">
             <li class="active list-group-item">${community.name}</li>
-            <c:if test="${sessionScope.BridgeUser.isAuthenticated()}">
-                <li class="list-group-item"><a><spring:message code="MyJournal"/></a></li>
-            </c:if>
-            <li class="list-group-item"><a><spring:message code="Forums"/></a></li>
+            <li class="list-group-item"><a><em>Space here for user-supplied index wiki.</em></a></li>
+            <li class="list-group-item"><a>${community.name} <spring:message code="Forums"/></a></li>
         </ul>
     </jsp:attribute>
     <jsp:attribute name="content"><jsp:doBody/></jsp:attribute>

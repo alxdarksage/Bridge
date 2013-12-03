@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.integration.auth;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
@@ -42,4 +43,16 @@ public class ITProfile extends WebDriverBase {
 		
 		driver.waitForCommunityPage();
 	}
+	
+	@Test
+	public void validatesFields() {
+		// username/alias... actually this eventually won't even be changeable.
+		Assert.fail("Not implemented");
+	}
+	
+	@Test
+	public void cannotRemoveSelfAsLastAdministratorFromCommunities() {
+		Assert.fail("Not implemented");
+	}
+	
 }

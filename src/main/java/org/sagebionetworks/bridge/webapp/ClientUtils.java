@@ -1,6 +1,10 @@
 package org.sagebionetworks.bridge.webapp;
 
+import java.io.File;
 import java.util.Set;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -91,12 +95,12 @@ public class ClientUtils {
 		throw exception;
 	}
 	
-	public static String parseSynapseException(SynapseException exception, int targetCode, String messageFragment) throws SynapseException {
-		ExceptionInfo info = parseSynapseException(exception);
+	public static String parseSynapseException(SynapseException e, int targetCode, String messageFragment) throws SynapseException {
+		ExceptionInfo info = parseSynapseException(e);
 		if (info.getCode() == targetCode && info.getMessage().contains(messageFragment)) {
 			return info.getMessage();
 		}
-		throw exception;
+		throw e;
 	}
 	
 	public static void formError(BindingResult result, String formName, String message) {
@@ -137,6 +141,14 @@ public class ClientUtils {
 		SynapseClient client = request.getBridgeUser().getSynapseClient();
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
 		return client.getV2WikiPage(key);
+	}
+	
+	public static File createTempFile(BridgeRequest request, String fileName) throws ServletException {
+		File directory = (File)request.getServletContext().getAttribute(ServletContext.TEMPDIR);
+		if (directory == null) {
+		    throw new ServletException("Servlet container does not provide temporary directory");
+		}
+		return new File(directory, fileName);
 	}
 	
 	public static void dumpErrors(Logger logger, BindingResult result) {

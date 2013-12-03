@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,13 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -23,6 +26,7 @@ import org.jsoup.safety.Whitelist;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
+import org.sagebionetworks.bridge.webapp.forms.ImageFile;
 import org.sagebionetworks.bridge.webapp.forms.UploadForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -33,6 +37,7 @@ import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
 import org.sagebionetworks.repo.model.file.FileHandle;
 import org.sagebionetworks.repo.model.file.FileHandleResults;
+import org.sagebionetworks.repo.model.file.PreviewFileHandle;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 import org.springframework.stereotype.Controller;
@@ -41,6 +46,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -69,23 +75,38 @@ public class CommunityWikiController {
 		
 		V2WikiPage wiki = prepareAndRetrieveModels(request, communityId, wikiId, model);
 		FormUtils.valuesToWikiForm(wikiForm, wiki);
+		
+		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wiki.getId());
+		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
+		String markdown = FileUtils.readFileToString(markdownFile);
+		wikiForm.setMarkdown(markdown);
+		
 		return model;
 	}
 	
 	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}/edit", method = RequestMethod.POST)
 	public ModelAndView update(BridgeRequest request, @PathVariable("communityId") String communityId,
 			@PathVariable("wikiId") String wikiId, @ModelAttribute @Valid WikiForm wikiForm, BindingResult result,
-			ModelAndView model) throws SynapseException, JSONObjectAdapterException {
+			ModelAndView model) throws SynapseException, JSONObjectAdapterException, IOException {
 		
 		V2WikiPage wiki = prepareAndRetrieveModels(request, communityId, wikiId, model);
 		
 		// There are no errors that can occur here, actually.
 		if (!result.hasErrors()) {
-			String sanitizedHTML = Jsoup.clean(wikiForm.getMarkdown(), getCustomWhitelist());
-			// wiki.setMarkdown(sanitizedHTML);
-			logger.info("Content that will be saved: " + sanitizedHTML);
+			SynapseClient client = request.getBridgeUser().getSynapseClient();
+			String sanitizedHTML = Jsoup.clean(wikiForm.getMarkdown(), "https://localhost:8888/webapp", getCustomWhitelist());
+			
+			logger.debug("Sanitized HTML: " + sanitizedHTML);
+			
+			// You need to create a file temporarily to do this: bad.
+			File tempDir = (File)request.getAttribute(ServletContext.TEMPDIR);
+			File temp = new File(tempDir, wiki.getId()+".html");
+			FileUtils.writeStringToFile(temp, sanitizedHTML);
+			FileHandle handle = client.createFileHandle(temp, "text/html");
+			
+			wiki.setMarkdownFileHandleId(handle.getId());
 			wiki.setTitle(wikiForm.getTitle());
-			request.getBridgeUser().getSynapseClient().updateV2WikiPage(communityId, ObjectType.ENTITY, wiki);
+			client.updateV2WikiPage(communityId, ObjectType.ENTITY, wiki);
 			
 			model.setViewName("redirect:/communities/" + communityId + ".html");
 			request.setNotification("CommunityUpdated");
@@ -94,8 +115,27 @@ public class CommunityWikiController {
 	}
 	
 	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}/browse", method = RequestMethod.GET)
-	public ModelAndView browseAttachments(ModelAndView model) {
+	public ModelAndView browseAttachments(BridgeRequest request, @PathVariable("communityId") String communityId,
+			@PathVariable("wikiId") String wikiId, ModelAndView model) throws JSONObjectAdapterException,
+			SynapseException, ClientProtocolException, MalformedURLException, IOException {
+		
 		model.setViewName("communities/browse");
+		
+		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
+		FileHandleResults results = synapseClient.getV2WikiAttachmentHandles(key);
+		List<ImageFile> images = new ArrayList<>();
+		for (FileHandle handle : results.getList()) {
+			// Preview files are included in the file handles, and they break things. Filter them out.
+			if (!(handle instanceof PreviewFileHandle)) {
+				String fileName = handle.getFileName();
+				URL tempURL = synapseClient.getV2WikiAttachmentPreviewTemporaryUrl(key, fileName);
+				ImageFile file = new ImageFile(tempURL.toExternalForm(), getLinkback(request.getContextPath(),
+						communityId, wikiId, fileName));
+				images.add(file);
+			}
+		}
+		model.addObject("images",images);
+		
 		return model;
 	}	
 	
@@ -122,24 +162,25 @@ public class CommunityWikiController {
 		client.updateV2WikiPage(communityId, ObjectType.ENTITY, page);
 
 		// Point back to the application so we can generate temporary Synapse URLs on demand.
-		String url = request.getContextPath() + "/page/" +communityId+ "/" +wikiId+ "/" + handle.getFileName();
+		
+		String url = getLinkback(request.getContextPath(), communityId, wikiId, handle.getFileName());
 		String funcNum = request.getParameter("CKEditorFuncNum");
 		String js = "<script>window.top.CKEDITOR.tools.callFunction("+funcNum+", '"+url.toString()+"');</script>";
 		response.getWriter().print(js);
 	}
 	
-	// This won't map to *.html. Add another mapping, like /page/*
-	@RequestMapping(value = "/page/{communityId}/{wikiId}/{fileName}", method = RequestMethod.GET)
+	@RequestMapping(value = "/files/{communityId}/{wikiId}", method = RequestMethod.GET)
 	public void imageURL(BridgeRequest request, HttpServletResponse response,
 			@PathVariable("communityId") String communityId, @PathVariable("wikiId") String wikiId, 
-			@PathVariable("fileName") String fileName) throws IOException {
+			@RequestParam("fileName") String fileName) throws IOException {
 		
 		try {
 			WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
 			URL url = synapseClient.getV2WikiAttachmentTemporaryUrl(key, fileName);
-			response.getWriter().print(url.toString());
+			response.sendRedirect(url.toString());
 		} catch(Exception e) {
-			response.getWriter().print("");
+			logger.error(e);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 	
@@ -165,27 +206,12 @@ public class CommunityWikiController {
 
 		try {
 			MultipartFile file = uploadForm.getFile();
-			// TODO: This seems very suspect to me. This will have to change. It needs to be unique,
-			// but at some point Synapse is referring to a file name, not sure how that is generated.
 			String fileName = file.getOriginalFilename();
-			
 			inputStream = file.getInputStream();
-
-			File directory = (File)request.getServletContext().getAttribute(ServletContext.TEMPDIR);
-			
-			if (directory == null) {
-			    throw new ServletException("Servlet container does not provide temporary directory");
-			}
-			File newFile = new File(directory.getAbsolutePath() + "/" + fileName);
-			logger.info("Writing file to:" + newFile.getAbsolutePath());
-			
-			if (!newFile.exists()) {
-				newFile.createNewFile();
-			}
+			File newFile = ClientUtils.createTempFile(request, fileName);
 			FileUtils.copyInputStreamToFile(inputStream, newFile);
-
+			logger.info("Writing file to:" + newFile.getAbsolutePath());
 			files.add(newFile);
-			
 		} catch (IOException e) {
 			logger.error(e);
 		} finally {
@@ -195,8 +221,13 @@ public class CommunityWikiController {
 		return files;
 	}
 	
+	private String getLinkback(String contextPath, String communityId, String wikiId, String fileName) {
+		return String.format("%s/files/%s/%s.html?fileName=%s", contextPath, communityId, wikiId, fileName);
+	}
+	
 	private Whitelist getCustomWhitelist() {
 		return Whitelist.relaxed()
+			.preserveRelativeLinks(true)
 			.addAttributes(":all", "class", "style", "width");
 	}
 }

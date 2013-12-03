@@ -42,6 +42,11 @@
 		                    </div>
 		                </c:forEach>
 		            </div>
+                    <spring:bind path="memberships">
+                        <div class="${status.error ? 'has-error' : ''}">
+	                        <form:errors id="memberships_errors" path="memberships" htmlEscape="false"/>
+                        </div>
+                    </spring:bind>
 		        </div>
             </div>
             <div class="col-sm-6">

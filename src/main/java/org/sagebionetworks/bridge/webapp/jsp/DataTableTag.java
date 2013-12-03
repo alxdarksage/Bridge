@@ -130,7 +130,7 @@ public class DataTableTag extends SimpleTagSupport {
 		tb.startTag("tr");
 		tb.startTag("td", "class", "empty");
 		tb.addAttribute("colspan", Integer.toString(this.columns.size()));
-		tb.append("There are currently no items.");
+		tb.append("There are currently no "+this.caption.toLowerCase()+".");
 		tb.endTag("td");
 		tb.endTag("tr");
 		tb.endTag("tbody");

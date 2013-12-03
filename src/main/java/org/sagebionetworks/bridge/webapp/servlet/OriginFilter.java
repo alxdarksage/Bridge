@@ -1,6 +1,7 @@
 package org.sagebionetworks.bridge.webapp.servlet;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,21 +22,11 @@ public class OriginFilter implements Filter {
 
 	private static Set<String> excludedURLs = new HashSet<String>();
 	static {
-		excludedURLs.add("/error.html");
-		excludedURLs.add("/signIn.html");
-		excludedURLs.add("/signOut.html");
-		excludedURLs.add("/signedOut.html");
-		excludedURLs.add("/signUp.html");
-		excludedURLs.add("/requestResetPassword.html");
-		excludedURLs.add("/resetPassword.html");
-		excludedURLs.add("/termsOfUse.html");
-		excludedURLs.add("/termsOfUse/cancel.html");
-		excludedURLs.add("/openId.html");
-		excludedURLs.add("/openIdCallback.html");
-		// TODO:
-		// You can't cold log in to profile and come back to it; but this makes 
-		// cancel on profile page == the origin url.
-		excludedURLs.add("/profile.html");
+		Collections.addAll(excludedURLs, "/error.html", "/signIn.html", 
+			"/signOut.html", "/signedOut.html", "/signUp.html", 
+			"/requestResetPassword.html", "/resetPassword.html", "/termsOfUse.html", 
+			"/termsOfUse/cancel.html", "/openId.html", "/openIdCallback.html", 
+			"/profile.html");
 	}
 
 	@Override
@@ -54,7 +45,7 @@ public class OriginFilter implements Filter {
 		String servletPath = request.getServletPath();
 		
 		// If this was only done for requests, not forwards or includes, it would always be *.html?
-		if (!excludedURLs.contains(servletPath) && servletPath.endsWith(".html")) {
+		if (!excludedURLs.contains(servletPath) && !servletPath.contains("/files/") && servletPath.endsWith(".html")) {
 			logger.debug("Setting the origin URL as: " + servletPath);
 			bridgeRequest.setOrigin(servletPath);
 		}

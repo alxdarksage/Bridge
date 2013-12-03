@@ -1,13 +1,16 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ProfileForm {
 
+	@NotEmpty
 	private String displayName;
 	private String firstName;
 	private String lastName;
 	private String summary;
+	private String memberships; // just here to hold an error...
 	
 	private MultipartFile photoFile;
 	
@@ -40,5 +43,11 @@ public class ProfileForm {
 	}
 	public void setPhotoFile(MultipartFile photoFile) {
 		this.photoFile = photoFile;
+	}
+	public String getMemberships() {
+		return memberships;
+	}
+	public void setMemberships(String memberships) {
+		this.memberships = memberships;
 	}
 }

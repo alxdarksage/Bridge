@@ -18,6 +18,8 @@ CKEDITOR.replace( 'markdown', {
 	baseHref: "http://localhost:8888<c:url value="/communities/${community.id}/wikis/${wikiForm.wikiId}/pages/"/>",
 	filebrowserBrowseUrl: "<c:url value="/communities/${community.id}/wikis/${wikiForm.wikiId}/browse.html"/>",
 	filebrowserUploadUrl: "<c:url value="/communities/${community.id}/wikis/${wikiForm.wikiId}/upload.html"/>",
+	filebrowserWindowWidth : '300',
+    filebrowserWindowHeight : '400',
     toolbarGroups: [
         { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
         { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
