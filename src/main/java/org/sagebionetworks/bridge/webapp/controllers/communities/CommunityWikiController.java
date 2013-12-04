@@ -12,7 +12,6 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -29,6 +28,7 @@ import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.ImageFile;
 import org.sagebionetworks.bridge.webapp.forms.UploadForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
+import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
@@ -52,12 +52,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 /**
- * /communities/#/wikis/#/edit (GET, POST to update)
- * /communities/#/wikis/#/browse (attachments)
- * /communities/#/wikis/#/upload (files as attachments)
- * 
+ * /communities/#
+ * 		/wikis/new (GET, POST to create)
+ * 		/wikis/#/edit (GET, POST to update)
+ * 		/wikis/#/browse (attachments)
+ * 		/wikis/#/upload (files as attachments)
+ *      /wikis/#/all (all other wiki pages for cross navigation)
  */
 @Controller
+@RequestMapping(value = "/communities")
 public class CommunityWikiController {
 	
 	private static Logger logger = LogManager.getLogger(CommunityWikiController.class.getName());
@@ -69,12 +72,56 @@ public class CommunityWikiController {
 		this.synapseClient = synapseClient;
 	}
 	
-	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/{communityId}/wikis/new", method = RequestMethod.GET)
+	public ModelAndView newWiki(BridgeRequest request, @PathVariable("communityId") String communityId,
+			ModelAndView model, WikiForm wikiForm) throws Exception {
+		
+		storeCommunityAndGetWikiPage(request, communityId, null, model);
+		model.setViewName("communities/new");
+		return model;
+	}
+	
+	@RequestMapping(value = "/{communityId}/wikis/new", method = RequestMethod.POST)
+	public ModelAndView saveNewWiki(BridgeRequest request, @PathVariable("communityId") String communityId,
+			ModelAndView model, @ModelAttribute @Valid WikiForm wikiForm, BindingResult result) throws Exception {
+		
+		storeCommunityAndGetWikiPage(request, communityId, null, model);
+		model.setViewName("communities/new");
+		if (!result.hasErrors()) {
+			SynapseClient client = request.getBridgeUser().getSynapseClient();
+			// NOTE: It doesn't use the relative URI, it just wants to know it's there... ?
+			String sanitizedHTML = Jsoup.clean(wikiForm.getMarkdown(), "https://localhost:8888/webapp", getCustomWhitelist());
+			
+			String userId = request.getBridgeUser().getOwnerId();
+			File tempDir = (File)request.getAttribute(ServletContext.TEMPDIR);
+			File temp = new File(tempDir, userId+".html");
+			FileUtils.writeStringToFile(temp, sanitizedHTML);
+			FileHandle handle = client.createFileHandle(temp, "text/html");
+			
+			V2WikiPage root = client.getV2RootWikiPage(communityId, ObjectType.ENTITY);
+			V2WikiPage wiki = new V2WikiPage();
+			wiki.setMarkdownFileHandleId(handle.getId());
+			wiki.setTitle(wikiForm.getTitle());
+			wiki.setParentWikiId(root.getId());
+			V2WikiPage saved = client.createV2WikiPage(communityId, ObjectType.ENTITY, wiki);
+
+			model.setViewName( String.format("redirect:/communities/%s/wikis/%s.html", communityId, saved.getId()) );
+			request.setNotification("CommunityUpdated");
+		}
+		return model;
+	}
+	
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}/edit", method = RequestMethod.GET)
 	public ModelAndView edit(BridgeRequest request, @PathVariable("communityId") String communityId,
 			@PathVariable("wikiId") String wikiId, ModelAndView model, WikiForm wikiForm) throws Exception {
-		
-		V2WikiPage wiki = prepareAndRetrieveModels(request, communityId, wikiId, model);
+
+		V2WikiPage wiki = storeCommunityAndGetWikiPage(request, communityId, wikiId, model);
+		model.setViewName("communities/edit");
 		FormUtils.valuesToWikiForm(wikiForm, wiki);
+		
+		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
+		List<WikiHeader> headers = ClientUtils.getWikiHeadersFor(synapseClient, community);
+		model.addObject("wikiHeaders", headers);
 		
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wiki.getId());
 		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
@@ -84,13 +131,13 @@ public class CommunityWikiController {
 		return model;
 	}
 	
-	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}/edit", method = RequestMethod.POST)
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}/edit", method = RequestMethod.POST)
 	public ModelAndView update(BridgeRequest request, @PathVariable("communityId") String communityId,
 			@PathVariable("wikiId") String wikiId, @ModelAttribute @Valid WikiForm wikiForm, BindingResult result,
 			ModelAndView model) throws SynapseException, JSONObjectAdapterException, IOException {
 		
-		V2WikiPage wiki = prepareAndRetrieveModels(request, communityId, wikiId, model);
-		
+		V2WikiPage wiki = storeCommunityAndGetWikiPage(request, communityId, wikiId, model);
+		model.setViewName("communities/edit");
 		// There are no errors that can occur here, actually.
 		if (!result.hasErrors()) {
 			SynapseClient client = request.getBridgeUser().getSynapseClient();
@@ -108,13 +155,13 @@ public class CommunityWikiController {
 			wiki.setTitle(wikiForm.getTitle());
 			client.updateV2WikiPage(communityId, ObjectType.ENTITY, wiki);
 			
-			model.setViewName("redirect:/communities/" + communityId + ".html");
+			model.setViewName( String.format("redirect:/communities/%s/wikis/%s.html", communityId, wikiId) );
 			request.setNotification("CommunityUpdated");
 		}
 		return model;
 	}
 	
-	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}/browse", method = RequestMethod.GET)
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}/browse", method = RequestMethod.GET)
 	public ModelAndView browseAttachments(BridgeRequest request, @PathVariable("communityId") String communityId,
 			@PathVariable("wikiId") String wikiId, ModelAndView model) throws JSONObjectAdapterException,
 			SynapseException, ClientProtocolException, MalformedURLException, IOException {
@@ -139,7 +186,7 @@ public class CommunityWikiController {
 		return model;
 	}	
 	
-	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}/upload", method = RequestMethod.POST)
 	public void uploadAttachment(BridgeRequest request, HttpServletResponse response,
 			@PathVariable("communityId") String communityId, @PathVariable("wikiId") String wikiId,
 			@ModelAttribute("uploadForm") UploadForm uploadForm, BindingResult result) throws ServletException,
@@ -168,34 +215,63 @@ public class CommunityWikiController {
 		String js = "<script>window.top.CKEDITOR.tools.callFunction("+funcNum+", '"+url.toString()+"');</script>";
 		response.getWriter().print(js);
 	}
-	
-	@RequestMapping(value = "/files/{communityId}/{wikiId}", method = RequestMethod.GET)
-	public void imageURL(BridgeRequest request, HttpServletResponse response,
-			@PathVariable("communityId") String communityId, @PathVariable("wikiId") String wikiId, 
-			@RequestParam("fileName") String fileName) throws IOException {
+
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}/all", method = RequestMethod.GET)
+	public ModelAndView allPages(BridgeRequest request, @PathVariable("communityId") String communityId,
+			@PathVariable("wikiId") String wikiId, ModelAndView model) throws ServletException, JSONObjectAdapterException, SynapseException, IOException {
 		
-		try {
-			WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
-			URL url = synapseClient.getV2WikiAttachmentTemporaryUrl(key, fileName);
-			response.sendRedirect(url.toString());
-		} catch(Exception e) {
-			logger.error(e);
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		}
+		// Get headers for all wiki pages. Removes root, but would like to mark the other two as well.
+		// Going to move this.
+		
+		V2WikiPage wiki = storeCommunityAndGetWikiPage(request, communityId, wikiId, model);
+		model.addObject("wiki", wiki);
+
+		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
+		List<WikiHeader> headers = ClientUtils.getWikiHeadersFor(synapseClient, community);
+		model.addObject("wikiHeaders", headers);
+		
+		model.setViewName("communities/all");
+		return model;
 	}
 	
-	// TODO: Ick
-	private V2WikiPage prepareAndRetrieveModels(BridgeRequest request, String communityId, String wikiId,
+	
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}/all", method = RequestMethod.POST, params = "delete=delete")
+	public String batchWikis(BridgeRequest request, @RequestParam("rowSelect") List<String> rowSelects,
+			@PathVariable("communityId") String communityId, @PathVariable("wikiId") String wikiId)
+			throws SynapseException {
+		
+		if (rowSelects != null) {
+			Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
+			SynapseClient client = request.getBridgeUser().getSynapseClient();
+			
+			int count = 0;
+			for (String id : rowSelects) {
+				if (!id.equals(community.getWelcomePageWikiId()) && !id.equals(community.getIndexPageWikiId())) {
+					WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, id);
+					client.deleteV2WikiPage(key);
+					count++;
+				}
+			}
+			if (count == 1) {
+				request.setNotification("CommunityDeleted");
+			} else if (count > 1) {
+				request.setNotification("CommunitiesDeleted");
+			}
+		}
+		return String.format("redirect:/communities/%s/wikis/%s/all.html", communityId, wikiId);
+	}
+	
+	
+	private V2WikiPage storeCommunityAndGetWikiPage(BridgeRequest request, String communityId, String wikiId,
 			ModelAndView model) throws SynapseException, JSONObjectAdapterException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Community community = client.getCommunity(communityId);
-		
-		V2WikiPage wiki = ClientUtils.getWikiPage(request, communityId, wikiId);
-		
 		model.addObject("community", community);
-		model.setViewName("communities/edit");
-		return wiki;
+		if (wikiId != null) {
+			return ClientUtils.getWikiPage(request, communityId, wikiId);	
+		}
+		return null;
 	}
 
 	private List<File> retrieveFiles(BridgeRequest request, UploadForm uploadForm) throws ServletException {

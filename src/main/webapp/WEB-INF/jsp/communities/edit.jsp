@@ -1,5 +1,10 @@
 <%@ include file="../directives.jsp" %>
-<sage:community code="${community.name}">
+<sage:community-wiki-edit code="${community.name}">
+    <c:url var="allUrl" value="/communities/${community.id}/wikis/${wikiForm.wikiId}/all.html"/>
+	<ul class="nav nav-tabs wiki-tabs">
+		<li class="active"><a>${wikiForm.title}</a></li>
+		<li><a href="${allUrl}">All Pages</a></li>
+	</ul>
     <sage:formErrors formName="wikiForm"/>
     <c:url var="editUrl" value="/communities/${community.id}/wikis/${wikiForm.wikiId}/edit.html"/>
     <form:form role="form" modelAttribute="wikiForm" method="post" action="${editUrl}">
@@ -32,5 +37,39 @@ CKEDITOR.replace( 'markdown', {
         { name: 'source', groups: ['mode'] }
     ]
 });
+
+function selectPage() {
+	var dialog = this._.dialog;
+	dialog.selectPage('info');
+	dialog.setValueOf('info', 'url', this.url);
+}
+
+CKEDITOR.on( 'dialogDefinition', function( e ) {
+    var dialogName = e.data.name;
+    var dialogDefinition = e.data.definition;
+    if (dialogName === "link") {
+    	dialogDefinition.addContents({
+            id : 'pagesTab',
+            label : 'Pages',
+            elements : [
+                {
+                    type : 'vbox',
+                    width: '100%',
+                    children: [
+                        <c:forEach var="wiki" items="${wikiHeaders}">
+                        {
+                            type: 'button',
+                            id: 'w${wiki.id}',
+                            label: "${wiki.title}",
+                            url: '${pageContext.request.contextPath}${wiki.viewURL}',
+                            onClick: selectPage
+                        },
+                        </c:forEach>
+                    ]
+                }
+            ]
+        });
+    }
+});
 </script>
-</sage:community>
+</sage:community-wiki-edit>

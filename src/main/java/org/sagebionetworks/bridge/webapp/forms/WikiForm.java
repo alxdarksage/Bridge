@@ -10,6 +10,7 @@ public class WikiForm {
 	private String markdown;
 	
 	private String wikiId;
+	private String communityId;
 	
 	public String getTitle() {
 		return title;
@@ -28,6 +29,20 @@ public class WikiForm {
 	}
 	public void setWikiId(String wikiId) {
 		this.wikiId = wikiId;
+	}
+	public String getCommunityId() {
+		return communityId;
+	}
+	public void setCommunityId(String communityId) {
+		this.communityId = communityId;
+	}
+	
+	public String getEditURL() {
+		if (wikiId != null) {
+			return String.format("/communities/%s/wikis/%s/edit.html", communityId, wikiId);	
+		} else {
+			return String.format("/communities/%s/wikis/new.html", communityId, wikiId);
+		}
 	}
 	
 }

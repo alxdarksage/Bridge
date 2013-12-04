@@ -1,21 +1,27 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.ObjectType;
+import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.ResourceAccess;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
+import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 import org.springframework.validation.BindingResult;
@@ -141,6 +147,21 @@ public class ClientUtils {
 		SynapseClient client = request.getBridgeUser().getSynapseClient();
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
 		return client.getV2WikiPage(key);
+	}
+	
+	public static List<WikiHeader> getWikiHeadersFor(SynapseClient client, Community community) throws JSONObjectAdapterException, SynapseException {
+		// Get headers for all wiki pages
+		V2WikiPage root = client.getV2RootWikiPage(community.getId(), ObjectType.ENTITY);
+		PaginatedResults<V2WikiHeader> results = client.getV2WikiHeaderTree(community.getId(), ObjectType.ENTITY);
+		List<WikiHeader> headers = new ArrayList<>();
+		for (V2WikiHeader header : results.getResults()) {
+			// Don't include the root or the index wiki pages in the list.
+			if (!header.getId().equals(root.getId()) && !header.getId().equals(community.getIndexPageWikiId())) {
+				WikiHeader h = new WikiHeader(header, community.getId(), header.getId().equals(community.getWelcomePageWikiId()));
+				headers.add(h);
+			}
+		}
+		return headers;//model.addObject("wikiHeaders", results.getResults());
 	}
 	
 	public static File createTempFile(BridgeRequest request, String fileName) throws ServletException {

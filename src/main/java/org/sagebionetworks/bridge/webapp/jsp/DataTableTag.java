@@ -164,6 +164,7 @@ public class DataTableTag extends SimpleTagSupport {
 				if (StringUtils.isNotBlank(column.getLink())) {
 					// TODO: Figure out how to do this correctly so there can be any expression here.
 					String output = column.getLink().replace("{id}", objectId);
+					
 					tb.startTag("a", "href", getContextPath() + output);
 					tb.append(value);
 					tb.endTag("a");
@@ -254,5 +255,4 @@ public class DataTableTag extends SimpleTagSupport {
 		PageContext pageContext = (PageContext)getJspContext();
 		return pageContext.getServletContext().getContextPath();
 	}
-
 }

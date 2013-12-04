@@ -19,6 +19,7 @@
         <css>/assets/bridge/css/termsOfUse.css</css>
         <css>/assets/bridge/css/profile.css</css>
         <css>/assets/bridge/css/data-table.css</css>
+        <css>/assets/bridge/css/editor.less</css>
         <css>/assets/bridge/css/oauth.less</css>
 	</group>
 

@@ -15,11 +15,11 @@
 	</div>
 </sage:blank>
 <script>
+var funcNum = document.getElementById('funcNum').getAttribute('data-value');
 var links = document.querySelectorAll(".attachment");
 for (var i=0; i < links.length; i++) {
 	var link = links[i];
 	link.addEventListener("click", function(e) {
-		var funcNum = document.getElementById('funcNum').getAttribute('data-value');
         var href = e.target.getAttribute('data-link');
 		window.opener.CKEDITOR.tools.callFunction(funcNum, href);
 		window.close();

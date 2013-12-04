@@ -2,27 +2,6 @@
 
 <c:choose>
     <c:when test="${sessionScope.BridgeUser.isAuthenticated()}">
-        <%-- 
-        <div id="profile-pane" class="well hidden-sm">
-            <table cellspacing="0" cellpadding="0">
-                <tr>
-                    <td><img src='<c:url value="/static/images/default_avatar.png"/>'/></td>
-                    <td>
-                        <div class="userName">${sessionScope['BridgeUser'].displayName}</div>
-                        <c:url var="signOutUrl" value="/signOut.html"/>
-                        <c:url var="editProfileUrl" value="/profile.html"/>
-                        <a id="signOutButton" href="${signOutUrl}">
-                            <spring:message code="SignOut"/>
-                        </a> <span class="divider-element">&bull;</span> 
-                        <a id="editProfileLink" href="${editProfileUrl}">
-                            <spring:message code="EditProfile"/>
-                        </a>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        --%>
-        
         <div id="profile-pane" class="panel panel-default hidden-sm">
             <div class="panel-body">
 	            <table>
@@ -42,9 +21,11 @@
 	                </tr>
 	            </table>
             </div>
+            <%-- There's no way to show this only for patients, at the moment. 
             <div class="panel-footer">
                 <a>My Journal</a>
             </div>
+            --%>
         </div>
         
     </c:when>

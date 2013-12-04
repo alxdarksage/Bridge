@@ -1,32 +1,37 @@
 package org.sagebionetworks.bridge.webapp.controllers.communities;
 
 import java.io.File;
-import java.net.URL;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
+import org.sagebionetworks.bridge.webapp.forms.WikiForm;
+import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.Team;
 import org.sagebionetworks.repo.model.TeamMembershipStatus;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
-import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -60,18 +65,46 @@ public class CommunityController {
 	}
 
 	@RequestMapping(value = "/{communityId}", method = RequestMethod.GET)
-	public ModelAndView get(BridgeRequest request, @PathVariable("communityId") String communityId, ModelAndView model) throws Exception {
+	public ModelAndView get(BridgeRequest request, @PathVariable("communityId") String communityId, ModelAndView model)
+			throws Exception {
+		
+		prepareIndexPage(request, model, communityId, null);
+
+		return model;
+	}
+	
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}", method = RequestMethod.GET)
+	public ModelAndView viewWiki(BridgeRequest request, @PathVariable("communityId") String communityId,
+			@PathVariable("wikiId") String wikiId, ModelAndView model) throws Exception {
+		
+		prepareIndexPage(request, model, communityId, wikiId);
+		
+		return model;
+	}
+	
+	@RequestMapping(value = "/{communityId}/wikis/{wikiId}", method = RequestMethod.POST)
+	public ModelAndView deleteWiki(BridgeRequest request, @PathVariable("communityId") String communityId,
+			@PathVariable("wikiId") String wikiId, ModelAndView model) throws Exception {
+		
+		prepareIndexPage(request, model, communityId, wikiId);
+		
+		return model;
+	}
+	
+	private void prepareIndexPage(BridgeRequest request, ModelAndView model, String communityId, String wikiId) throws SynapseException, ClientProtocolException, FileNotFoundException, IOException {
 		Community community = bridgeClient.getCommunity(communityId);
 		model.addObject("community", community);
 		model.setViewName("communities/index");
 		
-		// Get wiki.
-		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, community.getWelcomePageWikiId());
+		if (wikiId == null) {
+			wikiId = community.getWelcomePageWikiId();
+		}
+		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
 		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
 		String markdown = FileUtils.readFileToString(markdownFile);
 		model.addObject("wikiContent", markdown);
+		model.addObject("wikiId", wikiId);
 		
-		// and what are we supposed to do with this?
 		if (request.isUserAuthenticated()) {
 			UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
 			model.addObject("editable", permits.getCanEdit());
@@ -84,7 +117,6 @@ public class CommunityController {
 			model.addObject("editable", false);
 			model.addObject("joinable", false);
 		}
-		return model;
 	}
 	
 	@RequestMapping(value = "/{communityId}/join", method = RequestMethod.GET)
