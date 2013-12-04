@@ -1,6 +1,4 @@
 (function() {
-    // Won't work on IE7. Kill me now.
-    
     var tables = document.querySelectorAll(".table-selectable");
     for (var i=0; i < tables.length; i++) {
         initTable(tables[i]);
@@ -8,11 +6,13 @@
     function makeRowListener(masterControl, buttons, inputs, input) {
         return function(e) {
             if(e.target.nodeName.toLowerCase() == "td") {
-                input.checked = !input.checked;    
+            	if (!input.disabled) {
+            		input.checked = !input.checked;	
+            	}
                 masterControl.checked = allChecked(inputs);
                 btnState(buttons, anyChecked(inputs));
             }
-        }
+        };
     }
     function allChecked(inputs) {
         for (var j=0; j < inputs.length; j++) {
@@ -60,7 +60,9 @@
             btnState(buttons, e.target.checked);
             for (var j=0; j < inputs.length; j++) {
                 var input = inputs[j];
-                input.checked = e.target.checked;
+                if (!input.disabled) {
+                	input.checked = e.target.checked;	
+                }
             }
         }, false);
     }

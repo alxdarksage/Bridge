@@ -22,11 +22,11 @@
     <div class="container">
         <sage:header code="${code}"/>
         <div class="row main-pane">
-            <div class="col-sm-3 visible-sm visible-md visible-lg nav-pane">
+            <div id="nav-pane" class="col-sm-3 visible-sm visible-md visible-lg">
                 <sage:signIn/>
                 <jsp:invoke fragment="navigation" />
             </div>
-            <div class="col-sm-9 content-pane">
+            <div id="content-pane" class="col-sm-9">
                 <jsp:invoke fragment="content" />
             </div>
         </div>

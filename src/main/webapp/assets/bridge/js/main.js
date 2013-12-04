@@ -1,6 +1,5 @@
 // Empty.
 
-
 var photoUpload = document.getElementById('photoFileInput');
 if (photoUpload) {
 	// Ah IE.

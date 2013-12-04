@@ -31,10 +31,10 @@
 		                        <label>
 		                            <c:choose>
 		                                <c:when test="${community.selected}">
-		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" checked="checked" >
+		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" checked="checked" />
 		                                </c:when>
 		                                <c:otherwise>
-		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" >
+		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" />
 		                                </c:otherwise>
 		                            </c:choose>
 		                            ${community.displayName}
@@ -50,11 +50,10 @@
 		        </div>
             </div>
             <div class="col-sm-6">
-		        <sage:text field="displayName">
-		        <span class="help-block">
-		            <spring:message code="displayName.help2"/>
-		        </span>
-		        </sage:text>
+                <div class="form-group">
+			        <label class="control-label"><spring:message code="displayName"/></label>
+			        <p class="form-control-static">${profileForm.displayName}</p>
+			    </div>
 		        <sage:text field="firstName"/>
 		        <sage:text field="lastName"/>
 		        <sage:textarea field="summary"/>

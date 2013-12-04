@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
+import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.CheckboxItem;
 import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
@@ -19,7 +20,6 @@ import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.UserProfile;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -69,7 +69,7 @@ public class ProfileController {
 		
 		SynapseClient synapseClient = request.getBridgeUser().getSynapseClient();
 		UserProfile profile = synapseClient.getUserProfile(request.getBridgeUser().getOwnerId());
-		BeanUtils.copyProperties(profile, profileForm);
+		FormUtils.valuesToProfileForm(profileForm, profile);
 		
 		model.setViewName("profile");
 		return model;
@@ -105,7 +105,7 @@ public class ProfileController {
 				// Update the non-community membership
 				String userId = request.getBridgeUser().getOwnerId();
 				UserProfile oldProfile = client.getUserProfile(userId);
-				BeanUtils.copyProperties(profileForm, oldProfile);
+				FormUtils.valuesToUserProfile(oldProfile, profileForm);
 				client.updateMyProfile(oldProfile);
 				
 				request.setNotification("ProfileUpdated");

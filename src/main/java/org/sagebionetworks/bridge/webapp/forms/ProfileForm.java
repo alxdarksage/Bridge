@@ -5,7 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ProfileForm {
 
-	@NotEmpty
 	private String displayName;
 	private String firstName;
 	private String lastName;

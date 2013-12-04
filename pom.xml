@@ -266,12 +266,16 @@
 			<scope>compile</scope>
 		</dependency>
 		
-		<!-- This is also referenced in services/repository and can be removed when we bring that in. -->
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>${commons-collections.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>15.0</version>
+        </dependency>
 		
 		<!-- TEST -->
 		<dependency>
