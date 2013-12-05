@@ -51,6 +51,5 @@ public class WikiForm {
 			return String.format("/communities/%s/wikis/new.html", communityId, wikiId);
 		}
 	}
-
 	
 }
