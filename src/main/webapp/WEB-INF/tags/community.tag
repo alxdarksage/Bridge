@@ -20,13 +20,13 @@
         <div class="community-actions">
             <c:if test="${joinable}">
                 <c:url var="joinUrl" value="/communities/${community.id}/join.html"/>
-                <a href="${joinUrl}" class="btn btn-sm btn-block btn-primary">
+                <a id="joinAct" href="${joinUrl}" class="btn btn-sm btn-block btn-primary">
                     <spring:message code="JoinThisCommunity"/>
                 </a>
             </c:if>
             <c:if test="${editable}">
                 <c:url var="editUrl" value="/communities/${community.id}/wikis/${wikiId}/edit.html"/>
-                <a href="${editUrl}" class="btn btn-sm btn-block btn-default topSpaced">
+                <a id="editAct" href="${editUrl}" class="btn btn-sm btn-block btn-default topSpaced">
                     <spring:message code="EditPage"/>
                 </a>
             </c:if>

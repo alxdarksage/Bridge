@@ -1,5 +1,8 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 public class CommunityAdminPage extends AdminPages {
 	
 	public static final String TITLE = "Community Administration"; 
@@ -14,6 +17,19 @@ public class CommunityAdminPage extends AdminPages {
 	
 	public void setDescription(String value) {
 		facade.enterField("#description", value);
+	}
+	
+	public void toggleAdminCheckbox(String name) {
+		WebElement element = findCheckbox(name);
+		element.click();
+	}
+	
+	private WebElement findCheckbox(String name) {
+		WebElement element = facade.findElement(By.cssSelector("div[title='"+name+"'] input"));
+		if (element == null) {
+			throw new RuntimeException("Could not find checkbox for community: " + name);
+		}
+		return element;
 	}
 	
 	public void assertNameError() {

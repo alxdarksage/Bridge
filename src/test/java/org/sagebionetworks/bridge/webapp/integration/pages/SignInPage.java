@@ -11,8 +11,16 @@ public class SignInPage {
 		this.facade = facade;
 	}
 	
-	public void signIn() {
+	public void signInAsTimPowers() {
 		signIn("timpowers@timpowers.com", "password");
+	}
+	
+	public void signInAsOctaviaButler() {
+		signIn("octaviabutler@octaviabutler.com", "password");
+	}
+	
+	public void signInAsJoeTest() {
+		signIn("test@test.com", "password");
 	}
 	
 	public void signIn(String email, String password) {
@@ -43,6 +51,10 @@ public class SignInPage {
 	
 	public void clickSignOut() {
 		facade.click("#signOutButton");
+	}
+	
+	public void clickEditProfile() {
+		facade.click("#editProfileAct");
 	}
 	
 	public void assertGlobalError() {

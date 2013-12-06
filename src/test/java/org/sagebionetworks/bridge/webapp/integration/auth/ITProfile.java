@@ -20,7 +20,7 @@ public class ITProfile extends WebDriverBase {
 	@Test
 	public void profilePageRedirectsAfterSave() {
 		SignInPage page = driver.getSignInPage();
-		page.signIn();
+		page.signInAsTimPowers();
 		
 		driver.getCommunityPage();
 		
@@ -34,7 +34,7 @@ public class ITProfile extends WebDriverBase {
 	@Test
 	public void profilePageRedirectsAfterCancel() {
 		SignInPage page = driver.getSignInPage();
-		page.signIn();
+		page.signInAsTimPowers();
 		
 		driver.getCommunityPage();
 		

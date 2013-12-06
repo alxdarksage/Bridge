@@ -168,10 +168,12 @@ public class CommunityAdminController {
 	}
 	
 	private boolean isUserAdmin(AccessControlList acl, String userId) {
-		for (ResourceAccess ra : acl.getResourceAccess()) {
-			if (ra.getPrincipalId().toString().equals(userId) &&
-				ra.getAccessType().contains(ACCESS_TYPE.UPDATE)) { // or permissions change?
-				return true;
+		if (acl != null && acl.getResourceAccess() != null) {
+			for (ResourceAccess ra : acl.getResourceAccess()) {
+				if (ra.getPrincipalId().toString().equals(userId) &&
+					ra.getAccessType().contains(ACCESS_TYPE.UPDATE)) { // or permissions change?
+					return true;
+				}
 			}
 		}
 		return false;

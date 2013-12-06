@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -210,7 +208,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		logger.info("The team ID for " + community.getName() + " is " + team.getId());
 		
 		// Set user as an editor for this community
-		makeAccessControlList(user.getProfile().getOwnerId(), community.getId(), ACCESS_TYPE.UPDATE, ACCESS_TYPE.CHANGE_PERMISSIONS);
+		addToAccessControlList(community.getId(), user.getProfile().getOwnerId(), ACCESS_TYPE.UPDATE, ACCESS_TYPE.CHANGE_PERMISSIONS);
 		return community;
 	}
 
@@ -229,19 +227,31 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		return page;
 	}
 	
-	private void makeAccessControlList(String userOwnerId, String entityId, ACCESS_TYPE... types) {
-		AccessControlList acl = new AccessControlList();
-		acl.setId(entityId);
-		ResourceAccess ra = new ResourceAccess();
-		if (types != null) {
-			ra.setAccessType( Sets.newHashSet(types) );
+	private void addToAccessControlList(String entityId, String userOwnerId, ACCESS_TYPE... types) {
+		AccessControlList acl = acls.get(entityId);
+		if (acl == null) {
+			acl = new AccessControlList();
+			acl.setId(entityId);
+			acls.put(entityId, acl);
 		}
-		// Cannot set long id, so setting this directly in the stub implementation in a way where 
-		// we correctly retrieve the acls for a user/object combo
-		// ra.setPrincipalId();
-		acl.setResourceAccess( Sets.newHashSet(ra) );
-		logger.info("Setting an ACL for: " + acl.getId()+":"+userOwnerId);
-		acls.put(acl.getId()+":"+userOwnerId, acl);
+		ResourceAccess selected = null;
+		if (acl.getResourceAccess() == null) {
+			acl.setResourceAccess(new HashSet<ResourceAccess>());
+		}
+		for (ResourceAccess ra : acl.getResourceAccess()) {
+			if (ra.getPrincipalId() != null && userOwnerId.equals(ra.getPrincipalId().toString())) {
+				selected = ra;
+				break;
+			}
+		}
+		if (selected == null) {
+			selected = new ResourceAccess();
+			selected.setAccessType(new HashSet<ACCESS_TYPE>());
+			selected.setPrincipalId(Long.parseLong(userOwnerId));
+			acl.getResourceAccess().add(selected);
+		}
+		selected.getAccessType().addAll(Sets.newHashSet(types));
+		logger.info("Setting an ACL for: " + acl.getId());
 	}
 
 	private String newId() {
@@ -324,7 +334,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	public void leaveCommunity(String communityId) throws SynapseException {
 		Community community = communities.get(communityId);
 		Team team = teams.get(community.getTeamId());
-		removeUserFromCommunityTeam(team, currentUserData.getProfile().getOwnerId());
+		removeCommunityAdmin(communityId, currentUserData.getProfile().getOwnerId());
+		removeUserFromCommunityTeam(team, communityId, currentUserData.getProfile().getOwnerId());
 	}
 	
 	private void joinUserToThisCommunityTeam(Team team, String userId) {
@@ -336,7 +347,9 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		memberSet.add(userId);
 	}
 
-	private void removeUserFromCommunityTeam(Team team, String userId) {
+	private void removeUserFromCommunityTeam(Team team, String communityId, String userId) throws SynapseException {
+		// We want to simulate the error where the user is the last *admin* associated to 
+		// the community.
 		Set<String> memberSet = memberships.get(team);
 		memberSet.remove(userId);
 	}
@@ -666,13 +679,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public AccessControlList getACL(String entityId) throws SynapseException {
-		if (currentUserData == null || currentUserData.getProfile() == null) {
-			logger.error("No user, no ACLs will be returned");
-			// Wonder if this is how it really works
-			return new AccessControlList();
-		}
-		logger.info("Looking for an ACL for: " + entityId+":"+currentUserData.getProfile().getOwnerId());
-		return acls.get(entityId+":"+currentUserData.getProfile().getOwnerId());		
+		logger.info("Looking for an ACL for: " + entityId);
+		return acls.get(entityId);		
 	}
 
 	@Override
@@ -732,7 +740,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public AccessControlList createACL(AccessControlList acl) throws SynapseException {
-		acls.put(acl.getId()+":"+currentUserData.getProfile().getOwnerId(), acl);
+		acls.put(acl.getId(), acl);
 		return acl;		
 	}
 
@@ -760,15 +768,28 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public UserEntityPermissions getUsersEntityPermissions(String entityId) throws SynapseException {
-		// For now, the owners of the community have edit permissions, and that's the creator.
 		UserEntityPermissions permits = new UserEntityPermissions();
-		Community community = communities.get(entityId);
-		if (community != null && community.getCreatedBy().equals(currentUserData.getProfile().getEmail())) {
-			permits.setCanEdit(true);
-			permits.setCanChangePermissions(true);
-		} else {
-			permits.setCanEdit(false);
-			permits.setCanChangePermissions(false);
+		permits.setCanAddChild(false);
+		permits.setCanChangePermissions(false);
+		permits.setCanDelete(false);
+		permits.setCanDownload(false);
+		permits.setCanEdit(false);
+		permits.setCanEnableInheritance(false);
+		permits.setCanPublicRead(false);
+		permits.setCanView(false);
+		AccessControlList acl = acls.get(entityId);
+		if (acl != null) {
+			for (ResourceAccess ra : acl.getResourceAccess()) {
+				if (ra.getPrincipalId().toString().equals(currentUserData.getProfile().getOwnerId())) {
+					for (ACCESS_TYPE type : ra.getAccessType()) {
+						if (type == ACCESS_TYPE.UPDATE) {
+							permits.setCanEdit(true);			
+						} else if (type == ACCESS_TYPE.CHANGE_PERMISSIONS) {
+							permits.setCanChangePermissions(true);			
+						}
+					}
+				}
+			}
 		}
 		return permits;
 	}
@@ -2059,7 +2080,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	public PaginatedResults<UserGroupHeader> getCommunityMembers(String communityId, long limit, long offset)
 			throws SynapseException {
 		Community community = communities.get(communityId);
-		Team team = teams.get(community.getId());
+		Team team = teams.get(community.getTeamId());
 		Set<String> members = memberships.get(team);
 		
 		List<UserGroupHeader> headers = new ArrayList<>();
@@ -2079,13 +2100,33 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 	
 	@Override
-	public void addCommunityAdmin(String communityId, String memberName) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+	public void addCommunityAdmin(String communityId, String userId) throws SynapseException {
+		// One ACL per user, which is not how this is really structured, but it's easier to stub out. 
+		addToAccessControlList(communityId, userId, ACCESS_TYPE.UPDATE, ACCESS_TYPE.CHANGE_PERMISSIONS);
 	}
 
 	@Override
-	public void removeCommunityAdmin(String communityId, String memberName) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+	public void removeCommunityAdmin(String communityId, String userId) throws SynapseException {
+		// All of this only matters if you're removing yourself...
+		AccessControlList acl = acls.get(communityId);
+		
+		Set<String> admins = new HashSet<>();
+		for (ResourceAccess ra : acl.getResourceAccess()) {
+			
+			if (ra.getAccessType().contains(ACCESS_TYPE.UPDATE)) {
+				admins.add(ra.getPrincipalId().toString());
+			}
+		}
+		if (admins.size() < 2 && admins.contains(userId)) {
+			throw new SynapseException("Service Error(401): {\"reason\":\"Need at least one admin.\n\"}");
+		}
+		// This allows for no subtlety, we
+		for (ResourceAccess ra : acl.getResourceAccess()) {
+			if (ra.getPrincipalId().toString().equals(userId)) {
+				ra.getAccessType().remove(ACCESS_TYPE.CHANGE_PERMISSIONS);
+				ra.getAccessType().remove(ACCESS_TYPE.UPDATE);
+			}
+		}
 	}
 	
 	private <T> List<T> paginate(List<T> list, long limit, long offset) {

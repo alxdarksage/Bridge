@@ -1,11 +1,9 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.springframework.web.util.HtmlUtils;
 
 
 public class ProfilePage extends EmbeddedSignInPage {
@@ -21,26 +19,31 @@ public class ProfilePage extends EmbeddedSignInPage {
 	}
 	
 	public void assertCommunitySelected(String communityName) {
-		String id = getCommunityId();
-		System.out.println("ID: " + id);
-		List<WebElement> elements = facade.findElements(By.tagName(".m"+id));
-		System.out.println(elements.size());
-		boolean checked = (elements.size() == 1 && elements.get(0).isSelected());
-		Assert.assertTrue("Community " + communityName + " checked", checked);
+		WebElement element = findCheckbox(communityName);
+		Assert.assertTrue("Community " + communityName + " is checked", element.isSelected());
 	}
 	
-	/*
 	public void assertCommunityNotSelected(String communityName) {
-		String id = getCommunityId();
-		List<WebElement> elements = facade.findElements(By.cssSelector(".m"+id));
-		boolean checked = (elements.size() == 1 && elements.get(0).isSelected());
-		Assert.assertFalse("Community " + communityName + " not checked", checked);
+		WebElement element = findCheckbox(communityName);
+		Assert.assertFalse("Community " + communityName + " not checked", element.isSelected());
 	}
-	*/
 	
-	private String getCommunityId() {
-		Map<String,String> ids = facade.getPortalPage().getCommunityIds();
-		return ids.get("Fanconi Anemia");
+	public void toggleCommunityCheckbox(String communityName) {
+		WebElement element = findCheckbox(communityName);
+		element.click();
+	}
+	
+	public void assertNeedAtLeastOneAdminError() {
+		facade.assertErrorMessage("#memberships_errors", "Need at least one admin.");
+	}
+	
+	private WebElement findCheckbox(String communityName) {
+		String name = HtmlUtils.htmlEscape(communityName);
+		WebElement element = facade.findElement(By.cssSelector("div[title='"+name+" Membership'] input"));
+		if (element == null) {
+			throw new RuntimeException("Could not find checkbox for community: " + name);
+		}
+		return element;
 	}
 	
 	public void setDisplayName(String value) {

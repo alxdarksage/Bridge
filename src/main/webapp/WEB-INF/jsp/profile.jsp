@@ -27,14 +27,14 @@
 		            <label>Community Memberships</label>
 		            <div class="checkbox-box">
 		                <c:forEach items="${memberships}" var="community">
-		                    <div class="checkbox">
+		                    <div class="checkbox" title="${community.displayName} Membership">
 		                        <label>
 		                            <c:choose>
 		                                <c:when test="${community.selected}">
-		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" checked="checked" />
+		                                    <input type="checkbox" name="memberships" value="${community.id}" checked="checked" />
 		                                </c:when>
 		                                <c:otherwise>
-		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" />
+		                                    <input type="checkbox" name="memberships" value="${community.id}" />
 		                                </c:otherwise>
 		                            </c:choose>
 		                            ${community.displayName}

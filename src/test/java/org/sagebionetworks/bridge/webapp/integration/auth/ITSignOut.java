@@ -18,7 +18,7 @@ public class ITSignOut extends WebDriverBase {
 	@Test
 	public void signOutReturnsSignOutPage() {
 		CommunityPage communityPage = facade.getCommunityPage();
-		communityPage.getEmbeddedSignIn().signIn();
+		communityPage.getEmbeddedSignIn().signInAsTimPowers();
 		
 		communityPage.getEmbeddedSignIn().signOut();
 		facade.waitForSignedOutPage();
@@ -27,7 +27,7 @@ public class ITSignOut extends WebDriverBase {
 	@Test
 	public void signOutCausesAuthExceptions() {
 		CommunityPage communityPage = facade.getCommunityPage();
-		communityPage.getEmbeddedSignIn().signIn();
+		communityPage.getEmbeddedSignIn().signInAsTimPowers();
 		
 		communityPage = facade.waitForCommunityPage();
 		communityPage.getEmbeddedSignIn().signOut();

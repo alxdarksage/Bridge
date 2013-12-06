@@ -5,13 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;

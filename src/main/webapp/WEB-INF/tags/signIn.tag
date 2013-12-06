@@ -14,7 +14,7 @@
 	                        <a id="signOutButton" href="${signOutUrl}">
 	                            <spring:message code="SignOut"/>
 	                        </a> <span class="divider-element">&bull;</span> 
-	                        <a id="editProfileLink" href="${editProfileUrl}">
+	                        <a id="editProfileAct" href="${editProfileUrl}">
 	                            <spring:message code="EditProfile"/>
 	                        </a>
 	                    </td>

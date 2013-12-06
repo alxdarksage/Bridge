@@ -17,7 +17,7 @@
 	            <label>Community Administrators</label>
 	            <div class="checkbox-box">
 	                <c:forEach items="${administrators}" var="admin">
-	                    <div class="checkbox">
+	                    <div class="checkbox" title="${admin.displayName}">
 	                        <label>
 	                            <c:choose>
 	                                <c:when test="${admin.selected}">

@@ -16,7 +16,6 @@ import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
-import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
