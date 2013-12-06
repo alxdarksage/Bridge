@@ -1163,8 +1163,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public void deleteV2WikiPage(WikiPageKey key) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
+		wikiPages.remove(key.getWikiPageId());
 	}
 
 	@Override

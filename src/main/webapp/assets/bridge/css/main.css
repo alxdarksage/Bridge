@@ -10,6 +10,11 @@ a, a:visited {
 h1, h2, h3, h4 {
 	font-family: 'Archivo Narrow', sans-serif;
 }
+h3.auth {
+    margin: 0 0 1rem 0;
+    font: normal 2.1rem 'Archivo Narrow', sans-serif;
+}
+
 .forgotLinkWrapper {
 	margin-top:1rem; 
 	margin-bottom: -.25rem;

@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -45,6 +46,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/communities")
 public class CommunityWikiController {
 	
+	private static final String RELATIVE_URL_BASE = "https://localhost:8888/webapp";
+
 	private static Logger logger = LogManager.getLogger(CommunityWikiController.class.getName());
 	
 	@Resource(name = "synapseClient")
@@ -56,7 +59,7 @@ public class CommunityWikiController {
 	
 	@RequestMapping(value = "/{communityId}/wikis/new", method = RequestMethod.GET)
 	public ModelAndView newWiki(BridgeRequest request, @PathVariable("communityId") String communityId,
-			ModelAndView model, WikiForm wikiForm) throws Exception {
+			ModelAndView model, @ModelAttribute WikiForm wikiForm) throws Exception {
 		
 		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
 		model.setViewName("communities/new");
@@ -71,14 +74,14 @@ public class CommunityWikiController {
 		
 		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
 		model.setViewName("communities/new");
+		
+		sanitizeMarkdownField(wikiForm, result);
 		if (!result.hasErrors()) {
 			SynapseClient client = request.getBridgeUser().getSynapseClient();
-			// NOTE: It doesn't use the relative URI, it just wants to know it's there... ?
-			String sanitizedHTML = Jsoup.clean(wikiForm.getMarkdown(), "https://localhost:8888/webapp", getCustomWhitelist());
 			
 			String userId = request.getBridgeUser().getOwnerId();
 			File temp = ClientUtils.createTempFile(request, userId+".html");
-			FileUtils.writeStringToFile(temp, sanitizedHTML);
+			FileUtils.writeStringToFile(temp, wikiForm.getMarkdown());
 			FileHandle handle = client.createFileHandle(temp, "text/html");
 			
 			V2WikiPage root = client.getV2RootWikiPage(communityId, ObjectType.ENTITY);
@@ -123,18 +126,18 @@ public class CommunityWikiController {
 		
 		Community community = request.getBridgeUser().getBridgeClient().getCommunity(communityId);
 		model.setViewName("communities/edit");
+		wikiForm.setWikiId(wikiId);
 		wikiForm.setIndexWiki(wikiId.equals(community.getIndexPageWikiId()));
 		
 		// There are no errors that can occur here, actually.
+		sanitizeMarkdownField(wikiForm, result);
 		if (!result.hasErrors()) {
 			V2WikiPage wiki = ClientUtils.getWikiPage(request, community, wikiId);
 			
 			SynapseClient client = request.getBridgeUser().getSynapseClient();
-			String sanitizedHTML = Jsoup.clean(wikiForm.getMarkdown(), "https://localhost:8888/webapp", getCustomWhitelist());
-			
 			File tempDir = (File)request.getAttribute(ServletContext.TEMPDIR);
 			File temp = new File(tempDir, wiki.getId()+".html");
-			FileUtils.writeStringToFile(temp, sanitizedHTML);
+			FileUtils.writeStringToFile(temp, wikiForm.getMarkdown());
 			FileHandle handle = client.createFileHandle(temp, "text/html");
 			
 			wiki.setMarkdownFileHandleId(handle.getId());
@@ -170,11 +173,27 @@ public class CommunityWikiController {
 		}
 		return String.format("redirect:/communities/%s/wikis/%s/edit.html", communityId, finalWikiId);
 	}
-	
-	private Whitelist getCustomWhitelist() {
-		// TODO: If you create two addAttribute() calls, this fails to work correctly.
-		return Whitelist.relaxed()
-			.preserveRelativeLinks(true)
-			.addAttributes(":all", "class", "style", "width", "target");
+
+	private void sanitizeMarkdownField(WikiForm wikiForm, BindingResult result) {
+		String sanitizedHTML = Jsoup.clean(wikiForm.getMarkdown(), RELATIVE_URL_BASE,
+				getWhitelist(wikiForm.isIndexWiki()));
+		wikiForm.setMarkdown(sanitizedHTML);
+		if (StringUtils.isBlank(sanitizedHTML) && !result.hasErrors()) {
+			ClientUtils.fieldError(result, "wikiForm", "markdown", "NotEmpty.wikiForm.markdown");
+		}
 	}
+	
+	private Whitelist getWhitelist(boolean isIndex) {
+		if (isIndex) {
+			return Whitelist.none()
+				.preserveRelativeLinks(true)
+				.addTags("ul", "li", "a")
+				.addAttributes("a", "href", "target");
+		} else {
+			return Whitelist.relaxed()
+				.preserveRelativeLinks(true)
+				.addAttributes(":all", "class", "style", "width", "target");
+		}
+	}
+
 }

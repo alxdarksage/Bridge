@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.integration.auth;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
@@ -42,11 +41,6 @@ public class ITProfile extends WebDriverBase {
 		ppage.clickCancel();
 		
 		driver.waitForCommunityPage();
-	}
-	
-	@Test
-	public void cannotRemoveSelfAsLastAdministratorFromCommunities() {
-		// TODO: This seems to work in the stub, not sure what happens in the real client
 	}
 	
 }

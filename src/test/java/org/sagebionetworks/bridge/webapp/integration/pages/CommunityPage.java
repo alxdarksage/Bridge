@@ -21,7 +21,17 @@ public class CommunityPage extends EmbeddedSignInPage {
 	public void clickEditButton() {
 		facade.click("#editAct");	
 	}
+	
+	public void clickPage(String pageName) {
+		facade.findElement(By.partialLinkText(pageName)).click();
+	}
 
+	public void assertNavigationElementForPageHighlighted(String pageName) {
+		WebElement listElement = facade.findElement(By.cssSelector("#user-nav li.active"));
+		// Will throw an exception if this isn't true.
+		listElement.findElement(By.partialLinkText(pageName));
+	}
+	
 	public void assertJoinButtonPreset() {
 		List<WebElement> elements = facade.findElements(By.id("joinAct"));
 		Assert.assertTrue("Join button present", elements.size() == 1);

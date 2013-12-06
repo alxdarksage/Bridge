@@ -1,4 +1,5 @@
 <%@ include file="../directives.jsp" %>
+<div id="sageTestValue" style="position: absolute; left: -10000px"></div>
 <sage:community-wiki-edit code="${community.name}">
     <sage:formErrors formName="wikiForm"/>
     <c:url var="createUrl" value="/communities/${community.id}/wikis/new.html"/>
@@ -12,25 +13,5 @@
             <sage:cancel url="/communities/${community.id}.html"/>
         </div>
     </form:form>
-    <script src="/webapp/assets/ckeditor/ckeditor.js"></script>
-<script>
-CKEDITOR.replace( 'markdown', {
-    baseHref: "http://localhost:8888<c:url value="/communities/${community.id}/wikis/${wikiForm.wikiId}/"/>",
-    filebrowserBrowseUrl: "<c:url value="/files/communities/${community.id}/browse.html"/>",
-    filebrowserUploadUrl: "<c:url value="/files/communities/${community.id}/upload.html"/>",
-    filebrowserWindowWidth : '300',
-    filebrowserWindowHeight : '400',
-    toolbarGroups: [
-        { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-        { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
-        { name: 'insert' },
-        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align' ] },
-        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'styles' },
-        { name: 'colors' },
-        { name: 'links' },
-        { name: 'source', groups: ['mode'] }
-    ]
-});
-</script>
+    <sage:ckeditor-config community="${community}" wikiForm="${wikiForm}" wikiHeaders="${wikiHeaders}"/>
 </sage:community-wiki-edit>

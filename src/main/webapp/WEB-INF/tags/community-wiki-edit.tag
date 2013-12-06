@@ -1,16 +1,16 @@
 <%@ include file="../jsp/directives.jsp" %>
 <%@ attribute name="code" required="true" %>
-<sage:main code="${code}">
+<sage:main code="${code} Site Editor">
     <jsp:attribute name="navigation">
         <ul class="nav nav-tabs smBottomSpaced">
-            <li class="${(wikiForm.indexWiki) ? '' : 'active'}"><a data-target="pages" class="act"><spring:message code="AllPages"/></a></li>
-            <li class="${(wikiForm.indexWiki) ? 'active' : ''}"><a data-target="nav" class="act"><spring:message code="Navigation"/></a></li>
+            <li class="${(wikiForm.indexWiki) ? '' : 'active'}"><a id="allPagesAct" data-target="pages" class="act"><spring:message code="AllPages"/></a></li>
+            <li class="${(wikiForm.indexWiki) ? 'active' : ''}"><a id="navAct" data-target="nav" class="act"><spring:message code="Navigation"/></a></li>
         </ul>
         <div id="nav" class="subPanel panel panel-default" style="display: ${(wikiForm.indexWiki) ? 'block' : 'none'}">
             <div class="panel-heading">
                 <strong>Site Navigation</strong>
                 <c:url var="editIndexUrl" value="/communities/${community.id}/wikis/${community.indexPageWikiId}/edit.html"/>
-                <a href="${editIndexUrl}" style="float:right" class="btn btn-xs btn-default">Edit</a>
+                <a id="editIndexAct" href="${editIndexUrl}" style="float:right" class="btn btn-xs btn-default">Edit</a>
             </div>
             <ul class="list-group" id="user-nav">
                 <li class="list-group-item"><a><spring:message code="Home"/></a></li>
@@ -22,13 +22,13 @@
             <div class="panel-heading">
                 <strong>All Pages</strong>
 	            <c:url var="newUrl" value="/communities/${community.id}/wikis/new.html"/>
-	            <a style="float:right" class="btn btn-xs btn-primary" href="${newUrl}">New Page</a>
+	            <a id="newPageAct" style="float:right" class="btn btn-xs btn-primary" href="${newUrl}">New Page</a>
             </div>
             <div class="panel-body">
                 <c:forEach items="${wikiHeaders}" var="wikiHeader">
-                    <div class="pages ${(wikiHeader.id eq wikiForm.wikiId) ? 'alert alert-info' : 'alert'}">
+                    <div class="pages ${(wikiHeader.id eq wikiForm.wikiId) ? 'alert alert-info' : 'alert'}" title="${wikiHeader.title}">
                         <c:url var="editUrl" value="/communities/${community.id}/wikis/${wikiHeader.id}/edit.html"/>
-                        <a href="${editUrl}">
+                        <a class="linkAct" href="${editUrl}">
                             ${wikiHeader.title}
                         </a>
                         <c:if test="${not wikiHeader.locked}">
@@ -51,7 +51,7 @@
                     <c:url var="editUrl" value="/communities/${community.id}/wikis/${wikiForm.wikiId}.html"/>    
                 </c:otherwise>
             </c:choose>
-            <a href="${editUrl}" class="btn btn-sm btn-block btn-default topSpaced">
+            <a id="quitAct" href="${editUrl}" class="btn btn-sm btn-block btn-default topSpaced">
                 <spring:message code="QuitEditPage"/>
             </a>
         </div>        
@@ -75,6 +75,8 @@ for (var i=0; i < acts.length; i++) {
 		}
 	}, false);
 }
+/*
+ * Cannot test this in ghostdriver 
 var delActs = document.querySelectorAll(".deleteAct");
 for (var i=0; i < delActs.length; i++) {
     delActs[i].addEventListener("click", function(e) {
@@ -83,4 +85,5 @@ for (var i=0; i < delActs.length; i++) {
     	}
     }, false);
 }
+*/
 </script>

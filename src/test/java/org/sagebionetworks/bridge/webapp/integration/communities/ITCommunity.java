@@ -2,7 +2,6 @@ package org.sagebionetworks.bridge.webapp.integration.communities;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sagebionetworks.bridge.webapp.controllers.admin.CommunitiesAdminController;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunitiesAdminPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityAdminPage;

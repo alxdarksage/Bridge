@@ -31,7 +31,7 @@
     </c:when>
     <c:otherwise>
         <div class="well">
-			<h3><spring:message code="SignIn"/></h3>
+			<h3 class="auth"><spring:message code="SignIn"/></h3>
 			<c:url var="signInUrl" value="/signIn.html"/>
 			<form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
 			    <div class="form-group">

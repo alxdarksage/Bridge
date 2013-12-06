@@ -32,6 +32,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 public class ClientUtils {
 	
@@ -201,7 +202,9 @@ public class ClientUtils {
 		for (V2WikiHeader header : results.getResults()) {
 			// Don't include the root or the index wiki pages in the list.
 			if (!header.getId().equals(root.getId()) && !header.getId().equals(community.getIndexPageWikiId())) {
-				WikiHeader h = new WikiHeader(header, community.getId(), header.getId().equals(community.getWelcomePageWikiId()));
+				String title = HtmlUtils.htmlEscape(header.getTitle());
+				String id = header.getId();
+				WikiHeader h = new WikiHeader(title, id, community.getId(), header.getId().equals(community.getWelcomePageWikiId()));
 				headers.add(h);
 			}
 		}
