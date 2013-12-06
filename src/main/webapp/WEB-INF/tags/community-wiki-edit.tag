@@ -76,7 +76,6 @@ for (var i=0; i < acts.length; i++) {
 	}, false);
 }
 /*
- * Cannot test this in ghostdriver 
 var delActs = document.querySelectorAll(".deleteAct");
 for (var i=0; i < delActs.length; i++) {
     delActs[i].addEventListener("click", function(e) {

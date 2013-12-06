@@ -3,7 +3,6 @@ package org.sagebionetworks.bridge.webapp.integration.communities;
 import java.net.MalformedURLException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
@@ -24,7 +23,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		driver = initDriver();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void canLoadAndQuitEditor() {
 		CommunityPage page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsTimPowers();
@@ -36,7 +35,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		page = driver.waitForCommunityPage();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void canLoadIndexCkEditor() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -46,7 +45,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.assertIndexToolbars();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void canLoadFullCKEditor() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -55,7 +54,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.assertFullEditorToolbars();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void canCreateAndDeleteNewPage() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -70,7 +69,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.deletePage("New Page");
 	}
 	
-	@Test @Ignore
+	@Test
 	public void validatesPageFields() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -81,7 +80,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.assertMarkdownError();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void canEditAndRevertNavigationWiki() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -99,7 +98,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.assertNavEntryDoesNotExist("Test Entry");
 	}
 	
-	@Test @Ignore
+	@Test
 	public void quitFromIndexTakesUserToWelcomeWiki() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -109,7 +108,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.assertText("Welcome");
 	}
 	
-	@Test @Ignore
+	@Test
 	public void deleteCurrentWikiTakesUserToWelcomeWiki() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -121,7 +120,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.assertText("Welcome");
 	}
 	
-	@Test @Ignore
+	@Test
 	public void canCreateALinkToAnotherPage() {
 		// Create page
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
@@ -162,7 +161,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		*/
 	}
 	
-	@Test @Ignore
+	@Test
 	public void userNavigationHighlightsWhenLoaded() throws MalformedURLException {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();
@@ -194,7 +193,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.submit();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void cannotSaveDangerousHTML() {
 		CommunityWikiPage wpage = driver.getCommunityWikiPage();
 		wpage.getEmbeddedSignIn().signInAsTimPowers();

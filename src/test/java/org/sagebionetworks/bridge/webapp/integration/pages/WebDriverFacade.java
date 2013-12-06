@@ -35,7 +35,7 @@ public class WebDriverFacade implements WebDriver {
 		return this;
 	}
 	
-	public void takeScreenshot() {
+	void takeScreenshot() {
 		try {
 			String name = Long.toString(new Date().getTime());
 			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -208,6 +208,14 @@ public class WebDriverFacade implements WebDriver {
 		(new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert-info.humane")));
 		String content = (String)((JavascriptExecutor)driver).executeScript("return document.querySelector('#notice').textContent");
 		Assert.assertTrue("User notified with message '"+message+"' was: " + content, content.contains(message));
+	}
+	
+	/**
+	 * PhantomJS cannot handle alerts and dialogs. This has to happen after a page loads.
+	 */
+	private void applyGhostdriverFix() {
+		executeJavaScript("window.alert = function(){}");
+		executeJavaScript("window.confirm = function(){return true;}");
 	}
 	
 	// Pass-throughs to the driver object.

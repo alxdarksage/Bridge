@@ -403,6 +403,11 @@
 						<version>2.6</version>
 						<configuration>
 							<skipITs>false</skipITs>
+							<!-- 
+							<includes>
+							    <include>**/ITCommunityWiki.java</include>
+							</includes>
+							 -->
 						</configuration>
 					</plugin>
 					<plugin>

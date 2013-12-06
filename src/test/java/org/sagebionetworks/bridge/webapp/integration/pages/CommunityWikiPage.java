@@ -6,7 +6,10 @@ import java.net.URL;
 import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CommunityWikiPage extends EmbeddedSignInPage {
 	
@@ -37,6 +40,7 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	public void submit() {
+		facade.waitUntil("#wikiForm");
 		facade.submit("#wikiForm");
 	}
 	
@@ -45,10 +49,12 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	public void setTitle(String value) {
+		facade.waitUntil("#wikiForm");
 		facade.enterField("#title", value);
 	}
 	
 	public void setHTML(String html) {
+		waitForEditorToLoad();
 		html = html.replaceAll("\"", "&quot;");
 		facade.executeJavaScript("CKEDITOR.instances.markdown.setData(\""+html+"\");");
 	}
@@ -67,22 +73,22 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 		facade.findElement(By.cssSelector("a[title='Link']")).click();
 	}
 	public void clickDialogPagesTab() {
-		waitUntilDialogLoaded();
+		waitForDialogToLoad();
 		facade.findElement(By.cssSelector("div.cke_editor_markdown_dialog a[title='Pages']")).click();
 	}
 	
 	public void clickDialogBrowseServerButton() {
-		waitUntilDialogLoaded();
+		waitForDialogToLoad();
 		facade.findElement(By.cssSelector("div.cke_editor_markdown_dialog a[title='Browse Server']")).click();
 	}
 	
 	public void clickDialogOkButton() {
-		waitUntilDialogLoaded();
+		waitForDialogToLoad();
 		facade.findElement(By.cssSelector("div.cke_editor_markdown_dialog a[title='OK']")).click();
 	}
 	
 	public void clickDialogLinkToPage(String name) {
-		waitUntilDialogLoaded();
+		waitForDialogToLoad();
 		facade.findElement(By.cssSelector("div.cke_editor_markdown_dialog div[name='pagesTab'] a[title='"+name+"']")).click();
 	}
 	
@@ -94,12 +100,14 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	public void assertThereIsNoScriptInEditor() {
+		waitForEditorToLoad();
 		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.getData()");
 		String value = facade.findElement(By.id("sageTestValue")).getText();
 		Assert.assertTrue("There is no script in editor", value.indexOf("script") == -1);
 	}
 	
 	public void assertThereIsLinkInEditor() {
+		waitForEditorToLoad();
 		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.getData()");
 		String value = facade.findElement(By.id("sageTestValue")).getText();
 		Assert.assertTrue("There is a link in the text", value.indexOf("</a>") > -1);
@@ -172,12 +180,21 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	public void waitForEditorToLoad() {
-		facade.waitUntil("#cke_markdown a[title='Insert/Remove Bulleted List']");
+		(new WebDriverWait(facade, 10)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				String value = facade.findElement(By.id("sageEditorReady")).getText();
+				return ("true".equals(value));
+			}
+		});			
 	}
 	
-	// In Ghostdriver, this dialog never seems to appear.
-	private void waitUntilDialogLoaded() {
-		facade.waitUntil("div.cke_editor_markdown_dialog");
+	public void waitForDialogToLoad() {
+		(new WebDriverWait(facade, 10)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				String value = facade.findElement(By.id("sageDialogOpen")).getText();
+				return ("true".equals(value));
+			}
+		});
 	}
 	
 	private WebElement findPageLink(String name) {

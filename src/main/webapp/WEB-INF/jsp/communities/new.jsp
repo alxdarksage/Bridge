@@ -1,5 +1,4 @@
 <%@ include file="../directives.jsp" %>
-<div id="sageTestValue" style="position: absolute; left: -10000px"></div>
 <sage:community-wiki-edit code="${community.name}">
     <sage:formErrors formName="wikiForm"/>
     <c:url var="createUrl" value="/communities/${community.id}/wikis/new.html"/>

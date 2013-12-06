@@ -2,6 +2,9 @@
 <%@ attribute name="community" required="true" type="org.sagebionetworks.bridge.model.Community" %>
 <%@ attribute name="wikiForm" required="true" type="org.sagebionetworks.bridge.webapp.forms.WikiForm" %>
 <%@ attribute name="wikiHeaders" required="true" type="java.util.List" %>
+<div id="sageTestValue" style="position: absolute; left: -10000px"></div>
+<div id="sageEditorReady" style="position: absolute; left: -10000px">false</div>
+<div id="sageDialogOpen" style="position: absolute; left: -10000px">false</div>
 <script src="/webapp/assets/ckeditor/ckeditor.js"></script>
 <script>
 <c:choose>
@@ -40,9 +43,18 @@ function selectPage() {
     dialog.selectPage('info');
     dialog.setValueOf('info', 'url', this.url);
 }
+CKEDITOR.instances.markdown.on('instanceReady', function(e) {
+	document.getElementById('sageEditorReady').textContent = "true";
+});
 CKEDITOR.on( 'dialogDefinition', function( e ) {
     var dialogName = e.data.name;
     var dialogDefinition = e.data.definition;
+    dialogDefinition.onShow = function() {
+    	document.getElementById('sageDialogOpen').textContent = "true";
+    }
+    dialogDefinition.onHide = function() {
+    	document.getElementById('sageDialogOpen').textContent = "false";
+    }
     if (dialogName === "link") {
         dialogDefinition.removeContents( 'advanced' );
         dialogDefinition.addContents({
