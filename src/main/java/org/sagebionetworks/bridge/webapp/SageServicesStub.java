@@ -2198,28 +2198,46 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public WikiPage createV2WikiPageWithV1(String ownerId, ObjectType ownerType, WikiPage toCreate) throws IOException,
 			SynapseException, JSONObjectAdapterException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 	@Override
 	public WikiPage updateV2WikiPageWithV1(String ownerId, ObjectType ownerType, WikiPage toUpdate) throws IOException,
 			SynapseException, JSONObjectAdapterException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 	@Override
 	public WikiPage getV2WikiPageAsV1(WikiPageKey key) throws JSONObjectAdapterException, SynapseException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 	@Override
 	public WikiPage getVersionOfV2WikiPageAsV1(WikiPageKey key, Long version) throws JSONObjectAdapterException,
 			SynapseException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public MessageToUser sendMessage(MessageToUser message, String entityId) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public String downloadMessage(String messageId) throws SynapseException, MalformedURLException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public PaginatedResults<MembershipInvtnSubmission> getOpenMembershipInvitationSubmissions(String teamId,
+			String inviteeId, long limit, long offset) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public PaginatedResults<MembershipRqstSubmission> getOpenMembershipRequestSubmissions(String requesterId,
+			String teamId, long limit, long offset) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 }

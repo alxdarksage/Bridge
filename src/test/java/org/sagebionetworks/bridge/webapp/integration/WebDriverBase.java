@@ -33,11 +33,6 @@ public class WebDriverBase {
 			System.getProperty("PHANTOMJS_BINARY_PATH") != null) {
 			System.setProperty("phantomjs.binary.path", System.getProperty("PHANTOMJS_BINARY_PATH"));
 		}
-		/*
-		DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setJavascriptEnabled(true);
-        desiredCapabilities.setCapability("takesScreenshot", true);
-        */
 		return new WebDriverFacade(new PhantomJSDriver());
 	}
 	
@@ -47,7 +42,6 @@ public class WebDriverBase {
 		
 	@After
 	public void closeDriver() {
-		//_driver.takeScreenshot();
 		_driver.close();
 		_driver.quit();
 	}
