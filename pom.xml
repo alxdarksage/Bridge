@@ -30,7 +30,7 @@
 		<selenium.version>2.34.0</selenium.version>
 		<servlet.version>3.0</servlet.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
-		<synapse.version>2013-12-06-b5d652b-860</synapse.version>
+		<synapse.version>2013-12-07-82a25cd-866</synapse.version>
 		<tomcat.version>7.0.32</tomcat.version>
 		<wro4j.version>1.6.3</wro4j.version>
 	</properties>
