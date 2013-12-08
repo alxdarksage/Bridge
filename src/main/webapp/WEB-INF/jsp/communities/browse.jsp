@@ -28,8 +28,8 @@ for (var i=0; i < links.length; i++) {
 	var link = links[i];
 	link.addEventListener("click", function(e) {
         var href = e.target.getAttribute('data-link');
+        window.close();
 		window.opener.CKEDITOR.tools.callFunction(funcNum, href);
-		window.close();
 	}, false);
 }
 </script>

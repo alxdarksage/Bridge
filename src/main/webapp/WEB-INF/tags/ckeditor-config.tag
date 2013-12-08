@@ -10,7 +10,7 @@
 <c:choose>
 <c:when test="${wikiForm.indexWiki}">
 CKEDITOR.replace( 'markdown', {
-    baseHref: "http://localhost:8888<c:url value="/communities/${community.id}/wikis/"/>",
+	allowedContent: true,
     filebrowserBrowseUrl: "<c:url value="/files/communities/${community.id}/browse.html"/>",
     filebrowserUploadUrl: "<c:url value="/files/communities/${community.id}/upload.html"/>",
     filebrowserWindowWidth : '300',
@@ -20,20 +20,20 @@ CKEDITOR.replace( 'markdown', {
 </c:when>
 <c:otherwise>
 CKEDITOR.replace( 'markdown', {
-    baseHref: "http://localhost:8888<c:url value="/communities/${community.id}/wikis/"/>",
+	allowedContent: true,
     filebrowserBrowseUrl: "<c:url value="/files/communities/${community.id}/browse.html"/>",
     filebrowserUploadUrl: "<c:url value="/files/communities/${community.id}/upload.html"/>",
     filebrowserWindowWidth : '300',
     filebrowserWindowHeight : '400',
     toolbar: [
-        { name: 'clipboard', items: ['Cut','Copy','Paste','PasteText',/*'PasteFromWord',*/'-','Undo','Redo']},
-        { name: 'editing', items: [ 'Find','Replace','-','SelectAll'/*,'-','SpellCheck', 'Scayt'*/ ] },
+        { name: 'clipboard', items: ['Cut','Copy','Paste','PasteText','-','Undo','Redo']},
+        { name: 'editing', items: [ 'Find','Replace','-','SelectAll' ] },
         { name: 'paragraph', items: [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv',
            '-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
-        { name: 'insert', items: [ 'Link','Unlink','Anchor','Image','Table','HorizontalRule','SpecialChar','PageBreak'/*,'Iframe'*/ ]  },
+        { name: 'insert', items: [ 'Link','Unlink','Anchor','Image','Table','HorizontalRule','SpecialChar','PageBreak' ]  },
         { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
         { name: 'basicstyles', items: [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-',
-           'RemoveFormat','-','TextColor','BGColor' ] }
+           'RemoveFormat','-','TextColor','BGColor', 'Source' ] }
     ]
 });
 </c:otherwise>
@@ -49,12 +49,13 @@ CKEDITOR.instances.markdown.on('instanceReady', function(e) {
 CKEDITOR.on( 'dialogDefinition', function( e ) {
     var dialogName = e.data.name;
     var dialogDefinition = e.data.definition;
-    dialogDefinition.onShow = function() {
+    var dialog = e.data.definition.dialog;
+    dialog.on('show', function() {
     	document.getElementById('sageDialogOpen').textContent = "true";
-    }
-    dialogDefinition.onHide = function() {
+    });
+    dialog.on('hide', function() {
     	document.getElementById('sageDialogOpen').textContent = "false";
-    }
+    });
     if (dialogName === "link") {
         dialogDefinition.removeContents( 'advanced' );
         dialogDefinition.addContents({

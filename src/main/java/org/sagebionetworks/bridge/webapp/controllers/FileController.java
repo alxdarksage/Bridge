@@ -25,6 +25,7 @@ import org.sagebionetworks.bridge.webapp.forms.WikiFile;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
@@ -63,7 +64,7 @@ public class FileController {
 		this.bridgeClient = bridgeClient;
 	}
 	
-	@RequestMapping(value = "/files/communities/{communityId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/files/communities/{communityId}", method = {RequestMethod.GET, RequestMethod.HEAD})
 	public void imageURL(BridgeRequest request, HttpServletResponse response,
 			@PathVariable("communityId") String communityId, @RequestParam("fileName") String fileName)
 			throws IOException {
