@@ -29,11 +29,6 @@ public class WebDriverFacade implements WebDriver {
 	public WebDriverFacade(WebDriver driver) {
 		this.driver = driver;
 	}
-
-	WebDriverFacade enterField(String cssSelector, String value) {
-		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
-		return this;
-	}
 	
 	void takeScreenshot() {
 		try {
@@ -48,11 +43,19 @@ public class WebDriverFacade implements WebDriver {
 		
 	}
 	
+	WebDriverFacade enterField(String cssSelector, String value) {
+		waitUntil(cssSelector);
+		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
+		return this;
+	}
+	
 	void submit(String cssSelector) {
+		waitUntil(cssSelector);
 		WebElement form = driver.findElement(By.cssSelector(cssSelector));
 		form.findElement(By.cssSelector("button[type=submit]")).click();
 	}
 	void click(String cssSelector) {
+		waitUntil(cssSelector);
 		driver.findElement(By.cssSelector(cssSelector)).click();
 	}
 	void assertErrorMessage(String cssSelector, String message) {
@@ -64,6 +67,13 @@ public class WebDriverFacade implements WebDriver {
 		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return (d.findElement(By.cssSelector(cssSelector)) != null);
+			}
+		});	
+	}
+	void waitUntilPartialLink(final String partialLinkText) {
+		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				return (d.findElement(By.partialLinkText(partialLinkText)) != null);
 			}
 		});	
 	}
@@ -234,7 +244,7 @@ public class WebDriverFacade implements WebDriver {
 	}
 	@Override
 	public void get(String arg0) {
-		driver.get("http://localhost:8888/webapp" + arg0);
+		driver.get("http://localhost:8888/bridge" + arg0);
 	}
 	@Override
 	public String getCurrentUrl() {

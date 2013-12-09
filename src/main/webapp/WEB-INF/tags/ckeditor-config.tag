@@ -5,7 +5,8 @@
 <div id="sageTestValue" style="position: absolute; left: -10000px"></div>
 <div id="sageEditorReady" style="position: absolute; left: -10000px">false</div>
 <div id="sageDialogOpen" style="position: absolute; left: -10000px">false</div>
-<script src="/webapp/assets/ckeditor/ckeditor.js"></script>
+<c:url var="ckeditorUrl" value="/assets/ckeditor/ckeditor.js"/>
+<script src="${ckeditorUrl}"></script>
 <script>
 <c:choose>
 <c:when test="${wikiForm.indexWiki}">

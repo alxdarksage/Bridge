@@ -39,11 +39,9 @@ public class ProfilePage extends EmbeddedSignInPage {
 	
 	private WebElement findCheckbox(String communityName) {
 		String name = HtmlUtils.htmlEscape(communityName);
-		WebElement element = facade.findElement(By.cssSelector("div[title='"+name+" Membership'] input"));
-		if (element == null) {
-			throw new RuntimeException("Could not find checkbox for community: " + name);
-		}
-		return element;
+		String cssSelector = "div[title='"+name+" Membership'] input";
+		facade.waitUntil(cssSelector);
+		return facade.findElement(By.cssSelector(cssSelector));
 	}
 	
 	public void setDisplayName(String value) {
