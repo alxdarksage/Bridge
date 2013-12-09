@@ -47,14 +47,6 @@ public class SignInPage {
 		facade.click("#signUpLink");
 	}
 	
-	public void clickSignOut() {
-		facade.click("#signOutButton");
-	}
-	
-	public void clickEditProfile() {
-		facade.click("#editProfileAct");
-	}
-	
 	public void assertGlobalError() {
 		facade.assertErrorMessage("#signInForm_errors", "Unable to sign in. Email or password may be incorrect.");
 	}

@@ -20,7 +20,7 @@ public class ITSignOut extends WebDriverBase {
 		CommunityPage communityPage = facade.getCommunityPage();
 		communityPage.getEmbeddedSignIn().signInAsTimPowers();
 		
-		communityPage.getEmbeddedSignIn().clickSignOut();
+		communityPage.getProfilePanelPage().clickSignOut();
 		facade.waitForSignedOutPage();
 	}
 	
@@ -30,7 +30,7 @@ public class ITSignOut extends WebDriverBase {
 		communityPage.getEmbeddedSignIn().signInAsTimPowers();
 		
 		communityPage = facade.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().clickSignOut();
+		communityPage.getProfilePanelPage().clickSignOut();
 		
 		facade.getProfilePage();
 		facade.waitForSignInPage();
