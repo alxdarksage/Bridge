@@ -37,12 +37,6 @@ public class OriginFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
 			ServletException {
 		
-		// Let's see if any of the tests are failing because of timing issues.
-		try {
-			Thread.sleep(1000);	
-		} catch(Throwable e) {
-		}
-		
 		// Store the origin URL so after authentication, we can direct the user
 		// to where they came from. This isn't excellent but it'll do until we
 		// know the user's home community.
@@ -58,12 +52,6 @@ public class OriginFilter implements Filter {
 		}
 
 		chain.doFilter(bridgeRequest, res);
-		
-		// Let's see if any of the tests are failing because of timing issues.
-		try {
-			Thread.sleep(1000);	
-		} catch(Throwable e) {
-		}
 	}
 
 	@Override
