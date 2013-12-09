@@ -8,6 +8,7 @@ public class ProfileForm {
 	private String firstName;
 	private String lastName;
 	private String summary;
+	private String memberships; // just here to hold an error...
 	
 	private MultipartFile photoFile;
 	
@@ -40,5 +41,11 @@ public class ProfileForm {
 	}
 	public void setPhotoFile(MultipartFile photoFile) {
 		this.photoFile = photoFile;
+	}
+	public String getMemberships() {
+		return memberships;
+	}
+	public void setMemberships(String memberships) {
+		this.memberships = memberships;
 	}
 }

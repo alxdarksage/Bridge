@@ -1,11 +1,17 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -19,7 +25,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class WebDriverFacade implements WebDriver {
 	
 	private WebDriver driver;
-	
+
 	public WebDriverFacade(WebDriver driver) {
 		this.driver = driver;
 	}
@@ -27,6 +33,19 @@ public class WebDriverFacade implements WebDriver {
 	WebDriverFacade enterField(String cssSelector, String value) {
 		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
 		return this;
+	}
+	
+	void takeScreenshot() {
+		try {
+			String name = Long.toString(new Date().getTime());
+			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			File destFile = new File(name + ".png");
+			System.out.println(destFile.getAbsolutePath());
+			FileUtils.copyFile(srcFile, destFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	void submit(String cssSelector) {
@@ -55,6 +74,14 @@ public class WebDriverFacade implements WebDriver {
 			}
 		});
 	}	
+	
+	public void executeJavaScript(String javascript) {
+		if (driver instanceof JavascriptExecutor) {
+			((JavascriptExecutor) driver).executeScript(javascript);
+		} else {
+			throw new RuntimeException("Cannot execute JS using this Selenium driver");
+		}		
+	}
 	
 	public AdminPage waitForAdminPage() {
 		waitForTitle(AdminPage.TITLE);
@@ -107,6 +134,10 @@ public class WebDriverFacade implements WebDriver {
 	public SignUpPage waitForSignUpPage() {
 		waitForTitle(SignUpPage.TITLE);
 		return new SignUpPage(this);
+	}
+	public CommunityWikiPage waitForCommunityWikiPage() {
+		waitForTitle(CommunityWikiPage.TITLE);
+		return new CommunityWikiPage(this);
 	}
 	
 	public AdminPage getAdminPage() {
@@ -166,12 +197,25 @@ public class WebDriverFacade implements WebDriver {
 		get("/termsOfUse.html");
 		return new TermsOfUsePage(this);
 	}
+	public CommunityWikiPage getCommunityWikiPage() {
+		// This is delicate!
+		get("/communities/1/wikis/6/edit.html");
+		return new CommunityWikiPage(this);
+	}
 
 	public void assertNotice(String message) {
 		// This is the only way I've found to extract this information from the page.
 		(new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert-info.humane")));
 		String content = (String)((JavascriptExecutor)driver).executeScript("return document.querySelector('#notice').textContent");
 		Assert.assertTrue("User notified with message '"+message+"' was: " + content, content.contains(message));
+	}
+	
+	/**
+	 * PhantomJS cannot handle alerts and dialogs. This has to happen after a page loads.
+	 */
+	private void applyGhostdriverFix() {
+		executeJavaScript("window.alert = function(){}");
+		executeJavaScript("window.confirm = function(){return true;}");
 	}
 	
 	// Pass-throughs to the driver object.

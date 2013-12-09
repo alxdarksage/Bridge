@@ -27,14 +27,14 @@
 		            <label>Community Memberships</label>
 		            <div class="checkbox-box">
 		                <c:forEach items="${memberships}" var="community">
-		                    <div class="checkbox">
+		                    <div class="checkbox" title="${community.displayName} Membership">
 		                        <label>
 		                            <c:choose>
 		                                <c:when test="${community.selected}">
-		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" checked="checked" >
+		                                    <input type="checkbox" name="memberships" value="${community.id}" checked="checked" />
 		                                </c:when>
 		                                <c:otherwise>
-		                                    <input class="m${community.id}" type="checkbox" name="memberships" value="${community.id}" >
+		                                    <input type="checkbox" name="memberships" value="${community.id}" />
 		                                </c:otherwise>
 		                            </c:choose>
 		                            ${community.displayName}
@@ -42,14 +42,18 @@
 		                    </div>
 		                </c:forEach>
 		            </div>
+                    <spring:bind path="memberships">
+                        <div class="${status.error ? 'has-error' : ''}">
+	                        <form:errors id="memberships_errors" path="memberships" htmlEscape="false"/>
+                        </div>
+                    </spring:bind>
 		        </div>
             </div>
             <div class="col-sm-6">
-		        <sage:text field="displayName">
-		        <span class="help-block">
-		            <spring:message code="displayName.help2"/>
-		        </span>
-		        </sage:text>
+                <div class="form-group">
+			        <label class="control-label"><spring:message code="displayName"/></label>
+			        <p class="form-control-static">${profileForm.displayName}</p>
+			    </div>
 		        <sage:text field="firstName"/>
 		        <sage:text field="lastName"/>
 		        <sage:textarea field="summary"/>

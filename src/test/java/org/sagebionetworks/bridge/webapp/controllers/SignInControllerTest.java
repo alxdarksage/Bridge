@@ -5,13 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -83,9 +80,6 @@ public class SignInControllerTest {
 
 		String result = controller.post(request, form, binding);
 		
-		Logger logger = LogManager.getLogger(SignInControllerTest.class.getName());
-		ClientUtils.dumpErrors(logger, binding);
-		
 		assertFalse("No errors", binding.hasGlobalErrors());
 		assertEquals("Redirect to origin", "redirect:/portal/index.html", result);
 		assertTrue("User was stored in session", request.getBridgeUser() != null);
@@ -97,8 +91,8 @@ public class SignInControllerTest {
 	public void testFailedLogin() throws Exception {
 		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenThrow(new SynapseException());
 
-		String result = controller.post(request, form, binding);
-
+		controller.post(request, form, binding);
+		
 		assertTrue("Has an error", binding.hasGlobalErrors());
 		// Because this is mocked out, request.getServletPath() is now empty
 		// assertEquals("Redirect to origin with error", "redirect:/portal/index.html?login=error", result);

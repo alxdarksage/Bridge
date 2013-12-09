@@ -2,28 +2,36 @@
 
 <c:choose>
     <c:when test="${sessionScope.BridgeUser.isAuthenticated()}">
-        <div id="profile-pane" class="well hidden-sm">
-            <table cellspacing="0" cellpadding="0">
-                <tr>
-                    <td><img src='<c:url value="/static/images/default_avatar.png"/>'/></td>
-                    <td>
-                        <div class="userName">${sessionScope['BridgeUser'].displayName}</div>
-                        <c:url var="signOutUrl" value="/signOut.html"/>
-                        <c:url var="editProfileUrl" value="/profile.html"/>
-                        <a id="signOutButton" href="${signOutUrl}">
-                            <spring:message code="SignOut"/>
-                        </a> <span class="divider-element">&bull;</span> 
-                        <a id="editProfileLink" href="${editProfileUrl}">
-                            <spring:message code="EditProfile"/>
-                        </a>
-                    </td>
-                </tr>
-            </table>
+        <div id="profile-pane" class="panel panel-default hidden-sm">
+            <div class="panel-body">
+	            <table>
+	                <tr>
+	                    <td><img src='<c:url value="/static/images/default_avatar.png"/>'/></td>
+	                    <td>
+	                        <div class="userName">${sessionScope['BridgeUser'].displayName}</div>
+	                        <c:url var="signOutUrl" value="/signOut.html"/>
+	                        <c:url var="editProfileUrl" value="/profile.html"/>
+	                        <a id="signOutButton" href="${signOutUrl}">
+	                            <spring:message code="SignOut"/>
+	                        </a> <span class="divider-element">&bull;</span> 
+	                        <a id="editProfileAct" href="${editProfileUrl}">
+	                            <spring:message code="EditProfile"/>
+	                        </a>
+	                    </td>
+	                </tr>
+	            </table>
+            </div>
+            <%-- There's no way to show this only for patients, at the moment. 
+            <div class="panel-footer">
+                <a>My Journal</a>
+            </div>
+            --%>
         </div>
+        
     </c:when>
     <c:otherwise>
         <div class="well">
-			<h3><spring:message code="SignIn"/></h3>
+			<h3 class="auth"><spring:message code="SignIn"/></h3>
 			<c:url var="signInUrl" value="/signIn.html"/>
 			<form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
 			    <div class="form-group">

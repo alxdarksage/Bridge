@@ -130,7 +130,7 @@ public class DataTableTag extends SimpleTagSupport {
 		tb.startTag("tr");
 		tb.startTag("td", "class", "empty");
 		tb.addAttribute("colspan", Integer.toString(this.columns.size()));
-		tb.append("There are currently no items.");
+		tb.append("There are currently no "+this.caption.toLowerCase()+".");
 		tb.endTag("td");
 		tb.endTag("tr");
 		tb.endTag("tbody");
@@ -164,6 +164,7 @@ public class DataTableTag extends SimpleTagSupport {
 				if (StringUtils.isNotBlank(column.getLink())) {
 					// TODO: Figure out how to do this correctly so there can be any expression here.
 					String output = column.getLink().replace("{id}", objectId);
+					
 					tb.startTag("a", "href", getContextPath() + output);
 					tb.append(value);
 					tb.endTag("a");
@@ -254,5 +255,4 @@ public class DataTableTag extends SimpleTagSupport {
 		PageContext pageContext = (PageContext)getJspContext();
 		return pageContext.getServletContext().getContextPath();
 	}
-
 }

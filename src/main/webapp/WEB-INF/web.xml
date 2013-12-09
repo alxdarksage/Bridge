@@ -23,7 +23,6 @@
     <servlet-mapping>
         <servlet-name>spring-dispatcher</servlet-name>
         <url-pattern>*.html</url-pattern>
-        <url-pattern>/page/*</url-pattern>
     </servlet-mapping>
     
     <filter>

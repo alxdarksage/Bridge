@@ -6,8 +6,8 @@
 
     <p><spring:message code="Error.help"/></p>
     
-    <c:if test="${requestScope.message}">
-        <p><em>(The server said: "${requestScope.message}.")</em></p>
+    <c:if test="${message}">
+        <p><em>(The server said: "${message}.")</em></p>
     </c:if>
     
 </sage:minimal>

@@ -17,23 +17,39 @@
     background-color: none;
 }
 .list-group-item {
-    padding: 0;
+    padding: 10px 15px;
     
-    &.active {
-        padding: 10px 15px;
-    }
     a {
         display: block;
-        padding: 10px 15px;
+    }
+    &.active a {
+        color: #ffffff;
     }
 }
+.pages {
+    margin: 0 -4px;
+    padding: 2px 8px;
+}
 #profile-pane {
-    padding: 1rem;
     overflow: hidden;
     
+    .panel-body {
+        padding: 0;
+    }
+    .panel-footer {
+        padding: 5px 15px;
+    }
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+        
+        td {
+            padding: 0;
+        }
+    }
     img {
-       width: 5.6rem;
-       height: 5.6rem;
+       width: 7.2rem;
+       height: 7.2rem;
        margin-right: 1rem;
     }
     .userName {

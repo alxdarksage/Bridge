@@ -9,6 +9,7 @@ public class CommunityForm {
 	private String name;
 	private String description;
 	private String id;
+	private String administrators; // just here to hold an error...
 	
 	public String getFormName() {
 		if (StringUtils.isBlank(id)) {
@@ -42,5 +43,11 @@ public class CommunityForm {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public String getAdministrators() {
+		return administrators;
+	}
+	public void setAdministrators(String administrators) {
+		this.administrators = administrators;
 	}
 }

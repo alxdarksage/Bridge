@@ -18,7 +18,7 @@ public class ITCommunityAdmin extends WebDriverBase {
 	public void createDriver() {
 		driver = initDriver();
 		SignInPage signInPage = driver.getSignInPage();
-		signInPage.signIn();
+		signInPage.signInAsTimPowers();
 	}
 
 	@Test

@@ -8,6 +8,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class WebDriverBase {
@@ -15,9 +16,11 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
-		_driver = createPhantomJSDriver();
-		// _driver = createFirefoxDriver();
-		
+		if (StackConfiguration.isDevelopStack()) {
+			_driver = createFirefoxDriver();
+		} else {
+			_driver = createPhantomJSDriver();
+		}
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
@@ -36,7 +39,7 @@ public class WebDriverBase {
 	private WebDriverFacade createFirefoxDriver() {
 		return new WebDriverFacade(new FirefoxDriver());
 	}
-	
+		
 	@After
 	public void closeDriver() {
 		_driver.close();

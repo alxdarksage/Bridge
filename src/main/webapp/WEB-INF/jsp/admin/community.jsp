@@ -11,29 +11,34 @@
     <form:form role="form" modelAttribute="communityForm" method="post" action="${communityUrl}">
         <sage:text field="name"/>
         <sage:textarea field="description"/>
-        
-        <%-- 
-        <div class="form-group">
-            <label>Community Administrators</label>
-            <div class="checkbox-box">
-                <c:forEach items="${editors}" var="user">
-                    <div class="checkbox">
-                        <label>
-                            <c:choose>
-                                <c:when test="${user.selected}">
-                                    <input type="checkbox" name="editors" value="${user.id}" checked/>
-                                </c:when>
-                                <c:otherwise>
-                                    <input type="checkbox" name="editors" value="${user.id}" />                
-                                </c:otherwise>
-                            </c:choose>
-                            ${user.displayName}
-                        </label>
+        <%-- There are no members at this point. --%>
+        <c:if test="${communityForm.formId != 'new'}">
+	        <div class="form-group">
+	            <label>Community Administrators</label>
+	            <div class="checkbox-box">
+	                <c:forEach items="${administrators}" var="admin">
+	                    <div class="checkbox" title="${admin.displayName}">
+	                        <label>
+	                            <c:choose>
+	                                <c:when test="${admin.selected}">
+	                                    <input type="checkbox" name="administrators" value="${admin.id}" checked/>
+	                                </c:when>
+	                                <c:otherwise>
+	                                    <input type="checkbox" name="administrators" value="${admin.id}" />                
+	                                </c:otherwise>
+	                            </c:choose>
+	                            ${admin.displayName}
+	                        </label>
+	                    </div>
+	                </c:forEach>
+	            </div>
+                <spring:bind path="administrators">
+                    <div class="${status.error ? 'has-error' : ''}">
+                        <form:errors id="administrators_errors" path="administrators" htmlEscape="false"/>
                     </div>
-                </c:forEach>
-            </div>
-        </div>
-        --%>
+                </spring:bind>
+	        </div>
+        </c:if>
         
         <sage:hidden field="id"/>
         <sage:submit code="Save"/>

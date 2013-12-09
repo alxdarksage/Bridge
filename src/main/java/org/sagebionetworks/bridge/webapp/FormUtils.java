@@ -2,8 +2,10 @@ package org.sagebionetworks.bridge.webapp;
 
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
+import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
+import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
@@ -33,12 +35,29 @@ public class FormUtils {
 		return newUser;
 	}
 	
-	public static WikiForm valuesToWikiForm(WikiForm wikiForm, V2WikiPage wiki) {
+	public static WikiForm valuesToWikiForm(WikiForm wikiForm, V2WikiPage wiki, String markdown) {
 		wikiForm.setTitle(wiki.getTitle());
 		// This has become a good deal more complicated and is not finished.
 		// wikiForm.setMarkdown(wiki.getMarkdown());
 		wikiForm.setWikiId(wiki.getId());
+		wikiForm.setMarkdown(markdown);
 		return wikiForm;
 	}
+	
+	public static ProfileForm valuesToProfileForm(ProfileForm form, UserProfile profile) {
+		form.setDisplayName(profile.getDisplayName());
+		form.setFirstName(profile.getFirstName());
+		form.setLastName(profile.getLastName());
+		form.setSummary(profile.getSummary());
+		return form;
+	}
+	
+	public static UserProfile valuesToUserProfile(UserProfile profile, ProfileForm form) {
+		profile.setFirstName(form.getFirstName());
+		profile.setLastName(form.getLastName());
+		profile.setSummary(form.getSummary());
+		return profile;
+	}
+	
 	
 }
