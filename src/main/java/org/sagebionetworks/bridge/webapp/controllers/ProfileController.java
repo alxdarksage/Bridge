@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
+import com.google.common.collect.Lists;
+
 @Controller
 @RequestMapping(value = "/profile")
 public class ProfileController {
@@ -53,7 +54,7 @@ public class ProfileController {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
 		
-		List<CheckboxItem> items = new ArrayList<>();
+		List<CheckboxItem> items = Lists.newArrayList();
 		for (Community community : communities) {
 			CheckboxItem ci = new CheckboxItem(HtmlUtils.htmlEscape(community.getName()), community.getId());
 			if (memberships.getResults().contains(community)) {
@@ -120,7 +121,7 @@ public class ProfileController {
 	}
 	
 	private List<String> getMembershipIds(List<CheckboxItem> existingMemberships) throws SynapseException {
-		List<String> list = new ArrayList<>();
+		List<String> list = Lists.newArrayList();
 		for (CheckboxItem community : existingMemberships) {
 			if (community.isSelected()) {
 				list.add(community.getId());	

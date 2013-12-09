@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -41,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 @Controller
 public class FileController {
@@ -122,7 +123,7 @@ public class FileController {
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wiki.getId());
 		FileHandleResults results = synapseClient.getV2WikiAttachmentHandles(key);
 		
-		List<WikiFile> images = new ArrayList<>();
+		List<WikiFile> images = Lists.newArrayList();
 		for (FileHandle handle : results.getList()) {
 			// Preview files are included in the file handles, and they break things. Filter them out.
 			if (!(handle instanceof PreviewFileHandle)) {
@@ -177,7 +178,7 @@ public class FileController {
 	}
 	
 	private List<File> retrieveFilesFromRequest(BridgeRequest request, UploadForm uploadForm) throws ServletException {
-		List<File> files = new ArrayList<>();
+		List<File> files = Lists.newArrayList();
 		
 		InputStream inputStream = null;
 		OutputStream outputStream = null;

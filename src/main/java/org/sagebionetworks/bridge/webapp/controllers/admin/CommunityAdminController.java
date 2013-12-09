@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/admin")
@@ -134,7 +135,7 @@ public class CommunityAdminController {
 		List<UserGroupHeader> members = client.getCommunityMembers(communityId, ClientUtils.LIMIT, 0).getResults();
 		AccessControlList acl = synapseClient.getACL(communityId);
 		
-		List<CheckboxItem> items = new ArrayList<>();
+		List<CheckboxItem> items = Lists.newArrayList();
 		for (UserGroupHeader member : members) {
 			logger.info("Community has this member: " + member.getDisplayName());
 			CheckboxItem ci = new CheckboxItem(member.getDisplayName(), member.getOwnerId());
@@ -148,7 +149,7 @@ public class CommunityAdminController {
 	
 	private List<String> getAdministratorIds(BridgeRequest request, String communityId) throws SynapseException {
 		List<CheckboxItem> items = getAdministrators(request, communityId);
-		List<String> list = new ArrayList<>();
+		List<String> list = Lists.newArrayList();
 		for (CheckboxItem item : items) {
 			if (item.isSelected()) {
 				list.add(item.getId());
@@ -159,7 +160,7 @@ public class CommunityAdminController {
 	
 	private List<String> getMemberIds(BridgeRequest request, String communityId) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		List<String> list = new ArrayList<>();
+		List<String> list = Lists.newArrayList();
 		List<UserGroupHeader> members = client.getCommunityMembers(communityId, ClientUtils.LIMIT, 0).getResults();
 		for (UserGroupHeader member : members) {
 			list.add(member.getOwnerId());

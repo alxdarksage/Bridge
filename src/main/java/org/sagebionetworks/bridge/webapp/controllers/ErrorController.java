@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.collect.Maps;
+
 @Controller
 @RequestMapping("/error")
 public class ErrorController {
@@ -28,7 +29,7 @@ public class ErrorController {
 	
 	// In fact, I don't believe many of these get thrown, because they are not wrapped by 
 	// SynapseException, SE is a replacement for these domain-specific exceptions.
-	private static Map<Class<? extends Throwable>,String> errorCodes = new HashMap<>();
+	private static Map<Class<? extends Throwable>,String> errorCodes = Maps.newHashMap();
 	static {
 		errorCodes.put(UnauthorizedException.class, "Error.401");
 		errorCodes.put(ForbiddenException.class, "Error.403");
