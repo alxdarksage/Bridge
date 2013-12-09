@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.junit.Assert;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -139,6 +138,7 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	public void assertText(String text) {
+		facade.waitUntil(".main-pane");
 		WebElement base = facade.findElement(By.cssSelector(".main-pane"));
 		base.findElement(By.xpath("//div[contains(.,'"+text+"')]"));
 	}
@@ -198,15 +198,18 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	private WebElement findPageLink(String name) {
+		facade.waitUntil("div[title='"+name+"'] a.linkAct");
 		return facade.findElement(By.cssSelector("div[title='"+name+"'] a.linkAct"));
 	}
 	
 	private WebElement findNavEntry(String entry) {
+		facade.waitUntil("#user-nav");
 		WebElement base = facade.findElement(By.id("user-nav"));
 		return base.findElement(By.xpath("//div[contains(.,'"+entry+"')]"));
 	}
 	
 	private WebElement findPageDeleteLink(String name) {
+		facade.waitUntil("div[title='"+name+"'] a.deleteAct");
 		return facade.findElement(By.cssSelector("div[title='"+name+"'] a.deleteAct"));
 	}
 }

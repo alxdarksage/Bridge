@@ -70,6 +70,13 @@ public class WebDriverFacade implements WebDriver {
 			}
 		});	
 	}
+	void waitUntilPartialLink(final String partialLinkText) {
+		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				return (d.findElement(By.partialLinkText(partialLinkText)) != null);
+			}
+		});	
+	}
 	void waitForTitle(final String title) {
 		(new WebDriverWait(driver, 20)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
@@ -237,7 +244,7 @@ public class WebDriverFacade implements WebDriver {
 	}
 	@Override
 	public void get(String arg0) {
-		driver.get("http://localhost:8888/webapp" + arg0);
+		driver.get("http://localhost:8888/bridge" + arg0);
 	}
 	@Override
 	public String getCurrentUrl() {

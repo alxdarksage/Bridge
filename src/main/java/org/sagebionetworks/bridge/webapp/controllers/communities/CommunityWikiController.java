@@ -46,7 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/communities")
 public class CommunityWikiController {
 	
-	private static final String RELATIVE_URL_BASE = "https://localhost:8888/webapp";
+	private static final String RELATIVE_URL_BASE = "https://localhost:8888/bridge";
 
 	private static Logger logger = LogManager.getLogger(CommunityWikiController.class.getName());
 	
