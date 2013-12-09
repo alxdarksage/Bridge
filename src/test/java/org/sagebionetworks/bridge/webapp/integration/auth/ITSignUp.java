@@ -82,7 +82,7 @@ public class ITSignUp extends WebDriverBase {
 		touPage.submit();
 		
 		communityPage = driver.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().clickSignOut();
+		communityPage.getProfilePanelPage().clickSignOut();
 
 		// Signing back in, no more terms of service
 		SignOutPage signOutPage = driver.waitForSignedOutPage();

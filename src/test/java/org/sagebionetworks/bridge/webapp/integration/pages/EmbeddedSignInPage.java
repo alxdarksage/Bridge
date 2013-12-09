@@ -10,6 +10,12 @@ abstract public class EmbeddedSignInPage {
 	}
 
 	public SignInPage getEmbeddedSignIn() {
+		facade.waitUntil("#signInForm");
 		return new SignInPage(this.facade);
+	}
+	
+	public ProfilePanelPage getProfilePanelPage() {
+		facade.waitUntil("#profile-pane");
+		return new ProfilePanelPage(this.facade);
 	}
 }
