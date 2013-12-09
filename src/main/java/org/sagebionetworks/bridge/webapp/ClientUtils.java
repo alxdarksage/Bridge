@@ -34,6 +34,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
+import com.google.common.collect.Lists;
+
 public class ClientUtils {
 	
 	public static class ExceptionInfo {
@@ -198,7 +200,7 @@ public class ClientUtils {
 		// Get headers for all wiki pages
 		V2WikiPage root = client.getV2RootWikiPage(community.getId(), ObjectType.ENTITY);
 		PaginatedResults<V2WikiHeader> results = client.getV2WikiHeaderTree(community.getId(), ObjectType.ENTITY);
-		List<WikiHeader> headers = new ArrayList<>();
+		List<WikiHeader> headers = Lists.newArrayList();
 		for (V2WikiHeader header : results.getResults()) {
 			// Don't include the root or the index wiki pages in the list.
 			if (!header.getId().equals(root.getId()) && !header.getId().equals(community.getIndexPageWikiId())) {

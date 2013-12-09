@@ -1,9 +1,7 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +15,8 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 public class DataTableTag extends SimpleTagSupport {
 
@@ -35,9 +35,9 @@ public class DataTableTag extends SimpleTagSupport {
 	private String caption;
 	private boolean selectable;
 	
-	private List<DataTableColumnTag> columns = new ArrayList<>();
-	private List<DataTableButtonTag> globalButtons = new ArrayList<>();
-	private List<DataTableButtonTag> buttons = new ArrayList<>();
+	private List<DataTableColumnTag> columns = Lists.newArrayList();
+	private List<DataTableButtonTag> globalButtons = Lists.newArrayList();
+	private List<DataTableButtonTag> buttons = Lists.newArrayList();
 	
 	public void setFormId(String formId) {
 		this.formId = formId;
@@ -187,9 +187,9 @@ public class DataTableTag extends SimpleTagSupport {
 		} else {
 			try {
 				value = pub.getProperty(object, column.getField());
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			} catch (Exception e) {
 				logger.error(e);
-			}	
+			}
 		}
 		if (value instanceof Date) {
 			value = formatter.format(value);

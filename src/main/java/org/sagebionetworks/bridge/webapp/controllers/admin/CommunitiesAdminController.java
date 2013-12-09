@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.collect.Lists;
+
 @Controller
 @RequestMapping("/admin")
 public class CommunitiesAdminController {
@@ -35,7 +36,7 @@ public class CommunitiesAdminController {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<Community> results = client.getAllCommunities(ClientUtils.LIMIT, 0);
 		
-		List<Community> communities = new ArrayList<>();
+		List<Community> communities = Lists.newArrayList();
 		for (Community community : results.getResults()) {
 			UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
 			if (permits.getCanEdit()) {

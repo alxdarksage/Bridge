@@ -1,11 +1,12 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import com.google.common.collect.Maps;
 
 
 public class PortalPage {
@@ -19,7 +20,7 @@ public class PortalPage {
 	}
 	
 	public Map<String, String> getCommunityIds() {
-		Map<String,String> ids = new HashMap<>();
+		Map<String,String> ids = Maps.newHashMap();
 		List<WebElement> elements = facade.findElements(By.cssSelector("#communities a"));
 		for (WebElement element : elements) {
 			ids.put(element.getText().trim(), parseIdFromUrl(element.getAttribute("href")));

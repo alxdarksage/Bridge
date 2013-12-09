@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -118,23 +117,25 @@ import org.sagebionetworks.repo.web.NotFoundException;
 import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class SageServicesStub implements SynapseClient, BridgeClient {
 	
 	private static final Logger logger = LogManager.getLogger(SageServicesStub.class.getName());
 
-	private Map<String,Community> communities = new HashMap<>();
+	private Map<String,Community> communities = Maps.newHashMap();
 	UserSessionData currentUserData;
 	String sessionToken; // when this isn't separate from UserSessionData.getProfile().getSession() there are errors.
-	Map<String, UserSessionData> users = new HashMap<>();
-	Map<String,AccessControlList> acls = new HashMap<>();
-	Map<String, V2WikiPage> wikiPages = new HashMap<>();
-	Map<String, Team> teams = new HashMap<>();
-	Map<Team,Set<String>> memberships = new HashMap<>();
-	Set<String> agreedTOUs = new HashSet<>();
-	Map<String,String> markdowns = new HashMap<>();
-	Map<String,FileHandle> fileHandles = new HashMap<>();
+	Map<String, UserSessionData> users = Maps.newHashMap();
+	Map<String,AccessControlList> acls = Maps.newHashMap();
+	Map<String, V2WikiPage> wikiPages = Maps.newHashMap();
+	Map<String, Team> teams = Maps.newHashMap();
+	Map<Team,Set<String>> memberships = Maps.newHashMap();
+	Set<String> agreedTOUs = Sets.newHashSet();
+	Map<String,String> markdowns = Maps.newHashMap();
+	Map<String,FileHandle> fileHandles = Maps.newHashMap();
 	
 	String timPowersId;
 	
@@ -341,7 +342,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	private void joinUserToThisCommunityTeam(Team team, String userId) {
 		Set<String> memberSet = memberships.get(team);
 		if (memberSet == null) {
-			memberSet = new HashSet<>();
+			memberSet = new HashSet<String>();
 			memberships.put(team, memberSet);
 		}
 		memberSet.add(userId);
@@ -543,7 +544,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public FileHandleResults createFileHandles(List<File> files) throws SynapseException {
-		List<FileHandle> handles = new ArrayList<>();
+		List<FileHandle> handles = Lists.newArrayList();
 		for (File file : files) {
 			try {
 				String mimeType = SynapseClientImpl.guessContentTypeFromStream(file);
@@ -1122,7 +1123,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		V2WikiPage page = wikiPages.get(key.getWikiPageId());
 		
 		// I think we need to save and restore these...
-		List<FileHandle> handles = new ArrayList<>();
+		List<FileHandle> handles = Lists.newArrayList();
 		if (page.getAttachmentFileHandleIds() != null) {
 			for (String id : page.getAttachmentFileHandleIds()) {
 				S3FileHandle handle = new S3FileHandle();
@@ -1169,7 +1170,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public PaginatedResults<V2WikiHeader> getV2WikiHeaderTree(String ownerId, ObjectType ownerType)
 			throws SynapseException, JSONObjectAdapterException {
-		List<V2WikiHeader> list = new ArrayList<>();
+		List<V2WikiHeader> list = Lists.newArrayList();
 
 		// get the root, add it
 		V2WikiPage root = wikiPages.get(ownerId);
@@ -2057,7 +2058,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	// Get communities FOR THIS USER ALONE.
 	@Override
 	public PaginatedResults<Community> getCommunities(long limit, long offset) throws SynapseException {
-		List<Community> memberCommunities = new ArrayList<>();
+		List<Community> memberCommunities = Lists.newArrayList();
 		if (currentUserData != null && currentUserData.getProfile() != null) {
 			for (Community community : communities.values()) {
 				Team team = teams.get(community.getTeamId());
@@ -2082,7 +2083,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		Team team = teams.get(community.getTeamId());
 		Set<String> members = memberships.get(team);
 		
-		List<UserGroupHeader> headers = new ArrayList<>();
+		List<UserGroupHeader> headers = Lists.newArrayList();
 		for (String memberId : members) {
 			UserProfile profile = users.get(memberId).getProfile();
 			
@@ -2109,7 +2110,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		// All of this only matters if you're removing yourself...
 		AccessControlList acl = acls.get(communityId);
 		
-		Set<String> admins = new HashSet<>();
+		Set<String> admins = Sets.newHashSet();
 		for (ResourceAccess ra : acl.getResourceAccess()) {
 			
 			if (ra.getAccessType().contains(ACCESS_TYPE.UPDATE)) {
