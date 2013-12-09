@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>org.sagebionetworks.bridge</groupId>
-	<artifactId>webapp</artifactId>
+	<artifactId>bridge</artifactId>
 	<version>develop-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Bridge Web Application</name>
@@ -330,7 +330,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>webapp</finalName>
+		<finalName>bridge</finalName>
 
 		<pluginManagement>
 			<plugins>
@@ -459,7 +459,7 @@
 							<deployables>
 								<deployable>
 									<groupId>org.sagebionetworks.bridge</groupId>
-									<artifactId>webapp</artifactId>
+									<artifactId>bridge</artifactId>
 									<type>war</type>
 								</deployable>
 							</deployables>

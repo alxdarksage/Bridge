@@ -23,16 +23,19 @@ public class CommunityPage extends EmbeddedSignInPage {
 	}
 	
 	public void clickPage(String pageName) {
+		facade.waitUntilPartialLink(pageName);
 		facade.findElement(By.partialLinkText(pageName)).click();
 	}
 
 	public void assertNavigationElementForPageHighlighted(String pageName) {
+		facade.waitUntil("#user-nav li.active");
 		WebElement listElement = facade.findElement(By.cssSelector("#user-nav li.active"));
 		// Will throw an exception if this isn't true.
 		listElement.findElement(By.partialLinkText(pageName));
 	}
 	
 	public void assertJoinButtonPreset() {
+		facade.waitUntil("#joinAct");
 		List<WebElement> elements = facade.findElements(By.id("joinAct"));
 		Assert.assertTrue("Join button present", elements.size() == 1);
 	}
@@ -43,6 +46,7 @@ public class CommunityPage extends EmbeddedSignInPage {
 	}
 	
 	public void assertEditButtonPreset() {
+		facade.waitUntil("#editAct");
 		List<WebElement> elements = facade.findElements(By.id("editAct"));
 		Assert.assertTrue("Join button present", elements.size() == 1);
 	}
