@@ -16,11 +16,14 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
+		/*
 		if (StackConfiguration.isDevelopStack()) {
 			_driver = createFirefoxDriver();
 		} else {
 			_driver = createPhantomJSDriver();
 		}
+		*/
+		_driver = createPhantomJSDriver();
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
