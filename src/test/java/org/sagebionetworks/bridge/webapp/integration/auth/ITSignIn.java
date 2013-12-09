@@ -54,8 +54,9 @@ public class ITSignIn extends WebDriverBase {
 	
 	@Test
 	public void youAreRedirectedToLogInIfYouAreNot() {
-		driver.get("/profile.html");
-		SignInPage page = driver.waitForSignInPage();
+		driver.getProfilePage();
+		
+		SignInPage page = driver.getSignInPage();
 		page.signInAsTimPowers();
 		driver.waitForPortalPage();
 	}
@@ -76,7 +77,7 @@ public class ITSignIn extends WebDriverBase {
 	
 	@Test
 	public void dedicatedSignInFormRedirectsForTOU() {
-		driver.get("/communities/1.html");
+		driver.getCommunityPage();
 		
 		SignInPage page = driver.getSignInPage();
 		page.signInAsOctaviaButler();

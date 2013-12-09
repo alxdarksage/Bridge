@@ -40,7 +40,7 @@ public class ITCommunity extends WebDriverBase {
 
 		ProfilePage profilePage = driver.getProfilePage();
 		profilePage.assertCommunitySelected("Fanconi Anemia");
-		profilePage.getEmbeddedSignIn().signOut();
+		profilePage.getEmbeddedSignIn().clickSignOut();
 		
 		cpage = driver.getCommunityPage();
 		cpage.getEmbeddedSignIn().signInAsJoeTest();
@@ -80,13 +80,13 @@ public class ITCommunity extends WebDriverBase {
 		profilePage.assertNeedAtLeastOneAdminError();
 		
 		page = driver.getCommunityPage();
-		page.getEmbeddedSignIn().signOut();
+		page.getEmbeddedSignIn().clickSignOut();
 		
 		// Add another admin
 		page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsJoeTest();
 		page.clickJoinButton();
-		page.getEmbeddedSignIn().signOut();
+		page.getEmbeddedSignIn().clickSignOut();
 		
 		page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsTimPowers();
@@ -106,13 +106,13 @@ public class ITCommunity extends WebDriverBase {
 		
 		// Whew, now we need to undo all of that...
 		caspage = driver.waitForCommunitiesAdminPage();
-		caspage.getEmbeddedSignIn().signOut();
+		caspage.getEmbeddedSignIn().clickSignOut();
 
 		// tim has to rejoin the community.
 		page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsTimPowers();
 		page.clickJoinButton();
-		page.getEmbeddedSignIn().signOut();
+		page.getEmbeddedSignIn().clickSignOut();
 		
 		// test has to add back tim as an admin
 		page = driver.getCommunityPage();

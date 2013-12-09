@@ -29,11 +29,6 @@ public class WebDriverFacade implements WebDriver {
 	public WebDriverFacade(WebDriver driver) {
 		this.driver = driver;
 	}
-
-	WebDriverFacade enterField(String cssSelector, String value) {
-		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
-		return this;
-	}
 	
 	void takeScreenshot() {
 		try {
@@ -48,11 +43,19 @@ public class WebDriverFacade implements WebDriver {
 		
 	}
 	
+	WebDriverFacade enterField(String cssSelector, String value) {
+		waitUntil(cssSelector);
+		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
+		return this;
+	}
+	
 	void submit(String cssSelector) {
+		waitUntil(cssSelector);
 		WebElement form = driver.findElement(By.cssSelector(cssSelector));
 		form.findElement(By.cssSelector("button[type=submit]")).click();
 	}
 	void click(String cssSelector) {
+		waitUntil(cssSelector);
 		driver.findElement(By.cssSelector(cssSelector)).click();
 	}
 	void assertErrorMessage(String cssSelector, String message) {
