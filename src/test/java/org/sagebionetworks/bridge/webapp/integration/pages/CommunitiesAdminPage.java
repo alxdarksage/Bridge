@@ -80,7 +80,7 @@ public class CommunitiesAdminPage extends AdminPages {
 	}
 	
 	public void clickDelete() {
-		facade.click("#deleteAct");
+		facade.clickAndDismissConfirmation("#deleteAct");
 	}
 
 }

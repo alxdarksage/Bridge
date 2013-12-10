@@ -12,7 +12,7 @@
 	               <div class="fileName">${file.fileName}</div>
 	               <div class="attachment" style="background-image: url('${file.previewURL}')"
 	                   data-link="${file.permanentURL}"></div>
-	               <a href="${file.deleteURL}" class="glyphicon glyphicon-remove text-danger"></a>
+	               <a href="${file.deleteURL}" data-confirm="Are you sure you wish to delete this file?" class="glyphicon glyphicon-remove text-danger"></a>
 	           </div>
 	        </c:forEach>
 	    </div>

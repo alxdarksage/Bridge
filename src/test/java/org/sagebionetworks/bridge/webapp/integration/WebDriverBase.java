@@ -20,7 +20,6 @@ public class WebDriverBase {
 			_driver = createFirefoxDriver();
 		} else {
 			_driver = createPhantomJSDriver();
-			applyGhostdriverFix();
 		}
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));
@@ -39,11 +38,6 @@ public class WebDriverBase {
 	
 	private WebDriverFacade createFirefoxDriver() {
 		return new WebDriverFacade(new FirefoxDriver());
-	}
-	
-	private void applyGhostdriverFix() {
-		_driver.executeJavaScript("window.alert = function(){}");
-		_driver.executeJavaScript("window.confirm = function(){return true;}");
 	}
 		
 	@After

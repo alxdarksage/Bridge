@@ -233,6 +233,9 @@ public class DataTableTag extends SimpleTagSupport {
 				tb.addAttribute("name", button.getAction());
 				tb.addAttribute("value", button.getAction());
 				tb.addStyleClass("btn", "btn-xs", "disabled", "btn-"+button.getType());
+				if (button.getConfirm() != null) {
+					tb.addAttribute("data-confirm", button.getConfirm());
+				}
 				if (StringUtils.isNotBlank(button.getIcon())) {
 					tb.startTag("span");
 					tb.addStyleClass("glyphicon", "glyphicon-"+button.getIcon());

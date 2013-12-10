@@ -217,6 +217,15 @@
 				of the parameter to determine which button was selected.
             </description>
         </attribute>
+        <attribute>
+            <name>confirm</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                If there should be a confirmation dialog when this button is clicked, provide the text 
+                for the dialog.
+            </description>
+        </attribute>
     </tag>
 
 </taglib>

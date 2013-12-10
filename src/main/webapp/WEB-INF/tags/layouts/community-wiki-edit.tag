@@ -34,7 +34,7 @@
 	                        </a>
 	                        <c:if test="${not wikiHeader.locked}">
 	                            <c:url var="deleteUrl" value="/communities/${community.id}/wikis/${wikiHeader.id}/delete.html?rowSelect=${wikiHeader.id}"/>
-	                            <a class="deleteAct" href="${deleteUrl}" style="float:right">
+	                            <a class="deleteAct" href="${deleteUrl}" style="float:right" data-confirm="Are you sure?">
 	                                <span class="glyphicon glyphicon-remove text-danger"> </span>
 	                            </a>
 	                        </c:if>
@@ -68,14 +68,4 @@ for (var i=0; i < acts.length; i++) {
 		document.getElementById('tab-holder').className = e.target.getAttribute("data-target");
 	}, false);
 }
-/*
-var delActs = document.querySelectorAll(".deleteAct");
-for (var i=0; i < delActs.length; i++) {
-    delActs[i].addEventListener("click", function(e) {
-    	if (!confirm("Are you sure?")) {
-    		e.preventDefault();
-    	}
-    }, false);
-}
-*/
 </script>
