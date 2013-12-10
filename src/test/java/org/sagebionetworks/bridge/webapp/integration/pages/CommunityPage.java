@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 public class CommunityPage extends EmbeddedSignInPage {
 
 	public static final String TITLE = "Fanconi Anemia";
+	public static final String URL = "/communities/1.html";
 
 	public CommunityPage(WebDriverFacade facade) {
 		super(facade);

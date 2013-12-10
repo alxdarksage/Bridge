@@ -67,7 +67,7 @@ public class ITSignUp extends WebDriverBase {
 		TermsOfUsePage touPage = driver.waitForTOUPage();
 
 		// cancel
-		touPage.cancel();
+		touPage.clickCancel();
 		
 		communityPage = driver.waitForCommunityPage();
 		communityPage.getEmbeddedSignIn().signIn(email, "testdude");

@@ -5,7 +5,8 @@ import org.openqa.selenium.WebElement;
 
 public class CommunityAdminPage extends AdminPages {
 	
-	public static final String TITLE = "Community Administration"; 
+	public static final String TITLE = "Community Administration";
+	public static final String URL = "/admin/communities/1.html";
 	
 	public CommunityAdminPage(WebDriverFacade facade) {
 		super(facade);
@@ -20,18 +21,8 @@ public class CommunityAdminPage extends AdminPages {
 	}
 	
 	public void toggleAdminCheckbox(String name) {
-		WebElement element = findCheckbox(name);
-		element.click();
+		facade.findCheckbox(name).click();
 	}
-	
-	private WebElement findCheckbox(String name) {
-		WebElement element = facade.findElement(By.cssSelector("div[title='"+name+"'] input"));
-		if (element == null) {
-			throw new RuntimeException("Could not find checkbox for community: " + name);
-		}
-		return element;
-	}
-	
 	public void assertNameError() {
 		facade.assertErrorMessage("#name_errors", "A name is required");
 	}

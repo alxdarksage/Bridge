@@ -9,6 +9,7 @@ import org.springframework.web.util.HtmlUtils;
 public class ProfilePage extends EmbeddedSignInPage {
 
 	public static final String TITLE = "Profile";
+	public static final String URL = "/profile.html";
 	
 	public ProfilePage(WebDriverFacade facade) {
 		super(facade);
@@ -19,29 +20,22 @@ public class ProfilePage extends EmbeddedSignInPage {
 	}
 	
 	public void assertCommunitySelected(String communityName) {
-		WebElement element = findCheckbox(communityName);
+		WebElement element = facade.findCheckbox(communityName);
 		Assert.assertTrue("Community " + communityName + " is checked", element.isSelected());
 	}
 	
 	public void assertCommunityNotSelected(String communityName) {
-		WebElement element = findCheckbox(communityName);
+		WebElement element = facade.findCheckbox(communityName);
 		Assert.assertFalse("Community " + communityName + " not checked", element.isSelected());
 	}
 	
 	public void toggleCommunityCheckbox(String communityName) {
-		WebElement element = findCheckbox(communityName);
+		WebElement element = facade.findCheckbox(communityName);
 		element.click();
 	}
 	
 	public void assertNeedAtLeastOneAdminError() {
 		facade.assertErrorMessage("#memberships_errors", "Need at least one admin.");
-	}
-	
-	private WebElement findCheckbox(String communityName) {
-		String name = HtmlUtils.htmlEscape(communityName);
-		String cssSelector = "div[title='"+name+" Membership'] input";
-		facade.waitUntil(cssSelector);
-		return facade.findElement(By.cssSelector(cssSelector));
 	}
 	
 	public void setDisplayName(String value) {

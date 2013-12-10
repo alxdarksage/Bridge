@@ -4,6 +4,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 public class SignUpPage {
 
 	public static final String TITLE = "Sign Up";
+	public static final String URL = "/signUp.html";
 	
 	protected WebDriverFacade facade;
 	
@@ -21,11 +22,9 @@ public class SignUpPage {
 		facade.submit("#signUpForm");
 	}
 	public void assertEmailError() {
-		facade.waitUntil("#email_errors");
 		facade.assertErrorMessage("#email_errors", "Enter a valid email address");
 	}
 	public void assertUserNameError() {
-		facade.waitUntil("#displayName_errors");
 		facade.assertErrorMessage("#displayName_errors", "Enter a user name");
 	}
 	
