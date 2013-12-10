@@ -17,7 +17,7 @@
 		            <img id="photoImg" src=""/>
 		        </div>
 		        
-		        <div style="position:relative; margin-bottom: 2rem">
+		        <div class="photoUploadContainer">
 		            <a class='btn btn-sm btn-default' href='javascript:;'><spring:message code="ChooseFile"/>
 		                <input id="photoFileInput" type="file" name="photoFile" size="40"/>
 		            </a>
@@ -50,10 +50,7 @@
 		        </div>
             </div>
             <div class="col-sm-6">
-                <div class="form-group">
-			        <label class="control-label"><spring:message code="displayName"/></label>
-			        <p class="form-control-static">${profileForm.displayName}</p>
-			    </div>
+                <sage:static field="displayName" value="${profileForm.displayName}"/> 
 		        <sage:text field="firstName"/>
 		        <sage:text field="lastName"/>
 		        <sage:textarea field="summary"/>

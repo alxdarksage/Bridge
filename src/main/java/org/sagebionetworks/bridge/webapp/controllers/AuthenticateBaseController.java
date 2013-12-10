@@ -3,6 +3,8 @@ package org.sagebionetworks.bridge.webapp.controllers;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AuthenticateBaseController {
+
+	private static final Logger logger = LogManager.getLogger(AuthenticateBaseController.class.getName());
 	
 	@Autowired
 	protected BeanFactory beanFactory;
@@ -45,7 +49,7 @@ public class AuthenticateBaseController {
 		if (StringUtils.isBlank(request.getServletPath())) {
 			return ""; // test only, I believe
 		}
-		return request.getServletPath().substring(1).replace(".html", "");
+		return "auth/signIn"; // request.getServletPath().substring(1).replace(".html", "");
 	}
 
 }

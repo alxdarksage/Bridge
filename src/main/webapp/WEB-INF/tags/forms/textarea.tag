@@ -1,4 +1,4 @@
-<%@ include file="../jsp/directives.jsp" %>
+<%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="field" required="true" %>
 <%@ attribute name="hasLabel" required="false" %>
 <spring:bind path="${field}">

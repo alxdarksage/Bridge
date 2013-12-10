@@ -24,3 +24,7 @@
     background-color: transparent;
     color: transparent; 
 }
+.photoUploadContainer {
+    position:relative; 
+    margin-bottom: 2rem;				
+}

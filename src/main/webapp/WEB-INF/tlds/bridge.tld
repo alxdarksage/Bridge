@@ -7,6 +7,104 @@
     <short-name>table</short-name>
     <uri>http://sagebase.org/bridge</uri>
 
+    <!-- TAGFILES (NOT LAYOUTS) -->
+    <tag-file>
+        <name>ckeditor-config</name>
+        <path>/WEB-INF/tags/ckeditor-config.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>fullSignIn</name>
+        <path>/WEB-INF/tags/fullSignIn.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>head</name>
+        <path>/WEB-INF/tags/head.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>header</name>
+        <path>/WEB-INF/tags/header.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>notifications</name>
+        <path>/WEB-INF/tags/notifications.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>oauth</name>
+        <path>/WEB-INF/tags/oauth.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>signIn</name>
+        <path>/WEB-INF/tags/signIn.tag</path>
+    </tag-file>
+
+    <!-- FORMS (SPRING + BOOTSTRAP) -->
+    <tag-file>
+        <name>cancel</name>
+        <path>/WEB-INF/tags/forms/cancel.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>checkbox</name>
+        <path>/WEB-INF/tags/forms/checkbox.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>formErrors</name>
+        <path>/WEB-INF/tags/forms/formErrors.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>hidden</name>
+        <path>/WEB-INF/tags/forms/hidden.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>password</name>
+        <path>/WEB-INF/tags/forms/password.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>static</name>
+        <path>/WEB-INF/tags/forms/static.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>submit</name>
+        <path>/WEB-INF/tags/forms/submit.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>text</name>
+        <path>/WEB-INF/tags/forms/text.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>textarea</name>
+        <path>/WEB-INF/tags/forms/textarea.tag</path>
+    </tag-file>
+
+    <!-- LAYOUTS -->
+    <tag-file>
+        <name>main</name>
+        <path>/WEB-INF/tags/layouts/main.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>admin</name>
+        <path>/WEB-INF/tags/layouts/admin.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>blank</name>
+        <path>/WEB-INF/tags/layouts/blank.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>community</name>
+        <path>/WEB-INF/tags/layouts/community.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>community-wiki-edit</name>
+        <path>/WEB-INF/tags/layouts/community-wiki-edit.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>minimal</name>
+        <path>/WEB-INF/tags/layouts/minimal.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>portal</name>
+        <path>/WEB-INF/tags/layouts/portal.tag</path>
+    </tag-file>
+
     <tag>
         <name>table</name>
         <tag-class>org.sagebionetworks.bridge.webapp.jsp.DataTableTag</tag-class>
@@ -69,6 +167,11 @@
         </attribute>
         <attribute>
             <name>icon</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>className</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

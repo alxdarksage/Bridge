@@ -1,4 +1,4 @@
-<%@ include file="directives.jsp" %>
+<%@ include file="../directives.jsp" %>
 <sage:minimal code="SetPassword" boxSize="30rem">
     <%--This is a field in the form but it isn't present on the screen, so, all this. --%>
     <spring:bind path="resetPasswordForm.token">

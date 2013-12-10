@@ -48,7 +48,7 @@ public class FileController {
 	
 	private static Logger logger = LogManager.getLogger(FileController.class.getName());
 	
-	public static final String PLACEHOLDER_URL = "/static/images/placeholder.png";
+	public static final String PLACEHOLDER_URL = "/static/images/no-image.jpg";
 	
 	@Resource(name = "synapseClient")
 	protected SynapseClient synapseClient;
@@ -132,7 +132,7 @@ public class FileController {
 				String previewImageLink = getPreviewImageLink(request, key, fileName);
 				String permanentLink = getPermanentLink(request.getContextPath(), community, fileName);
 				String deleteLink = getDeleteLink(request.getContextPath(), community, fileName);
-				images.add( new WikiFile(previewImageLink, permanentLink, deleteLink) );
+				images.add( new WikiFile(fileName, previewImageLink, permanentLink, deleteLink) );
 			}
 		}
 		model.addObject("images",images);

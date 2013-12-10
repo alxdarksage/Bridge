@@ -1,5 +1,4 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="field" required="true" %>
 <spring:bind path="${field}">
     <div class="checkbox ${status.error ? 'has-error' : ''}">

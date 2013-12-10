@@ -32,7 +32,7 @@ public class SignUpController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(BridgeRequest request, @ModelAttribute SignUpForm signUpForm) {
-		return "signUp";
+		return "auth/signUp";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -55,7 +55,7 @@ public class SignUpController {
 				ClientUtils.fieldError(result, "signUpForm", "email", message);
 			}
 		}
-		return "signUp";
+		return "auth/signUp";
 	}
 	
 }

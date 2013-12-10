@@ -1,3 +1,56 @@
- .wiki-tabs {
-    margin-bottom: 2rem;
- }
+/* SHOW/HIDE TABS */
+
+#nav, #pages { width: 100%; }
+.index #nav, .pages #pages { display: block; }
+.index #pages, .pages #nav { display: none; }
+.index ul.nav li:last-child a, .pages ul.nav li:first-child a { /* pseudo-active */
+    color: #555555;
+    cursor: default;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-bottom-color: transparent;
+}
+ 
+/* FILE BROWSER */
+
+.attachment-container {
+    margin: 0 1rem .5rem 0; 
+    display: inline-block;
+    
+    a {
+        float: right; 
+    }
+    .fileName {
+        font-size: 9px;
+        text-align: center;
+        margin-bottom: 2px;
+    }
+}
+.attachment {
+    height: 12rem; 
+    width: 12rem;
+    background-size: contain; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-color: #e5e5e5;
+    outline: 1px solid #aaa;
+    cursor: pointer;
+	display: block; 
+}
+.panel-heading-container {
+    display: table;
+    
+    div {
+        display: table-cell;
+    }
+    div:first-child {
+        width: 100%;
+    }
+}
+div[name='pagesTab'] a, div[name='pagesTab'] a span, div[name='pagesTab'] a:hover {
+	text-align: left;
+	color: #428bca;
+    width: 100%;
+    border: none;
+    background: none;
+}

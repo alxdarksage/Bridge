@@ -1,22 +1,19 @@
 <%@ include file="../directives.jsp" %>
-<sage:blank>
+<sage:blank code="BrowseServerFiles">
     <div id="funcNum" data-value="${param.CKEditorFuncNum}"/>
 	<div class="panel panel-default">
-	    <div class="panel-heading">
-	       <div style="display: table-row">
-	           <div style="display: table-cell; width: 100%">Select a file:</div>
-	           <div style="display: table-cell"><a class="btn btn-small" href="javascript:window.close()">Close</a></div>
-	       </div>
+	    <div class="panel-heading panel-heading-container">
+           <div><spring:message code="SelectAFile"/></div>
+           <div><a class="btn btn-small" href="javascript:window.close()"><spring:message code="Close"/></a></div>
 	    </div>
 	    <div class="panel-body">
 	        <c:forEach items="${images}" var="file">
-	           <div style="max-width: 100px; float: left; margin-right: 1rem; display: none">
-	               <img class="attachment" 
-	                   onload="this.parentNode.style.display='block'"
-	               data-link="${file.permanentURL}" src="${file.previewURL}" style="display:block; outline: 1px solid #aaa; "/>
-	               <a href="${file.deleteURL}" style="float: right" class="glyphicon glyphicon-remove text-danger"> </a>
+	           <div class="attachment-container">
+	               <div class="fileName">${file.fileName}</div>
+	               <div class="attachment" style="background-image: url('${file.previewURL}')"
+	                   data-link="${file.permanentURL}"></div>
+	               <a href="${file.deleteURL}" class="glyphicon glyphicon-remove text-danger"></a>
 	           </div>
-                
 	        </c:forEach>
 	    </div>
 	</div>

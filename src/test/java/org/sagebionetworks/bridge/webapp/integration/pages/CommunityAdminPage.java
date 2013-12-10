@@ -1,7 +1,5 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 public class CommunityAdminPage extends AdminPages {
 	

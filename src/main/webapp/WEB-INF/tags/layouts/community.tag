@@ -1,4 +1,4 @@
-<%@ include file="../jsp/directives.jsp" %>
+<%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="code" required="true" %>
 <sage:main code="${code}">
     <jsp:attribute name="navigation">

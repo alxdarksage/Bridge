@@ -12,6 +12,7 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	private String link;
 	private String icon;
 	private String stat;
+	private String className;
 	
 	@Override
 	public void doTag() throws JspException, IOException {
@@ -50,13 +51,17 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-
 	public String getStatic() {
 		return stat;
 	}
-
 	public void setStatic(String stat) {
 		this.stat = stat;
+	}
+	public String getClassName() {
+		return className;
+	}
+	public void setClassName(String className) {
+		this.className = className;
 	}
 	
 }

@@ -72,7 +72,7 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	public void clickDialogPagesTab() {
 		waitForDialogToLoad();
-		facade.findElement(By.cssSelector("div.cke_editor_markdown_dialog a[title='Pages']")).click();
+		facade.findElement(By.cssSelector("div.cke_editor_markdown_dialog a[title='Community Pages']")).click();
 	}
 	
 	public void clickDialogBrowseServerButton() {
@@ -175,7 +175,7 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 		waitForEditorToLoad();
 		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.toolbar.length");
 		String value = facade.findElement(By.id("sageTestValue")).getText();
-		Assert.assertTrue("Toolbar has many elements", "6".equals(value));
+		Assert.assertTrue("Toolbar has many elements", "7".equals(value));
 	}
 	
 	public void waitForEditorToLoad() {

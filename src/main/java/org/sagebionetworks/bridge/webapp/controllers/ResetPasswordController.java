@@ -27,7 +27,7 @@ public class ResetPasswordController {
 
 	@RequestMapping(value="/requestResetPassword", method = RequestMethod.GET)
 	public String get(@ModelAttribute("requestResetPasswordForm") RequestResetPasswordForm requestResetPasswordForm) {
-		return "requestResetPassword";
+		return "auth/requestResetPassword";
 	}
 
 	@RequestMapping(value="/requestResetPassword", method = RequestMethod.POST)
@@ -39,12 +39,12 @@ public class ResetPasswordController {
 			request.setNotification("ResetEmailSent");
 			return "redirect:" + request.getOrigin();
 		}
-		return "requestResetPassword";
+		return "auth/requestResetPassword";
 	}
 	
 	@RequestMapping(value="/resetPassword", method = RequestMethod.GET)
 	public String get(@ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm) {
-		return "resetPassword";
+		return "auth/resetPassword";
 	}
 
 	@RequestMapping(value="/resetPassword", method = RequestMethod.POST)
@@ -55,6 +55,6 @@ public class ResetPasswordController {
 			request.setNotification("PasswordChanged");
 			return "redirect:" + BridgeRequest.DEFAULT_ORIGIN_URL;
 		}
-		return "resetPassword";
+		return "auth/resetPassword";
 	}
 }
