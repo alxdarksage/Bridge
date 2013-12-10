@@ -1,7 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
+<%@ include file="../directives.jsp" %>
 <sage:minimal code="TermsOfUse" boxSize="90%">
     <div class="tou">
         ${termsOfUseForm.termsOfUse}

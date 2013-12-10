@@ -1,9 +1,7 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.springframework.web.util.HtmlUtils;
 
 
 public class ProfilePage extends EmbeddedSignInPage {

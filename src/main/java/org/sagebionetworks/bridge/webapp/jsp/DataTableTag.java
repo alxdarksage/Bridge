@@ -147,12 +147,10 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.startTag("tr");
 			String objectId = BeanUtils.getProperty(object, this.itemId);
 			addCheckboxIfSelectable(objectId);
-			boolean first = false;
 			for (DataTableColumnTag column : columns) {
 				tb.startTag("td");
-				if (first) {
-					tb.addAttribute("class", "nowrap");
-					first = !first;
+				if (column.getClassName() != null) {
+					tb.addAttribute("class", column.getClassName());
 				}
 				if (column.getIcon() != null) {
 					tb.startTag("span", "class", "glyphicon glyphicon-"+column.getIcon());

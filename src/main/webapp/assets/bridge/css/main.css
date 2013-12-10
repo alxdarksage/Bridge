@@ -46,11 +46,6 @@ h3.auth {
 .divider-element {
     color: #aaa;
 }
-.attachment {
-    max-height: 10rem; 
-    max-width: 10rem; 
-    cursor: pointer;
-}
 #notice {
     display: none;
 }

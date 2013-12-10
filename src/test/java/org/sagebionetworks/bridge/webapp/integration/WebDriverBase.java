@@ -16,11 +16,16 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
+		/*
 		if (StackConfiguration.isDevelopStack()) {
 			_driver = createFirefoxDriver();
 		} else {
 			_driver = createPhantomJSDriver();
+			applyGhostdriverFix();
 		}
+		*/
+		_driver = createPhantomJSDriver();
+		applyGhostdriverFix();
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
@@ -38,6 +43,11 @@ public class WebDriverBase {
 	
 	private WebDriverFacade createFirefoxDriver() {
 		return new WebDriverFacade(new FirefoxDriver());
+	}
+	
+	private void applyGhostdriverFix() {
+		_driver.executeJavaScript("window.alert = function(){}");
+		_driver.executeJavaScript("window.confirm = function(){return true;}");
 	}
 		
 	@After

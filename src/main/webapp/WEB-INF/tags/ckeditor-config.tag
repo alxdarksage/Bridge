@@ -12,6 +12,7 @@
 <c:when test="${wikiForm.indexWiki}">
 CKEDITOR.replace( 'markdown', {
 	allowedContent: true,
+	height: "500px",
     filebrowserBrowseUrl: "<c:url value="/files/communities/${community.id}/browse.html"/>",
     filebrowserUploadUrl: "<c:url value="/files/communities/${community.id}/upload.html"/>",
     filebrowserWindowWidth : '300',
@@ -22,6 +23,7 @@ CKEDITOR.replace( 'markdown', {
 <c:otherwise>
 CKEDITOR.replace( 'markdown', {
 	allowedContent: true,
+	height: "500px",
     filebrowserBrowseUrl: "<c:url value="/files/communities/${community.id}/browse.html"/>",
     filebrowserUploadUrl: "<c:url value="/files/communities/${community.id}/upload.html"/>",
     filebrowserWindowWidth : '300',
@@ -34,7 +36,8 @@ CKEDITOR.replace( 'markdown', {
         { name: 'insert', items: [ 'Link','Unlink','Anchor','Image','Table','HorizontalRule','SpecialChar','PageBreak' ]  },
         { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
         { name: 'basicstyles', items: [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-',
-           'RemoveFormat','-','TextColor','BGColor', 'Source' ] }
+           'RemoveFormat','-','TextColor','BGColor' ] },
+        { name: 'advanced', items: ['Source'] }
     ]
 });
 </c:otherwise>
@@ -61,7 +64,7 @@ CKEDITOR.on( 'dialogDefinition', function( e ) {
         dialogDefinition.removeContents( 'advanced' );
         dialogDefinition.addContents({
             id : 'pagesTab',
-            label : 'Pages',
+            label : 'Community Pages',
             elements : [
                 {
                     type : 'vbox',

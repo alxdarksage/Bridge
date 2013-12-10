@@ -28,7 +28,7 @@ public class SignInController extends AuthenticateBaseController {
 		if (request.isUserAuthenticated()) {
 			return "redirect:" + request.getOrigin();
 		}
-		return "signIn";
+		return "auth/signIn";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

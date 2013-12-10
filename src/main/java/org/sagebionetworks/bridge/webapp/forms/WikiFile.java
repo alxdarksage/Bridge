@@ -10,16 +10,22 @@ package org.sagebionetworks.bridge.webapp.forms;
  */
 public class WikiFile {
 
+	private final String fileName;
 	private final String previewURL;
 	private final String permanentURL;
 	private final String deleteURL;
 	
-	public WikiFile(final String previewURL, final String permanentURL, final String deleteURL) {
+	public WikiFile(final String name, final String previewURL, final String permanentURL, final String deleteURL) {
+		this.fileName = name;
 		this.previewURL = previewURL;
 		this.permanentURL = permanentURL;
 		this.deleteURL = deleteURL;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+	
 	public String getPreviewURL() {
 		return previewURL;
 	}

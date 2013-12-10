@@ -1,5 +1,4 @@
-<%@ taglib prefix="sage" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ include file="../directives.jsp" %>
 <sage:minimal code="SignedOut" boxSize="30rem">
     <p><spring:message code="SignedOutWelcome"/></p>
     <sage:fullSignIn/>

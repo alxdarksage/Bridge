@@ -1,4 +1,4 @@
-<%@ include file="../jsp/directives.jsp" %>
+<%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="field" required="true" %>
 <spring:bind path="${field}">
 	<div class="form-group ${status.error ? 'has-error' : ''}">

@@ -1,12 +1,5 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
-import java.util.List;
-import java.util.Map;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
-import com.google.common.collect.Maps;
 
 
 public class PortalPage {

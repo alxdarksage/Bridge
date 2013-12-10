@@ -225,14 +225,6 @@ public class WebDriverFacade implements WebDriver {
 		Assert.assertTrue("User notified with message '"+message+"' was: " + content, content.contains(message));
 	}
 	
-	/**
-	 * PhantomJS cannot handle alerts and dialogs. This has to happen after a page loads.
-	 */
-	private void applyGhostdriverFix() {
-		executeJavaScript("window.alert = function(){}");
-		executeJavaScript("window.confirm = function(){return true;}");
-	}
-	
 	// Pass-throughs to the driver object. Arguably, these should be removed and replaced
 	// with methods that *always* wait first, because this has been an issue in getting 
 	// to reliable tests.

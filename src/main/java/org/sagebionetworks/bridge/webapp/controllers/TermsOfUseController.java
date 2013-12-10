@@ -28,7 +28,7 @@ public class TermsOfUseController extends AuthenticateBaseController {
 		// Throws exception because I can't imagine what we'd do that was better 
 		// than the error page if this failed
 		termsOfUseForm.setTermsOfUse(synapseClient.getSynapseTermsOfUse());	
-		return "tou";
+		return "auth/tou";
 	}
 	
 	@RequestMapping(value = "/termsOfUse", method = RequestMethod.GET)
@@ -36,7 +36,7 @@ public class TermsOfUseController extends AuthenticateBaseController {
 		// Throws exception because I can't imagine what we'd do that was better 
 		// than the error page if this failed
 		termsOfUseForm.setTermsOfUse(synapseClient.getSynapseTermsOfUse());	
-		return "termsOfUse";
+		return "auth/termsOfUse";
 	}
 
 	@RequestMapping(value = "/termsOfUse", method = RequestMethod.POST)
@@ -68,7 +68,7 @@ public class TermsOfUseController extends AuthenticateBaseController {
 			return "redirect:" + request.getOrigin();
 		}
 		termsOfUseForm.setTermsOfUse(synapseClient.getSynapseTermsOfUse());
-		return "termsOfUse";
+		return "auth/termsOfUse";
 	}
 
 	@RequestMapping(value = "/termsOfUse/cancel", method = RequestMethod.GET)

@@ -1,5 +1,4 @@
 <%@ include file="../jsp/directives.jsp" %>
-
 <c:choose>
     <c:when test="${sessionScope.BridgeUser.isAuthenticated()}">
         <div id="profile-pane" class="panel panel-default hidden-sm">
@@ -27,7 +26,6 @@
             </div>
             --%>
         </div>
-        
     </c:when>
     <c:otherwise>
         <div class="well">
@@ -48,10 +46,12 @@
 			        </div>
 			    </c:if>
 			    <sage:submit code="SignIn"/>
-			    <a id="signUpLink" href='<c:url value="/signUp.html"/>' class="btn"><spring:message code="SignUp"/></a>
+			    <c:url var="signUpUrl" value="/signUp.html"/>
+			    <a id="signUpLink" href="${signUpUrl}" class="btn"><spring:message code="SignUp"/></a>
 			</form:form>
 			<p class="forgotLinkWrapper">
-			    <a id="forgotPasswordLink" href='<c:url value="/requestResetPassword.html"/>'><spring:message code="ForgotPassword"/></a>
+                <c:url var="forgotUrl" value="/requestResetPassword.html"/>
+			    <a id="forgotPasswordLink" href="${forgotUrl}"><spring:message code="ForgotPassword"/></a>
 			</p>
 			<sage:oauth/>
         </div>

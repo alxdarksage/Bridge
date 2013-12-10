@@ -1,4 +1,4 @@
-<%@ include file="../jsp/directives.jsp" %>
+<%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="formName" required="true" %>
 <spring:bind path="${formName}">
     <c:if test="${not empty status.errorMessages}">

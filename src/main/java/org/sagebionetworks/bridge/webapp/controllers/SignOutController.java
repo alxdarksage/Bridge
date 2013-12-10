@@ -38,7 +38,7 @@ public class SignOutController {
 			session.invalidate();
 			logger.info("User #{} signed off.", user.getOwnerId());
 		}
-		return "signedOut";
+		return "auth/signedOut";
 	}
 
 }
