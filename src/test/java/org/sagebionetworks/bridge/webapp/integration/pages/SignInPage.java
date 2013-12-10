@@ -4,6 +4,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 public class SignInPage {
 	
 	public static final String TITLE = "Sign In";
+	public static final String URL = "/signIn.html";
 
 	private WebDriverFacade facade;
 	

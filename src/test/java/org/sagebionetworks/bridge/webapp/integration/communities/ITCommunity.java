@@ -44,6 +44,8 @@ public class ITCommunity extends WebDriverBase {
 		
 		cpage = driver.getCommunityPage();
 		cpage.getEmbeddedSignIn().signInAsJoeTest();
+		
+		profilePage = driver.getProfilePage();
 		profilePage.assertCommunityNotSelected("Fanconi Anemia");
 	}
 	

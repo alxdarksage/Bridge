@@ -24,6 +24,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class WebDriverFacade implements WebDriver {
 	
+	public static final String CONTEXT_PATH = "http://localhost:8888/bridge";
+	public static final int TIMEOUT = 30;
+	
 	private WebDriver driver;
 
 	public WebDriverFacade(WebDriver driver) {
@@ -42,16 +45,20 @@ public class WebDriverFacade implements WebDriver {
 		}
 		
 	}
-	
-	WebDriverFacade enterField(String cssSelector, String value) {
+	// Assumes the input is surrounded by a div with some kind of selectable title.
+	WebElement findCheckbox(String name) {
+		String cssSelector = "div[title*=\""+name+"\"] input";
 		waitUntil(cssSelector);
-		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
-		return this;
+		return driver.findElement(By.cssSelector(cssSelector));
 	}
 	
-	void submit(String cssSelector) {
+	void enterField(String cssSelector, String value) {
 		waitUntil(cssSelector);
-		WebElement form = driver.findElement(By.cssSelector(cssSelector));
+		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
+	}
+	void submit(String formCssSelector) {
+		waitUntil(formCssSelector);
+		WebElement form = driver.findElement(By.cssSelector(formCssSelector));
 		form.findElement(By.cssSelector("button[type=submit]")).click();
 	}
 	void click(String cssSelector) {
@@ -64,26 +71,26 @@ public class WebDriverFacade implements WebDriver {
 		Assert.assertTrue("Correct error ('"+message+"') in " + cssSelector, errors.getText().contains(message));		
 	}
 	void waitUntil(final String cssSelector) {
-		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return (d.findElement(By.cssSelector(cssSelector)) != null);
 			}
 		});	
 	}
 	void waitUntilPartialLink(final String partialLinkText) {
-		(new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return (d.findElement(By.partialLinkText(partialLinkText)) != null);
 			}
 		});	
 	}
 	void waitForTitle(final String title) {
-		(new WebDriverWait(driver, 20)).until(new ExpectedCondition<Boolean>() {
+		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return d.getTitle().contains(title);
 			}
 		});
-	}	
+	}
 	
 	public void executeJavaScript(String javascript) {
 		if (driver instanceof JavascriptExecutor) {
@@ -92,7 +99,6 @@ public class WebDriverFacade implements WebDriver {
 			throw new RuntimeException("Cannot execute JS using this Selenium driver");
 		}		
 	}
-	
 	public AdminPage waitForAdminPage() {
 		waitForTitle(AdminPage.TITLE);
 		return new AdminPage(this);
@@ -151,19 +157,19 @@ public class WebDriverFacade implements WebDriver {
 	}
 	
 	public AdminPage getAdminPage() {
-		get("/admin/index.html");
+		get(AdminPage.URL);
 		return new AdminPage(this);
 	}
 	public CommunitiesAdminPage getCommunitiesAdminPage() {
-		get("/admin/communities.html");
+		get(CommunitiesAdminPage.URL);
 		return new CommunitiesAdminPage(this);
 	}
 	public CommunityPage getCommunityPage() {
-		get("/communities/1.html");
+		get(CommunityPage.URL);
 		return new CommunityPage(this);
 	}
 	public CommunityAdminPage getCommunityAdminPage() {
-		get("/admin/communities/1.html");
+		get(CommunityAdminPage.URL);
 		return new CommunityAdminPage(this);
 	}
 	
@@ -172,50 +178,49 @@ public class WebDriverFacade implements WebDriver {
 		return new ErrorPage(this);
 	}
 	public PortalPage getPortalPage() {
-		get("/portal/index.html");
+		get(PortalPage.URL);
 		return new PortalPage(this);
 	}
 	public ProfilePage getProfilePage() {
-		get("/profile.html");
+		get(ProfilePage.URL);
 		return new ProfilePage(this);
 	}
 	public RequestResetPasswordPage getRequestResetPasswordPage() {
-		get("/requestResetPassword.html");
+		get(RequestResetPasswordPage.URL);
 		return new RequestResetPasswordPage(this);
 	}
 	public ResetPasswordPage getResetPasswordPage(boolean includeToken) {
 		if (includeToken) {
-			get("/resetPassword.html?token=foo");
+			get(ResetPasswordPage.URL+"?token=testToken");
 		} else {
-			get("/resetPassword.html");	
+			get(ResetPasswordPage.URL);	
 		}
 		return new ResetPasswordPage(this);
 	}
 	public SignInPage getSignInPage() {
-		get("/signIn.html");
+		get(SignInPage.URL);
 		return new SignInPage(this);
 	}
 	public SignOutPage getSignOutPage() {
-		get("/signOut.html");
+		get(SignOutPage.URL);
 		return new SignOutPage(this);
 	}
 	public SignUpPage getSignUpPage() {
-		get("/signUp.html");
+		get(SignUpPage.URL);
 		return new SignUpPage(this);
 	}
 	public TermsOfUsePage getTermsOfUsePage() {
-		get("/termsOfUse.html");
+		get(TermsOfUsePage.URL);
 		return new TermsOfUsePage(this);
 	}
 	public CommunityWikiPage getCommunityWikiPage() {
-		// This is delicate!
-		get("/communities/1/wikis/6/edit.html");
+		get(CommunityWikiPage.URL);
 		return new CommunityWikiPage(this);
 	}
 
 	public void assertNotice(String message) {
 		// This is the only way I've found to extract this information from the page.
-		(new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert-info.humane")));
+		(new WebDriverWait(driver, TIMEOUT)).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert-info.humane")));
 		String content = (String)((JavascriptExecutor)driver).executeScript("return document.querySelector('#notice').textContent");
 		Assert.assertTrue("User notified with message '"+message+"' was: " + content, content.contains(message));
 	}
@@ -228,7 +233,9 @@ public class WebDriverFacade implements WebDriver {
 		executeJavaScript("window.confirm = function(){return true;}");
 	}
 	
-	// Pass-throughs to the driver object.
+	// Pass-throughs to the driver object. Arguably, these should be removed and replaced
+	// with methods that *always* wait first, because this has been an issue in getting 
+	// to reliable tests.
 	
 	@Override
 	public void close() {
@@ -244,7 +251,7 @@ public class WebDriverFacade implements WebDriver {
 	}
 	@Override
 	public void get(String arg0) {
-		driver.get("http://localhost:8888/bridge" + arg0);
+		driver.get(CONTEXT_PATH + arg0);
 	}
 	@Override
 	public String getCurrentUrl() {

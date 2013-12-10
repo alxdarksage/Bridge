@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 public class RequestResetPasswordPage {
 
 	public static final String TITLE = "Reset Password";
+	public static final String URL = "/requestResetPassword.html";
 	
 	private WebDriverFacade facade;
 	

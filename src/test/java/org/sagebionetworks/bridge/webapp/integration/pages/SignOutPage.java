@@ -8,6 +8,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 public class SignOutPage {
 	
 	public static final String TITLE = "Signed Out";
+	public static final String URL = "/signOut.html";
 
 	private WebDriverFacade facade;
 	
@@ -38,17 +39,14 @@ public class SignOutPage {
 	}
 	
 	public void assertGlobalError() {
-		facade.waitUntil("#signInForm_errors");
 		facade.assertErrorMessage("#signInForm_errors", "Unable to sign in. Email or password may be incorrect.");
 	}
 	
 	public void assertEmailError() {
-		facade.waitUntil("#email_errors");
 		facade.assertErrorMessage("#email_errors", "Enter a valid email address");
 	}
 	
 	public void assertPasswordError() {
-		facade.waitUntil("#password_errors");
 		facade.assertErrorMessage("#password_errors", "Enter your password");
 	}
 }
