@@ -16,38 +16,12 @@
 		        <div class="avatar_container">
 		            <img id="photoImg" src=""/>
 		        </div>
-		        
 		        <div class="photoUploadContainer">
 		            <a class='btn btn-sm btn-default' href='javascript:;'><spring:message code="ChooseFile"/>
 		                <input id="photoFileInput" type="file" name="photoFile" size="40"/>
 		            </a>
 		        </div>
-		        
-		        <div class="form-group">
-		            <label>Community Memberships</label>
-		            <div class="checkbox-box">
-		                <c:forEach items="${memberships}" var="community">
-		                    <div class="checkbox" title="${community.displayName} Membership">
-		                        <label>
-		                            <c:choose>
-		                                <c:when test="${community.selected}">
-		                                    <input type="checkbox" name="memberships" value="${community.id}" checked="checked" />
-		                                </c:when>
-		                                <c:otherwise>
-		                                    <input type="checkbox" name="memberships" value="${community.id}" />
-		                                </c:otherwise>
-		                            </c:choose>
-		                            ${community.displayName}
-		                        </label>
-		                    </div>
-		                </c:forEach>
-		            </div>
-                    <spring:bind path="memberships">
-                        <div class="${status.error ? 'has-error' : ''}">
-	                        <form:errors id="memberships_errors" path="memberships" htmlEscape="false"/>
-                        </div>
-                    </spring:bind>
-		        </div>
+		        <sage:checkboxes label="CommunityMemberships" field="memberships" items="${memberships}"/>
             </div>
             <div class="col-sm-6">
                 <sage:static field="displayName" value="${profileForm.displayName}"/> 
