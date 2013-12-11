@@ -8,12 +8,14 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -31,6 +33,10 @@ public class WebDriverFacade implements WebDriver {
 
 	public WebDriverFacade(WebDriver driver) {
 		this.driver = driver;
+	}
+	
+	public boolean isGhostdriver() {
+		return (driver instanceof PhantomJSDriver);
 	}
 	
 	void takeScreenshot() {
@@ -64,6 +70,22 @@ public class WebDriverFacade implements WebDriver {
 	void click(String cssSelector) {
 		waitUntil(cssSelector);
 		driver.findElement(By.cssSelector(cssSelector)).click();
+	}
+	void clickAndDismissConfirmation(String cssSelector) {
+		WebElement element = findElement(By.cssSelector(cssSelector));
+		clickAndDismissConfirmation(element);
+	}
+	void clickAndDismissConfirmation(WebElement element) {
+		// Ghostdriver/PhantomJS do not support alerts, so we have to do some branching here.
+		if (isGhostdriver()) {
+			executeJavaScript("window.alert = function(){}");
+			executeJavaScript("window.confirm = function(){return true;}");
+		}
+		element.click();
+		if (!isGhostdriver()) {
+			Alert alert = driver.switchTo().alert();
+			alert.accept();
+		}
 	}
 	void assertErrorMessage(String cssSelector, String message) {
 		waitUntil(cssSelector);

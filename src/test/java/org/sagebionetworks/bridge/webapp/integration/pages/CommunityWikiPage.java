@@ -4,7 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.junit.Assert;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -148,12 +150,7 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	}
 	
 	public void deletePage(String pageName) {
-		// This throws an error if the link is not there, which we want
-		findPageDeleteLink(pageName).click();
-		/*
-		Alert alert = facade.switchTo().alert();
-		alert.accept();
-		*/
+		facade.clickAndDismissConfirmation(findPageDeleteLink(pageName));
 	}
 	
 	public void assertTitleError() {

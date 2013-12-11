@@ -9,6 +9,7 @@ public class DataTableButtonTag extends SimpleTagSupport {
 	private String icon; // Icon from Bootstrap library to show in the button
 	private String label;
 	private String action;
+	private String confirm;
 	
 	@Override
 	public void doTag() {
@@ -45,5 +46,11 @@ public class DataTableButtonTag extends SimpleTagSupport {
 	}
 	public void setAction(String action) {
 		this.action = action;
+	}
+	public String getConfirm() {
+		return confirm;
+	}
+	public void setConfirm(String confirm) {
+		this.confirm = confirm;
 	}
 }

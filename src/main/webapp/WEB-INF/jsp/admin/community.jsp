@@ -13,33 +13,8 @@
         <sage:textarea field="description"/>
         <%-- There are no members at this point. --%>
         <c:if test="${communityForm.formId != 'new'}">
-	        <div class="form-group">
-	            <label>Community Administrators</label>
-	            <div class="checkbox-box">
-	                <c:forEach items="${administrators}" var="admin">
-	                    <div class="checkbox" title="${admin.displayName}">
-	                        <label>
-	                            <c:choose>
-	                                <c:when test="${admin.selected}">
-	                                    <input type="checkbox" name="administrators" value="${admin.id}" checked/>
-	                                </c:when>
-	                                <c:otherwise>
-	                                    <input type="checkbox" name="administrators" value="${admin.id}" />                
-	                                </c:otherwise>
-	                            </c:choose>
-	                            ${admin.displayName}
-	                        </label>
-	                    </div>
-	                </c:forEach>
-	            </div>
-                <spring:bind path="administrators">
-                    <div class="${status.error ? 'has-error' : ''}">
-                        <form:errors id="administrators_errors" path="administrators" htmlEscape="false"/>
-                    </div>
-                </spring:bind>
-	        </div>
+            <sage:checkboxes label="CommunityAdministrators" field="administrators" items="${administrators}"/>
         </c:if>
-        
         <sage:hidden field="id"/>
         <sage:submit code="Save"/>
         <sage:cancel url="/admin/communities.html"/>
