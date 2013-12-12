@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +42,7 @@ public class OriginFilter implements Filter {
 		// to where they came from. This isn't excellent but it'll do until we
 		// know the user's home community.
 		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
 		BridgeRequest bridgeRequest = new BridgeRequest(request);
 
 		String servletPath = request.getServletPath();
@@ -50,7 +52,11 @@ public class OriginFilter implements Filter {
 			logger.debug("Setting the origin URL as: " + servletPath);
 			bridgeRequest.setOrigin(servletPath);
 		}
-
+		// This can be read by XHR requests to determine the final URL of redirects within the application.
+		// That can be shown in the history, so the user can bookmark and reload the page they're looking at.
+		if (servletPath.endsWith(".html")) {
+			response.setHeader("X-Bridge-Origin", request.getContextPath() + servletPath);
+		}
 		chain.doFilter(bridgeRequest, res);
 	}
 
