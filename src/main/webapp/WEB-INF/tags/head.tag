@@ -17,5 +17,8 @@
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Archivo+Narrow" type="text/css" />
     <c:url var="styleUrl" value="/assets/header.css"/>
     <link rel="stylesheet" type="text/css" href="${styleUrl}" />
-    <%-- <script src="/bridge/static/compare.js"></script>--%>
+    <%-- 
+    <script src="/bridge/static/dollardom.js"></script>
+    <script src="/bridge/static/compare.js"></script>
+    --%>
 </head>

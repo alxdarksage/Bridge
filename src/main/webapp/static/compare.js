@@ -65,7 +65,6 @@
 		return true;
 	}
 	
-	// This is expensive. At the least, start 
 	function compare(dest, update) {
 		if (hasSameChildren(dest, update)) {
 			for (var i=0; i < dest.childNodes.length; i++) {
@@ -76,6 +75,7 @@
 				console.log("Replacing node: ", dest);
 				dest.parentNode.removeChild(dest);
 			} else if (!dest && update) {
+				alert("This happens");
 				// pffft. May need to iterate over longest 
 			} else {
 				console.log("Replacing node: ", dest);
@@ -85,60 +85,25 @@
 		}
 	}
 	
-	/*
-	function sameNodes(k, j) {
-		if (allWhitespace(k) && allWhitespace(j)) {
-			return true;
-		}
-		return (k.nodeType === j.nodeType && k.nodeName === j.nodeName && k.nodeValue === j.nodeValue);
-	}
-	
-	function allWhitespace(n) {
-		return !(/[^\t\n\r ]/.test(n.data));
-	}
-	*/
-	
 	function formToQuery(form) {
-		var params = {};
+		var array = [];
 		for (var i=0; i < form.elements.length; i++) {
 			var field = form.elements[i];
-			if (field.name === "") {
-				continue;
-			}
-			if (params[field.name]) {
-				if (params[field.name] instanceof Array) {
-					params[field.name].push(field.value);
-				} else {
-					params[field.name] = [params[field.name], field.value];
-				}
-			} else {
-				params[field.name] = field.value;
-			}
-		}
-		var array = [];
-		for (var prop in params) {
-			var value = params[prop];
-			if (value instanceof Array) {
-				for (var i=0; i < value.length; i++) {
-					add(array, prop, params[prop][i]);
-				}
-			} else {
-				add(array, prop, params[prop]);
+			if (field.name !== "") {
+				array.push( encodeURIComponent(field.name) + "=" + encodeURIComponent(field.value));
 			}
 		}
 		return array.join("&");
-		
-		function add(array, name, value) {
-			array.push( encodeURIComponent(name) + "=" + encodeURIComponent(value));
-		}
 	}
 	
 	function handleElement(e) {
 		var link = walk(e.target, "parentNode", "nodeName", "A");
 		if (link) {
 			var url = link.getAttribute('href');
-			e.preventDefault();
-			ajax(url, handleResponse);
+			if (url) {
+				e.preventDefault();
+				ajax(url, handleResponse);
+			}
 		}
 	}
 	
@@ -158,12 +123,12 @@
 		var finalUrl = this.getResponseHeader('X-Bridge-Origin');
 		document.title = this.responseXML.title + " (AJAX)";
 		history.pushState(null, null, finalUrl);
-		/*
 		var current = document.body.querySelector(".container");
 		var update = this.responseXML.querySelector(".container");
-		*/
+		/*
 		var current = document.body;
 		var update = this.responseXML.body;
+		*/
 		compare(current, update);
 	}
 	
