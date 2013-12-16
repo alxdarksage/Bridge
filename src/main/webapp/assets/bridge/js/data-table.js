@@ -1,69 +1,74 @@
 (function() {
-    var tables = document.querySelectorAll(".table-selectable");
-    for (var i=0; i < tables.length; i++) {
-        initTable(tables[i]);
+    function DataTable(target) {
+    	var $target = $(target);
+    	var $table = $target.closest('.table-selectable');
+    	this.target = $target.get(0);
+		this.buttons = $table.find("tfoot button").get();
+		this.inputs = $table.find("tbody input[type=checkbox]").get();
+		this.masterControl = $table.find("tfoot input[type=checkbox]").get(0);
+		this.input = $target.closest('tr').find("input[type=checkbox]").get(0);
     }
-    function makeRowListener(masterControl, buttons, inputs, input) {
-        return function(e) {
-            if(e.target.nodeName.toLowerCase() == "td") {
-            	if (!input.disabled) {
-            		input.checked = !input.checked;	
-            	}
-                masterControl.checked = allChecked(inputs);
-                btnState(buttons, anyChecked(inputs));
-            }
-        };
-    }
-    function allChecked(inputs) {
-        for (var j=0; j < inputs.length; j++) {
-            if (!inputs[j].checked) {
-                return false;
-            }
-        }
-        return true;
-    }
-    function anyChecked(inputs) {
-        for (var j=0; j < inputs.length; j++) {
-            if (inputs[j].checked) {
-                return true;
-            }
-        }
-        return false;
-    }
-    function btnState(buttons, state) {
-        for (var i=0; i < buttons.length; i++) {
-            var button = buttons[i];
-            if (state) {
-                button.className = button.className.replace("disabled","");
-            } else {
-                button.className += " disabled";
-            }
-        }
-    }
-    function initTable(table) {
-        var rows = table.tBodies[0].rows,
-            buttons = table.querySelectorAll("tfoot button"),
-            inputs = table.querySelectorAll("tbody input[type=checkbox]"),
-            masterControl = table.querySelector("tfoot input[type=checkbox]");
-        for (var j=0; j < rows.length; j++) {
-            rows[j].addEventListener("click", makeRowListener(masterControl, buttons, inputs, inputs[j]), false);
-        }
-        for (var j=0; j < inputs.length; j++) {
-            var input = inputs[j];
-            input.addEventListener("click", function(e) {
-                e.stopPropagation();
-                masterControl.checked = allChecked(inputs);
-                btnState(buttons, anyChecked(inputs));
-            }, false);
-        }
-        masterControl.addEventListener("click", function(e) {
-            btnState(buttons, e.target.checked);
-            for (var j=0; j < inputs.length; j++) {
-                var input = inputs[j];
-                if (!input.disabled) {
-                	input.checked = e.target.checked;	
-                }
-            }
-        }, false);
-    }
+    DataTable.prototype = {
+	    updateCheckState: function() {
+	    	this.masterControl.checked = this.allChecked();
+	        this.btnState(this.anyChecked());    	
+	    },
+	    toggle: function() {
+	    	if (!this.input.disabled) {
+	    		this.input.checked = !this.input.checked;	
+	    	}
+	    },
+	    toggleAll: function() {
+	    	var checked = this.target.checked;
+	        this.btnState(checked);
+	        for (var i=0; i < this.inputs.length; i++) {
+	        	if (!this.inputs[i].disabled) {
+	        		this.inputs[i].checked = checked;
+	        	}
+	        }
+	    },
+	    allChecked: function() {
+	        for (var j=0; j < this.inputs.length; j++) {
+	            if (!this.inputs[j].checked) {
+	                return false;
+	            }
+	        }
+	        return true;
+	    },
+	    anyChecked: function() {
+	        for (var j=0; j < this.inputs.length; j++) {
+	            if (this.inputs.checked) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    },
+	    btnState: function(state) {
+	        for (var i=0; i < this.buttons.length; i++) {
+	            var button = this.buttons[i];
+	            if (state) {
+	            	$(button).removeClass("disabled");
+	            } else {
+	            	$(button).addClass("disabled");
+	            }
+	        }
+	    }	    
+    };
+    
+    $(function() {
+    	$(document.documentElement).on('click', '.table-selectable tbody td', function(e) {
+    		if (e.target.nodeName !== "INPUT" && e.target.nodeName !== "A") {
+        		var dt = new DataTable(e.target);
+        		dt.toggle();
+        		dt.updateCheckState();
+    		}
+    	}).on('click', '.table-selectable tbody input[type=checkbox]', function(e) {
+    		var dt = new DataTable(e.target);
+    		dt.updateCheckState();
+    	}).on('click', '.table-selectable tfoot input[type=checkbox]', function(e) {
+    		e.stopPropagation();
+    		var dt = new DataTable(e.target);
+    		dt.toggleAll();
+    	});
+    });
 })();
