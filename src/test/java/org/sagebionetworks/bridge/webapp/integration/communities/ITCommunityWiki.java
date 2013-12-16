@@ -204,4 +204,18 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.submit();
 		wpage.assertThereIsNoScriptInEditor();
 	}
+	
+	@Test
+	public void canSaveIndexWikiWithoutContent() {
+		CommunityWikiPage wpage = driver.getCommunityWikiPage();
+		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		wpage.clickNavigationTab();
+		wpage.clickEditIndex();
+		
+		wpage.setHTML("");
+		wpage.submit();
+		driver.assertNotice("Page saved");
+		wpage.clickQuitEditing();
+		wpage.assertNavEntryExists("Forums");
+	}
 }

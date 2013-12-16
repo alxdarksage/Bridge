@@ -128,10 +128,10 @@ public class CommunityWikiController {
 		model.setViewName("communities/edit");
 		wikiForm.setWikiId(wikiId);
 		wikiForm.setIndexWiki(wikiId.equals(community.getIndexPageWikiId()));
-		
+
 		// There are no errors that can occur here, actually.
 		sanitizeMarkdownField(wikiForm, result);
-		if (!result.hasErrors()) {
+		if (wikiForm.isIndexWiki() || !result.hasErrors()) {
 			V2WikiPage wiki = ClientUtils.getWikiPage(request, community, wikiId);
 			
 			SynapseClient client = request.getBridgeUser().getSynapseClient();
