@@ -48,7 +48,7 @@ public class SignInControllerTest {
 	@Before
 	public void setUp() {
 		synapseClient = Mockito.mock(SynapseClientImpl.class);
-		controller.setSynapseClient(synapseClient);
+		controller.synapseClient = synapseClient;
 		
 		session = new Session();
 		session.setSessionToken("AAA");

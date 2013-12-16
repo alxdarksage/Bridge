@@ -23,14 +23,6 @@ public class TermsOfUseController extends AuthenticateBaseController {
 	
 	private static final Logger logger = LogManager.getLogger(TermsOfUseController.class.getName());
 	
-	@RequestMapping(value = "/tou", method = RequestMethod.GET)
-	public String getWithoutCheckbox(BridgeRequest request, @ModelAttribute TermsOfUseForm termsOfUseForm) throws Exception {
-		// Throws exception because I can't imagine what we'd do that was better 
-		// than the error page if this failed
-		termsOfUseForm.setTermsOfUse(synapseClient.getSynapseTermsOfUse());	
-		return "auth/tou";
-	}
-	
 	@RequestMapping(value = "/termsOfUse", method = RequestMethod.GET)
 	public String get(BridgeRequest request, @ModelAttribute TermsOfUseForm termsOfUseForm) throws Exception {
 		// Throws exception because I can't imagine what we'd do that was better 

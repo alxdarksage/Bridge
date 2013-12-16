@@ -24,6 +24,10 @@ public class SignUpPage {
 	public void assertEmailError() {
 		facade.assertErrorMessage("#email_errors", "Enter a valid email address");
 	}
+	public void assertEmailDuplicateError() {
+		facade.assertErrorMessage("#email_errors", "User");
+		facade.assertErrorMessage("#email_errors", "already exists");
+	}
 	public void assertUserNameError() {
 		facade.assertErrorMessage("#displayName_errors", "Enter a user name");
 	}

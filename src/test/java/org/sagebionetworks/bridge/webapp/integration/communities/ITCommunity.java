@@ -6,6 +6,7 @@ import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunitiesAdminPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityAdminPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.ErrorPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.ProfilePage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
@@ -133,6 +134,13 @@ public class ITCommunity extends WebDriverBase {
 		page = driver.getCommunityPage();
 		page.assertEditButtonNotPreset();
 		page.assertJoinButtonPreset();
+	}
+	
+	@Test
+	public void invalidCommunityIdRedirectsToErrorPage() {
+		driver.get("/communities/40000.html");
+		ErrorPage page = driver.waitForErrorPage();
+		page.assertErrorTitle("Not Found");
 	}
 	
 }

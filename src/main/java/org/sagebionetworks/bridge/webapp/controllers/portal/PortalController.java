@@ -21,10 +21,6 @@ public class PortalController {
 	@Resource(name = "bridgeClient")
 	protected BridgeClient bridgeClient;
 
-	public void setBridgeClient(BridgeClient bridgeClient) {
-		this.bridgeClient = bridgeClient;
-	}
-
 	@ModelAttribute("signInForm")
 	public SignInForm signInForm() {
 		return new SignInForm();

@@ -23,10 +23,6 @@ public class AuthenticateBaseController {
 	@Resource(name = "synapseClient")
 	protected SynapseClient synapseClient;
 
-	public void setSynapseClient(SynapseClient synapseClient) {
-		this.synapseClient = synapseClient;
-	}
-	
 	protected BridgeUser createBridgeUserFromUserSessionData(UserSessionData data) {
 		BridgeUser user = (BridgeUser) beanFactory.getBean("bridgeUser");
 		user.setDisplayName(data.getProfile().getDisplayName());
@@ -46,10 +42,12 @@ public class AuthenticateBaseController {
 	}
 	
 	protected String getOnErrorReturnPage(SignInForm signInForm, BridgeRequest request) {
+		/*
 		if (StringUtils.isBlank(request.getServletPath())) {
 			return ""; // test only, I believe
 		}
-		return "auth/signIn"; // request.getServletPath().substring(1).replace(".html", "");
+		*/
+		return "auth/signIn";
 	}
 
 }
