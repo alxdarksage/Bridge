@@ -30,6 +30,20 @@
     margin: 0 -4px;
     padding: 2px 8px;
 }
+#nav-pane {
+    .panel {
+	    .panel-body {
+	        padding: 0;
+	    }
+	    .list-group {
+	       border: none;
+	       margin-bottom: 0;
+	    }
+	    .list-group-item {
+	       border: none;
+	    }
+    }
+}
 
 @dropdown-spacing: 8px;
 
@@ -71,6 +85,10 @@
         .userName-box { 
             margin: 0; 
             margin-bottom: -@dropdown-spacing; 
+            display: inline-block;
+            
+            &:hover .smenu { display: block; }
+            &:hover .caret { visibility: hidden; }
             
 		    .smenu { 
                 position: absolute; 
@@ -94,9 +112,6 @@
                     border-right: @dropdown-spacing solid transparent;
 		        } 
 	        }
-	        
-		    &:hover .smenu { display: block; }
-		    &:hover .caret { visibility: hidden; }
 		    
 		    .userName { 
 				margin: 0;
