@@ -20,7 +20,8 @@ public class CommunitiesAdminPage extends AdminPages {
 	}
 	
 	public WebElement getRowByName(String name) {
-		List<WebElement> list = facade.findElements(By.linkText(name));
+		WebElement table = facade.findElement(By.className("table-selectable")); 
+		List<WebElement> list = table.findElements(By.partialLinkText(name));
 		if (!list.isEmpty()) {
 			return list.get(0).findElement(By.xpath("./ancestor::tr"));
 		}

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -54,7 +55,7 @@ public class ErrorController {
 	}
 	
 	private void processThrowable(BridgeRequest request, Throwable throwable, ModelAndView map) {
-		throwable = ClientUtils.unwrapThrowable(throwable);
+		throwable = Throwables.getRootCause(throwable);
 		logger.error("MESSAGE STRING: " + throwable.getMessage());
 		
 		if (throwable instanceof UnauthorizedException) {

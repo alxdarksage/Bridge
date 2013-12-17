@@ -28,16 +28,16 @@
 	        }
 	    },
 	    allChecked: function() {
-	        for (var j=0; j < this.inputs.length; j++) {
-	            if (!this.inputs[j].checked) {
+	        for (var i=0; i < this.inputs.length; i++) {
+	            if (!this.inputs[i].checked) {
 	                return false;
 	            }
 	        }
 	        return true;
 	    },
 	    anyChecked: function() {
-	        for (var j=0; j < this.inputs.length; j++) {
-	            if (this.inputs.checked) {
+	        for (var i=0; i < this.inputs.length; i++) {
+	            if (this.inputs[i].checked) {
 	                return true;
 	            }
 	        }
@@ -46,6 +46,7 @@
 	    btnState: function(state) {
 	        for (var i=0; i < this.buttons.length; i++) {
 	            var button = this.buttons[i];
+	            console.log(state, button);
 	            if (state) {
 	            	$(button).removeClass("disabled");
 	            } else {

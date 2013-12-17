@@ -9,10 +9,12 @@ public class ProfilePanelPage {
 	}
 
 	public void clickSignOut() {
+		facade.executeJavaScript("document.getElementsByClassName('smenu')[0].style.display='block';");
 		facade.click("#signOutButton");
 	}
 	
 	public void clickEditProfile() {
+		facade.executeJavaScript("document.getElementsByClassName('smenu')[0].style.display='block';");
 		facade.click("#editProfileAct");
 	}
 }
