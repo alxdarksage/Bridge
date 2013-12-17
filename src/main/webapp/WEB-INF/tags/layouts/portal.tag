@@ -9,6 +9,6 @@
 	    <jsp:doBody/>
     </div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
-    <sage:notifications/>
+    <sage:footer/>
 </body>
 </html>
