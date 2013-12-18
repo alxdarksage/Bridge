@@ -25,8 +25,8 @@
         <path>/WEB-INF/tags/header.tag</path>
     </tag-file>
     <tag-file>
-        <name>notifications</name>
-        <path>/WEB-INF/tags/notifications.tag</path>
+        <name>footer</name>
+        <path>/WEB-INF/tags/footer.tag</path>
     </tag-file>
     <tag-file>
         <name>oauth</name>
@@ -99,6 +99,10 @@
     <tag-file>
         <name>community-wiki-edit</name>
         <path>/WEB-INF/tags/layouts/community-wiki-edit.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>journal</name>
+        <path>/WEB-INF/tags/layouts/journal.tag</path>
     </tag-file>
     <tag-file>
         <name>minimal</name>

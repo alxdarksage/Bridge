@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
@@ -123,14 +124,6 @@ public class ClientUtils {
 	
 	public static void fieldError(BindingResult result, String formName, String fieldName, String message) {
 		result.addError(new FieldError(formName, fieldName, null, false, new String[] { message }, null, message));
-	}
-	
-	// NOTE: This is in Guava.
-	public static Throwable unwrapThrowable(Throwable throwable) {
-		while (throwable.getCause() != null) {
-			throwable = throwable.getCause();
-		}
-		return throwable;
 	}
 	
 	public static String dumpACL(AccessControlList acl) {

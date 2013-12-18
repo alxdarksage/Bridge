@@ -72,7 +72,7 @@
 			}
 		} else {
 			if (dest && !update) {
-				console.log("Replacing node: ", dest);
+				console.log("Removing node: ", dest);
 				dest.parentNode.removeChild(dest);
 			} else if (!dest && update) {
 				alert("This happens");

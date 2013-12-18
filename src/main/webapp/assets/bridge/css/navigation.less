@@ -30,30 +30,95 @@
     margin: 0 -4px;
     padding: 2px 8px;
 }
+#nav-pane {
+    .panel {
+	    .panel-body {
+	        padding: 0;
+	    }
+	    .list-group {
+	       border: none;
+	       margin-bottom: 0;
+	    }
+	    .list-group-item {
+	       border: none;
+	    }
+    }
+}
+
+@dropdown-spacing: 8px;
+
 #profile-pane {
-    overflow: hidden;
+    border-color: #892e65;
+				
+    .avatar-side { 
+        display: table-cell; 
+        background-color: #B882A3; 
     
-    .panel-body {
-        padding: 0;
-    }
-    .panel-footer {
-        padding: 5px 15px;
-    }
-    table {
-        border-spacing: 0;
-        border-collapse: collapse;
-        
-        td {
-            padding: 0;
+        .avatar { 
+            background-size: contain; 
+            background-repeat: no-repeat; 
+            width: 7.2rem; 
+            height: 7.2rem; 
+        }
+        .msgs { 
+            padding: 4px 0 2px 0; 
+            font-size: smaller; 
+            text-align: center; 
+            color: #e5e5e5;
+            
+            a { 
+	            color: white; 
+	        } 
         }
     }
-    img {
-       width: 7.2rem;
-       height: 7.2rem;
-       margin-right: 1rem;
-    }
-    .userName {
-        font-size: 16px;
-        margin-bottom: .6rem;
+    .userName-side { 
+        display: table-cell; 
+        padding: 2px;
+        padding-left: 1rem; 
+        width: 100%; 
+        vertical-align: middle;  
+        
+        a { 
+            display: block;
+            margin: .2rem 0; 
+        }
+        .userName-box { 
+            margin: 0; 
+            margin-bottom: -@dropdown-spacing; 
+            display: inline-block;
+            
+            &:hover .smenu { display: block; }
+            &:hover .caret { visibility: hidden; }
+            
+		    .smenu { 
+                position: absolute; 
+                border-radius: 3px;
+                margin-top: -@dropdown-spacing; 
+                display: none; 
+                width: 12rem; 
+                line-height: 2; 
+		        background-color: white; 
+		        padding: .5rem 1rem; 
+		        border: 1px solid #892e65; 
+		        font-size: 14px;
+		        
+		        &:before {
+                    content: ""; position: absolute; 
+                    top: -@dropdown-spacing; 
+                    left: @dropdown-spacing; 
+                    border-bottom: @dropdown-spacing solid #a069c3;
+                    border-top-color: #a069c3;  
+                    border-left: @dropdown-spacing solid transparent; 
+                    border-right: @dropdown-spacing solid transparent;
+		        } 
+	        }
+		    
+		    .userName { 
+				margin: 0;
+				letter-spacing: 1px; 
+				padding-bottom: (@dropdown-spacing+4px); 
+				font-weight: bold; 
+            }
+        }
     }
 }

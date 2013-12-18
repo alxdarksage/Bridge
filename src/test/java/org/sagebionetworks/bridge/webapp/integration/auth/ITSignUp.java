@@ -90,4 +90,13 @@ public class ITSignUp extends WebDriverBase {
 		driver.waitForCommunityPage();
 	}
 	
+	@Test
+	public void signingUpForExistingEmailFailsWithError() {
+		SignUpPage page = driver.getSignUpPage();
+		page.setEmail("timpowers@timpowers.com");
+		page.setUserName("timpowers");
+		page.submit();
+		page.assertEmailDuplicateError();
+	}
+	
 }

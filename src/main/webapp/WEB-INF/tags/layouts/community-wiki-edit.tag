@@ -58,14 +58,16 @@
             </a>
         </div>        
     </jsp:attribute>
-    <jsp:attribute name="content"><jsp:doBody/></jsp:attribute>
-</sage:main>
+    <jsp:attribute name="content">
+        <jsp:doBody/>
 <script>
 var acts = document.querySelectorAll(".act");
 for (var i=0; i < acts.length; i++) {
-	acts[i].addEventListener("click", function(e) {
-		e.preventDefault();
-		document.getElementById('tab-holder').className = e.target.getAttribute("data-target");
-	}, false);
+    acts[i].addEventListener("click", function(e) {
+        e.preventDefault();
+        document.getElementById('tab-holder').className = e.target.getAttribute("data-target");
+    }, false);
 }
 </script>
+    </jsp:attribute>
+</sage:main>

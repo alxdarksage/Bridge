@@ -1,14 +1,28 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.webapp.ClientUtils;
+import org.sagebionetworks.bridge.webapp.controllers.admin.CommunityAdminController;
+import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
+
 public class BridgeUser {
 
+	private static Logger logger = LogManager.getLogger(BridgeUser.class.getName());
+	
 	public static final BridgeUser PUBLIC_USER = new BridgeUser();
 
 	@Autowired
@@ -64,6 +78,20 @@ public class BridgeUser {
 
 	public void setAvatarUrl(String avatarUrl) {
 		this.avatarUrl = avatarUrl;
+	}
+	
+	public List<Community> getCommunities() throws SynapseException {
+		if (!isAuthenticated()) {
+			throw new UnauthorizedException("The user must be authenticated");
+		}
+		try {
+			BridgeClient client = getBridgeClient();
+			PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
+			return memberships.getResults();
+		} catch(SynapseException e) {
+			logger.error(e);
+			return Lists.newArrayList();
+		}
 	}
 
 	public SynapseClient getSynapseClient() {

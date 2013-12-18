@@ -446,7 +446,10 @@
 			                    <configuration>
 			                        <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
 			                        <propertyName>surefireArgLine</propertyName>
-			                    </configuration>
+                                    <excludes>
+                                        <exclude>**/SageServicesStub*</exclude>
+                                    </excludes>
+		                    </configuration>
 			                </execution>
 			                <execution>
 			                    <id>report</id>
@@ -457,6 +460,9 @@
 			                    <configuration>
 			                        <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
 			                        <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+		                            <excludes>
+		                                <exclude>**/SageServicesStub*</exclude>
+		                            </excludes>
 			                    </configuration>
 			                </execution>
 			            </executions>
