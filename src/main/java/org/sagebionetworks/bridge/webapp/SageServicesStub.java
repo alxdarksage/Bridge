@@ -19,6 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.versionInfo.BridgeVersionInfo;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SharedClientConnection;
@@ -105,6 +107,7 @@ import org.sagebionetworks.repo.model.storage.StorageUsageDimension;
 import org.sagebionetworks.repo.model.storage.StorageUsageSummaryList;
 import org.sagebionetworks.repo.model.table.ColumnModel;
 import org.sagebionetworks.repo.model.table.PaginatedColumnModels;
+import org.sagebionetworks.repo.model.table.PaginatedRowSet;
 import org.sagebionetworks.repo.model.table.RowReferenceSet;
 import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
@@ -1090,13 +1093,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		}
 		wikiPages.put(page.getId(), page);
 		return page;
-	}
-
-	@Override
-	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, V2WikiPage toUpdate, Long versionToRestore)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -2238,6 +2234,76 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public PaginatedResults<MembershipRqstSubmission> getOpenMembershipRequestSubmissions(String requesterId,
 			String teamId, long limit, long offset) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public RowSet appendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public RowSet appendParticipantData(String participantIdentifier, String participantDataDescriptorId, RowSet data)
+			throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public RowSet updateParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public PaginatedRowSet getParticipantData(String participantDataDescriptorId, long limit, long offset)
+			throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public ParticipantDataDescriptor createParticipantDataDescriptor(ParticipantDataDescriptor participantDataDescriptor)
+			throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
+			throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
+			throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public ParticipantDataColumnDescriptor createParticipantDataColumnDescriptor(
+			ParticipantDataColumnDescriptor participantDataColumnDescriptor1) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public PaginatedResults<ParticipantDataColumnDescriptor> getParticipantDataColumnDescriptors(
+			String participantDataDescriptorId, long limit, long offset) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, String wikiId, Long versionToRestore)
+			throws JSONObjectAdapterException, SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public URL getVersionOfV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName, Long version)
+			throws ClientProtocolException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public URL getVersionOfV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName, Long version)
+			throws ClientProtocolException, IOException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
 
