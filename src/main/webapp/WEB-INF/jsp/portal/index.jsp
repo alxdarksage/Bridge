@@ -9,7 +9,8 @@
             <sage:signIn/>
         </div>
         <div class="col-md-6">
-            <div style="margin-bottom: 1rem; outline: 1px solid #aaa; position: relative; background: transparent url('/bridge/static/images/bridge.jpg') 4% 48% no-repeat; max-width: 600px; height: 200px ! important">&#160;</div>
+            <c:url var="imageUrl" value="/static/images/bridge.jpg"/>
+            <div style="margin-bottom: 1rem; outline: 1px solid #aaa; position: relative; background: transparent url('${imageUrl}') 4% 48% no-repeat; max-width: 600px; height: 200px ! important">&#160;</div>
             <p id="portal-page">
                 This is the portal page. It has anonymous access, but needs to know if you are authenticated or not. 
                 It also needs content of some kind. The current appearance is intended to be slightly embarassing, 

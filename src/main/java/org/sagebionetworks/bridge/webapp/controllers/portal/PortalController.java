@@ -26,13 +26,8 @@ public class PortalController {
 		return new SignInForm();
 	}
 	
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index() throws SynapseException {
-		return "redirect:/portal/index.html";
-	}
-	
-	@RequestMapping(value = "/portal/index", method = RequestMethod.GET)
-	public ModelAndView index(BridgeRequest request, ModelAndView model) throws SynapseException {
+	@RequestMapping(value = {"/index", "/portal/index"}, method = RequestMethod.GET)
+	public ModelAndView index(ModelAndView model) throws SynapseException {
 		PaginatedResults<Community> results = bridgeClient.getAllCommunities(ClientUtils.LIMIT, 0);
 		model.addObject("communities", results.getResults());
 		model.setViewName("portal/index");
