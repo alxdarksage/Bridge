@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/admin")
 public class ParticipantDataDescriptorsController {
 
-
 	@ModelAttribute("signInForm")
 	public SignInForm signInForm() {
 		return new SignInForm();
