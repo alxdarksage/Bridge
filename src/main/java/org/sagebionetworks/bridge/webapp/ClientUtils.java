@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
@@ -143,6 +144,19 @@ public class ClientUtils {
 	
 	public static UserEntityPermissions getPermits(BridgeRequest request, String id) throws SynapseException {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
+	}
+	
+	// TODO: This is redundant with the model attribute method that makes the same calls.
+	public static void addParticipantDataDescriptor(BridgeClient client,
+			ModelAndView model, String participantDataDescriptorId) throws SynapseException {
+		
+		PaginatedResults<ParticipantDataDescriptor> records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
+		for (ParticipantDataDescriptor descriptor : records.getResults()) {
+			if (descriptor.getId().equals(participantDataDescriptorId)) {
+				model.addObject("descriptor", descriptor);
+				return;
+			}
+		}
 	}
 	
 	public static V2WikiPage getWikiPage(BridgeRequest request, Community community, String wikiId)

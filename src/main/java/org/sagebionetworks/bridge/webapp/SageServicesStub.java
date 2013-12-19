@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -120,8 +122,12 @@ import org.sagebionetworks.repo.web.NotFoundException;
 import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 public class SageServicesStub implements SynapseClient, BridgeClient {
@@ -139,6 +145,11 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	Set<String> agreedTOUs = Sets.newHashSet();
 	Map<String,String> markdowns = Maps.newHashMap();
 	Map<String,FileHandle> fileHandles = Maps.newHashMap();
+
+	// Participant data
+	Map<String, ParticipantDataDescriptor> descriptors = Maps.newHashMap();
+	Multimap<String, ParticipantDataDescriptor> descriptorsPerOwner = LinkedListMultimap.create();
+	Multimap<String, ParticipantDataColumnDescriptor> columns = LinkedListMultimap.create();
 	
 	String timPowersId;
 	
@@ -2126,6 +2137,9 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 	
 	private <T> List<T> paginate(List<T> list, long limit, long offset) {
+		if (list == null) {
+			return Collections.emptyList();
+		}
 		if (list.isEmpty()) {
 			return list;
 		}
@@ -2150,6 +2164,13 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		results.setResults(newList);
 		results.setTotalNumberOfResults(list.size());
 		return results;
+	}
+	
+	private <T extends JSONEntity> PaginatedResults<T> toResults(Collection<T> coll, long limit, long offset) {
+		if (coll == null) {
+			return new PaginatedResults();
+		}
+		return toResults(Lists.newArrayList(coll), limit, offset);
 	}
 
 	@Override
@@ -2238,6 +2259,24 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
+	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, String wikiId, Long versionToRestore)
+			throws JSONObjectAdapterException, SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public URL getVersionOfV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName, Long version)
+			throws ClientProtocolException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public URL getVersionOfV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName, Long version)
+			throws ClientProtocolException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
 	public RowSet appendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
@@ -2258,53 +2297,44 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
-
+	
 	@Override
-	public ParticipantDataDescriptor createParticipantDataDescriptor(ParticipantDataDescriptor participantDataDescriptor)
+	public ParticipantDataDescriptor createParticipantDataDescriptor(ParticipantDataDescriptor descriptor)
 			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+		descriptor.setId(newId());
+		descriptors.put(descriptor.getId(), descriptor);
+		descriptorsPerOwner.put(currentUserData.getProfile().getOwnerId(), descriptor);
+		return descriptor;
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
 			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+		return toResults(descriptors.values(), limit, offset);
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
 			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+		String ownerId = currentUserData.getProfile().getOwnerId();
+		return toResults(descriptorsPerOwner.get(ownerId), limit, offset);
 	}
 
 	@Override
 	public ParticipantDataColumnDescriptor createParticipantDataColumnDescriptor(
-			ParticipantDataColumnDescriptor participantDataColumnDescriptor1) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+			ParticipantDataColumnDescriptor column) throws SynapseException {
+		if (column.getParticipantDataDescriptorId() == null) {
+			throw new SynapseException("You must include a ParticipantDataDescriptor id before creating this column");
+		}
+		column.setId(newId());
+		columns.put(column.getParticipantDataDescriptorId(), column);
+		return column;
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataColumnDescriptor> getParticipantDataColumnDescriptors(
-			String participantDataDescriptorId, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, String wikiId, Long versionToRestore)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public URL getVersionOfV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName, Long version)
-			throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public URL getVersionOfV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName, Long version)
-			throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
+			String descriptorId, long limit, long offset) throws SynapseException {
+		return toResults(columns.get(descriptorId), limit, offset);
 	}
 
 }
