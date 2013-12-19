@@ -30,9 +30,9 @@ public class ParticipantDataDescriptorsController {
 		return new SignInForm();
 	}
 
-	@RequestMapping(value = "/descriptors", method = RequestMethod.GET)
+	@RequestMapping(value = "/descriptors/index", method = RequestMethod.GET)
 	public String viewParticipantDataDescriptors() {
-		return "admin/descriptors";
+		return "admin/descriptors/index";
 	}
 	
 	@RequestMapping(value = "/descriptors/create/cbc", method = RequestMethod.GET)
@@ -46,7 +46,7 @@ public class ParticipantDataDescriptorsController {
 		for (ParticipantDataDescriptor d : all.getResults()) {
 			if (d.getName().equals(spec.getDescriptor().getName())) {
 				request.setNotification("CBC has already been created");
-				return "redirect:/admin/descriptors.html";
+				return "redirect:/admin/descriptors/index.html";
 			}
 		}
 		
@@ -58,7 +58,7 @@ public class ParticipantDataDescriptorsController {
 		}
 		
 		request.setNotification("Created a CBC descriptor, look for it in the journal section");
-		return "redirect:/admin/descriptors.html";
+		return "redirect:/admin/descriptors/index.html";
 	}
 	
 }

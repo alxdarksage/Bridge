@@ -4,10 +4,6 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
     version="3.0">
 
-    <!-- 
-        May have to downgrade from version 3.0, because we had to downgrade Spring to 3.0.5.
-     -->
-        
     <display-name>Bridge Web Application</display-name>
     
 	<servlet>
@@ -42,18 +38,6 @@
         <filter-name>sslFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    <!-- 
-	<filter>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>*.html</url-pattern>
-	</filter-mapping>
-	 -->
     
     <filter>
         <filter-name>OriginFilter</filter-name>
@@ -123,19 +107,5 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-    
-    <!-- This occurs before the origin filter. So the origin is not captured
-        for login, and the Spring context isn't available, etc.
-    <security-constraint>
-        <display-name>Admin</display-name>
-        <web-resource-collection>
-            <web-resource-name>Admin</web-resource-name>
-            <url-pattern>/admin/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>admin</role-name>            
-        </auth-constraint>
-    </security-constraint>
-     -->
     
 </web-app>

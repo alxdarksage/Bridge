@@ -1,4 +1,4 @@
-<%@ include file="../directives.jsp" %>
+<%@ include file="../../directives.jsp" %>
 <sage:journal code="MyJournal">
     <div class="sage-crumbs">
         <c:url var="journalUrl" value="/journal.html"/>

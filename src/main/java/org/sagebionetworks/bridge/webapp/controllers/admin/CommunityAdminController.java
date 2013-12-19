@@ -50,19 +50,19 @@ public class CommunityAdminController {
 	
 	@RequestMapping(value = "/communities/new", method = RequestMethod.GET)
 	public String newCommunity(@ModelAttribute("communityForm") CommunityForm communityForm) {
-		return "admin/community";
+		return "admin/communities/new";
 	}
 	
 	@RequestMapping(value = "/communities/new", method = RequestMethod.POST)
 	public ModelAndView createCommunity(BridgeRequest request, @ModelAttribute @Valid CommunityForm communityForm,
 			BindingResult result, ModelAndView model) throws SynapseException {
-		model.setViewName("admin/community");
+		model.setViewName("admin/communities/new");
 		if (!result.hasErrors()) {
 			try {
 				BridgeClient client = request.getBridgeUser().getBridgeClient();
 				Community community = FormUtils.valuesToCommunity(new Community(), communityForm);
 				client.createCommunity(community);
-				model.setViewName("redirect:/admin/communities.html");
+				model.setViewName("redirect:/admin/communities/index.html");
 				request.setNotification("CommunityCreated");
 			} catch(SynapseException e) {
 				String message = ClientUtils.parseSynapseException(e, 500, "Invalid Entity name");
@@ -81,7 +81,7 @@ public class CommunityAdminController {
 		communityForm.setId(community.getId());
 
 		map.addObject("administrators", getAdministrators(request, communityId));
-		map.setViewName("admin/community");
+		map.setViewName("admin/communities/edit");
 		
 		return map;
 	}
@@ -92,7 +92,7 @@ public class CommunityAdminController {
 			@RequestParam(value = "administrators", required = false) List<String> administrators) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		map.setViewName("admin/community");
+		map.setViewName("admin/communities/edit");
 
 		if (!result.hasErrors()) {
 			if (administrators == null) {
@@ -123,7 +123,7 @@ public class CommunityAdminController {
 			Community community = client.getCommunity(communityId);
 			FormUtils.valuesToCommunity(community, communityForm);
 			client.updateCommunity(community);
-			map.setViewName("redirect:/admin/communities.html");
+			map.setViewName("redirect:/admin/communities/index.html");
 		}
 		return map;
 	}

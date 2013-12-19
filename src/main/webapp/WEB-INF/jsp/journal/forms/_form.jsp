@@ -1,4 +1,4 @@
-<%@ include file="../directives.jsp" %>
+<%@ include file="../../directives.jsp" %>
 <sage:journal code="MyJournal">
     <c:url var="journalUrl" value="/journal.html"/>
     <c:url var="formsUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html"/>

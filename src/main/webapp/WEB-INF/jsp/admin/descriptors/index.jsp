@@ -1,5 +1,5 @@
-<%@ include file="../directives.jsp" %>
-<sage:admin code="Patient Data Descriptors" active="PDD">
+<%@ include file="../../directives.jsp" %>
+<sage:admin code="Patient Data Descriptors Administration" active="PDD">
     <div class="sage-crumbs">
         <a href="<c:url value="/admin/index.html"/>">Admin Dashboard</a>
     </div>

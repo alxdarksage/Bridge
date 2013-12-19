@@ -45,7 +45,7 @@ public class JournalController {
 	
 	@RequestMapping(value = "/journal", method = RequestMethod.GET)
 	public ModelAndView viewDashboard(BridgeRequest request, ModelAndView model) {
-		model.setViewName("journal/dashboard");
+		model.setViewName("journal/index");
 		return model;
 	}
 	
@@ -67,7 +67,7 @@ public class JournalController {
 		}
 		
 		// Show all the records for this form, with the ability to create, delete.
-		model.setViewName("journal/forms");
+		model.setViewName("journal/forms/index");
 		return model;
 	}
 	
@@ -78,14 +78,9 @@ public class JournalController {
 		ClientUtils.addParticipantDataDescriptor(bridgeClient, model, formId);
 		// There's currently only one... so the form would have to map to it. 
 		model.addObject("form", new CompleteBloodCountSpec());
-		model.setViewName("journal/form");
+		model.setViewName("journal/forms/new");
 
 		return model;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/studies", method = RequestMethod.GET)
-	public ModelAndView viewStudies(BridgeRequest request, @PathVariable String participantId, ModelAndView model) {
-		model.setViewName("journal/studies");
-		return model;
-	}
 }

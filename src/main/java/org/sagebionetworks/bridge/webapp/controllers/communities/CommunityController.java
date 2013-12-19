@@ -95,7 +95,7 @@ public class CommunityController {
 		Community community = bridgeClient.getCommunity(communityId);
 		ClientUtils.prepareCommunitySidebarData(synapseClient, community, model);
 		
-		model.setViewName("communities/index");
+		model.setViewName("communities/show");
 		
 		if (wikiId == null) {
 			wikiId = community.getWelcomePageWikiId();
