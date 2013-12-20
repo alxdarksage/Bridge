@@ -24,7 +24,7 @@ public class DataTableTag extends SimpleTagSupport {
 	
 	private TagBuilder tb = new TagBuilder();
 	
-	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, YYYY");
+	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
 	
 	private PropertyUtilsBean pub = new PropertyUtilsBean();
 	
