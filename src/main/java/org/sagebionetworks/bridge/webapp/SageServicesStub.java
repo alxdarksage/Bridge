@@ -122,34 +122,31 @@ import org.sagebionetworks.repo.web.NotFoundException;
 import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 public class SageServicesStub implements SynapseClient, BridgeClient {
 	
 	private static final Logger logger = LogManager.getLogger(SageServicesStub.class.getName());
 
-	private Map<String,Community> communities = Maps.newHashMap();
 	UserSessionData currentUserData;
 	String sessionToken; // when this isn't separate from UserSessionData.getProfile().getSession() there are errors.
-	Map<String, UserSessionData> users = Maps.newHashMap();
-	Map<String,AccessControlList> acls = Maps.newHashMap();
-	Map<String, V2WikiPage> wikiPages = Maps.newHashMap();
-	Map<String, Team> teams = Maps.newHashMap();
-	Map<Team,Set<String>> memberships = Maps.newHashMap();
 	Set<String> agreedTOUs = Sets.newHashSet();
-	Map<String,String> markdowns = Maps.newHashMap();
-	Map<String,FileHandle> fileHandles = Maps.newHashMap();
+	Map<String,Community> communitiesById = Maps.newHashMap();
+	Map<String,UserSessionData> usersById = Maps.newHashMap();
+	Map<String,AccessControlList> aclsByEntityId = Maps.newHashMap(); // treating community as an entity
+	Map<String,V2WikiPage> wikiPagesById = Maps.newHashMap();
+	Map<String,Team> teamsById = Maps.newHashMap();
+	Map<Team,Set<String>> memberships = Maps.newHashMap();
+	Map<String,String> markdownsByFileHandleId = Maps.newHashMap();
 
 	// Participant data
-	Map<String, ParticipantDataDescriptor> descriptors = Maps.newHashMap();
-	Multimap<String, ParticipantDataDescriptor> descriptorsPerOwner = LinkedListMultimap.create();
-	Multimap<String, ParticipantDataColumnDescriptor> columns = LinkedListMultimap.create();
+	Map<String,ParticipantDataDescriptor> descriptorsById = Maps.newHashMap();
+	Multimap<String,ParticipantDataDescriptor> descriptorsByUserId = LinkedListMultimap.create();
+	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorId = LinkedListMultimap.create();
 	
 	String timPowersId;
 	
@@ -186,8 +183,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		data.setIsSSO(false);
 		data.setProfile(profile);
 		data.setSession(session);
-		users.put(email, data);
-		users.put(id, data);
+		usersById.put(email, data);
+		usersById.put(id, data);
 		return data;
 	}
 
@@ -205,7 +202,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		
 		// The hidden root page, under a key directly related to the community.
 		V2WikiPage root = createWikiPage(user, "Root", null, "Root");
-		wikiPages.put(community.getId(), root);
+		wikiPagesById.put(community.getId(), root);
 		
 		V2WikiPage page = createWikiPage(user, "Welcome Page", root.getId(), "Welcome");
 		community.setWelcomePageWikiId(page.getId());
@@ -213,12 +210,12 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		page = createWikiPage(user, root.getId(), "Index Page", "Index");
 		community.setIndexPageWikiId(page.getId());
 		
-		communities.put(community.getId(), community);
+		communitiesById.put(community.getId(), community);
 		
 		Team team = new Team();
 		team.setId("synTeam" + community.getId());
 		community.setTeamId(team.getId());
-		teams.put(team.getId(), team);
+		teamsById.put(team.getId(), team);
 		joinUserToThisCommunityTeam(team, user.getProfile().getOwnerId());
 		logger.info("The team ID for " + community.getName() + " is " + team.getId());
 		
@@ -237,17 +234,17 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			page.setParentWikiId(parentId);
 		}
 		page.setMarkdownFileHandleId(newId());
-		markdowns.put(page.getMarkdownFileHandleId(), markdown);
-		wikiPages.put(page.getId(), page);
+		markdownsByFileHandleId.put(page.getMarkdownFileHandleId(), markdown);
+		wikiPagesById.put(page.getId(), page);
 		return page;
 	}
 	
 	private void addToAccessControlList(String entityId, String userOwnerId, ACCESS_TYPE... types) {
-		AccessControlList acl = acls.get(entityId);
+		AccessControlList acl = aclsByEntityId.get(entityId);
 		if (acl == null) {
 			acl = new AccessControlList();
 			acl.setId(entityId);
-			acls.put(entityId, acl);
+			aclsByEntityId.put(entityId, acl);
 		}
 		ResourceAccess selected = null;
 		if (acl.getResourceAccess() == null) {
@@ -273,6 +270,43 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		return Integer.toString(++idCount);
 	}	
 	
+	private <T> List<T> paginate(List<T> list, long limit, long offset) {
+		if (list == null) {
+			return Collections.emptyList();
+		}
+		if (list.isEmpty()) {
+			return list;
+		}
+		int start = (int)offset;
+		int end = (int)limit;
+		int lastIndex = list.size();
+		start = (start > lastIndex) ? lastIndex : (start < 0) ? 0 : start;
+		end = (end > lastIndex) ? lastIndex : (end < 1) ? 1 : end;
+		return list.subList(start, end);
+	}
+	
+	private <T extends JSONEntity> PaginatedResults<T> toResults(List<T> list) {
+		PaginatedResults<T> results = new PaginatedResults<T>();
+		results.setResults(list);
+		results.setTotalNumberOfResults(list.size());
+		return results;
+	}
+	
+	private <T extends JSONEntity> PaginatedResults<T> toResults(List<T> list, long limit, long offset) {
+		List<T> newList = paginate(list, limit, offset);
+		PaginatedResults<T> results = new PaginatedResults<T>();
+		results.setResults(newList);
+		results.setTotalNumberOfResults(list.size());
+		return results;
+	}
+	
+	private <T extends JSONEntity> PaginatedResults<T> toResults(Collection<T> coll, long limit, long offset) {
+		if (coll == null) {
+			return new PaginatedResults<T>();
+		}
+		return toResults(Lists.newArrayList(coll), limit, offset);
+	}
+
 	@Override
 	public void appendUserAgent(String toAppend) {
 		logger.debug("--> appendUserAgent: " + toAppend);
@@ -313,7 +347,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Community getCommunity(String communityId) throws SynapseException {
-		Community community = communities.get(communityId);
+		Community community = communitiesById.get(communityId);
 		if (community == null) {
 			throw new SynapseException(new NotFoundException());
 		}
@@ -322,33 +356,33 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Community updateCommunity(Community community) throws SynapseException {
-		Community cty = communities.get(community.getId());
+		Community cty = communitiesById.get(community.getId());
 		if (cty == null) {
 			throw new SynapseNotFoundException();
 		}
-		communities.put(community.getId(), community);
+		communitiesById.put(community.getId(), community);
 		return community;
 	}
 
 	@Override
 	public void deleteCommunity(String communityId) throws SynapseException {
-		if (communityId == null || !communities.containsKey(communityId)) {
+		if (communityId == null || !communitiesById.containsKey(communityId)) {
 			throw new SynapseException(new NotFoundException("Could not find that community"));
 		}
-		communities.remove(communityId);
+		communitiesById.remove(communityId);
 	}
 	
 	@Override
 	public void joinCommunity(String communityId) throws SynapseException {
-		Community community = communities.get(communityId);
-		Team team = teams.get(community.getTeamId());
+		Community community = communitiesById.get(communityId);
+		Team team = teamsById.get(community.getTeamId());
 		joinUserToThisCommunityTeam(team, currentUserData.getProfile().getOwnerId());
 	}
 	
 	@Override
 	public void leaveCommunity(String communityId) throws SynapseException {
-		Community community = communities.get(communityId);
-		Team team = teams.get(community.getTeamId());
+		Community community = communitiesById.get(communityId);
+		Team team = teamsById.get(community.getTeamId());
 		removeCommunityAdmin(communityId, currentUserData.getProfile().getOwnerId());
 		removeUserFromCommunityTeam(team, communityId, currentUserData.getProfile().getOwnerId());
 	}
@@ -459,7 +493,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Session login(String username, String password) throws SynapseException {
-		UserSessionData data = users.get(username);
+		UserSessionData data = usersById.get(username);
 		if (data == null) {
 			throw new SynapseException();
 		}
@@ -538,11 +572,11 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public S3FileHandle createFileHandle(File temp, String contentType) throws SynapseException, IOException {
 		S3FileHandle handle = new S3FileHandle();
-		// This isn't going to be easy to stub out! We need to read in the content and save it in markdowns,
+		// This isn't going to be easy to stub out! We need to read in the content and save it in markdownsByFileHandleId,
 		// as that's the only place we're using it right now, with a new id, and put that ID in the handle.
 		String id = newId();
 		String markdown = FileUtils.readFileToString(temp);
-		markdowns.put(id, markdown);
+		markdownsByFileHandleId.put(id, markdown);
 		handle.setId(id);
 		handle.setFileName(temp.getName());
 		// Create a preview item as well? Where to store it?
@@ -695,7 +729,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public AccessControlList getACL(String entityId) throws SynapseException {
 		logger.info("Looking for an ACL for: " + entityId);
-		return acls.get(entityId);		
+		return aclsByEntityId.get(entityId);		
 	}
 
 	@Override
@@ -712,14 +746,14 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public void updateMyProfile(UserProfile userProfile) throws SynapseException {
-		UserSessionData data = users.get(userProfile.getOwnerId());
+		UserSessionData data = usersById.get(userProfile.getOwnerId());
 		data.setProfile(userProfile);		
 	}
 
 	@Override
 	public UserProfile getUserProfile(String ownerId) throws SynapseException {
 		logger.info("--> getUserProfile: " + ownerId);
-		return users.get(ownerId).getProfile();
+		return usersById.get(ownerId).getProfile();
 	}
 
 	@Override
@@ -755,7 +789,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public AccessControlList createACL(AccessControlList acl) throws SynapseException {
-		acls.put(acl.getId(), acl);
+		aclsByEntityId.put(acl.getId(), acl);
 		return acl;		
 	}
 
@@ -792,7 +826,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		permits.setCanEnableInheritance(false);
 		permits.setCanPublicRead(false);
 		permits.setCanView(false);
-		AccessControlList acl = acls.get(entityId);
+		AccessControlList acl = aclsByEntityId.get(entityId);
 		if (acl != null) {
 			for (ResourceAccess ra : acl.getResourceAccess()) {
 				if (ra.getPrincipalId().toString().equals(currentUserData.getProfile().getOwnerId())) {
@@ -1082,7 +1116,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			throws JSONObjectAdapterException, SynapseException {
 		String id = newId();
 		page.setId(id);
-		wikiPages.put(page.getId(), page);
+		wikiPagesById.put(page.getId(), page);
 		return page;
 		
 	}
@@ -1090,44 +1124,44 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public V2WikiPage getV2WikiPage(WikiPageKey key) throws JSONObjectAdapterException, SynapseException {
 		String realId = key.getWikiPageId();
-		if (!wikiPages.containsKey(realId)) {
+		if (!wikiPagesById.containsKey(realId)) {
 			throw new SynapseException("Wiki page not found");
 		}
-		return wikiPages.get(realId);
+		return wikiPagesById.get(realId);
 	}
 
 	@Override
 	public V2WikiPage updateV2WikiPage(String ownerId, ObjectType ownerType, V2WikiPage page)
 			throws JSONObjectAdapterException, SynapseException {
-		if (!wikiPages.containsKey(page.getId())) {
+		if (!wikiPagesById.containsKey(page.getId())) {
 			throw new SynapseException("Wiki page does not yet exist");
 		}
-		wikiPages.put(page.getId(), page);
+		wikiPagesById.put(page.getId(), page);
 		return page;
 	}
 
 	@Override
 	public V2WikiPage getV2RootWikiPage(String ownerId, ObjectType ownerType) throws JSONObjectAdapterException, SynapseException {
 		// The invisible root wiki page is stored under the community key.
-		Community community = communities.get(ownerId);
+		Community community = communitiesById.get(ownerId);
 		if (community == null) {
 			throw new SynapseException("Wiki page's community not found");
 		}
 		String communityId = community.getId();
-		if (!wikiPages.containsKey(communityId)) {
+		if (!wikiPagesById.containsKey(communityId)) {
 			throw new SynapseException("Wiki page not found");
 		}
-		return wikiPages.get(communityId);
+		return wikiPagesById.get(communityId);
 	}
 
 	@Override
 	public FileHandleResults getV2WikiAttachmentHandles(WikiPageKey key) throws JSONObjectAdapterException,
 			SynapseException {
-		if (!wikiPages.containsKey(key.getWikiPageId())) {
+		if (!wikiPagesById.containsKey(key.getWikiPageId())) {
 			throw new SynapseException("Wiki not found");
 		}
 		FileHandleResults results = new FileHandleResults();
-		V2WikiPage page = wikiPages.get(key.getWikiPageId());
+		V2WikiPage page = wikiPagesById.get(key.getWikiPageId());
 		
 		// I think we need to save and restore these...
 		List<FileHandle> handles = Lists.newArrayList();
@@ -1171,7 +1205,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public void deleteV2WikiPage(WikiPageKey key) throws SynapseException {
-		wikiPages.remove(key.getWikiPageId());
+		wikiPagesById.remove(key.getWikiPageId());
 	}
 
 	@Override
@@ -1180,11 +1214,11 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		List<V2WikiHeader> list = Lists.newArrayList();
 
 		// get the root, add it
-		V2WikiPage root = wikiPages.get(ownerId);
+		V2WikiPage root = wikiPagesById.get(ownerId);
 		addToResults(list, root);
 		
 		// get every page under the root (we only have a shallow list, not a tree), add it
-		for (V2WikiPage page : wikiPages.values()) {
+		for (V2WikiPage page : wikiPagesById.values()) {
 			if (page.getParentWikiId() != null && page.getParentWikiId().equals(root.getId())) {
 				addToResults(list, page);
 			}
@@ -1835,10 +1869,10 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Team getTeam(String id) throws SynapseException {
-		if (!teams.keySet().contains(id)) {
+		if (!teamsById.keySet().contains(id)) {
 			throw new SynapseException("Team not found");
 		}
-		return teams.get(id);
+		return teamsById.get(id);
 	}
 
 	@Override
@@ -1901,7 +1935,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		TeamMembershipStatus status = new TeamMembershipStatus();
 		status.setTeamId(teamId);
 		status.setUserId(userId);
-		Team team = teams.get(teamId);
+		Team team = teamsById.get(teamId);
 		if (team != null) {
 			Set<String> members = memberships.get(team);
 			status.setIsMember( (members != null && members.contains(userId)) );
@@ -1985,7 +2019,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public void createUser(NewUser user, OriginatingClient originClient) throws SynapseException {
-		if (users.get(user.getEmail()) != null) {
+		if (usersById.get(user.getEmail()) != null) {
 			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
 		}
 		
@@ -2003,8 +2037,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		data.setSession(session);
 		data.setProfile(profile);
 		// ARGH!
-		users.put(user.getEmail(), data);
-		users.put(USER_ID, data);		
+		usersById.put(user.getEmail(), data);
+		usersById.put(USER_ID, data);		
 	}
 
 	@Override
@@ -2049,7 +2083,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		// 3. Returning user who should just be logged in to default start page
 		
 		// The user will always be Tim Powers, session AAA.
-		currentUserData = users.get(timPowersId);
+		currentUserData = usersById.get(timPowersId);
 		Session session = new Session();
 		session.setSessionToken(timPowersId);
 		return session;		
@@ -2062,13 +2096,13 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		return info;
 	}
 
-	// Get communities FOR THIS USER ALONE.
+	// Get communitiesById FOR THIS USER ALONE.
 	@Override
 	public PaginatedResults<Community> getCommunities(long limit, long offset) throws SynapseException {
 		List<Community> memberCommunities = Lists.newArrayList();
 		if (currentUserData != null && currentUserData.getProfile() != null) {
-			for (Community community : communities.values()) {
-				Team team = teams.get(community.getTeamId());
+			for (Community community : communitiesById.values()) {
+				Team team = teamsById.get(community.getTeamId());
 				Set<String> members = memberships.get(team);
 				if (members != null && members.contains(currentUserData.getProfile().getOwnerId())) {
 					memberCommunities.add(community);
@@ -2080,19 +2114,19 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public PaginatedResults<Community> getAllCommunities(long limit, long offset) throws SynapseException {
-		return toResults(new ArrayList<Community>(communities.values()));
+		return toResults(new ArrayList<Community>(communitiesById.values()));
 	}
 
 	@Override
 	public PaginatedResults<UserGroupHeader> getCommunityMembers(String communityId, long limit, long offset)
 			throws SynapseException {
-		Community community = communities.get(communityId);
-		Team team = teams.get(community.getTeamId());
+		Community community = communitiesById.get(communityId);
+		Team team = teamsById.get(community.getTeamId());
 		Set<String> members = memberships.get(team);
 		
 		List<UserGroupHeader> headers = Lists.newArrayList();
 		for (String memberId : members) {
-			UserProfile profile = users.get(memberId).getProfile();
+			UserProfile profile = usersById.get(memberId).getProfile();
 			
 			UserGroupHeader header = new UserGroupHeader();
 			header.setDisplayName(profile.getDisplayName());
@@ -2115,7 +2149,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public void removeCommunityAdmin(String communityId, String userId) throws SynapseException {
 		// All of this only matters if you're removing yourself...
-		AccessControlList acl = acls.get(communityId);
+		AccessControlList acl = aclsByEntityId.get(communityId);
 		
 		Set<String> admins = Sets.newHashSet();
 		for (ResourceAccess ra : acl.getResourceAccess()) {
@@ -2136,43 +2170,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		}
 	}
 	
-	private <T> List<T> paginate(List<T> list, long limit, long offset) {
-		if (list == null) {
-			return Collections.emptyList();
-		}
-		if (list.isEmpty()) {
-			return list;
-		}
-		int start = (int)offset;
-		int end = (int)limit;
-		int lastIndex = list.size();
-		start = (start > lastIndex) ? lastIndex : (start < 0) ? 0 : start;
-		end = (end > lastIndex) ? lastIndex : (end < 1) ? 1 : end;
-		return list.subList(start, end);
-	}
-	
-	private <T extends JSONEntity> PaginatedResults<T> toResults(List<T> list) {
-		PaginatedResults<T> results = new PaginatedResults<T>();
-		results.setResults(list);
-		results.setTotalNumberOfResults(list.size());
-		return results;
-	}
-	
-	private <T extends JSONEntity> PaginatedResults<T> toResults(List<T> list, long limit, long offset) {
-		List<T> newList = paginate(list, limit, offset);
-		PaginatedResults<T> results = new PaginatedResults<T>();
-		results.setResults(newList);
-		results.setTotalNumberOfResults(list.size());
-		return results;
-	}
-	
-	private <T extends JSONEntity> PaginatedResults<T> toResults(Collection<T> coll, long limit, long offset) {
-		if (coll == null) {
-			return new PaginatedResults();
-		}
-		return toResults(Lists.newArrayList(coll), limit, offset);
-	}
-
 	@Override
 	public V2WikiPage getVersionOfV2WikiPage(WikiPageKey key, Long version) throws JSONObjectAdapterException,
 			SynapseException {
@@ -2188,13 +2185,13 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public File downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
 			IOException {
-		V2WikiPage page = wikiPages.get(key.getWikiPageId());
+		V2WikiPage page = wikiPagesById.get(key.getWikiPageId());
 		if (page == null) {
 			throw new FileNotFoundException("Wiki page not found");
 		}
 		File temp = File.createTempFile("tempPage"+page.getId(), ".html");
 		
-		String markdown = markdowns.get(page.getMarkdownFileHandleId());
+		String markdown = markdownsByFileHandleId.get(page.getMarkdownFileHandleId());
 		if (markdown == null) {
 			throw new FileNotFoundException("Wiki page markdown not found");
 		}
@@ -2237,6 +2234,24 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
+	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, String wikiId, Long versionToRestore)
+			throws JSONObjectAdapterException, SynapseException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public URL getVersionOfV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName, Long version)
+			throws ClientProtocolException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public URL getVersionOfV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName, Long version)
+			throws ClientProtocolException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
 	public MessageToUser sendMessage(MessageToUser message, String entityId) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
@@ -2255,24 +2270,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public PaginatedResults<MembershipRqstSubmission> getOpenMembershipRequestSubmissions(String requesterId,
 			String teamId, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, String wikiId, Long versionToRestore)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public URL getVersionOfV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName, Long version)
-			throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public URL getVersionOfV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName, Long version)
-			throws ClientProtocolException, IOException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
 
@@ -2302,22 +2299,22 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	public ParticipantDataDescriptor createParticipantDataDescriptor(ParticipantDataDescriptor descriptor)
 			throws SynapseException {
 		descriptor.setId(newId());
-		descriptors.put(descriptor.getId(), descriptor);
-		descriptorsPerOwner.put(currentUserData.getProfile().getOwnerId(), descriptor);
+		descriptorsById.put(descriptor.getId(), descriptor);
+		descriptorsByUserId.put(currentUserData.getProfile().getOwnerId(), descriptor);
 		return descriptor;
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
 			throws SynapseException {
-		return toResults(descriptors.values(), limit, offset);
+		return toResults(descriptorsById.values(), limit, offset);
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
 			throws SynapseException {
 		String ownerId = currentUserData.getProfile().getOwnerId();
-		return toResults(descriptorsPerOwner.get(ownerId), limit, offset);
+		return toResults(descriptorsByUserId.get(ownerId), limit, offset);
 	}
 
 	@Override
@@ -2327,14 +2324,14 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			throw new SynapseException("You must include a ParticipantDataDescriptor id before creating this column");
 		}
 		column.setId(newId());
-		columns.put(column.getParticipantDataDescriptorId(), column);
+		columnsByDescriptorId.put(column.getParticipantDataDescriptorId(), column);
 		return column;
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataColumnDescriptor> getParticipantDataColumnDescriptors(
 			String descriptorId, long limit, long offset) throws SynapseException {
-		return toResults(columns.get(descriptorId), limit, offset);
+		return toResults(columnsByDescriptorId.get(descriptorId), limit, offset);
 	}
 
 }

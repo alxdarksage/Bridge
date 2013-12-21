@@ -21,6 +21,7 @@
         <css>/assets/bridge/css/data-table.css</css>
         <css>/assets/bridge/css/editor.less</css>
         <css>/assets/bridge/css/oauth.less</css>
+        <css>/assets/bridge/css/form.less</css>
 	</group>
 
 	<group name="footer">

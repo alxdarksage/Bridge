@@ -10,7 +10,6 @@ import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.CompleteBloodCountSpec;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
-import org.sagebionetworks.bridge.webapp.servlet.OriginFilter;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -49,7 +48,7 @@ public class ParticipantDataDescriptorsController {
 				return "redirect:/admin/descriptors/index.html";
 			}
 		}
-		
+
 		ParticipantDataDescriptor descriptor = spec.getDescriptor();
 		descriptor = client.createParticipantDataDescriptor(spec.getDescriptor());
 		List<ParticipantDataColumnDescriptor> columns = spec.getColumnDescriptors(descriptor);

@@ -12,9 +12,12 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.webapp.forms.CompleteBloodCountSpec;
+import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
@@ -27,6 +30,9 @@ import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.ResourceAccess;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
+import org.sagebionetworks.repo.model.table.PaginatedRowSet;
+import org.sagebionetworks.repo.model.table.Row;
+import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
@@ -40,6 +46,8 @@ import com.google.common.collect.Lists;
 
 public class ClientUtils {
 	
+	private static final Logger logger = LogManager.getLogger(ClientUtils.class.getName());
+
 	public static class ExceptionInfo {
 		
 		private int code;
@@ -58,7 +66,7 @@ public class ClientUtils {
 		
 	}
 	
-	public static final long LIMIT = 1000L;
+	public static final long LIMIT = 10000L;
 	
 	/**
 	 * By the time exceptions get to the client across the REST interface, they are in 
@@ -146,8 +154,8 @@ public class ClientUtils {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
-	// TODO: This is redundant with the model attribute method that makes the same calls.
-	public static void addParticipantDataDescriptor(BridgeClient client,
+	// TODO: Inefficient (no mid-tier call). Redundant with the model attribute list of all these for sidebar.
+	public static void prepareDescriptor(BridgeClient client,
 			ModelAndView model, String participantDataDescriptorId) throws SynapseException {
 		
 		PaginatedResults<ParticipantDataDescriptor> records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
@@ -201,6 +209,41 @@ public class ClientUtils {
 			model.addObject("indexContent", markdown);
 		}
 	}
+
+	public static void prepareParticipantData(BridgeClient client, ModelAndView model, CompleteBloodCountSpec spec, String formId) throws SynapseException {
+		
+		// Block error (which isn't an error here, and also contains a whole Tomcat page in the message field).
+		//try { This has to go
+			List<RowObject> records = Lists.newArrayList();
+			
+			PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
+			RowSet rowSet = paginatedRowSet.getResults();
+			List<String> headers = rowSet.getHeaders();
+			
+			for (Row row : rowSet.getRows()) {
+				RowObject object = new RowObject(spec, row.getRowId(), headers, row.getValues());
+				records.add(object);
+			}
+			model.addObject("records", records);
+			
+			/*
+		} catch(Exception e) {
+			logger.error(e);
+			// this throws a gibberish exception when there are no records. It's not a 404, it's a 500 with 
+			// a Tomcat web page as the message of the exception.
+			model.addObject("records", Lists.newArrayList());
+		}
+		*/
+	}
+	
+	public static Row getRowById(PaginatedRowSet paginatedRowSet, long rowId) {
+		for (Row row : paginatedRowSet.getResults().getRows()) {
+			if (row.getRowId().equals(rowId)) {
+				return row;
+			}
+		}
+		throw new IllegalArgumentException(Long.toString(rowId) + " is not a valid row");
+	}	
 
 	private static List<WikiHeader> getWikiHeaders(SynapseClient client, Community community)
 			throws JSONObjectAdapterException, SynapseException {

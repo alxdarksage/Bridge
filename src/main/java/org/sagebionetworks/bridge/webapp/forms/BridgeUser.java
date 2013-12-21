@@ -51,6 +51,9 @@ public class BridgeUser {
 	}
 
 	public String getOwnerId() {
+		if (ownerId == null) {
+			throw new UnauthorizedException("The user must be authenticated");
+		}
 		return ownerId;
 	}
 
