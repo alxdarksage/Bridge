@@ -2,6 +2,7 @@
 <%@ attribute name="code" required="true" %>
 <%@ attribute name="navigation" required="true" fragment="true" %>
 <%@ attribute name="content" required="true" fragment="true" %>
+<%@ attribute name="scripts" required="false" fragment="true" %>
 <!DOCTYPE html>
 <html lang="en">
 <sage:head code="${code}"/>
@@ -19,6 +20,7 @@
         </div>
     </div>
     <script type="text/javascript" src="<c:url value='/assets/footer.js'/>"></script>
+    <jsp:invoke fragment="scripts" />
     <sage:footer/>
 </body>
 </html>

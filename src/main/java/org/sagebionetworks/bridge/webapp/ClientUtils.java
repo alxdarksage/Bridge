@@ -10,16 +10,16 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
-import org.sagebionetworks.bridge.webapp.forms.CompleteBloodCountSpec;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -154,17 +154,22 @@ public class ClientUtils {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
-	// TODO: Inefficient (no mid-tier call). Redundant with the model attribute list of all these for sidebar.
-	public static void prepareDescriptor(BridgeClient client,
+	// TODO: We don't need the descriptor if we have the specification, since it created the latter
+	// (at least at the moment).
+	public static Specification prepareDescriptorAndForm(BridgeClient client,
 			ModelAndView model, String participantDataDescriptorId) throws SynapseException {
+		
+		Specification spec = new CompleteBloodCount();
+		model.addObject("form", spec);
 		
 		PaginatedResults<ParticipantDataDescriptor> records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
 		for (ParticipantDataDescriptor descriptor : records.getResults()) {
 			if (descriptor.getId().equals(participantDataDescriptorId)) {
 				model.addObject("descriptor", descriptor);
-				return;
+				break;
 			}
 		}
+		return spec;
 	}
 	
 	public static V2WikiPage getWikiPage(BridgeRequest request, Community community, String wikiId)
@@ -196,8 +201,7 @@ public class ClientUtils {
 		model.addObject("wikiHeaders", headers);
 		
 		WikiPageKey key = new WikiPageKey(community.getId(), ObjectType.ENTITY, community.getIndexPageWikiId());
-		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
-		String markdown = FileUtils.readFileToString(markdownFile);
+		String markdown = synapseClient.downloadV2WikiMarkdown(key);
 		
 		// TODO: This should be removable when we fix the manager code. The manager does not create a 
 		// valid starting bit of markdown for this wiki.
@@ -210,10 +214,10 @@ public class ClientUtils {
 		}
 	}
 
-	public static void prepareParticipantData(BridgeClient client, ModelAndView model, CompleteBloodCountSpec spec, String formId) throws SynapseException {
+	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String formId) throws SynapseException {
 		
 		// Block error (which isn't an error here, and also contains a whole Tomcat page in the message field).
-		//try { This has to go
+		try {
 			List<RowObject> records = Lists.newArrayList();
 			
 			PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
@@ -221,23 +225,22 @@ public class ClientUtils {
 			List<String> headers = rowSet.getHeaders();
 			
 			for (Row row : rowSet.getRows()) {
+				// TODO: Don't pass spec all the way down into this object to do the conversion.
 				RowObject object = new RowObject(spec, row.getRowId(), headers, row.getValues());
 				records.add(object);
 			}
 			model.addObject("records", records);
 			
-			/*
-		} catch(Exception e) {
+		} catch(Exception e) { // But what kind of exception. Test for this.
 			logger.error(e);
 			// this throws a gibberish exception when there are no records. It's not a 404, it's a 500 with 
 			// a Tomcat web page as the message of the exception.
 			model.addObject("records", Lists.newArrayList());
 		}
-		*/
 	}
 	
-	public static Row getRowById(PaginatedRowSet paginatedRowSet, long rowId) {
-		for (Row row : paginatedRowSet.getResults().getRows()) {
+	public static Row getRowById(RowSet rowSet, long rowId) {
+		for (Row row : rowSet.getRows()) {
 			if (row.getRowId().equals(rowId)) {
 				return row;
 			}

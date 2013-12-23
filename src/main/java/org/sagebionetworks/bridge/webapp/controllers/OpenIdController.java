@@ -17,7 +17,7 @@ import org.sagebionetworks.authutil.OpenIDConsumerUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
-import org.sagebionetworks.repo.model.OriginatingClient;
+import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.springframework.stereotype.Controller;
@@ -122,7 +122,7 @@ public class OpenIdController extends AuthenticateBaseController {
 		String queryString = URLDecoder.decode(request.getQueryString(), "UTF-8");
 
 		// Send all the Open ID info to the repository services
-		Session session = privateSynapseClient.passThroughOpenIDParameters(queryString, true, OriginatingClient.BRIDGE);
+		Session session = privateSynapseClient.passThroughOpenIDParameters(queryString, true, DomainType.BRIDGE);
 		
 		if (session.getAcceptsTermsOfUse()) {
 			acceptsTermsOfUse = true;

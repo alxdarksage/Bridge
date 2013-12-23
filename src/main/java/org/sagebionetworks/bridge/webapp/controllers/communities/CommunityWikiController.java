@@ -108,8 +108,7 @@ public class CommunityWikiController {
 		
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
 		V2WikiPage wiki = ClientUtils.getWikiPage(request, key);
-		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
-		String markdown = FileUtils.readFileToString(markdownFile);
+		String markdown = synapseClient.downloadV2WikiMarkdown(key);
 		
 		FormUtils.valuesToWikiForm(wikiForm, wiki, markdown);
 		wikiForm.setIndexWiki(wikiId.equals(community.getIndexPageWikiId()));

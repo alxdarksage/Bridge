@@ -4,7 +4,7 @@
         <a href="<c:url value="/admin/index.html"/>"><spring:message code="AdminDashboard"/></a> &#187; 
     </div>
     <h3><spring:message code="Communities"/></h3>
-    <sage:table formId="communityForm" action="/admin/communities.html" itemId="id" items="${communities}" caption="Communities">
+    <sage:table formId="communityForm" action="/admin/communities/index.html" itemId="id" items="${communities}" caption="Communities">
         <sage:button id="newCommunityAct" type="primary" label="New Community" action="/admin/communities/new.html"/>
         <sage:column label="Name" field="name" link="/admin/communities/{id}.html" className="nowrap"/>
         <sage:column label="Description" field="description"/>

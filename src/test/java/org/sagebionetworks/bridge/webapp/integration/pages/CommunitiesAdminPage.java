@@ -9,7 +9,7 @@ import org.openqa.selenium.WebElement;
 public class CommunitiesAdminPage extends AdminPages {
 	
 	public static final String TITLE = "Communities Administration";
-	public static final String URL = "/admin/communities.html";
+	public static final String URL = "/admin/communities/index.html";
 	
 	public CommunitiesAdminPage(WebDriverFacade facade) {
 		super(facade);

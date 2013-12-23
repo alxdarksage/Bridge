@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp;
 
-import java.util.List;
 import java.util.Map;
 
 import org.sagebionetworks.bridge.model.Community;
@@ -12,6 +11,7 @@ import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.table.Row;
+import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
 import com.google.common.collect.Maps;
@@ -64,11 +64,15 @@ public class FormUtils {
 		return profile;
 	}
 	
-	public static DynamicForm valuesToDynamicForm(DynamicForm dynamicForm, List<String> headers, Row row) {
+	public static DynamicForm valuesToDynamicForm(DynamicForm dynamicForm, RowSet rowSet, long rowId) {
+		Row row = ClientUtils.getRowById(rowSet, rowId);
 		Map<String,String> values = Maps.newHashMap();
-		for (int i=0; i < headers.size(); i++) {
-			String header = headers.get(i);
+		for (int i=0; i < rowSet.getHeaders().size(); i++) {
+			String header = rowSet.getHeaders().get(i);
 			String value = row.getValues().get(i);
+			if (value == null) {
+				value = "";
+			}
 			values.put(header,value);
 		}
 		dynamicForm.setValues(values);

@@ -15,15 +15,7 @@
     <mvc:annotation-driven />
 
    	<import resource="bridge-log-sweeper.spb.xml" />
-
-    <!-- TODO: This class requires construction on every request for every user, retrieving their session 
-        token. Actually I kinda don't believe that, it might be safe for one user to reuse this client 
-        between requests.
-        
-        Also, this is the publicSynapseClient, you can configure a privateSynapseClient that uses 
-        the private auth URL.
-    -->
-    
+ 
     <bean id="synapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
         <property name="repositoryEndpoint">
             <bean class="org.sagebionetworks.StackConfiguration"

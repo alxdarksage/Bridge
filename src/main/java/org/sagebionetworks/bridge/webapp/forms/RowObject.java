@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Maps;
 
@@ -20,7 +21,7 @@ public class RowObject {
 	private List<String> keySet;
 	private Map<String, Object> valueMap = Maps.newLinkedHashMap();
 	
-	public RowObject(CompleteBloodCountSpec spec, Long id, List<String> headers, List<String> values) {
+	public RowObject(Specification spec, Long id, List<String> headers, List<String> values) {
 		if (spec == null) {
 			throw new IllegalArgumentException("Specification cannot be null");
 		}

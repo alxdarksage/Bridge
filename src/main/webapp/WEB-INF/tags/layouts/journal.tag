@@ -1,5 +1,7 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="code" required="true" %>
+<%@ attribute name="content" required="true" fragment="true" %>
+<%@ attribute name="scripts" required="false" fragment="true" %>
 <sage:main code="${code}">
     <jsp:attribute name="navigation">
         <div class="panel panel-default">
@@ -17,5 +19,8 @@
             </div>
         </div>    
     </jsp:attribute>
-    <jsp:attribute name="content"><jsp:doBody/></jsp:attribute>
+    <jsp:attribute name="content"><jsp:invoke fragment="content" /></jsp:attribute>
+    <jsp:attribute name="scripts">
+        <script src="<c:url value='/assets/form-keys.js'/>"></script>    
+    </jsp:attribute>
 </sage:main>

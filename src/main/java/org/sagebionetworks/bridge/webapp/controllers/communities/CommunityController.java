@@ -1,12 +1,10 @@
 package org.sagebionetworks.bridge.webapp.controllers.communities;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -101,8 +99,7 @@ public class CommunityController {
 			wikiId = community.getWelcomePageWikiId();
 		}
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
-		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
-		String markdown = FileUtils.readFileToString(markdownFile);
+		String markdown = synapseClient.downloadV2WikiMarkdown(key);
 		model.addObject("wikiContent", markdown);
 		model.addObject("wikiId", wikiId);
 

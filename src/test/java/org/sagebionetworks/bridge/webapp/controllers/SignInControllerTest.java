@@ -54,8 +54,10 @@ public class SignInControllerTest {
 		session.setSessionToken("AAA");
 		session.setAcceptsTermsOfUse(true);
 		
+		UserProfile profile = new UserProfile();
+		profile.setOwnerId("AAA");
 		userSessionData = new UserSessionData();
-		userSessionData.setProfile(new UserProfile());
+		userSessionData.setProfile(profile);
 		userSessionData.setSession(session);
 
 		form = createSignInForm();

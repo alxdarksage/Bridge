@@ -14,7 +14,7 @@
                     <tr>
                         <td>${row.label}</td>
                         <td>
-                           <form:input cssClass="form-control input-sm" id="${row.valueField}" path="values['${row.valueField}']"/>    
+                           <form:input cssClass="form-control input-sm" id="${row.valueField}" data-type="float" path="values['${row.valueField}']"/>    
                         </td>
                         <td>
                             <c:choose>
@@ -28,9 +28,9 @@
                             </c:choose>
                         </td>
                         <td class="multi">
-                            <form:input cssClass="form-control input-sm" id="${row.lowRangeField}" pattern="\d*" placeholder="low" path="values['${row.lowRangeField}']"/>    
+                            <form:input cssClass="form-control input-sm" id="${row.lowRangeField}" data-type="float" placeholder="low" path="values['${row.lowRangeField}']"/>    
                             &mdash; 
-                            <form:input cssClass="form-control input-sm" id="${row.highRangeField}" pattern="\d*" placeholder="high" path="values['${row.highRangeField}']"/>    
+                            <form:input cssClass="form-control input-sm" id="${row.highRangeField}" data-type="float" placeholder="high" path="values['${row.highRangeField}']"/>    
                         </td>
                     </tr>
                 </c:forEach>

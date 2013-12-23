@@ -7,9 +7,10 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.bridge.webapp.forms.CompleteBloodCountSpec;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -38,7 +39,7 @@ public class ParticipantDataDescriptorsController {
 	public String createDescriptor(BridgeRequest request) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		
-		CompleteBloodCountSpec spec = new CompleteBloodCountSpec();
+		Specification spec = new CompleteBloodCount();
 		
 		// Don't do it twice. IT tests do fill db with junk.
 		PaginatedResults<ParticipantDataDescriptor> all = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);

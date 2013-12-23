@@ -45,6 +45,7 @@ import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.AccessRequirement;
 import org.sagebionetworks.repo.model.Annotations;
 import org.sagebionetworks.repo.model.BatchResults;
+import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.Entity;
 import org.sagebionetworks.repo.model.EntityBundle;
 import org.sagebionetworks.repo.model.EntityBundleCreate;
@@ -58,7 +59,6 @@ import org.sagebionetworks.repo.model.MembershipInvtnSubmission;
 import org.sagebionetworks.repo.model.MembershipRequest;
 import org.sagebionetworks.repo.model.MembershipRqstSubmission;
 import org.sagebionetworks.repo.model.ObjectType;
-import org.sagebionetworks.repo.model.OriginatingClient;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.Reference;
 import org.sagebionetworks.repo.model.ResourceAccess;
@@ -110,6 +110,7 @@ import org.sagebionetworks.repo.model.storage.StorageUsageSummaryList;
 import org.sagebionetworks.repo.model.table.ColumnModel;
 import org.sagebionetworks.repo.model.table.PaginatedColumnModels;
 import org.sagebionetworks.repo.model.table.PaginatedRowSet;
+import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowReferenceSet;
 import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
@@ -147,6 +148,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	Map<String,ParticipantDataDescriptor> descriptorsById = Maps.newHashMap();
 	Multimap<String,ParticipantDataDescriptor> descriptorsByUserId = LinkedListMultimap.create();
 	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorId = LinkedListMultimap.create();
+	Map<String, RowSet> participantDataByDescriptorId = Maps.newHashMap();
 	
 	String timPowersId;
 	
@@ -1072,19 +1074,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public File downloadWikiAttachment(WikiPageKey key, String fileName) throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadWikiAttachmentPreview(WikiPageKey key, String fileName) throws ClientProtocolException,
-			FileNotFoundException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public void deleteWikiPage(WikiPageKey key) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 		
@@ -1174,19 +1163,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		}
 		results.setList(handles);
 		return results;
-	}
-
-	@Override
-	public File downloadV2WikiAttachment(WikiPageKey key, String fileName) throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadV2WikiAttachmentPreview(WikiPageKey key, String fileName) throws ClientProtocolException,
-			FileNotFoundException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -2018,7 +1994,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public void createUser(NewUser user, OriginatingClient originClient) throws SynapseException {
+	public void createUser(NewUser user, DomainType originClient) throws SynapseException {
 		if (usersById.get(user.getEmail()) != null) {
 			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
 		}
@@ -2059,7 +2035,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public void sendPasswordResetEmail(String email, OriginatingClient originClient) throws SynapseException {
+	public void sendPasswordResetEmail(String email, DomainType domainType) throws SynapseException {
 		// noop
 	}
 
@@ -2076,7 +2052,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean createUserIfNecessary,
-			OriginatingClient originClient) throws SynapseException {
+			DomainType domainType) throws SynapseException {
 		// We'd like to test three scenarios here:
 		// 1. Brand new user, needs to sign TOU
 		// 2. Returning user who hasn't signed TOU?
@@ -2183,24 +2159,21 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public File downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
+	public String downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
 			IOException {
 		V2WikiPage page = wikiPagesById.get(key.getWikiPageId());
 		if (page == null) {
 			throw new FileNotFoundException("Wiki page not found");
 		}
-		File temp = File.createTempFile("tempPage"+page.getId(), ".html");
-		
 		String markdown = markdownsByFileHandleId.get(page.getMarkdownFileHandleId());
 		if (markdown == null) {
 			throw new FileNotFoundException("Wiki page markdown not found");
 		}
-		FileUtils.writeStringToFile(temp, markdown);
-		return temp;
+		return markdown;
 	}
 
 	@Override
-	public File downloadVersionOfV2WikiMarkdown(WikiPageKey key, Long version) throws ClientProtocolException,
+	public String downloadVersionOfV2WikiMarkdown(WikiPageKey key, Long version) throws ClientProtocolException,
 			FileNotFoundException, IOException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
@@ -2272,27 +2245,72 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			String teamId, long limit, long offset) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
-
-	@Override
-	public RowSet appendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
+	
+	// For the purposes of these next two methods, we really don't care that one is on behalf of another person.
+	
 	@Override
 	public RowSet appendParticipantData(String participantIdentifier, String participantDataDescriptorId, RowSet data)
 			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+		return internalAppendParticipantData(participantDataDescriptorId, data);
+	}
+	
+	@Override
+	public RowSet appendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
+		return internalAppendParticipantData(participantDataDescriptorId, data);
+	}
+	
+	public RowSet internalAppendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
+		for (Row row : data.getRows()) {
+			row.setRowId(Long.parseLong(newId()));
+		}
+		RowSet oldData = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (oldData != null) {
+			oldData.getRows().addAll(data.getRows());
+		} else {
+			participantDataByDescriptorId.put(participantDataDescriptorId, data);
+		}
+		return oldData; // or data?!?
 	}
 
 	@Override
 	public RowSet updateParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+		
+		RowSet oldData = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (oldData == null) {
+			throw new SynapseException("Did not find participant data record");
+		}
+		for (Row row : data.getRows()) {
+			if (row.getRowId() == null) {
+				throw new SynapseException("Found previously unsaved row");
+			}
+			// This assumes the heading order never changes, which it could.
+			Row existing = findRowById(oldData, row.getRowId());
+			existing.setValues(row.getValues());
+		}
+		return oldData; // or data?!?
+	}
+	
+	private Row findRowById(RowSet rowSet, Long id) {
+		for (Row row : rowSet.getRows()) {
+			if (row.getRowId().equals(id)) {
+				return row;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public PaginatedRowSet getParticipantData(String participantDataDescriptorId, long limit, long offset)
 			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
+		// TODO: This is not actually paged.
+		RowSet data = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (data == null) {
+			throw new SynapseException("Did not find participant data record");
+		}
+		PaginatedRowSet pagedRowSet = new PaginatedRowSet();
+		pagedRowSet.setResults(data);
+		pagedRowSet.setTotalNumberOfResults((long)data.getRows().size());
+		return pagedRowSet;
 	}
 	
 	@Override
@@ -2332,6 +2350,12 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	public PaginatedResults<ParticipantDataColumnDescriptor> getParticipantDataColumnDescriptors(
 			String descriptorId, long limit, long offset) throws SynapseException {
 		return toResults(columnsByDescriptorId.get(descriptorId), limit, offset);
+	}
+
+	@Override
+	public S3FileHandle createFileHandle(File temp, String contentType, Boolean shouldPreviewBeCreated)
+			throws SynapseException, IOException {
+		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 }
