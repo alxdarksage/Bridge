@@ -29,7 +29,7 @@ public class RowObject {
 			throw new IllegalArgumentException("RowObject id cannot be null");
 		}
 		if (headers.size() != values.size()) {
-			throw new IllegalArgumentException("Row names must match values 1:1");
+			throw new IllegalArgumentException("FormGroup names must match values 1:1");
 		}
 		this.id = id;
 		this.keySet = headers;

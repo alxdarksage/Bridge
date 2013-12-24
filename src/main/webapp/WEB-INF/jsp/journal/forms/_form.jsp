@@ -1,36 +1,37 @@
-<c:forEach var="entry" items="${form.displayRows}">
+<c:forEach var="group" items="${form.formElements}">
     <div class="form well">
         <table>
             <thead>
                 <tr>
-                    <th><h4>${entry.key}</h4></th>
+                    <th><h4>${group.label}</h4></th>
                     <th>Value</th>
                     <th>Unit</th>
                     <th>Range</th>
                 </tr>
             </thead>
             <tbody>
-                <c:forEach var="row" items="${entry.value}">
+                <c:forEach var="row" items="${group.children}">
+                
                     <tr>
                         <td>${row.label}</td>
                         <td>
-                           <form:input cssClass="form-control input-sm" id="${row.valueField}" data-type="float" path="values['${row.valueField}']"/>    
+                           <form:input cssClass="form-control input-sm" id="${row.children[0].name}" data-type="float" path="values['${row.children[0].name}']"/>    
                         </td>
                         <td>
                             <c:choose>
-                                <c:when test="${fn:length(row.unitEnumeration) == 1}">
-                                    <p class="form-control-static">${row.unitEnumeration[0]}</p>
-                                    <input type="hidden" name="values['${row.unitField}']" value="${row.unitEnumeration[0]}"/>
+                                <c:when test="${fn:length(row.children[1].enumeratedValues) == 1}">
+                                    <p class="form-control-static">${row.children[1].enumeratedValues[0]}</p>
+                                    <input type="hidden" name="${row.children[1].name}" value="${row.children[1].enumeratedValues[0]}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <form:select path="values['${row.unitField}']" cssClass="form-control input-sm" items="${row.unitEnumeration}" />
+                                    <form:select path="values['${row.children[1].name}']" cssClass="form-control input-sm" items="${row.children[1].enumeratedValues}" />
                                 </c:otherwise>
                             </c:choose>
                         </td>
                         <td class="multi">
-                            <form:input cssClass="form-control input-sm" id="${row.lowRangeField}" data-type="float" placeholder="low" path="values['${row.lowRangeField}']"/>    
+                            <form:input cssClass="form-control input-sm" id="${row.children[2].name}" data-type="float" placeholder="low" path="values['${row.children[2].name}']"/>    
                             &mdash; 
-                            <form:input cssClass="form-control input-sm" id="${row.highRangeField}" data-type="float" placeholder="high" path="values['${row.highRangeField}']"/>    
+                            <form:input cssClass="form-control input-sm" id="${row.children[3].name}" data-type="float" placeholder="high" path="values['${row.children[3].name}']"/>    
                         </td>
                     </tr>
                 </c:forEach>
