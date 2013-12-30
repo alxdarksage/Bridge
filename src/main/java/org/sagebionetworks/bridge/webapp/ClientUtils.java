@@ -174,8 +174,7 @@ public class ClientUtils {
 		model.addObject("wikiHeaders", headers);
 		
 		WikiPageKey key = new WikiPageKey(community.getId(), ObjectType.ENTITY, community.getIndexPageWikiId());
-		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
-		String markdown = FileUtils.readFileToString(markdownFile);
+		String markdown = synapseClient.downloadV2WikiMarkdown(key);
 		
 		// TODO: This should be removable when we fix the manager code. The manager does not create a 
 		// valid starting bit of markdown for this wiki.

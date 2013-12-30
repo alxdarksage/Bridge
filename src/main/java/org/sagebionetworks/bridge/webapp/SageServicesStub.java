@@ -36,43 +36,8 @@ import org.sagebionetworks.evaluation.model.SubmissionStatus;
 import org.sagebionetworks.evaluation.model.SubmissionStatusEnum;
 import org.sagebionetworks.evaluation.model.UserEvaluationPermissions;
 import org.sagebionetworks.evaluation.model.UserEvaluationState;
-import org.sagebionetworks.repo.model.ACCESS_TYPE;
-import org.sagebionetworks.repo.model.ACTAccessRequirement;
-import org.sagebionetworks.repo.model.AccessApproval;
-import org.sagebionetworks.repo.model.AccessControlList;
-import org.sagebionetworks.repo.model.AccessRequirement;
-import org.sagebionetworks.repo.model.Annotations;
-import org.sagebionetworks.repo.model.BatchResults;
-import org.sagebionetworks.repo.model.Entity;
-import org.sagebionetworks.repo.model.EntityBundle;
-import org.sagebionetworks.repo.model.EntityBundleCreate;
-import org.sagebionetworks.repo.model.EntityHeader;
-import org.sagebionetworks.repo.model.EntityIdList;
-import org.sagebionetworks.repo.model.EntityPath;
-import org.sagebionetworks.repo.model.LocationData;
-import org.sagebionetworks.repo.model.Locationable;
-import org.sagebionetworks.repo.model.MembershipInvitation;
-import org.sagebionetworks.repo.model.MembershipInvtnSubmission;
-import org.sagebionetworks.repo.model.MembershipRequest;
-import org.sagebionetworks.repo.model.MembershipRqstSubmission;
-import org.sagebionetworks.repo.model.ObjectType;
-import org.sagebionetworks.repo.model.OriginatingClient;
-import org.sagebionetworks.repo.model.PaginatedResults;
-import org.sagebionetworks.repo.model.Reference;
-import org.sagebionetworks.repo.model.ResourceAccess;
-import org.sagebionetworks.repo.model.RestrictableObjectDescriptor;
+import org.sagebionetworks.repo.model.*;
 import org.sagebionetworks.repo.model.ServiceConstants.AttachmentType;
-import org.sagebionetworks.repo.model.Team;
-import org.sagebionetworks.repo.model.TeamMember;
-import org.sagebionetworks.repo.model.TeamMembershipStatus;
-import org.sagebionetworks.repo.model.TrashedEntity;
-import org.sagebionetworks.repo.model.UserGroup;
-import org.sagebionetworks.repo.model.UserGroupHeader;
-import org.sagebionetworks.repo.model.UserGroupHeaderResponsePage;
-import org.sagebionetworks.repo.model.UserProfile;
-import org.sagebionetworks.repo.model.UserSessionData;
-import org.sagebionetworks.repo.model.VariableContentPaginatedResults;
-import org.sagebionetworks.repo.model.VersionInfo;
 import org.sagebionetworks.repo.model.attachment.AttachmentData;
 import org.sagebionetworks.repo.model.attachment.PresignedUrl;
 import org.sagebionetworks.repo.model.attachment.S3AttachmentToken;
@@ -1027,19 +992,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public File downloadWikiAttachment(WikiPageKey key, String fileName) throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadWikiAttachmentPreview(WikiPageKey key, String fileName) throws ClientProtocolException,
-			FileNotFoundException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public void deleteWikiPage(WikiPageKey key) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 		
@@ -1129,19 +1081,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		}
 		results.setList(handles);
 		return results;
-	}
-
-	@Override
-	public File downloadV2WikiAttachment(WikiPageKey key, String fileName) throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadV2WikiAttachmentPreview(WikiPageKey key, String fileName) throws ClientProtocolException,
-			FileNotFoundException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -1973,7 +1912,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public void createUser(NewUser user, OriginatingClient originClient) throws SynapseException {
+	public void createUser(NewUser user, DomainType originClient) throws SynapseException {
 		if (users.get(user.getEmail()) != null) {
 			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
 		}
@@ -2014,11 +1953,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public void sendPasswordResetEmail(String email, OriginatingClient originClient) throws SynapseException {
-		// noop
-	}
-
-	@Override
 	public Session passThroughOpenIDParameters(String queryString) throws SynapseException {
 		throw new IllegalArgumentException("Don't use this API method in Bridge");
 	}
@@ -2031,7 +1965,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean createUserIfNecessary,
-			OriginatingClient originClient) throws SynapseException {
+ DomainType originClient)
+			throws SynapseException {
 		// We'd like to test three scenarios here:
 		// 1. Brand new user, needs to sign TOU
 		// 2. Returning user who hasn't signed TOU?
@@ -2165,24 +2100,19 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public File downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
+	public String downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
 			IOException {
 		V2WikiPage page = wikiPages.get(key.getWikiPageId());
 		if (page == null) {
 			throw new FileNotFoundException("Wiki page not found");
 		}
-		File temp = File.createTempFile("tempPage"+page.getId(), ".html");
 		
 		String markdown = markdowns.get(page.getMarkdownFileHandleId());
-		if (markdown == null) {
-			throw new FileNotFoundException("Wiki page markdown not found");
-		}
-		FileUtils.writeStringToFile(temp, markdown);
-		return temp;
+		return markdown;
 	}
 
 	@Override
-	public File downloadVersionOfV2WikiMarkdown(WikiPageKey key, Long version) throws ClientProtocolException,
+	public String downloadVersionOfV2WikiMarkdown(WikiPageKey key, Long version) throws ClientProtocolException,
 			FileNotFoundException, IOException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
@@ -2307,4 +2237,15 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
 
+	@Override
+	public S3FileHandle createFileHandle(File temp, String contentType, Boolean shouldPreviewBeCreated) throws SynapseException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void sendPasswordResetEmail(String email, DomainType originClient) throws SynapseException {
+		// TODO Auto-generated method stub
+
+	}
 }
