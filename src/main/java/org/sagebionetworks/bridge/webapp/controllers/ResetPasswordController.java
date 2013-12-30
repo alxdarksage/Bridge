@@ -10,7 +10,7 @@ import org.sagebionetworks.bridge.webapp.forms.ResetPasswordForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.OriginatingClient;
+import org.sagebionetworks.repo.model.DomainType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,7 +35,7 @@ public class ResetPasswordController {
 			@ModelAttribute("requestResetPasswordForm") @Valid RequestResetPasswordForm requestResetPasswordForm,
 			BindingResult result) throws SynapseException {
 		if (!result.hasErrors()) {
-			synapseClient.sendPasswordResetEmail(requestResetPasswordForm.getEmail(), OriginatingClient.BRIDGE);
+			synapseClient.sendPasswordResetEmail(requestResetPasswordForm.getEmail(), DomainType.BRIDGE);
 			request.setNotification("ResetEmailSent");
 			return "redirect:" + request.getOrigin();
 		}

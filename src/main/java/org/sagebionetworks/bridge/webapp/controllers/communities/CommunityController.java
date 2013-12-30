@@ -101,8 +101,7 @@ public class CommunityController {
 			wikiId = community.getWelcomePageWikiId();
 		}
 		WikiPageKey key = new WikiPageKey(communityId, ObjectType.ENTITY, wikiId);
-		File markdownFile = synapseClient.downloadV2WikiMarkdown(key);
-		String markdown = FileUtils.readFileToString(markdownFile);
+		String markdown = synapseClient.downloadV2WikiMarkdown(key);
 		model.addObject("wikiContent", markdown);
 		model.addObject("wikiId", wikiId);
 
