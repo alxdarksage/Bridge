@@ -4,7 +4,7 @@
 	
 	<groupId>org.sagebionetworks.bridge</groupId>
 	<artifactId>bridge</artifactId>
-	<version>develop-SNAPSHOT</version>
+	<version>2013-12-20-6a609d0-894</version>
 	<packaging>war</packaging>
 	<name>Bridge Web Application</name>
 	
