@@ -2033,17 +2033,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	public void sendPasswordResetEmail(String email) throws SynapseException {
 		throw new IllegalArgumentException("Don't use this API method in Bridge");
 	}
-
-	@Override
-	public void sendPasswordResetEmail(String email, DomainType domainType) throws SynapseException {
-		// noop
-	}
-
-	@Override
-	public Session passThroughOpenIDParameters(String queryString) throws SynapseException {
-		throw new IllegalArgumentException("Don't use this API method in Bridge");
-	}
-
+	
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean createUserIfNecessary)
 			throws SynapseException {
@@ -2355,7 +2345,17 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public S3FileHandle createFileHandle(File temp, String contentType, Boolean shouldPreviewBeCreated)
 			throws SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public void sendPasswordResetEmail(String email, DomainType originClient) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public Session passThroughOpenIDParameters(String queryString) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 }
