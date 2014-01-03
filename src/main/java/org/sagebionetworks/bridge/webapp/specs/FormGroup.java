@@ -7,15 +7,15 @@ import com.google.common.collect.Lists;
 public class FormGroup implements FormElement {
 
 	private final String label;
-	private final List<FormElement> columns = Lists.newArrayList();
+	private final List<FormElement> children = Lists.newArrayList();
 	
 	public FormGroup(final String label) {
 		this.label = label;
 	}
 	
-	public FormGroup(final String label, final List<FormElement> rows) {
+	public FormGroup(final String label, final List<FormElement> children) {
 		this.label = label;
-		this.columns.addAll(rows);
+		this.children.addAll(children);
 	}
 	
 	@Override
@@ -35,14 +35,14 @@ public class FormGroup implements FormElement {
 
 	@Override
 	public List<FormElement> getChildren() {
-		return columns;
+		return children;
 	}
 	
-	public void addColumn(FormField column) {
-		if (column == null) {
-			throw new IllegalArgumentException("Column cannot be null");
+	public void addField(FormField field) {
+		if (field == null) {
+			throw new IllegalArgumentException("Field cannot be null");
 		}
-		columns.add(column);
+		children.add(field);
 	}
 
 }

@@ -29,14 +29,11 @@
 	    <js>/assets/humane/humane.js</js>
 		<js>/assets/bridge/js/main.js</js>
 		<js>/assets/bridge/js/data-table.js</js>
-		<!-- 
-		<js>/assets/bridge/js/compare.js</js>
-		 -->
+		<!-- <js>/assets/bridge/js/compare.js</js> -->
         <js>/assets/bridge/js/metrics.js</js>
 	</group>
 	
     <group name="form-keys">
-        <js>/assets/keymaster/keymaster.js</js>
         <js>/assets/bridge/js/form-keys.js</js>
     </group>
 	

@@ -92,10 +92,10 @@ public class CompleteBloodCount implements Specification {
 
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
-		row.addColumn(new FormField(name, description, false));
-		row.addColumn(new EnumeratedFormField(name + UNITS_SUFFIX, description + ": units of measurement", true, unitEnumeration));
-		row.addColumn(new FormField(name + RANGE_LOW_SUFFIX, description + ": low end of normal range", true));
-		row.addColumn(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range", true));
+		row.addField(new FormField(name, description, false));
+		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, description + ": units of measurement", true, unitEnumeration));
+		row.addField(new FormField(name + RANGE_LOW_SUFFIX, description + ": low end of normal range", true));
+		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range", true));
 		return row;
 	}
 

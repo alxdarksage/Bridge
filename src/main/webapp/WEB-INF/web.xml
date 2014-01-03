@@ -125,20 +125,5 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-
-    <!-- 
-	<security-constraint>
-	    <web-resource-collection>
-	        <web-resource-name>journal</web-resource-name>
-	        <url-pattern>/journal/*</url-pattern>
-	    </web-resource-collection>
-	    <auth-constraint>
-	        <role-name>AUTHENTICATED</role-name>
-	    </auth-constraint>
-	    <user-data-constraint>
-	        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-	    </user-data-constraint>
-	</security-constraint>
-	 -->
     
 </web-app>

@@ -30,7 +30,5 @@ public interface Specification {
 	 * @return
 	 */
 	public List<FormElement> getAllFormElements();
-	
-	//public Object convertToObject(String header, String value);
 
 }

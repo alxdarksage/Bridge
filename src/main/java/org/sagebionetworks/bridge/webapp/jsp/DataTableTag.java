@@ -199,7 +199,7 @@ public class DataTableTag extends SimpleTagSupport {
 	protected void addCheckboxIfSelectable(String objectId) {
 		if (this.selectable) {
 			tb.startTag("td");
-			tb.startTag("input", "type", "checkbox", "name", "rowSelect", "title", "Select FormGroup", "value", objectId);
+			tb.startTag("input", "type", "checkbox", "name", "rowSelect", "title", "Select Row", "value", objectId);
 			tb.endTag("input");
 			tb.endTag("td");
 		}
