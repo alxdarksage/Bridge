@@ -9,6 +9,8 @@ import org.apache.http.auth.BasicUserPrincipal;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 
+import com.google.common.base.Throwables;
+
 /**
  * A convenience wrapper to hide some of the ick of casting and using map keys
  * when working with request and session objects.
@@ -137,8 +139,8 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	 */
 	public Throwable getErrorThrowableCause() {
 		Throwable cause = (Throwable) request.getAttribute("javax.servlet.error.exception");
-		while (cause != null && cause.getCause() != null) {
-			cause = cause.getCause();
+		if (cause != null) {
+			return Throwables.getRootCause(cause);
 		}
 		return cause;
 	}

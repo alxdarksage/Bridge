@@ -46,15 +46,15 @@ public class CommunitiesAdminController {
 		return communities;
 	}
 	
-	@RequestMapping(value = "/communities", method = RequestMethod.GET)
+	@RequestMapping(value = "/communities/index", method = RequestMethod.GET)
 	public String viewCommunities(BridgeRequest request,
 			@ModelAttribute("communities") List<Community> communities) throws SynapseException {
-		return "admin/communities";
+		return "admin/communities/index";
 	}
 	
 	// It's possible through the submit button name to have another method to process another 
 	// table-specific button in the same form. Very handy.
-	@RequestMapping(value = "/communities", method = RequestMethod.POST, params = "delete=delete")
+	@RequestMapping(value = "/communities/index", method = RequestMethod.POST, params = "delete=delete")
 	public String batchCommunities(BridgeRequest request, @RequestParam("rowSelect") List<String> rowSelects)
 			throws SynapseException {
 		if (rowSelects != null) {
@@ -71,7 +71,7 @@ public class CommunitiesAdminController {
 				request.setNotification("CommunitiesDeleted");
 			}
 		}
-		return "redirect:/admin/communities.html";
+		return "redirect:/admin/communities/index.html";
 	}
 	
 }

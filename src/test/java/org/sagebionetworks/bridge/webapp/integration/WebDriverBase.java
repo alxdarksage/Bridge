@@ -17,6 +17,8 @@ public class WebDriverBase {
 
 	protected WebDriverFacade initDriver() {
 		if (StackConfiguration.isDevelopStack()) {
+			// Does not work with version 26.0 of Firefox on my machine. Downgraded
+			// Firefox to version 25.0 for the time being.
 			_driver = createFirefoxDriver();
 		} else {
 			_driver = createPhantomJSDriver();

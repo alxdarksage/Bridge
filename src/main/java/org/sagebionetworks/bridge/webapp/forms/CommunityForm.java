@@ -11,6 +11,7 @@ public class CommunityForm {
 	private String id;
 	private String administrators; // just here to hold an error...
 	
+	/*
 	public String getFormName() {
 		if (StringUtils.isBlank(id)) {
 			return "NewCommunity";
@@ -19,6 +20,7 @@ public class CommunityForm {
 		}
 		return name;
 	}
+	*/
 	public String getFormId() {
 		if (StringUtils.isBlank(id)) {
 			return "new";

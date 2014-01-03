@@ -62,6 +62,10 @@ public class WebDriverFacade implements WebDriver {
 		waitUntil(cssSelector);
 		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
 	}
+	String getFieldValue(String cssSelector) {
+		waitUntil(cssSelector);
+		return driver.findElement(By.cssSelector(cssSelector)).getAttribute("value");
+	}
 	void submit(String formCssSelector) {
 		waitUntil(formCssSelector);
 		WebElement form = driver.findElement(By.cssSelector(formCssSelector));
@@ -92,6 +96,16 @@ public class WebDriverFacade implements WebDriver {
 		WebElement errors = driver.findElement(By.cssSelector(cssSelector));
 		Assert.assertTrue("Correct error ('"+message+"') in " + cssSelector, errors.getText().contains(message));		
 	}
+	void assertHeader(String header) {
+		waitUntil("h3");
+		WebElement h3 = driver.findElement(By.cssSelector("h3"));
+		Assert.assertTrue("Correct header ('"+header+"')", h3.getText().contains(header));
+	}
+	void assertFieldValue(String cssSelector, String expectedValue) {
+		waitUntil(cssSelector);
+		String valueInForm = getFieldValue(cssSelector);
+		Assert.assertEquals("Correct value", expectedValue, valueInForm);
+	}
 	void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
@@ -110,6 +124,13 @@ public class WebDriverFacade implements WebDriver {
 		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
 				return d.getTitle().contains(title);
+			}
+		});
+	}
+	void waitForHeader(final String header) {
+		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				return d.findElement(By.tagName("h3")).getText().contains(header);
 			}
 		});
 	}
@@ -177,6 +198,14 @@ public class WebDriverFacade implements WebDriver {
 		waitForTitle(CommunityWikiPage.TITLE);
 		return new CommunityWikiPage(this);
 	}
+	public AdminParticipantDataDescriptorsPage waitForAdminParticipantDataDescriptorsPage() {
+		waitForTitle(AdminParticipantDataDescriptorsPage.TITLE);
+		return new AdminParticipantDataDescriptorsPage(this);
+	}
+	public JournalHomePage waitForJournalHomePage() {
+		waitForTitle(JournalHomePage.TITLE);
+		return new JournalHomePage(this);
+	}
 	
 	public AdminPage getAdminPage() {
 		get(AdminPage.URL);
@@ -238,6 +267,14 @@ public class WebDriverFacade implements WebDriver {
 	public CommunityWikiPage getCommunityWikiPage() {
 		get(CommunityWikiPage.URL);
 		return new CommunityWikiPage(this);
+	}
+	public AdminParticipantDataDescriptorsPage getAdminParticipantDataDescriptorsPage() {
+		get(AdminParticipantDataDescriptorsPage.URL);
+		return new AdminParticipantDataDescriptorsPage(this);
+	}
+	public JournalHomePage getJournalHomePage() {
+		get(JournalHomePage.URL);
+		return new JournalHomePage(this);
 	}
 
 	public void assertNotice(String message) {

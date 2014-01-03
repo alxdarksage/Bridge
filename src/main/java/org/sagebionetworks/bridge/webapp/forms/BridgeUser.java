@@ -7,8 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.bridge.webapp.controllers.admin.CommunityAdminController;
-import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -53,6 +51,9 @@ public class BridgeUser {
 	}
 
 	public String getOwnerId() {
+		if (ownerId == null) {
+			throw new UnauthorizedException("The user must be authenticated");
+		}
 		return ownerId;
 	}
 

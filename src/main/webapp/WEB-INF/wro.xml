@@ -21,16 +21,20 @@
         <css>/assets/bridge/css/data-table.css</css>
         <css>/assets/bridge/css/editor.less</css>
         <css>/assets/bridge/css/oauth.less</css>
+        <css>/assets/bridge/css/form.less</css>
 	</group>
 
 	<group name="footer">
 	    <js>/assets/zepto/zepto.js</js>
-        <js>/assets/humane/humane.js</js>
+	    <js>/assets/humane/humane.js</js>
 		<js>/assets/bridge/js/main.js</js>
 		<js>/assets/bridge/js/data-table.js</js>
-		<!-- 
-		<js>/assets/bridge/js/compare.js</js>
-		 -->
+		<!-- <js>/assets/bridge/js/compare.js</js> -->
+        <js>/assets/bridge/js/metrics.js</js>
 	</group>
+	
+    <group name="form-keys">
+        <js>/assets/bridge/js/form-keys.js</js>
+    </group>
 	
 </groups>

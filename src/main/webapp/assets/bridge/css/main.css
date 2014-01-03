@@ -19,9 +19,6 @@ h3.auth {
 	margin-top:1rem; 
 	margin-bottom: -.25rem;
 }
-.main-pane {
-    padding-right: 2rem;
-}
 .right {
     float: right;
 }
@@ -48,9 +45,4 @@ h3.auth {
 }
 #notice {
     display: none;
-}
-@media (max-width: 600px) {
-	.main-pane {
-	    padding-right: 15px;
-	}
 }

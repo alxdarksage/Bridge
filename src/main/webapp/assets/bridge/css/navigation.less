@@ -16,8 +16,12 @@
     margin: 0;
     background-color: none;
 }
+.panel-heading {
+	/* When enabled, highlighting of wiki page being edited is broken */
+    /* padding: .5rem 1rem ! important;*/
+}
 .list-group-item {
-    padding: 10px 15px;
+    padding: .5rem 1rem ! important;
     
     a {
         display: block;
@@ -48,17 +52,20 @@
 @dropdown-spacing: 8px;
 
 #profile-pane {
-    border-color: #892e65;
+    border-color: #555;
 				
     .avatar-side { 
         display: table-cell; 
-        background-color: #B882A3; 
+        background-color: #a0a0a0; 
+        border-bottom-left-radius: 4px;
+        border-top-left-radius: 4px;
     
         .avatar { 
             background-size: contain; 
             background-repeat: no-repeat; 
             width: 7.2rem; 
             height: 7.2rem; 
+            border-top-left-radius: 4px;
         }
         .msgs { 
             padding: 4px 0 2px 0; 
@@ -91,23 +98,24 @@
             &:hover .caret { visibility: hidden; }
             
 		    .smenu { 
-                position: absolute; 
-                border-radius: 3px;
+                position: absolute;
+                z-index:10; 
+                border-radius: 4px;
                 margin-top: -@dropdown-spacing; 
                 display: none; 
                 width: 12rem; 
                 line-height: 2; 
 		        background-color: white; 
 		        padding: .5rem 1rem; 
-		        border: 1px solid #892e65; 
+		        border: 1px solid #555; 
 		        font-size: 14px;
 		        
 		        &:before {
                     content: ""; position: absolute; 
                     top: -@dropdown-spacing; 
                     left: @dropdown-spacing; 
-                    border-bottom: @dropdown-spacing solid #a069c3;
-                    border-top-color: #a069c3;  
+                    border-bottom: @dropdown-spacing solid #555;
+                    border-top-color: #555;  
                     border-left: @dropdown-spacing solid transparent; 
                     border-right: @dropdown-spacing solid transparent;
 		        } 

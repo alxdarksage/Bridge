@@ -16,8 +16,8 @@
                 <div class="userName-box">
                     <div class="userName">${sessionScope['BridgeUser'].displayName} <span class="caret"></span></div>
                     <div class="smenu">
-                        <a id="signOutButton" href="${signOutUrl}"><spring:message code="SignOut"/></a>
                         <a id="editProfileAct" href="${editProfileUrl}"><spring:message code="EditProfile"/></a>
+                        <a id="signOutButton" href="${signOutUrl}"><spring:message code="SignOut"/></a>
                     </div>
                 </div>
                 <a id="journalAct" href="${journalUrl}"><spring:message code="MyJournal"/></a>
@@ -30,7 +30,6 @@
     </c:when>
     <c:otherwise>
         <div class="well">
-			<h3 class="auth"><spring:message code="SignIn"/></h3>
 			<c:url var="signInUrl" value="/signIn.html"/>
 			<form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
 			    <div class="form-group">

@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
-
 abstract public class EmbeddedSignInPage {
 	
 	protected WebDriverFacade facade;

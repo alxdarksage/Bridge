@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -24,14 +25,14 @@ public class DataTableTag extends SimpleTagSupport {
 	
 	private TagBuilder tb = new TagBuilder();
 	
-	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
+	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy (hh:mm a)");
 	
 	private PropertyUtilsBean pub = new PropertyUtilsBean();
 	
 	private String formId;
 	private String itemId;
 	private String action;
-	private Collection<Object> items;
+	private List<Object> items;
 	private String caption;
 	private boolean selectable;
 	
@@ -49,7 +50,7 @@ public class DataTableTag extends SimpleTagSupport {
 		this.action = action;
 	}
 	public void setItems(Collection<Object> items) {
-		this.items = items;
+		this.items = Lists.newArrayList(items);
 	}
 	public void setCaption(String caption) {
 		this.caption = caption;
@@ -137,14 +138,14 @@ public class DataTableTag extends SimpleTagSupport {
 	}	
 	protected void createTableBody() {
 		tb.startTag("tbody");
-		for (Object object : items) {
-			createRow(object);
+		for (int i=0; i < items.size(); i++) {
+			createRow(items.get(i), i);
 		}
 		tb.endTag("tbody");
 	}
-	protected void createRow(Object object) {
+	protected void createRow(Object object, int index) {
 		try {
-			tb.startTag("tr");
+			tb.startTag("tr", "id", "row"+Integer.toString(index));
 			String objectId = BeanUtils.getProperty(object, this.itemId);
 			addCheckboxIfSelectable(objectId);
 			for (DataTableColumnTag column : columns) {

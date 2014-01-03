@@ -1,6 +1,6 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="field" required="true" type="java.lang.String"  %>
-<%@ attribute name="items" required="true" type="java.util.Collection" %>
+<%@ attribute name="items" required="true" type="java.util.List" %>
 <%@ attribute name="label" required="true" type="java.lang.String" %>
 <div class="form-group">
     <label><spring:message code="${label}"/></label>

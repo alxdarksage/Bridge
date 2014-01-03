@@ -1,6 +1,5 @@
 .main-pane {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding: 2rem 2rem 2rem 0;
     background-color: white;
     min-height: 50rem;
     box-shadow: 0px 1px 3px silver inset;
@@ -11,8 +10,16 @@
         margin: 2rem auto;
     }
 }
+@media (max-width: 600px) {
+    .main-pane {
+        padding-right: 15px;
+    }
+}
 /* Basically, the built-in styles for the content that users can edit. */   
 #content-pane {
+    h1:first-child, h2:first-child, h3:first-child, h4:first-child,
+        h5:first-child, h6:first-child { margin-top: 0; }
+				
     h1 { font: normal 2.2rem 'Archivo Narrow', sans-serif; border-bottom: 1px solid #aaa; }
     h2 { font: normal 2.1rem 'Archivo Narrow', sans-serif; }
     h3 { font: normal 2rem 'Archivo Narrow', sans-serif; }

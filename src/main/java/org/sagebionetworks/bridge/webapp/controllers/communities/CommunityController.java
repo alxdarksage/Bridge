@@ -1,12 +1,10 @@
 package org.sagebionetworks.bridge.webapp.controllers.communities;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,7 +93,7 @@ public class CommunityController {
 		Community community = bridgeClient.getCommunity(communityId);
 		ClientUtils.prepareCommunitySidebarData(synapseClient, community, model);
 		
-		model.setViewName("communities/index");
+		model.setViewName("communities/show");
 		
 		if (wikiId == null) {
 			wikiId = community.getWelcomePageWikiId();
