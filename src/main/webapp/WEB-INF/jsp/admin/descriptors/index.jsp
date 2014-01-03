@@ -6,5 +6,5 @@
     <h3>Patient Data Descriptors</h3>
     
     <c:url var="pddCreateUrl" value="/admin/descriptors/create/cbc.html"/>
-    <p><a href="${pddCreateUrl}">Click here to create a CBC descriptor.</a></p>
+    <p><a id="cbcAct" href="${pddCreateUrl}">Click here to create a CBC descriptor.</a></p>
 </sage:admin>

@@ -14,7 +14,7 @@ import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
-import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -54,6 +54,8 @@ public class JournalController {
 	
 	@RequestMapping(value = "/journal", method = RequestMethod.GET)
 	public ModelAndView viewAllForms(BridgeRequest request, ModelAndView model) throws SynapseException {
+		// Force redirect to sign in
+		request.getBridgeUser().getBridgeClient();
 		model.setViewName("journal/index");
 		return model;
 	}
@@ -63,9 +65,8 @@ public class JournalController {
 			@PathVariable("formId") String formId, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareDescriptorAndForm(client, model, formId);
-		// TODO: Don't pass conversion all the way down like this.
-		ClientUtils.prepareParticipantData(client, model, spec, formId);
+		ClientUtils.prepareParticipantData(client, model, formId);
+		ClientUtils.prepareDescriptorAndForm(client, model, formId);
 		model.setViewName("journal/forms/index");
 		return model;
 	}
@@ -100,7 +101,7 @@ public class JournalController {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		
 		CompleteBloodCount spec = new CompleteBloodCount();
-		RowSet data = spec.getRowSetForCreate(dynamicForm.getValues());
+		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValues());
 		client.appendParticipantData(formId, data);
 		
 		request.setNotification("Survey updated.");
@@ -134,7 +135,8 @@ public class JournalController {
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 		
 		CompleteBloodCount spec = new CompleteBloodCount();
-		RowSet data = spec.getRowSetForUpdate(dynamicForm.getValues(), paginatedRowSet.getResults(), rowId);
+		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValues(),
+				paginatedRowSet.getResults(), rowId);
 		client.updateParticipantData(formId, data);
 		
 		request.setNotification("Survey updated.");

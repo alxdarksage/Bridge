@@ -1,4 +1,4 @@
-<c:forEach var="group" items="${form.formElements}">
+<c:forEach var="group" items="${form.formStructure.children}">
     <div class="form well">
         <table>
             <thead>
@@ -21,10 +21,12 @@
                             <c:choose>
                                 <c:when test="${fn:length(row.children[1].enumeratedValues) == 1}">
                                     <p class="form-control-static">${row.children[1].enumeratedValues[0]}</p>
-                                    <input type="hidden" name="${row.children[1].name}" value="${row.children[1].enumeratedValues[0]}"/>
+                                    <input type="hidden" id="${row.children[1].name}" name="${row.children[1].name}" 
+                                        value="${row.children[1].enumeratedValues[0]}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <form:select path="values['${row.children[1].name}']" cssClass="form-control input-sm" items="${row.children[1].enumeratedValues}" />
+                                    <form:select id="${row.children[1].name}" path="values['${row.children[1].name}']" 
+                                        cssClass="form-control input-sm" items="${row.children[1].enumeratedValues}" />
                                 </c:otherwise>
                             </c:choose>
                         </td>

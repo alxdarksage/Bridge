@@ -154,14 +154,13 @@ public class ClientUtils {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
-	// TODO: We don't need the descriptor if we have the specification, since it created the latter
-	// (at least at the moment).
 	public static Specification prepareDescriptorAndForm(BridgeClient client,
 			ModelAndView model, String participantDataDescriptorId) throws SynapseException {
 		
 		Specification spec = new CompleteBloodCount();
 		model.addObject("form", spec);
 		
+		// We use the name and the ID of the descriptor, but searching for it like this is silly
 		PaginatedResults<ParticipantDataDescriptor> records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
 		for (ParticipantDataDescriptor descriptor : records.getResults()) {
 			if (descriptor.getId().equals(participantDataDescriptorId)) {
@@ -214,7 +213,7 @@ public class ClientUtils {
 		}
 	}
 
-	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String formId) throws SynapseException {
+	public static void prepareParticipantData(BridgeClient client, ModelAndView model, String formId) throws SynapseException {
 		
 		// Block error (which isn't an error here, and also contains a whole Tomcat page in the message field).
 		try {
@@ -225,8 +224,7 @@ public class ClientUtils {
 			List<String> headers = rowSet.getHeaders();
 			
 			for (Row row : rowSet.getRows()) {
-				// TODO: Don't pass spec all the way down into this object to do the conversion.
-				RowObject object = new RowObject(spec, row.getRowId(), headers, row.getValues());
+				RowObject object = new RowObject(row.getRowId(), headers, row.getValues());
 				records.add(object);
 			}
 			model.addObject("records", records);

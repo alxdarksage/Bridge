@@ -2350,7 +2350,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public void sendPasswordResetEmail(String email, DomainType originClient) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented");
+		// noop
 	}
 
 	@Override

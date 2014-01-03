@@ -67,6 +67,7 @@ public class CommunitiesAdminPage extends AdminPages {
 		Assert.assertTrue(classes.contains("disabled"));
 	}
 	
+	/* Doesn't appear this will work, as the ID is no longer created by the DataTableTag.
 	public void navigateRow(int row) {
 		facade.click("#n"+Integer.toString(row) + " a");
 	}
@@ -75,6 +76,7 @@ public class CommunitiesAdminPage extends AdminPages {
 		WebElement parent = getRowByName(name);
 		facade.click("#"+parent.getAttribute("id") + " a");
 	}
+	*/
 	
 	public void clickMasterCheckbox() {
 		facade.click("*[name=masterSelect]");

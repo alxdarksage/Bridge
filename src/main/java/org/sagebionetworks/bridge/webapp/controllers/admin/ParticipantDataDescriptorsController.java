@@ -10,6 +10,7 @@ import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -44,15 +45,16 @@ public class ParticipantDataDescriptorsController {
 		// Don't do it twice. IT tests do fill db with junk.
 		PaginatedResults<ParticipantDataDescriptor> all = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
 		for (ParticipantDataDescriptor d : all.getResults()) {
-			if (d.getName().equals(spec.getDescriptor().getName())) {
+			if (d.getName().equals(spec.getName())) {
 				request.setNotification("CBC has already been created");
 				return "redirect:/admin/descriptors/index.html";
 			}
 		}
 
-		ParticipantDataDescriptor descriptor = spec.getDescriptor();
-		descriptor = client.createParticipantDataDescriptor(spec.getDescriptor());
-		List<ParticipantDataColumnDescriptor> columns = spec.getColumnDescriptors(descriptor);
+		ParticipantDataDescriptor descriptor = ParticipantDataUtils.getDescriptor(spec);
+		descriptor = client.createParticipantDataDescriptor(descriptor);
+		
+		List<ParticipantDataColumnDescriptor> columns = ParticipantDataUtils.getColumnDescriptors(descriptor.getId(), spec);
 		for (ParticipantDataColumnDescriptor column : columns) {
 			client.createParticipantDataColumnDescriptor(column);
 		}

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Maps;
@@ -21,10 +22,7 @@ public class RowObject {
 	private List<String> keySet;
 	private Map<String, Object> valueMap = Maps.newLinkedHashMap();
 	
-	public RowObject(Specification spec, Long id, List<String> headers, List<String> values) {
-		if (spec == null) {
-			throw new IllegalArgumentException("Specification cannot be null");
-		}
+	public RowObject(Long id, List<String> headers, List<String> values) {
 		if (id == null) {
 			throw new IllegalArgumentException("RowObject id cannot be null");
 		}
@@ -35,7 +33,7 @@ public class RowObject {
 		this.keySet = headers;
 		for (int i=0; i < headers.size(); i++) {
 			String header = headers.get(i);
-			Object value = spec.convertToObject(header, values.get(i));
+			Object value = ParticipantDataUtils.convertToObject(header, values.get(i));
 			valueMap.put(header, value);
 		}
 	}
@@ -44,14 +42,12 @@ public class RowObject {
 		return Long.toString(this.id);
 	}
 	
-	// TODO: These are special, even beyond a specification.
-	
 	public Object getCreatedOn() {
-		return getValue("createdOn");
+		return getValue(Specification.CREATED_ON);
 	}
 	
 	public Object getModifiedOn() {
-		return getValue("modifiedOn");
+		return getValue(Specification.MODIFIED_ON);
 	}
 	
 	public List<String> keySet() {

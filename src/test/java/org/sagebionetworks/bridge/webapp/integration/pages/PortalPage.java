@@ -1,7 +1,5 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
-
-
 public class PortalPage {
 
 	public static final String TITLE = "Patients & Researchers in Partnership";

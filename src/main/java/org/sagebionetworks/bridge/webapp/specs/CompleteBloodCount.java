@@ -1,39 +1,25 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
-import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
-import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
 
 import com.google.common.collect.Lists;
 
 public class CompleteBloodCount implements Specification {
-
-	public static final String CREATED_ON = "createdOn";
-	public static final String MODIFIED_ON = "modifiedOn";
 	
 	private static final String UNITS_SUFFIX = "_units";
 	private static final String RANGE_LOW_SUFFIX = "_range_low";
 	private static final String RANGE_HIGH_SUFFIX = "_range_high";
-	
+
 	private final List<String> CMM = Lists.newArrayList(Ratios.CELLS_PER_CMM.getAbbrev(), Ratios.CELLS_PER_MICROLITER.getAbbrev());
 	private final List<String> GMDL = Lists.newArrayList(Ratios.GRAMS_PER_DECILITER.getAbbrev(), Ratios.MILLIMOLES_PER_LITER.getAbbrev());
 	private final List<String> PERC = Lists.newArrayList(Units.PERCENTAGE.getAbbrev());
 	private final List<String> FL = Lists.newArrayList(Units.FEMTOLITER.getAbbrev());
 	private final List<String> PG = Lists.newArrayList(Units.PICOGRAM.getAbbrev());
 	private final List<String> COUNT = Lists.newArrayList("count", "c.v.", "s.d.");	
-	
+
 	List<FormElement> metadata = Lists.newArrayList();
 	List<FormElement> displayRows = Lists.newArrayList();
-	
+
 	public CompleteBloodCount() {
 		metadata.add( new FormField(CREATED_ON, "", false) );
 		metadata.add( new FormField(MODIFIED_ON, "", false) );
@@ -67,6 +53,16 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addRow("pdw", "Platelet distribution width", PERC) );
 		displayRows.add( new FormGroup("Platelets", rows) );
 	}
+
+	@Override
+	public String getName() {
+		return "CBC";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Complete Blood Count";
+	}
 	
 	@Override
 	public FormLayout getFormLayout() {
@@ -74,126 +70,26 @@ public class CompleteBloodCount implements Specification {
 	}
 
 	@Override
-	public List<FormElement> getFormElements() {
-		return displayRows;
+	public FormElement getFormStructure() {
+		return new FormGroup("CBC", displayRows);
 	}
-
+	
 	@Override
-	public List<String> getFieldNames() {
-		List<String> fieldNames = Lists.newArrayList();
+	public List<FormElement> getAllFormElements() {
+		List<FormElement> elements = Lists.newArrayList();
 		for (FormElement field : metadata) {
-			fieldNames.add(field.getName());
+			elements.add(field);
 		}
 		for (FormElement displayRow : displayRows) {
 			for (FormElement row: displayRow.getChildren()) {
 				for (FormElement field : row.getChildren()) {
-					fieldNames.add(field.getName());
+					elements.add(field);
 				}
 			}
 		}		
-		return fieldNames;
+		return elements;
 	}
 
-	@Override
-	public Object convertToObject(String header, String value) {
-		if (StringUtils.isNotBlank(value) && !"null".equals(value)) {
-			if (CREATED_ON.equals(header) || MODIFIED_ON.equals(header)) {
-				return DateTime.parse(value, ISODateTimeFormat.dateTime()).toDate();
-			}
-		}
-		return value;
-	}
-
-	@Override
-	public String convertToString(String header, Object object) {
-		if (object != null) {
-			if (header.equals(CREATED_ON) || header.equals(MODIFIED_ON)) {
-				DateTime date = new DateTime();
-				return date.toString(ISODateTimeFormat.dateTime());
-			} else {
-				return (String)object;
-			}
-		}
-		return "";	
-	}
-
-	@Override
-	public ParticipantDataDescriptor getDescriptor() {
-		ParticipantDataDescriptor descriptor = new ParticipantDataDescriptor();
-		descriptor.setName("CBC");
-		descriptor.setDescription("Complete Blood Count");
-		return descriptor;
-	}
-
-	@Override
-	public List<ParticipantDataColumnDescriptor> getColumnDescriptors(ParticipantDataDescriptor descriptor) {
-		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList();
-		for (FormElement meta : metadata) {
-			ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
-			column.setName(meta.getName());
-			column.setColumnType(ParticipantDataColumnType.STRING); // datetime stamp
-			column.setParticipantDataDescriptorId(descriptor.getId());
-			list.add(column);
-		}
-		for (FormElement displayRow : displayRows) {
-			for (FormElement row: displayRow.getChildren()) {
-				for (FormElement field : row.getChildren()) {
-					ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
-					column.setName(field.getName());
-					column.setDescription(field.getLabel());
-					column.setColumnType(ParticipantDataColumnType.DOUBLE); // All of them?!?
-					column.setParticipantDataDescriptorId(descriptor.getId());
-					list.add(column);
-				}
-			}
-		}
-		return list;
-	}
-
-	@Override
-	public RowSet getRowSetForCreate(Map<String, String> values) {
-		if (values == null) {
-			throw new IllegalArgumentException("getRowSetForCreate() requires values map");
-		}
-		Row row = new Row();
-		List<String> newValues = Lists.newArrayList();
-		for (String header : getFieldNames()) {
-			if (header.equals(CREATED_ON) || header.equals(MODIFIED_ON)) {
-				newValues.add( convertToString(header, StringUtils.EMPTY	) ); // anything but null
-			} else {
-				newValues.add( convertToString(header, values.get(header)) );	
-			}
-		}
-		row.setValues(newValues);
-		RowSet data = new RowSet();
-		data.setHeaders(getFieldNames());
-		data.setRows(Lists.newArrayList(row));
-		return data;
-	}
-
-	@Override
-	public RowSet getRowSetForUpdate(Map<String, String> values, RowSet rowSet, long rowId) {
-		if (values == null) {
-			throw new IllegalArgumentException("getRowSetForUpdate() requires values");
-		}
-		Row row = ClientUtils.getRowById(rowSet, rowId);
-		List<String> newValues = Lists.newArrayList();
-		for (String header : getFieldNames()) {
-			if (header.equals(CREATED_ON)) {
-				newValues.add( getValueInRow(row, rowSet.getHeaders(), CREATED_ON) ); // passthrough value, immutable
-			} else if (header.equals(MODIFIED_ON)) {
-				newValues.add( convertToString(header, StringUtils.EMPTY) ); // anything but null
-			} else {
-				newValues.add( convertToString(header, values.get(header)) );	
-			}
-		}
-		row.setValues(newValues);
-		RowSet data = new RowSet();
-		data.setHeaders(getFieldNames());
-		data.setRows(Lists.newArrayList(row));
-		return data;
-	}
-	
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
 		row.addColumn(new FormField(name, description, false));
@@ -202,14 +98,5 @@ public class CompleteBloodCount implements Specification {
 		row.addColumn(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range", true));
 		return row;
 	}
-	
-	private String getValueInRow(Row row, List<String> headers, String header) {
-		for (int i=0; i < headers.size(); i++) {
-			if (header.equals(headers.get(i))) {
-				return row.getValues().get(i);
-			}
-		}
-		throw new IllegalArgumentException(header + " is not a valid header");
-	}	
 
 }
