@@ -1375,9 +1375,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public MessageToUser sendMessage(MessageToUser message) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
-
+	
 	@Override
 	public PaginatedResults<MessageBundle> getInbox(List<MessageStatusType> inboxFilter, MessageSortBy orderBy,
 			Boolean descending, long limit, long offset) throws SynapseException {
@@ -2218,6 +2217,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	public MessageToUser sendMessage(MessageToUser message, String entityId) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
+	
+	
 
 	@Override
 	public String downloadMessage(String messageId) throws SynapseException, MalformedURLException, IOException {
@@ -2355,6 +2356,23 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public Session passThroughOpenIDParameters(String queryString) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public String uploadToFileHandle(String content, String contentType) throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public MessageToUser sendMessage(MessageToUser message, String messageBody, String contentType)
+			throws SynapseException {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public MessageToUser sendMessage(MessageToUser message, String entityId, String messageBody, String contentType)
+			throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented");
 	}
 
