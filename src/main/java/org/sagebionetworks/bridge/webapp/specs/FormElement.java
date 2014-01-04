@@ -2,6 +2,8 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
+
 public interface FormElement {
 
 	/**
@@ -18,7 +20,15 @@ public interface FormElement {
 	 * Can this value be pre-set from the value of a prior form already saved by the user?
 	 * @return
 	 */
-	public boolean getDefaultable();
+	public boolean isDefaultable();
+	/**
+	 * Can this value be changed after it is created?
+	 * 
+	 * @return
+	 */
+	public boolean isImmutable();
+	
+	public ParticipantDataColumnType getType();
 	
 	public List<FormElement> getChildren();
 	

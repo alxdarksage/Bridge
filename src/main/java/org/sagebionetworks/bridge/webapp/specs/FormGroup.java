@@ -2,6 +2,8 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
+
 import com.google.common.collect.Lists;
 
 public class FormGroup implements FormElement {
@@ -27,10 +29,20 @@ public class FormGroup implements FormElement {
 	public String getLabel() {
 		return label;
 	}
+	
+	@Override
+	public ParticipantDataColumnType getType() {
+		return null; // no type, just a container
+	}
 
 	@Override
-	public boolean getDefaultable() {
+	public boolean isDefaultable() {
 		return false;
+	}
+	
+	@Override
+	public boolean isImmutable() {
+		return true;
 	}
 
 	@Override

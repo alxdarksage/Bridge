@@ -1,11 +1,18 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
+import java.util.SortedMap;
+
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class CompleteBloodCount implements Specification {
-	
+
+	private static final String CREATED_ON = "createdOn";
+	private static final String MODIFIED_ON = "modifiedOn";
+
 	private static final String UNITS_SUFFIX = "_units";
 	private static final String RANGE_LOW_SUFFIX = "_range_low";
 	private static final String RANGE_HIGH_SUFFIX = "_range_high";
@@ -19,10 +26,15 @@ public class CompleteBloodCount implements Specification {
 
 	List<FormElement> metadata = Lists.newArrayList();
 	List<FormElement> displayRows = Lists.newArrayList();
+	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
 
 	public CompleteBloodCount() {
-		metadata.add( new FormField(CREATED_ON, "", false) );
-		metadata.add( new FormField(MODIFIED_ON, "", false) );
+		FormField field1 = new FormField(CREATED_ON, "", ParticipantDataColumnType.DATETIME, true, false);
+		FormField field2 = new FormField(MODIFIED_ON, "", ParticipantDataColumnType.DATETIME, false, false);
+		metadata.add( field1 );
+		metadata.add( field2 );
+		tableFields.put(CREATED_ON, field1);
+		tableFields.put(MODIFIED_ON, field2);
 
 		List<FormElement> rows = Lists.newArrayList();
 		rows.add( addRow("rbc", "Red cells (Erythrocytes / RBC)", CMM) );
@@ -89,13 +101,21 @@ public class CompleteBloodCount implements Specification {
 		}		
 		return elements;
 	}
+	
+	@Override
+	public SortedMap<String,FormElement> getTableFields() {
+		return tableFields;
+	}
 
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
-		row.addField(new FormField(name, description, false));
-		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, description + ": units of measurement", true, unitEnumeration));
-		row.addField(new FormField(name + RANGE_LOW_SUFFIX, description + ": low end of normal range", true));
-		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range", true));
+		row.addField(new FormField(name, description, ParticipantDataColumnType.DOUBLE, false, false));
+		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, description + ": units of measurement",
+				ParticipantDataColumnType.STRING, false, true, unitEnumeration));
+		row.addField(new FormField(name + RANGE_LOW_SUFFIX, description + ": low end of normal range",
+				ParticipantDataColumnType.DOUBLE, false, true));
+		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range",
+				ParticipantDataColumnType.DOUBLE, false, true));
 		return row;
 	}
 

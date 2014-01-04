@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,6 +22,9 @@ import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.FormField;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
@@ -213,8 +219,7 @@ public class ClientUtils {
 		}
 	}
 
-	public static void prepareParticipantData(BridgeClient client, ModelAndView model, String formId) throws SynapseException {
-		
+	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String formId) throws SynapseException {
 		// Block error (which isn't an error here, and also contains a whole Tomcat page in the message field).
 		try {
 			List<RowObject> records = Lists.newArrayList();
@@ -222,17 +227,23 @@ public class ClientUtils {
 			PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 			RowSet rowSet = paginatedRowSet.getResults();
 			List<String> headers = rowSet.getHeaders();
+			SortedMap<String,FormElement> tabs = spec.getTableFields();
 			
+			// TODO: Inefficient. 
 			for (Row row : rowSet.getRows()) {
-				RowObject object = new RowObject(row.getRowId(), headers, row.getValues());
-				records.add(object);
+				List<Object> values = Lists.newArrayList();
+				for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
+					String fieldName = entry.getKey();
+					FormElement field = entry.getValue();
+					String serValue = row.getValues().get( headers.indexOf(fieldName) );
+					
+					values.add( ParticipantDataUtils.convertToObject(field.getType(), serValue) );
+				}
+				records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 			}
 			model.addObject("records", records);
-			
-		} catch(Exception e) { // But what kind of exception. Test for this.
+		} catch(SynapseException e) {
 			logger.error(e);
-			// this throws a gibberish exception when there are no records. It's not a 404, it's a 500 with 
-			// a Tomcat web page as the message of the exception.
 			model.addObject("records", Lists.newArrayList());
 		}
 	}
@@ -244,6 +255,15 @@ public class ClientUtils {
 			}
 		}
 		throw new IllegalArgumentException(Long.toString(rowId) + " is not a valid row");
+	}	
+	
+	public static String getValueInRow(Row row, List<String> headers, String header) {
+		for (int i=0; i < headers.size(); i++) {
+			if (header.equals(headers.get(i))) {
+				return row.getValues().get(i);
+			}
+		}
+		throw new IllegalArgumentException(header + " is not a valid header");
 	}	
 
 	private static List<WikiHeader> getWikiHeaders(SynapseClient client, Community community)

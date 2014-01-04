@@ -1,12 +1,10 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
+import java.util.SortedMap;
 
 public interface Specification {
 
-	public static final String CREATED_ON = "createdOn";
-	public static final String MODIFIED_ON = "modifiedOn";
-	
 	public String getName();
 	public String getDescription();
 	
@@ -30,5 +28,11 @@ public interface Specification {
 	 * @return
 	 */
 	public List<FormElement> getAllFormElements();
+	/**
+	 * Get a map of the column names and their form element descriptions, in the order they 
+	 * should be shown left-to-right in a table view for this form.
+	 * @return
+	 */
+	public SortedMap<String,FormElement> getTableFields();
 
 }

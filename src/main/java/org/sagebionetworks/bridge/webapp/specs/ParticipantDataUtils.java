@@ -30,8 +30,7 @@ public class ParticipantDataUtils {
 			ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
 			column.setName(field.getName());
 			column.setDescription(field.getLabel());
-			// TODO: FormElement has to declare more types than this eventually.
-			column.setColumnType(ParticipantDataColumnType.DOUBLE); 
+			column.setColumnType(field.getType()); 
 			column.setParticipantDataDescriptorId(descriptorId);
 			list.add(column);			
 		}
@@ -42,19 +41,23 @@ public class ParticipantDataUtils {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForCreate() requires values map");
 		}
-		List<String> names = getFieldNames(spec);
+		
 		Row row = new Row();
 		List<String> newValues = Lists.newArrayList();
-		for (String header : names) {
-			if (header.equals(Specification.CREATED_ON) || header.equals(Specification.MODIFIED_ON)) {
-				newValues.add( convertToString(header, StringUtils.EMPTY	) ); // anything but null
-			} else {
-				newValues.add( convertToString(header, values.get(header)) );	
+		List<String> headers = Lists.newArrayList();
+		for (FormElement element : spec.getAllFormElements()) {
+			if (element.getType() != null) {
+				headers.add(element.getName());
+				if (ParticipantDataColumnType.DATETIME == element.getType()) {
+					newValues.add( convertToString(element.getType(), StringUtils.EMPTY	) ); // anything but null
+				} else {
+					newValues.add( convertToString(element.getType(), values.get(element.getName())) );
+				}
 			}
 		}
 		row.setValues(newValues);
 		RowSet data = new RowSet();
-		data.setHeaders(names);
+		data.setHeaders(headers);
 		data.setRows(Lists.newArrayList(row));
 		return data;
 	}
@@ -63,60 +66,66 @@ public class ParticipantDataUtils {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForUpdate() requires values");
 		}
-		List<String> names = getFieldNames(spec);
+		
 		Row row = ClientUtils.getRowById(rowSet, rowId);
 		List<String> newValues = Lists.newArrayList();
-		for (String header : names) {
-			if (header.equals(Specification.CREATED_ON)) {
-				newValues.add( getValueInRow(row, rowSet.getHeaders(), Specification.CREATED_ON) ); // passthrough value, immutable
-			} else if (header.equals(Specification.MODIFIED_ON)) {
-				newValues.add( convertToString(header, StringUtils.EMPTY) ); // anything but null
-			} else {
-				newValues.add( convertToString(header, values.get(header)) );	
+		List<String> headers = Lists.newArrayList();
+		for (FormElement element : spec.getAllFormElements()) {
+			if (element.getType() != null) {
+				headers.add(element.getName());
+				if (element.isImmutable()) {
+					newValues.add( ClientUtils.getValueInRow(row, rowSet.getHeaders(), element.getName()) ); // passthrough value, immutable
+				} else {
+					if (ParticipantDataColumnType.DATETIME == element.getType()) {
+						newValues.add( convertToString(element.getType(), StringUtils.EMPTY	) ); // anything but null
+					} else {
+						newValues.add( convertToString(element.getType(), values.get(element.getName())) );
+					}
+				}
 			}
 		}
 		row.setValues(newValues);
 		RowSet data = new RowSet();
-		data.setHeaders(names);
+		data.setHeaders(headers);
 		data.setRows(Lists.newArrayList(row));
 		return data;
 	}
-	
-	public static Object convertToObject(String header, String value) {
+
+	public static Object convertToObject(ParticipantDataColumnType type, String value) {
 		if (StringUtils.isNotBlank(value) && !"null".equals(value)) {
-			if (Specification.CREATED_ON.equals(header) || Specification.MODIFIED_ON.equals(header)) {
+			switch(type) {
+			case FILEHANDLEID:
+			case STRING:
+				return value;
+			case DATETIME:
 				return DateTime.parse(value, ISODateTimeFormat.dateTime()).toDate();
+			case BOOLEAN:
+				return Boolean.valueOf(value);
+			case LONG:
+				return Long.parseLong(value);
+			case DOUBLE:
+				return Double.parseDouble(value);
 			}
 		}
 		return value;
 	}
 	
-	private static String getValueInRow(Row row, List<String> headers, String header) {
-		for (int i=0; i < headers.size(); i++) {
-			if (header.equals(headers.get(i))) {
-				return row.getValues().get(i);
-			}
-		}
-		throw new IllegalArgumentException(header + " is not a valid header");
-	}
-	
-	private static String convertToString(String header, Object object) {
+	private static String convertToString(ParticipantDataColumnType type, Object object) {
 		if (object != null) {
-			if (header.equals(Specification.CREATED_ON) || header.equals(Specification.MODIFIED_ON)) {
+			switch(type) {
+			case FILEHANDLEID:
+			case STRING:
+				return (String)object;
+			case DATETIME:
 				DateTime date = new DateTime();
 				return date.toString(ISODateTimeFormat.dateTime());
-			} else {
-				return (String)object;
-			}
+			case BOOLEAN:
+			case LONG:
+			case DOUBLE:
+				return object.toString();
+			}			
 		}
-		return "";	
+		return "";
 	}
-	
-	private static List<String> getFieldNames(Specification spec) {
-		List<String> names = Lists.newArrayList();
-		for (FormElement field : spec.getAllFormElements()) {
-			names.add(field.getName());
-		}
-		return names;
-	}
+
 }

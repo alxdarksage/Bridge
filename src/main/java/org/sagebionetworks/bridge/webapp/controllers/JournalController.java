@@ -15,6 +15,7 @@ import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -65,7 +66,8 @@ public class JournalController {
 			@PathVariable("formId") String formId, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareParticipantData(client, model, formId);
+		CompleteBloodCount spec = new CompleteBloodCount();
+		ClientUtils.prepareParticipantData(client, model, spec, formId);
 		ClientUtils.prepareDescriptorAndForm(client, model, formId);
 		model.setViewName("journal/forms/index");
 		return model;
