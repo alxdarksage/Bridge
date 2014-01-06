@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -2296,7 +2297,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		// TODO: This is not actually paged.
 		RowSet data = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (data == null) {
-			throw new SynapseException("Did not find participant data record");
+			throw new SynapseNotFoundException("Did not find participant data record");
 		}
 		PaginatedRowSet pagedRowSet = new PaginatedRowSet();
 		pagedRowSet.setResults(data);
@@ -2360,18 +2361,17 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public String uploadToFileHandle(String content, String contentType) throws SynapseException {
+	public String uploadToFileHandle(byte[] content, ContentType contentType) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override
-	public MessageToUser sendMessage(MessageToUser message, String messageBody, String contentType)
-			throws SynapseException {
+	public MessageToUser sendStringMessage(MessageToUser message, String messageBody) throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override
-	public MessageToUser sendMessage(MessageToUser message, String entityId, String messageBody, String contentType)
+	public MessageToUser sendStringMessage(MessageToUser message, String entityId, String messageBody)
 			throws SynapseException {
 		throw new UnsupportedOperationException("Not implemented");
 	}

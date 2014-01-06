@@ -296,18 +296,19 @@ public class ClientUtils {
 	}
 	
 	public static boolean defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
-			String formId) {
+			String formId) throws SynapseException {
 		boolean anyDefaulted = false;
 		try {
 			// Right now these are sorted first to last entered, so we'd default from the last in the list.
 			// I would like this to change to reverse the order, then this'll need to change as well.
 			PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
 			if (rowSet.getTotalNumberOfResults() > 0L) {
-				long len = rowSet.getTotalNumberOfResults();
+				Set<String> defaults = defaultTheseFields(spec);
 				List<String> headers = rowSet.getResults().getHeaders();
+				
+				long len = rowSet.getTotalNumberOfResults();
 				Row finalRow = rowSet.getResults().getRows().get((int)len-1);
 				List<String> values = finalRow.getValues();
-				Set<String> defaults = defaultTheseFields(spec);
 
 				for (int i=0; i < headers.size(); i++) {
 					String header = headers.get(i);
