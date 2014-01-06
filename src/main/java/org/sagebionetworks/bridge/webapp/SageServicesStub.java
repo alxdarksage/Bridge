@@ -878,7 +878,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		
 		RowSet oldData = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (oldData == null) {
-			throw new SynapseException("Did not find participant data record");
+			RowSet emptyData = new RowSet();
+			emptyData.setHeaders(new ArrayList<String>());
+			emptyData.setRows(new ArrayList<Row>());
+			return emptyData;
 		}
 		for (Row row : data.getRows()) {
 			if (row.getRowId() == null) {
@@ -906,7 +909,13 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		// TODO: This is not actually paged.
 		RowSet data = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (data == null) {
-			throw new SynapseNotFoundException("Did not find participant data record");
+			RowSet emptyData = new RowSet();
+			emptyData.setHeaders(new ArrayList<String>());
+			emptyData.setRows(new ArrayList<Row>());
+			PaginatedRowSet pagedRowSet = new PaginatedRowSet();
+			pagedRowSet.setResults(emptyData);
+			pagedRowSet.setTotalNumberOfResults(0L);
+			return pagedRowSet;
 		}
 		PaginatedRowSet pagedRowSet = new PaginatedRowSet();
 		pagedRowSet.setResults(data);

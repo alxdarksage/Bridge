@@ -13,8 +13,7 @@
    	<context:component-scan base-package="org.sagebionetworks.bridge.webapp.controllers"/>
 
     <mvc:annotation-driven />
-    <!-- 
-   	<import resource="bridge-log-sweeper.spb.xml" /> -->
+   	<import resource="bridge-log-sweeper.spb.xml" />
  
     <bean id="synapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
         <property name="repositoryEndpoint">

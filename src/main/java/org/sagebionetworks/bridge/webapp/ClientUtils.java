@@ -232,7 +232,7 @@ public class ClientUtils {
 
 	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String formId) throws SynapseException {
 		// Block error (which isn't an error here, and also contains a whole Tomcat page in the message field).
-		try {
+		//try {
 			List<RowObject> records = Lists.newArrayList();
 			
 			PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
@@ -240,7 +240,7 @@ public class ClientUtils {
 			List<String> headers = rowSet.getHeaders();
 			SortedMap<String,FormElement> tabs = spec.getTableFields();
 			
-			// TODO: Inefficient. 
+			// TODO: Inefficient.
 			for (Row row : rowSet.getRows()) {
 				List<Object> values = Lists.newArrayList();
 				for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
@@ -253,10 +253,12 @@ public class ClientUtils {
 				records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 			}
 			model.addObject("records", records);
+			/*
 		} catch(SynapseException e) {
 			logger.error(e);
 			model.addObject("records", Lists.newArrayList());
 		}
+		*/
 	}
 	
 	public static Row getRowById(RowSet rowSet, long rowId) {
