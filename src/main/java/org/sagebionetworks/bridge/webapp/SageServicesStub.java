@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,8 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+import net.sf.cglib.transform.impl.UndeclaredThrowableStrategy;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -122,6 +130,7 @@ import org.sagebionetworks.repo.model.wiki.WikiPage;
 import org.sagebionetworks.repo.web.NotFoundException;
 import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
+import org.springframework.aop.framework.ProxyFactory;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
@@ -129,7 +138,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class SageServicesStub implements SynapseClient, BridgeClient {
+public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	
 	private static final Logger logger = LogManager.getLogger(SageServicesStub.class.getName());
 
@@ -165,6 +174,31 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		createCommunity("1", "Fanconi Anemia", "This is a very rare but very serious disease, affecting about 1,000 people worldwide.", data);
 		createUser("octaviabutler", "octaviabutler@octaviabutler.com", false);
 		createUser("test", "test@test.com", true);
+	}
+
+	/**
+	 * bean factory method
+	 * 
+	 * @return
+	 */
+	public static SageServicesStub createInstance() {
+		// Configure CGLIB Enhancer...
+		Enhancer enhancer = new Enhancer();
+		enhancer.setSuperclass(SageServicesStub.class);
+		enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
+		enhancer.setInterfaces(new Class[] { SynapseClient.class, BridgeClient.class });
+		enhancer.setInterceptDuringConstruction(false);
+		enhancer.setCallback(new MethodInterceptor() {
+			@Override
+			public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+				return proxy.invokeSuper(obj, args);
+			}
+		});
+
+		// Generate the proxy class and create a proxy instance.
+		Object proxy = enhancer.create();
+
+		return (SageServicesStub) proxy;
 	}
 
 	private UserSessionData createUser(String userName, String email, boolean acceptsTOU) {
@@ -404,94 +438,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		Set<String> memberSet = memberships.get(team);
 		memberSet.remove(userId);
 	}
-	@Override
-	public StackStatus getCurrentStackStatus() throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String getRepoEndpoint() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setRepositoryEndpoint(String repoEndpoint) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setAuthEndpoint(String authEndpoint) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String getAuthEndpoint() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setFileEndpoint(String fileEndpoint) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String getFileEndpoint() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AttachmentData uploadAttachmentToSynapse(String entityId, File temp, String fileName)
-			throws JSONObjectAdapterException, SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Entity getEntityById(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends Entity> T putEntity(T entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PresignedUrl waitForPreviewToBeCreated(String entityId, String tokenId, int maxTimeOut)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PresignedUrl createAttachmentPresignedUrl(String entityId, String tokenId) throws SynapseException,
-			JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getWikiAttachmentPreviewTemporaryUrl(WikiPageKey properKey, String fileName)
-			throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getWikiAttachmentTemporaryUrl(WikiPageKey properKey, String fileName) throws ClientProtocolException,
-			IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
 
 	@Override
 	public Session login(String username, String password) throws SynapseException {
@@ -517,58 +463,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public UserSessionData getUserSessionData() throws SynapseException {
 		return currentUserData;
-	}
-
-	@Override
-	public boolean revalidateSession() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public <T extends Entity> T createEntity(T entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public JSONObject createJSONObject(String uri, JSONObject entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public SearchResults search(SearchQuery searchQuery) throws SynapseException, UnsupportedEncodingException,
-			JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getFileEntityPreviewTemporaryUrlForCurrentVersion(String entityId) throws ClientProtocolException,
-			MalformedURLException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getFileEntityTemporaryUrlForCurrentVersion(String entityId) throws ClientProtocolException,
-			MalformedURLException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getFileEntityPreviewTemporaryUrlForVersion(String entityId, Long versionNumber)
-			throws ClientProtocolException, MalformedURLException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getFileEntityTemporaryUrlForVersion(String entityId, Long versionNumber) throws ClientProtocolException,
-			MalformedURLException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -610,37 +504,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public WikiPage getWikiPage(WikiPageKey properKey) throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public VariableContentPaginatedResults<AccessRequirement> getAccessRequirements(
-			RestrictableObjectDescriptor subjectId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public WikiPage updateWikiPage(String ownerId, ObjectType ownerType, WikiPage toUpdate)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setRequestProfile(boolean request) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public JSONObject getProfileData() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public String getUserName() {
 		if (currentUserData != null && currentUserData.getProfile() != null) {
 			return currentUserData.getProfile().getDisplayName();
@@ -649,101 +512,9 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public void setUserName(String userName) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String getApiKey() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setApiKey(String apiKey) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends Entity> T createEntity(T entity, String activityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends JSONEntity> T createJSONEntity(String uri, T entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityBundle createEntityBundle(EntityBundleCreate ebc) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityBundle createEntityBundle(EntityBundleCreate ebc, String activityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityBundle updateEntityBundle(String entityId, EntityBundleCreate ebc) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityBundle updateEntityBundle(String entityId, EntityBundleCreate ebc, String activityId)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Entity getEntityByIdForVersion(String entityId, Long versionNumber) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityBundle getEntityBundle(String entityId, int partsMask) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityBundle getEntityBundle(String entityId, Long versionNumber, int partsMask) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<VersionInfo> getEntityVersions(String entityId, int offset, int limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public AccessControlList getACL(String entityId) throws SynapseException {
 		logger.info("Looking for an ACL for: " + entityId);
 		return aclsByEntityId.get(entityId);		
-	}
-
-	@Override
-	public EntityHeader getEntityBenefactor(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public UserProfile getMyProfile() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -759,62 +530,9 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public UserGroupHeaderResponsePage getUserGroupHeadersByIds(List<String> ids) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public UserGroupHeaderResponsePage getUserGroupHeadersByPrefix(String prefix) throws SynapseException,
-			UnsupportedEncodingException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AccessControlList updateACL(AccessControlList acl) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AccessControlList updateACL(AccessControlList acl, boolean recursive) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteACL(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public AccessControlList createACL(AccessControlList acl) throws SynapseException {
 		aclsByEntityId.put(acl.getId(), acl);
 		return acl;		
-	}
-
-	@Override
-	public PaginatedResults<UserProfile> getUsers(int offset, int limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<UserGroup> getGroups(int offset, int limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public boolean canAccess(String entityId, ACCESS_TYPE accessType) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public boolean canAccess(String id, ObjectType type, ACCESS_TYPE accessType) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 	@Override
@@ -843,261 +561,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			}
 		}
 		return permits;
-	}
-
-	@Override
-	public Annotations getAnnotations(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Annotations updateAnnotations(String entityId, Annotations updated) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends AccessRequirement> T createAccessRequirement(T ar) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public ACTAccessRequirement createLockAccessRequirement(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public VariableContentPaginatedResults<AccessRequirement> getUnmetAccessRequirements(
-			RestrictableObjectDescriptor subjectId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends AccessApproval> T createAccessApproval(T aa) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public JSONObject getEntity(String uri) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends JSONEntity> T getEntity(String entityId, Class<? extends T> clazz) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteAccessRequirement(Long arId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends Entity> T putEntity(T entity, String activityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends Entity> void deleteEntity(T entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends Entity> void deleteAndPurgeEntity(T entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteEntityById(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteAndPurgeEntityById(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public <T extends Entity> void deleteEntityVersion(T entity, Long versionNumber) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteEntityVersionById(String entityId, Long versionNumber) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityPath getEntityPath(Entity entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityPath getEntityPath(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public BatchResults<EntityHeader> getEntityTypeBatch(List<String> entityIds) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public BatchResults<EntityHeader> getEntityHeaderBatch(List<Reference> references) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<EntityHeader> getEntityReferencedBy(Entity entity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<EntityHeader> getEntityReferencedBy(String entityId, String targetVersion)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public JSONObject query(String query) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public ChunkedFileToken createChunkedFileUploadToken(CreateChunkedFileTokenRequest ccftr) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL createChunkedPresignedUrl(ChunkRequest chunkRequest) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String putFileToURL(URL url, File file, String contentType) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public ChunkResult addChunkToFile(ChunkRequest chunkRequest) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public S3FileHandle completeChunkFileUpload(CompleteChunkedFileRequest request) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public UploadDaemonStatus startUploadDeamon(CompleteAllChunksRequest cacr) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public UploadDaemonStatus getCompleteUploadDaemonStatus(String daemonId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public ExternalFileHandle createExternalFileHandle(ExternalFileHandle efh) throws JSONObjectAdapterException,
-			SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public FileHandle getRawFileHandle(String fileHandleId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteFileHandle(String fileHandleId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void clearPreview(String fileHandleId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public WikiPage createWikiPage(String ownerId, ObjectType ownerType, WikiPage toCreate)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public WikiPage getRootWikiPage(String ownerId, ObjectType ownerType) throws JSONObjectAdapterException,
-			SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public FileHandleResults getWikiAttachmenthHandles(WikiPageKey key) throws JSONObjectAdapterException,
-			SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteWikiPage(WikiPageKey key) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<WikiHeader> getWikiHeaderTree(String ownerId, ObjectType ownerType)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public FileHandleResults getEntityFileHandlesForCurrentVersion(String entityId) throws JSONObjectAdapterException,
-			SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public FileHandleResults getEntityFileHandlesForVersion(String entityId, Long versionNumber)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -1166,20 +629,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public URL getV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName) throws ClientProtocolException,
-			IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName) throws ClientProtocolException,
-			IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public void deleteV2WikiPage(WikiPageKey key) throws SynapseException {
 		wikiPagesById.remove(key.getWikiPageId());
 	}
@@ -1211,635 +660,8 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 	
 	@Override
-	public PaginatedResults<V2WikiHistorySnapshot> getV2WikiHistory(WikiPageKey key, Long limit, Long offset)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadLocationableFromSynapse(Locationable locationable) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadLocationableFromSynapse(Locationable locationable, File destinationFile)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadFromSynapse(LocationData location, String md5, File destinationFile) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public File downloadFromSynapse(String path, String md5, File destinationFile) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Locationable uploadLocationableToSynapse(Locationable locationable, File dataFile) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Locationable uploadLocationableToSynapse(Locationable locationable, File dataFile, String md5)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Locationable updateExternalLocationableToSynapse(Locationable locationable, String externalUrl)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Locationable updateExternalLocationableToSynapse(Locationable locationable, String externalUrl, String md5)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AttachmentData uploadAttachmentToSynapse(String entityId, File dataFile) throws JSONObjectAdapterException,
-			SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AttachmentData uploadUserProfileAttachmentToSynapse(String userId, File dataFile, String fileName)
-			throws JSONObjectAdapterException, SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AttachmentData uploadAttachmentToSynapse(String id, AttachmentType attachmentType, File dataFile,
-			String fileName) throws JSONObjectAdapterException, SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PresignedUrl createUserProfileAttachmentPresignedUrl(String id, String tokenOrPreviewId)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PresignedUrl createAttachmentPresignedUrl(String id, AttachmentType attachmentType, String tokenOrPreviewId)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PresignedUrl waitForUserProfilePreviewToBeCreated(String userId, String tokenOrPreviewId, int timeout)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PresignedUrl waitForPreviewToBeCreated(String id, AttachmentType type, String tokenOrPreviewId, int timeout)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void downloadEntityAttachment(String entityId, AttachmentData attachmentData, File destFile)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void downloadUserProfileAttachment(String userId, AttachmentData attachmentData, File destFile)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void downloadAttachment(String id, AttachmentType type, AttachmentData attachmentData, File destFile)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void downloadEntityAttachmentPreview(String entityId, String previewId, File destFile)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void downloadUserProfileAttachmentPreview(String userId, String previewId, File destFile)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void downloadAttachmentPreview(String id, AttachmentType type, String previewId, File destFile)
-			throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public S3AttachmentToken createAttachmentS3Token(String id, AttachmentType attachmentType, S3AttachmentToken token)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
 	public String getSynapseTermsOfUse() throws SynapseException {
 		return "<p>These are the Stub terms of use.</p>";
-	}
-
-	@Override
-	public MessageToUser sendMessage(MessageToUser message) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-	
-	@Override
-	public PaginatedResults<MessageBundle> getInbox(List<MessageStatusType> inboxFilter, MessageSortBy orderBy,
-			Boolean descending, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<MessageToUser> getOutbox(MessageSortBy orderBy, Boolean descending, long limit, long offset)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public MessageToUser getMessage(String messageId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public MessageToUser forwardMessage(String messageId, MessageRecipientSet recipients) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<MessageToUser> getConversation(String associatedMessageId, MessageSortBy orderBy,
-			Boolean descending, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void updateMessageStatus(MessageStatus status) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteMessage(String messageId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Long getChildCount(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public SynapseVersionInfo getVersionInfo() throws SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public Set<String> getAllUserAndGroupIds() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Activity getActivityForEntity(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Activity getActivityForEntityVersion(String entityId, Long versionNumber) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Activity setActivityForEntity(String entityId, String activityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteGeneratedByForEntity(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Activity createActivity(Activity activity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Activity getActivity(String activityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Activity putActivity(Activity activity) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteActivity(String activityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Reference> getEntitiesGeneratedBy(String activityId, Integer limit, Integer offset)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityIdList getDescendants(String nodeId, int pageSize, String lastDescIdExcl) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityIdList getDescendants(String nodeId, int generation, int pageSize, String lastDescIdExcl)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Evaluation createEvaluation(Evaluation eval) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Evaluation getEvaluation(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Evaluation> getEvaluationByContentSource(String id, int offset, int limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Evaluation> getEvaluationsPaginated(int offset, int limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Evaluation> getAvailableEvaluationsPaginated(int offset, int limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Long getEvaluationCount() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Evaluation findEvaluation(String name) throws SynapseException, UnsupportedEncodingException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Evaluation updateEvaluation(Evaluation eval) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteEvaluation(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Participant createParticipant(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Participant getParticipant(String evalId, String principalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteParticipant(String evalId, String principalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Participant> getAllParticipants(String s, long offset, long limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Long getParticipantCount(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Submission createSubmission(Submission sub, String etag) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Submission getSubmission(String subId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public SubmissionStatus getSubmissionStatus(String subId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public SubmissionStatus updateSubmissionStatus(SubmissionStatus status) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteSubmission(String subId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Submission> getAllSubmissions(String evalId, long offset, long limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<SubmissionStatus> getAllSubmissionStatuses(String evalId, long offset, long limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<SubmissionBundle> getAllSubmissionBundles(String evalId, long offset, long limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Submission> getAllSubmissionsByStatus(String evalId, SubmissionStatusEnum status,
-			long offset, long limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<SubmissionStatus> getAllSubmissionStatusesByStatus(String evalId,
-			SubmissionStatusEnum status, long offset, long limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<SubmissionBundle> getAllSubmissionBundlesByStatus(String evalId,
-			SubmissionStatusEnum status, long offset, long limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Submission> getMySubmissions(String evalId, long offset, long limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<SubmissionBundle> getMySubmissionBundles(String evalId, long offset, long limit)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getFileTemporaryUrlForSubmissionFileHandle(String submissionId, String fileHandleId)
-			throws ClientProtocolException, MalformedURLException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Long getSubmissionCount(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public UserEvaluationState getUserEvaluationState(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public QueryTableResults queryEvaluation(String query) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public StorageUsageSummaryList getStorageUsageSummary(List<StorageUsageDimension> aggregation)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void moveToTrash(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void restoreFromTrash(String entityId, String newParentId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<TrashedEntity> viewTrashForUser(long offset, long limit) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void purgeTrashForUser(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void purgeTrashForUser() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public EntityHeader addFavorite(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void removeFavorite(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<EntityHeader> getFavorites(Integer limit, Integer offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void createEntityDoi(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void createEntityDoi(String entityId, Long entityVersion) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Doi getEntityDoi(String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Doi getEntityDoi(String s, Long entityVersion) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public List<EntityHeader> getEntityHeaderByMd5(String md5) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String retrieveApiKey() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void invalidateApiKey() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AccessControlList updateEvaluationAcl(AccessControlList acl) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public AccessControlList getEvaluationAcl(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public UserEvaluationPermissions getUserEvaluationPermissions(String evalId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public RowReferenceSet appendRowsToTable(RowSet toAppend) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public ColumnModel createColumnModel(ColumnModel model) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public ColumnModel getColumnModel(String columnId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Team createTeam(Team team) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -1848,61 +670,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 			throw new SynapseException("Team not found");
 		}
 		return teamsById.get(id);
-	}
-
-	@Override
-	public PaginatedResults<Team> getTeams(String fragment, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<Team> getTeamsForUser(String memberId, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public URL getTeamIcon(String teamId, Boolean redirect) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public Team updateTeam(Team team) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteTeam(String teamId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void addTeamMember(String teamId, String memberId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<TeamMember> getTeamMembers(String teamId, String fragment, long limit, long offset)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void removeTeamMember(String teamId, String memberId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setTeamMemberPermissions(String teamId, String memberId, boolean isAdmin) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
 	}
 
 	@Override
@@ -1918,74 +685,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		return status;
 	}
 	
-	@Override
-	public MembershipInvtnSubmission createMembershipInvitation(MembershipInvtnSubmission invitation)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public MembershipInvtnSubmission getMembershipInvitation(String invitationId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<MembershipInvitation> getOpenMembershipInvitations(String memberId, String teamId,
-			long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteMembershipInvitation(String invitationId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public MembershipRqstSubmission createMembershipRequest(MembershipRqstSubmission request) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public MembershipRqstSubmission getMembershipRequest(String requestId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedResults<MembershipRequest> getOpenMembershipRequests(String teamId, String requestorId, long limit,
-			long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void deleteMembershipRequest(String requestId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void updateTeamSearchCache() throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public List<ColumnModel> getColumnModelsForTableEntity(String tableEntityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public PaginatedColumnModels listColumnModels(String prefix, Long limit, Long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
 
 	@Override
 	public void createUser(NewUser user) throws SynapseException {
@@ -2136,18 +835,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 	
 	@Override
-	public V2WikiPage getVersionOfV2WikiPage(WikiPageKey key, Long version) throws JSONObjectAdapterException,
-			SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public FileHandleResults getVersionOfV2WikiAttachmentHandles(WikiPageKey key, Long version)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
 	public String downloadV2WikiMarkdown(WikiPageKey key) throws ClientProtocolException, FileNotFoundException,
 			IOException {
 		V2WikiPage page = wikiPagesById.get(key.getWikiPageId());
@@ -2161,82 +848,6 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 		return markdown;
 	}
 
-	@Override
-	public String downloadVersionOfV2WikiMarkdown(WikiPageKey key, Long version) throws ClientProtocolException,
-			FileNotFoundException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public TeamMember getTeamMember(String teamId, String memberId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public WikiPage createV2WikiPageWithV1(String ownerId, ObjectType ownerType, WikiPage toCreate) throws IOException,
-			SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public WikiPage updateV2WikiPageWithV1(String ownerId, ObjectType ownerType, WikiPage toUpdate) throws IOException,
-			SynapseException, JSONObjectAdapterException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public WikiPage getV2WikiPageAsV1(WikiPageKey key) throws JSONObjectAdapterException, SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public WikiPage getVersionOfV2WikiPageAsV1(WikiPageKey key, Long version) throws JSONObjectAdapterException,
-			SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public V2WikiPage restoreV2WikiPage(String ownerId, ObjectType ownerType, String wikiId, Long versionToRestore)
-			throws JSONObjectAdapterException, SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public URL getVersionOfV2WikiAttachmentPreviewTemporaryUrl(WikiPageKey key, String fileName, Long version)
-			throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public URL getVersionOfV2WikiAttachmentTemporaryUrl(WikiPageKey key, String fileName, Long version)
-			throws ClientProtocolException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public MessageToUser sendMessage(MessageToUser message, String entityId) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-	
-	
-
-	@Override
-	public String downloadMessage(String messageId) throws SynapseException, MalformedURLException, IOException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public PaginatedResults<MembershipInvtnSubmission> getOpenMembershipInvitationSubmissions(String teamId,
-			String inviteeId, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-
-	@Override
-	public PaginatedResults<MembershipRqstSubmission> getOpenMembershipRequestSubmissions(String requesterId,
-			String teamId, long limit, long offset) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented.");
-	}
-	
 	// For the purposes of these next two methods, we really don't care that one is on behalf of another person.
 	
 	@Override
@@ -2344,36 +955,12 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public S3FileHandle createFileHandle(File temp, String contentType, Boolean shouldPreviewBeCreated)
-			throws SynapseException, IOException {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
 	public void sendPasswordResetEmail(String email, DomainType originClient) throws SynapseException {
 		// noop
 	}
 
 	@Override
-	public Session passThroughOpenIDParameters(String queryString) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented");
+	public void setAuthEndpoint(String authEndpoint) {
+		// noop
 	}
-
-	@Override
-	public String uploadToFileHandle(String content, String contentType) throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public MessageToUser sendMessage(MessageToUser message, String messageBody, String contentType)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public MessageToUser sendMessage(MessageToUser message, String entityId, String messageBody, String contentType)
-			throws SynapseException {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
 }

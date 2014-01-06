@@ -14,7 +14,7 @@
     
     <!-- These are *definitely* not singletons in the production configuration of the app, be aware of that. -->
     
-    <bean id="sageServices" class="org.sagebionetworks.bridge.webapp.SageServicesStub" scope="singleton"/>
+    <bean id="sageServices" class="org.sagebionetworks.bridge.webapp.SageServicesStub" scope="singleton" factory-method="createInstance"/>
     
     <alias name="sageServices" alias="bridgeClient"/>
     <alias name="sageServices" alias="privateSynapseClient"/>
