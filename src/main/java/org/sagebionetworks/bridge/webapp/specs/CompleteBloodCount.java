@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
@@ -121,12 +122,10 @@ public class CompleteBloodCount implements Specification {
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
 		String datetime = ParticipantDataUtils.convertToString(new DateTime());
-		if (values.get(CREATED_ON) == null) {
+		if (StringUtils.isBlank(values.get(CREATED_ON))) {
 			values.put(CREATED_ON, datetime);
 		}
-		// This is presumably better than nothing, but I wonder if this isn't
-		// an example of something that is required to be entered.
-		if (values.get(TESTED_ON) == null) {
+		if (StringUtils.isBlank(values.get(TESTED_ON))) {
 			values.put(TESTED_ON, datetime);	
 		}
 		values.put(MODIFIED_ON, datetime);
@@ -135,12 +134,12 @@ public class CompleteBloodCount implements Specification {
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
 		row.addField(new FormField(name, description, ParticipantDataColumnType.DOUBLE, false, false));
-		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, description + ": units of measurement",
-				ParticipantDataColumnType.STRING, false, true, unitEnumeration));
-		row.addField(new FormField(name + RANGE_LOW_SUFFIX, description + ": low end of normal range",
-				ParticipantDataColumnType.DOUBLE, false, true));
-		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range",
-				ParticipantDataColumnType.DOUBLE, false, true));
+		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, "Units", ParticipantDataColumnType.STRING, false,
+				true, unitEnumeration));
+		row.addField(new FormField(name + RANGE_LOW_SUFFIX, "Low " + description, ParticipantDataColumnType.DOUBLE,
+				false, true));
+		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, "High " + description, ParticipantDataColumnType.DOUBLE,
+				false, true));
 		return row;
 	}
 
