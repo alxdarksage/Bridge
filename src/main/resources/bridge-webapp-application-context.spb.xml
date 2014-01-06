@@ -13,8 +13,8 @@
    	<context:component-scan base-package="org.sagebionetworks.bridge.webapp.controllers"/>
 
     <mvc:annotation-driven />
-
-   	<import resource="bridge-log-sweeper.spb.xml" />
+    <!-- 
+   	<import resource="bridge-log-sweeper.spb.xml" /> -->
  
     <bean id="synapseClient" class="org.sagebionetworks.client.SynapseClientImpl" scope="prototype">
         <property name="repositoryEndpoint">
@@ -90,4 +90,13 @@
         <property name="useCodeAsDefaultMessage" value="true"/>
     </bean>
   
+    <bean id="specificationResolver" class="org.sagebionetworks.bridge.webapp.specs.SpecificationResolver">
+        <property name="specifications">
+            <list>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount"/>
+                <!-- <bean class="org.sagebionetworks.bridge.webapp.specs.LifestyleSurvey"/> -->
+            </list>
+        </property>
+    </bean>
+    
 </beans>

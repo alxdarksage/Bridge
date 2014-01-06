@@ -1,5 +1,7 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,8 +15,9 @@ import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
-import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -36,6 +39,9 @@ public class JournalController {
 	@Resource(name = "bridgeClient")
 	protected BridgeClient bridgeClient;
 	
+	@Resource(name = "specificationResolver")
+	protected SpecificationResolver specResolver;
+	
 	@ModelAttribute("signInForm")
 	public SignInForm signInForm() {
 		return new SignInForm();
@@ -49,6 +55,13 @@ public class JournalController {
 	@ModelAttribute("descriptors")
 	public List<ParticipantDataDescriptor> descriptors() throws SynapseException {
 		PaginatedResults<ParticipantDataDescriptor> descriptors = bridgeClient.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
+		Collections.sort(descriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
+			@Override
+			public int compare(ParticipantDataDescriptor arg0, ParticipantDataDescriptor arg1) {
+				return arg0.getDescription().compareTo(arg1.getDescription());
+			}
+			
+		});
 		return descriptors.getResults();
 	}
 	
@@ -65,8 +78,8 @@ public class JournalController {
 			@PathVariable("formId") String formId, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareParticipantData(client, model, formId);
-		ClientUtils.prepareDescriptorAndForm(client, model, formId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		ClientUtils.prepareParticipantData(client, model, spec, formId);
 		model.setViewName("journal/forms/index");
 		return model;
 	}
@@ -85,13 +98,20 @@ public class JournalController {
 	
 	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/new", method = RequestMethod.GET)
 	public ModelAndView newSurvey(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, ModelAndView model) throws SynapseException {
-		
+			@PathVariable("formId") String formId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model)
+			throws SynapseException {
+
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareDescriptorAndForm(client, model, formId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		boolean anyDefaulted = ClientUtils.defaultValuesFromPriorForm(client, spec, dynamicForm, formId);
+		if (anyDefaulted) {
+			model.addObject("anyDefaulted", true);
+		}
+		
 		model.setViewName("journal/forms/new");
 		return model;
 	}
+
 	
 	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/new", method = RequestMethod.POST)
 	public ModelAndView createSurvey(BridgeRequest request, @PathVariable("participantId") String participantId,
@@ -100,7 +120,8 @@ public class JournalController {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		
-		CompleteBloodCount spec = new CompleteBloodCount();
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		spec.setSystemSpecifiedValues(dynamicForm.getValues());
 		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValues());
 		client.appendParticipantData(formId, data);
 		
@@ -115,7 +136,7 @@ public class JournalController {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareDescriptorAndForm(client, model, formId);
+		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
 		
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
@@ -134,7 +155,8 @@ public class JournalController {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 		
-		CompleteBloodCount spec = new CompleteBloodCount();
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		spec.setSystemSpecifiedValues(dynamicForm.getValues());
 		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValues(),
 				paginatedRowSet.getResults(), rowId);
 		client.updateParticipantData(formId, data);

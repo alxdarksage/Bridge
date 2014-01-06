@@ -2,17 +2,23 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
+
 import com.google.common.collect.Lists;
 
 public class FormField implements FormElement {
 
-	protected String name;
-	protected String label;
-	protected boolean defaultable;
+	protected final String name;
+	protected final String label;
+	protected final ParticipantDataColumnType type;
+	protected final boolean immutable;
+	protected final boolean defaultable;
 	
-	public FormField(String name, String label, boolean defaultable) {
+	public FormField(final String name, final String label, final ParticipantDataColumnType type, final boolean immutable, final boolean defaultable) {
 		this.name = name;
 		this.label = label;
+		this.type = type;
+		this.immutable = immutable;
 		this.defaultable = defaultable;
 	}
 	
@@ -27,8 +33,18 @@ public class FormField implements FormElement {
 	}
 	
 	@Override
-	public boolean getDefaultable() {
+	public ParticipantDataColumnType getType() {
+		return type;
+	}
+	
+	@Override
+	public boolean isDefaultable() {
 		return defaultable;
+	}
+	
+	@Override
+	public boolean isImmutable() {
+		return immutable;
 	}
 
 	@Override

@@ -403,7 +403,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public void deleteCommunity(String communityId) throws SynapseException {
 		if (communityId == null || !communitiesById.containsKey(communityId)) {
-			throw new SynapseException(new NotFoundException("Could not find that community"));
+			throw new SynapseNotFoundException(new NotFoundException("Could not find that community"));
 		}
 		communitiesById.remove(communityId);
 	}
@@ -825,7 +825,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		if (admins.size() < 2 && admins.contains(userId)) {
 			throw new SynapseException("Service Error(401): {\"reason\":\"Need at least one admin.\n\"}");
 		}
-		// This allows for no subtlety, we
 		for (ResourceAccess ra : acl.getResourceAccess()) {
 			if (ra.getPrincipalId().toString().equals(userId)) {
 				ra.getAccessType().remove(ACCESS_TYPE.CHANGE_PERMISSIONS);
@@ -907,7 +906,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		// TODO: This is not actually paged.
 		RowSet data = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (data == null) {
-			throw new SynapseException("Did not find participant data record");
+			throw new SynapseNotFoundException("Did not find participant data record");
 		}
 		PaginatedRowSet pagedRowSet = new PaginatedRowSet();
 		pagedRowSet.setResults(data);

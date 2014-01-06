@@ -21,6 +21,7 @@
     </jsp:attribute>
     <jsp:attribute name="content"><jsp:invoke fragment="content" /></jsp:attribute>
     <jsp:attribute name="scripts">
-        <script src="<c:url value='/assets/form-keys.js'/>"></script>    
+        <script src="<c:url value='/assets/journal.js'/>"></script>
+        <script>$("#dp3").datepicker();</script>
     </jsp:attribute>
 </sage:main>

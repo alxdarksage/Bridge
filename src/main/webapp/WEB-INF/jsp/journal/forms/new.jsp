@@ -8,6 +8,15 @@
 	        <a href="${formsUrl}">All "${descriptor.description}" Surveys</a> 
 	    </div>
 	    <h3>New ${descriptor.description}</h3>
+
+	    <c:if test="${anyDefaulted}">
+	       <table style="margin: 1rem 0; max-width: 600px">
+	           <tr>
+	               <td style="padding-right: 1rem"><div class="example defaulted">&#160;</div></td>
+	               <td><spring:message code="DefaultsPresent"/></td>
+	           </tr>
+	       </table>
+	    </c:if>
 	    
 	    <c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/new.html"/>
 	    <form:form role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
