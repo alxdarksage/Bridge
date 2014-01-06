@@ -30,12 +30,12 @@
 	                                    <c:otherwise>
 	                                       <form:input cssClass="form-control input-sm" id="${row.name}" 
 	                                            data-type="float" path="values['${row.name}']"/>
-	                                            
+	                                            <%-- 
 <div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
 	<input class="form-control" style="width:15rem!important" type="text" value="12-02-2012" readonly/>
 	<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 </div>
-              	                                            
+              	                                     --%>       
 	                                    </c:otherwise>
 	                                </c:choose>
 			                    </td>
