@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -26,9 +27,11 @@ import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.ObjectType;
@@ -49,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class ClientUtils {
 	
@@ -160,21 +164,28 @@ public class ClientUtils {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
-	public static Specification prepareDescriptorAndForm(BridgeClient client,
-			ModelAndView model, String participantDataDescriptorId) throws SynapseException {
+	
+	public static Specification prepareSpecificationAndDescriptor(BridgeClient client, SpecificationResolver resolver,
+			ModelAndView model, String descriptorId) throws SynapseException {
 		
-		Specification spec = new CompleteBloodCount();
-		model.addObject("form", spec);
-		
-		// We use the name and the ID of the descriptor, but searching for it like this is silly
+		ParticipantDataDescriptor descriptor = null;
 		PaginatedResults<ParticipantDataDescriptor> records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
-		for (ParticipantDataDescriptor descriptor : records.getResults()) {
-			if (descriptor.getId().equals(participantDataDescriptorId)) {
-				model.addObject("descriptor", descriptor);
+		for (ParticipantDataDescriptor d : records.getResults()) {
+			if (d.getId().equals(descriptorId)) {
+				descriptor = d;
 				break;
 			}
 		}
-		return spec;
+		if (descriptor == null) {
+			throw new SynapseNotFoundException("Could not find ParticipantDataDescriptor with ID of " + descriptorId);
+		}
+		Specification specification = resolver.getSpecification(descriptor.getName());
+		if (specification == null) {
+			throw new SynapseNotFoundException("Could not find Specification for a Descriptor with the name " + descriptor.getName());
+		}
+		model.addObject("descriptor", descriptor);
+		model.addObject("form", specification);
+		return specification;
 	}
 	
 	public static V2WikiPage getWikiPage(BridgeRequest request, Community community, String wikiId)
@@ -283,6 +294,45 @@ public class ClientUtils {
 		}
 		return headers;
 	}
+	
+	public static boolean defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
+			String formId) {
+		boolean anyDefaulted = false;
+		try {
+			// Right now these are sorted first to last entered, so we'd default from the last in the list.
+			// I would like this to change to reverse the order, then this'll need to change as well.
+			PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
+			if (rowSet.getTotalNumberOfResults() > 0L) {
+				long len = rowSet.getTotalNumberOfResults();
+				List<String> headers = rowSet.getResults().getHeaders();
+				Row finalRow = rowSet.getResults().getRows().get((int)len-1);
+				List<String> values = finalRow.getValues();
+				Set<String> defaults = defaultTheseFields(spec);
+
+				for (int i=0; i < headers.size(); i++) {
+					String header = headers.get(i);
+					if (defaults.contains(header)) {
+						dynamicForm.getValues().put(header, values.get(i));
+						anyDefaulted = true;
+					}
+				}
+			}
+		} catch(SynapseException se) {
+			// An exception shouldn't be thrown when there's no records.
+		}
+		return anyDefaulted;
+	}
+	
+	private static Set<String> defaultTheseFields(Specification spec) {
+		Set<String> matches = Sets.newHashSet();
+		for (FormElement element : spec.getAllFormElements()) {
+			if (element.isDefaultable()) {
+				matches.add(element.getName());
+			}
+		}
+		return matches;
+	}
+	
 
 	public static File createTempFile(BridgeRequest request, String fileName) throws ServletException {
 		File directory = (File)request.getServletContext().getAttribute(ServletContext.TEMPDIR);

@@ -7,7 +7,7 @@
 	    </div>
 	    <h3>All "${descriptor.description}" Surveys</h3>
 	    <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html" 
-	        itemId="id" items="${records}" caption="Participant Surveys">
+	        itemId="id" items="${records}" caption="${form.description} Surveys">
 	        <sage:button id="newSurveyAct" type="primary" label="New Survey" 
 	            action="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/new.html"/>
 	        <sage:column label="Created" field="createdOn" 

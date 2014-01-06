@@ -369,7 +369,7 @@ public class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public void deleteCommunity(String communityId) throws SynapseException {
 		if (communityId == null || !communitiesById.containsKey(communityId)) {
-			throw new SynapseException(new NotFoundException("Could not find that community"));
+			throw new SynapseNotFoundException(new NotFoundException("Could not find that community"));
 		}
 		communitiesById.remove(communityId);
 	}

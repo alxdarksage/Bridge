@@ -48,11 +48,7 @@ public class ParticipantDataUtils {
 		for (FormElement element : spec.getAllFormElements()) {
 			if (element.getType() != null) {
 				headers.add(element.getName());
-				if (ParticipantDataColumnType.DATETIME == element.getType()) {
-					newValues.add( convertToString(element.getType(), StringUtils.EMPTY	) ); // anything but null
-				} else {
-					newValues.add( convertToString(element.getType(), values.get(element.getName())) );
-				}
+				newValues.add( values.get(element.getName()) );
 			}
 		}
 		row.setValues(newValues);
@@ -61,7 +57,7 @@ public class ParticipantDataUtils {
 		data.setRows(Lists.newArrayList(row));
 		return data;
 	}
-
+	
 	public static RowSet getRowSetForUpdate(Specification spec, Map<String, String> values, RowSet rowSet, long rowId) {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForUpdate() requires values");
@@ -74,13 +70,9 @@ public class ParticipantDataUtils {
 			if (element.getType() != null) {
 				headers.add(element.getName());
 				if (element.isImmutable()) {
-					newValues.add( ClientUtils.getValueInRow(row, rowSet.getHeaders(), element.getName()) ); // passthrough value, immutable
+					newValues.add( ClientUtils.getValueInRow(row, rowSet.getHeaders(), element.getName()) );
 				} else {
-					if (ParticipantDataColumnType.DATETIME == element.getType()) {
-						newValues.add( convertToString(element.getType(), StringUtils.EMPTY	) ); // anything but null
-					} else {
-						newValues.add( convertToString(element.getType(), values.get(element.getName())) );
-					}
+					newValues.add( values.get(element.getName()) );
 				}
 			}
 		}
@@ -91,6 +83,12 @@ public class ParticipantDataUtils {
 		return data;
 	}
 
+	// All data is stored in ParticipantData as a string type. And most of it comes from the UI
+	// in string form, so not all types may need to be converted, but you can overload this method.
+	public static String convertToString(DateTime datetime) {
+		return datetime.toString(ISODateTimeFormat.dateTime());
+	}
+	
 	public static Object convertToObject(ParticipantDataColumnType type, String value) {
 		if (StringUtils.isNotBlank(value) && !"null".equals(value)) {
 			switch(type) {
@@ -110,22 +108,4 @@ public class ParticipantDataUtils {
 		return value;
 	}
 	
-	private static String convertToString(ParticipantDataColumnType type, Object object) {
-		if (object != null) {
-			switch(type) {
-			case FILEHANDLEID:
-			case STRING:
-				return (String)object;
-			case DATETIME:
-				DateTime date = new DateTime();
-				return date.toString(ISODateTimeFormat.dateTime());
-			case BOOLEAN:
-			case LONG:
-			case DOUBLE:
-				return object.toString();
-			}			
-		}
-		return "";
-	}
-
 }

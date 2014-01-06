@@ -1,8 +1,11 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 
 import com.google.common.collect.Lists;
@@ -12,6 +15,7 @@ public class CompleteBloodCount implements Specification {
 
 	private static final String CREATED_ON = "createdOn";
 	private static final String MODIFIED_ON = "modifiedOn";
+	private static final String TESTED_ON = "testedOn";
 
 	private static final String UNITS_SUFFIX = "_units";
 	private static final String RANGE_LOW_SUFFIX = "_range_low";
@@ -22,21 +26,28 @@ public class CompleteBloodCount implements Specification {
 	private final List<String> PERC = Lists.newArrayList(Units.PERCENTAGE.getAbbrev());
 	private final List<String> FL = Lists.newArrayList(Units.FEMTOLITER.getAbbrev());
 	private final List<String> PG = Lists.newArrayList(Units.PICOGRAM.getAbbrev());
-	private final List<String> COUNT = Lists.newArrayList("count", "c.v.", "s.d.");	
+	private final List<String> COUNT = Lists.newArrayList("count", "c.v.", "s.d.");
+	
+	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Prick", "IV Central Line", "Central Prick");
 
 	List<FormElement> metadata = Lists.newArrayList();
 	List<FormElement> displayRows = Lists.newArrayList();
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
 
 	public CompleteBloodCount() {
-		FormField field1 = new FormField(CREATED_ON, "", ParticipantDataColumnType.DATETIME, true, false);
-		FormField field2 = new FormField(MODIFIED_ON, "", ParticipantDataColumnType.DATETIME, false, false);
+		FormField field1 = new FormField(CREATED_ON, "Created on date", ParticipantDataColumnType.DATETIME, true, false);
+		FormField field2 = new FormField(MODIFIED_ON, "Modified on date", ParticipantDataColumnType.DATETIME, false, false);
 		metadata.add( field1 );
 		metadata.add( field2 );
 		tableFields.put(CREATED_ON, field1);
 		tableFields.put(MODIFIED_ON, field2);
 
 		List<FormElement> rows = Lists.newArrayList();
+		rows.add(new FormField(TESTED_ON, "Date of test", ParticipantDataColumnType.DATETIME, false, false));
+		rows.add(new EnumeratedFormField("draw_type", "Draw type", ParticipantDataColumnType.STRING, false, true, COLLECTION_METHODS));
+		displayRows.add( new FormGroup("General information", rows) );
+		
+		rows = Lists.newArrayList();
 		rows.add( addRow("rbc", "Red cells (Erythrocytes / RBC)", CMM) );
 		rows.add( addRow("hb", "Hemoglobin (Hb)", GMDL) );
 		rows.add( addRow("hct", "Hematocrit (HCT)", PERC) );
@@ -107,6 +118,20 @@ public class CompleteBloodCount implements Specification {
 		return tableFields;
 	}
 
+	@Override
+	public void setSystemSpecifiedValues(Map<String, String> values) {
+		String datetime = ParticipantDataUtils.convertToString(new DateTime());
+		if (values.get(CREATED_ON) == null) {
+			values.put(CREATED_ON, datetime);
+		}
+		// This is presumably better than nothing, but I wonder if this isn't
+		// an example of something that is required to be entered.
+		if (values.get(TESTED_ON) == null) {
+			values.put(TESTED_ON, datetime);	
+		}
+		values.put(MODIFIED_ON, datetime);
+	}
+	
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
 		row.addField(new FormField(name, description, ParticipantDataColumnType.DOUBLE, false, false));

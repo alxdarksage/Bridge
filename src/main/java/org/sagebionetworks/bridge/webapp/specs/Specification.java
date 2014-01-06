@@ -1,6 +1,7 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 
 public interface Specification {
@@ -35,4 +36,11 @@ public interface Specification {
 	 */
 	public SortedMap<String,FormElement> getTableFields();
 
+	/**
+	 * After creation/update by a user, this method may set values on the map to be persisted, 
+	 * reformat values, compare values. It should eventually be able to do custom validation
+	 * as well.  
+	 * @param values
+	 */
+	public void setSystemSpecifiedValues(Map<String, String> values);
 }

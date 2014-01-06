@@ -6,9 +6,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.sagebionetworks.repo.web.ForbiddenException;
 import org.sagebionetworks.repo.web.NotFoundException;
@@ -24,6 +26,11 @@ import com.google.common.collect.Maps;
 @Controller
 @RequestMapping("/error")
 public class ErrorController {
+
+	private static final String IS_DEVELOP = "isDevelop";
+	private static final String EXCEPTION = "exception";
+	private static final String MESSAGE = "message";
+	private static final String ERROR_CODE = "errorCode";
 
 	private static final Logger logger = LogManager.getLogger(ErrorController.class.getName());
 	
@@ -42,34 +49,36 @@ public class ErrorController {
 	public ModelAndView handleError(BridgeRequest request, HttpServletResponse response, ModelAndView map) {
 		map.setViewName("error");
 
-		Integer statusCode = request.getErrorStatusCode();
-		map.addObject("errorCode", "Error." + Integer.toString(statusCode));
-
+		map.addObject(IS_DEVELOP, Boolean.valueOf(StackConfiguration.isDevelopStack()));
+		
 		Throwable throwable = request.getErrorThrowableCause();
 		if (throwable != null) {
-			processThrowable(request, throwable, map);
+			map.addObject(EXCEPTION, throwable);
+			processThrowableDetails(request, throwable, map);
+		} else {
+			Integer statusCode = request.getErrorStatusCode();
+			map.addObject(ERROR_CODE, "Error." + Integer.toString(statusCode));	
 		}
-
 		return map;
 	}
 	
-	private void processThrowable(BridgeRequest request, Throwable throwable, ModelAndView map) {
-		logger.error("MESSAGE STRING: " + throwable.getMessage());
-		
-		map.addObject("exception", throwable);
-		
+	private void processThrowableDetails(BridgeRequest request, Throwable throwable, ModelAndView map) {
 		if (throwable instanceof UnauthorizedException) {
+			map.clear();
 			map.setViewName("redirect:/signIn.html");
+		} else if (throwable instanceof SynapseNotFoundException) {
+			map.addObject(ERROR_CODE, "Error.404");
+			map.addObject(MESSAGE, throwable.getMessage());
 		} else if (throwable instanceof SynapseException) {
 			ClientUtils.ExceptionInfo info = ClientUtils.parseSynapseException((SynapseException)throwable);
-			map.addObject("errorCode", "Error." + Integer.toString(info.getCode()));
-			map.addObject("message", info.getMessage());
+			map.addObject(ERROR_CODE, "Error." + Integer.toString(info.getCode()));
+			map.addObject(MESSAGE, info.getMessage());
 		} else {
 			String exceptionCode = errorCodes.get(throwable.getClass());
 			if (exceptionCode != null) {
-				map.addObject("errorCode", exceptionCode);
+				map.addObject(ERROR_CODE, exceptionCode);
 			}
-			map.addObject("message", throwable.getMessage());
+			map.addObject(MESSAGE, throwable.getMessage());
 		}
 	}
 
