@@ -25,19 +25,19 @@ public class CompleteBloodCount implements Specification {
 		metadata.add( new FormField(MODIFIED_ON, "", false) );
 
 		List<FormElement> rows = Lists.newArrayList();
-		rows.add( addRow("rbc", "Red cells (Erythrocytes)", CMM) );
-		rows.add( addRow("hb", "Hemoglobin", GMDL) );
-		rows.add( addRow("hct", "Hematocrit", PERC) );
-		rows.add( addRow("mcv", "Mean corpuscular volume", FL) );
-		rows.add( addRow("mch", "Mean corpuscular hemoglobin", PG) );
-		// uiRow.add( addField("mchc", "Mean corpuscular hemoglobin concentration", PERC) );
-		rows.add( addRow("rdw", "RBC distribution width", COUNT) );
-		rows.add( addRow("ret", "Reticulocyte count", COUNT) );
+		rows.add( addRow("rbc", "Red cells (Erythrocytes / RBC)", CMM) );
+		rows.add( addRow("hb", "Hemoglobin (Hb)", GMDL) );
+		rows.add( addRow("hct", "Hematocrit (HCT)", PERC) );
+		rows.add( addRow("mcv", "Mean corpuscular volume (MCV)", FL) );
+		rows.add( addRow("mch", "Mean corpuscular hemoglobin (MCH)", PG) );
+		// uiRow.add( addField("mchc", "Mean corpuscular hemoglobin concentration (MCHC)", PERC) );
+		rows.add( addRow("rdw", "RBC distribution width (RDW)", COUNT) );
+		rows.add( addRow("ret", "Reticulocyte count (Ret)", COUNT) );
 		displayRows.add( new FormGroup("Red blood cells", rows) );
 		
 		rows = Lists.newArrayList();
-		rows.add( addRow("wbc", "White cells (Leukocytes)", CMM) );
-		rows.add( addRow("wbc_diff", "WBC differential (Diff)", PERC) );
+		rows.add( addRow("wbc", "White cells (Leukocytes / WBC)", CMM) );
+		rows.add( addRow("wbc_diff", "WBC differential (WBC Diff)", PERC) );
 		// But these can also be counts...
 		rows.add( addRow("neutrophil", "Neutrophil", PERC) );
 		rows.add( addRow("neutrophil_immature", "Immature Neutrophil (band neutrophil)", PERC) );
@@ -48,9 +48,9 @@ public class CompleteBloodCount implements Specification {
 		displayRows.add( new FormGroup("White blood cells", rows) );
 		
 		rows = Lists.newArrayList();
-		rows.add( addRow("plt", "Platelet count (Thrombocyte)", CMM) );
+		rows.add( addRow("plt", "Platelet count (Thrombocyte / PLT)", CMM) );
 		rows.add( addRow("mpv", "Mean platelet volume (MPV)", FL) );
-		rows.add( addRow("pdw", "Platelet distribution width", PERC) );
+		rows.add( addRow("pdw", "Platelet distribution width (PDW)", PERC) );
 		displayRows.add( new FormGroup("Platelets", rows) );
 	}
 
