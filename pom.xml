@@ -4,13 +4,14 @@
 	
 	<groupId>org.sagebionetworks.bridge</groupId>
 	<artifactId>bridge</artifactId>
-	<version>2013-12-20-6a609d0-894</version>
+	<version>develop-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Bridge Web Application</name>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
+		<cglib.version>2.2</cglib.version>
 		<commons-beanutils.version>1.8.3</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<commons-fileupload.version>1.2</commons-fileupload.version>
@@ -335,6 +336,11 @@
 			<artifactId>commons-logging</artifactId>
 			<version>${commons-logging.version}</version>
 		</dependency>		
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>${cglib.version}</version>
+		</dependency>
 		
 	</dependencies>
 
