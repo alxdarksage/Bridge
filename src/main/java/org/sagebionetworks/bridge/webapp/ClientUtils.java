@@ -231,34 +231,26 @@ public class ClientUtils {
 	}
 
 	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String formId) throws SynapseException {
-		// Block error (which isn't an error here, and also contains a whole Tomcat page in the message field).
-		//try {
-			List<RowObject> records = Lists.newArrayList();
-			
-			PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
-			RowSet rowSet = paginatedRowSet.getResults();
-			List<String> headers = rowSet.getHeaders();
-			SortedMap<String,FormElement> tabs = spec.getTableFields();
-			
-			// TODO: Inefficient.
-			for (Row row : rowSet.getRows()) {
-				List<Object> values = Lists.newArrayList();
-				for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
-					String fieldName = entry.getKey();
-					FormElement field = entry.getValue();
-					String serValue = row.getValues().get( headers.indexOf(fieldName) );
-					
-					values.add( ParticipantDataUtils.convertToObject(field.getType(), serValue) );
-				}
-				records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
+		List<RowObject> records = Lists.newArrayList();
+		
+		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
+		RowSet rowSet = paginatedRowSet.getResults();
+		List<String> headers = rowSet.getHeaders();
+		SortedMap<String,FormElement> tabs = spec.getTableFields();
+		
+		// TODO: Inefficient.
+		for (Row row : rowSet.getRows()) {
+			List<Object> values = Lists.newArrayList();
+			for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
+				String fieldName = entry.getKey();
+				FormElement field = entry.getValue();
+				String serValue = row.getValues().get( headers.indexOf(fieldName) );
+				
+				values.add( ParticipantDataUtils.convertToObject(field.getType(), serValue) );
 			}
-			model.addObject("records", records);
-			/*
-		} catch(SynapseException e) {
-			logger.error(e);
-			model.addObject("records", Lists.newArrayList());
+			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 		}
-		*/
+		model.addObject("records", records);
 	}
 	
 	public static Row getRowById(RowSet rowSet, long rowId) {
@@ -300,28 +292,24 @@ public class ClientUtils {
 	public static boolean defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
 			String formId) throws SynapseException {
 		boolean anyDefaulted = false;
-		try {
-			// Right now these are sorted first to last entered, so we'd default from the last in the list.
-			// I would like this to change to reverse the order, then this'll need to change as well.
-			PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
-			if (rowSet.getTotalNumberOfResults() > 0L) {
-				Set<String> defaults = defaultTheseFields(spec);
-				List<String> headers = rowSet.getResults().getHeaders();
-				
-				long len = rowSet.getTotalNumberOfResults();
-				Row finalRow = rowSet.getResults().getRows().get((int)len-1);
-				List<String> values = finalRow.getValues();
+		// Right now these are sorted first to last entered, so we'd default from the last in the list.
+		// I would like this to change to reverse the order, then this'll need to change as well.
+		PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
+		if (rowSet.getTotalNumberOfResults() > 0L) {
+			Set<String> defaults = defaultTheseFields(spec);
+			List<String> headers = rowSet.getResults().getHeaders();
+			
+			long len = rowSet.getTotalNumberOfResults();
+			Row finalRow = rowSet.getResults().getRows().get((int)len-1);
+			List<String> values = finalRow.getValues();
 
-				for (int i=0; i < headers.size(); i++) {
-					String header = headers.get(i);
-					if (defaults.contains(header)) {
-						dynamicForm.getValues().put(header, values.get(i));
-						anyDefaulted = true;
-					}
+			for (int i=0; i < headers.size(); i++) {
+				String header = headers.get(i);
+				if (defaults.contains(header)) {
+					dynamicForm.getValues().put(header, values.get(i));
+					anyDefaulted = true;
 				}
 			}
-		} catch(SynapseException se) {
-			// An exception shouldn't be thrown when there's no records.
 		}
 		return anyDefaulted;
 	}
