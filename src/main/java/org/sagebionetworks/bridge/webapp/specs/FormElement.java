@@ -27,6 +27,18 @@ public interface FormElement {
 	 * @return
 	 */
 	public boolean isImmutable();
+	/**
+	 * Initial value for this field (the default value, as opposed to the defaulted value 
+	 * from a prior form.
+	 * @return
+	 */
+	public String getInitialValue();
+	/**
+	 * Read only value. If a field is read only with an initial value, the value is permanently
+	 * set but worth including in the data set.
+	 * @return
+	 */
+	public boolean isReadonly();
 	
 	public ParticipantDataColumnType getType();
 	

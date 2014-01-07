@@ -103,10 +103,9 @@ public class JournalController {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
-		boolean anyDefaulted = ClientUtils.defaultValuesFromPriorForm(client, spec, dynamicForm, formId);
-		if (anyDefaulted) {
-			model.addObject("anyDefaulted", true);
-		}
+		Set<String> defaultedFields = ClientUtils.defaultValuesFromPriorForm(client, spec, dynamicForm, formId);
+		model.addObject("anyDefaulted", !defaultedFields.isEmpty());
+		model.addObject("defaultedFields", defaultedFields);
 		
 		model.setViewName("journal/forms/new");
 		return model;

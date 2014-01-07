@@ -95,9 +95,6 @@ public class CommunityAdminController {
 		map.setViewName("admin/communities/edit");
 
 		if (!result.hasErrors()) {
-			if (administrators == null) {
-				administrators = Collections.emptyList();
-			}
 			List<String> members = getMemberIds(request, communityId);
 			List<String> currentAdministrators = getAdministratorIds(request, communityId);
 			try {

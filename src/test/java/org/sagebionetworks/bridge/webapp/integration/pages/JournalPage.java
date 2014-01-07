@@ -3,27 +3,30 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class JournalHomePage {
+public class JournalPage {
 
 	public static final String TITLE = "Journal";
 	public static final String URL = "/journal.html";
 	
 	protected WebDriverFacade facade;
 
-	public JournalHomePage(WebDriverFacade facade) {
+	public JournalPage(WebDriverFacade facade) {
 		this.facade = facade;
 	}
 	
 	public void clickCompleteBloodCount() {
-		WebElement element = facade.findElement(By.partialLinkText(JournalFormHistoryPage.HEADER));
+		WebElement element = facade.findElement(By.partialLinkText(FormIndexPage.HEADER));
 		System.out.println(element);
 		element.click();
 	}
 	
-	public JournalFormHistoryPage getJournalFormHistoryPage() {
+	public FormIndexPage getFormIndexPage() {
 		clickCompleteBloodCount();
-		facade.waitForHeader(JournalFormHistoryPage.HEADER);
-		return new JournalFormHistoryPage(facade);
+		return waitForFormIndexPage();
 	}
 	
+	public FormIndexPage waitForFormIndexPage() {
+		facade.waitForHeader(FormIndexPage.HEADER);
+		return new FormIndexPage(facade);
+	}
 }

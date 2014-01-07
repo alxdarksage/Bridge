@@ -235,5 +235,27 @@
             </description>
         </attribute>
     </tag>
-
+    <tag>
+        <name>field</name>
+        <tag-class>org.sagebionetworks.bridge.webapp.jsp.FieldTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Renders a FormField, a kind of form element in a specification that renders a form control of some kind.
+        </description>
+        <attribute>
+            <name>field</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>currentValue</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>defaultedFields</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 </taglib>

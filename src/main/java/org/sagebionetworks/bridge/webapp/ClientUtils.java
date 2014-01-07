@@ -145,25 +145,9 @@ public class ClientUtils {
 		result.addError(new FieldError(formName, fieldName, null, false, new String[] { message }, null, message));
 	}
 	
-	public static String dumpACL(AccessControlList acl) {
-		StringBuilder sb = new StringBuilder("ACL: ");
-		if (acl != null) {
-			Set<ResourceAccess> accesses = acl.getResourceAccess();
-			if (accesses != null) {
-				for(ResourceAccess ra: accesses) {
-					for (ACCESS_TYPE type : ra.getAccessType()) {
-						sb.append(type.toString()).append(", ");	
-					}
-				}
-			}
-		}
-		return sb.toString();
-	}
-	
 	public static UserEntityPermissions getPermits(BridgeRequest request, String id) throws SynapseException {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
-	
 	
 	public static Specification prepareSpecificationAndDescriptor(BridgeClient client, SpecificationResolver resolver,
 			ModelAndView model, String descriptorId) throws SynapseException {
@@ -289,9 +273,9 @@ public class ClientUtils {
 		return headers;
 	}
 	
-	public static boolean defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
+	public static Set<String> defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
 			String formId) throws SynapseException {
-		boolean anyDefaulted = false;
+		Set<String> defaultedFields = Sets.newHashSet();
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
 		PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
@@ -307,11 +291,11 @@ public class ClientUtils {
 				String header = headers.get(i);
 				if (defaults.contains(header)) {
 					dynamicForm.getValues().put(header, values.get(i));
-					anyDefaulted = true;
+					defaultedFields.add(header);
 				}
 			}
 		}
-		return anyDefaulted;
+		return defaultedFields;
 	}
 	
 	private static Set<String> defaultTheseFields(Specification spec) {
@@ -331,18 +315,6 @@ public class ClientUtils {
 		    throw new ServletException("Servlet container does not provide temporary directory");
 		}
 		return new File(directory, fileName);
-	}
-	
-	public static void dumpErrors(Logger logger, BindingResult result) {
-		if (!result.hasGlobalErrors() && !result.hasFieldErrors()) {
-			logger.debug("NO ERRORS");
-		}
-		for (ObjectError error : result.getGlobalErrors()) {
-			logger.debug(String.format("GLOBAl ERROR: %s: %s: %s", error.getObjectName(), error.getCode(), error.getDefaultMessage()));
-		}
-		for (ObjectError error : result.getFieldErrors()) {
-			logger.debug(String.format("FIELD ERROR: %s: %s: %s", error.getObjectName(), error.getCode(), error.getDefaultMessage()));
-		}
 	}
 
 }

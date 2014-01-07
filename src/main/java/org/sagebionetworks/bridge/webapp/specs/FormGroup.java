@@ -49,6 +49,16 @@ public class FormGroup implements FormElement {
 	public List<FormElement> getChildren() {
 		return children;
 	}
+
+	@Override
+	public String getInitialValue() {
+		return null;
+	}
+
+	@Override
+	public boolean isReadonly() {
+		return false;
+	}
 	
 	public void addField(FormField field) {
 		if (field == null) {

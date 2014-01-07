@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
-
 import com.google.common.collect.Lists;
 
 /**
@@ -16,7 +14,7 @@ public class LifestyleSurvey implements Specification {
 	private FormField oneField;
 	
 	public LifestyleSurvey() {
-		oneField = new FormField("feelings", "Feelings", ParticipantDataColumnType.STRING, false, false);
+		oneField = new FormFieldBuilder().forField().asString().withName("feelings").withLabel("Feelings").create();
 	}
 	
 	@Override

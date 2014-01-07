@@ -36,16 +36,37 @@ public class CompleteBloodCount implements Specification {
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
 
 	public CompleteBloodCount() {
-		FormField field1 = new FormField(CREATED_ON, "Created on date", ParticipantDataColumnType.DATETIME, true, false);
-		FormField field2 = new FormField(MODIFIED_ON, "Modified on date", ParticipantDataColumnType.DATETIME, false, false);
+		FormFieldBuilder builder = new FormFieldBuilder();
+		FormField field1 = builder.forField()
+				.withName(CREATED_ON)
+				.withLabel("Created on date")
+				.asDatetime()
+				.asImmutable().create();
+		FormField field2 = builder.forField()
+				.withName(MODIFIED_ON)
+				.withLabel("Modified on date")
+				.asDatetime().create();
 		metadata.add( field1 );
 		metadata.add( field2 );
 		tableFields.put(CREATED_ON, field1);
 		tableFields.put(MODIFIED_ON, field2);
 
 		List<FormElement> rows = Lists.newArrayList();
-		rows.add(new FormField(TESTED_ON, "Date of test", ParticipantDataColumnType.DATETIME, false, false));
-		rows.add(new EnumeratedFormField("draw_type", "Draw type", ParticipantDataColumnType.STRING, false, true, COLLECTION_METHODS));
+		
+		FormField dot = builder.forField()
+				.withName(TESTED_ON)
+				.withLabel("Date of test")
+				.asDatetime().create();
+		rows.add(dot);
+		
+		FormField eff = builder.forEnumeratedField()
+				.withName("draw_type")
+				.withLabel("Draw type")
+				.asString()
+				.asDefaultable()
+				.withEnumeration(COLLECTION_METHODS).create();
+		
+		rows.add(eff);
 		displayRows.add( new FormGroup("General information", rows) );
 		
 		rows = Lists.newArrayList();
@@ -133,13 +154,38 @@ public class CompleteBloodCount implements Specification {
 	
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
-		row.addField(new FormField(name, description, ParticipantDataColumnType.DOUBLE, false, false));
-		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, "Units", ParticipantDataColumnType.STRING, false,
-				true, unitEnumeration));
-		row.addField(new FormField(name + RANGE_LOW_SUFFIX, "Low " + description, ParticipantDataColumnType.DOUBLE,
-				false, true));
-		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, "High " + description, ParticipantDataColumnType.DOUBLE,
-				false, true));
+		
+		FormFieldBuilder builder = new FormFieldBuilder();
+		
+		if (unitEnumeration == PERC) {
+			FormField field = builder.forField().withName(name).withInitialValue("%").asReadonly().withLabel(description).asDouble().create();
+			row.addField(field);
+		} else {
+			FormField field = builder.forField().withName(name).withLabel(description).asDouble().create();
+			row.addField(field);
+		}
+
+		FormField units = builder.forEnumeratedField().withName(name + UNITS_SUFFIX).withLabel("Units").asString()
+				.asDefaultable().withEnumeration(unitEnumeration).create();
+		row.addField(units);
+		
+		if (unitEnumeration == PERC) {
+			FormField low = builder.forField().withName(name + RANGE_LOW_SUFFIX).withLabel("Low " + description).asDouble()
+					.withInitialValue("0").asReadonly().asDefaultable().create();
+			row.addField(low);
+
+			FormField high = builder.forField().withName(name + RANGE_HIGH_SUFFIX).withLabel("High " + description)
+					.withInitialValue("100").asReadonly().asDouble().asDefaultable().create();
+			row.addField(high);
+		} else {
+			FormField low = builder.forField().withName(name + RANGE_LOW_SUFFIX).withLabel("Low " + description).asDouble()
+					.asDefaultable().create();
+			row.addField(low);
+
+			FormField high = builder.forField().withName(name + RANGE_HIGH_SUFFIX).withLabel("High " + description)
+					.asDouble().asDefaultable().create();
+			row.addField(high);
+		}
 		return row;
 	}
 
