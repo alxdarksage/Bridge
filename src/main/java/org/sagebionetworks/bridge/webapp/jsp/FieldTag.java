@@ -6,8 +6,10 @@ import java.util.Set;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 
@@ -17,19 +19,19 @@ import org.sagebionetworks.bridge.webapp.specs.FormField;
  */
 public class FieldTag extends SimpleTagSupport {
 
-	private static final Logger logger = LogManager.getLogger(DataTableTag.class.getName());
+	private static final Logger logger = LogManager.getLogger(FieldTag.class.getName());
 
 	private TagBuilder tb = new TagBuilder();
 	
 	private FormField field;
-	private String currentValue;
+	private DynamicForm dynamicForm;
 	private Set<String> defaultedFields;
 	
 	public void setField(FormField field) {
 		this.field = field;
 	}
-	public void setCurrentValue(String currentValue) {
-		this.currentValue = currentValue;
+	public void setDynamicForm(DynamicForm form) {
+		this.dynamicForm = form;
 	}
 	public void setDefaultedFields(Set<String> defaultedFields) {
 		this.defaultedFields = defaultedFields;
@@ -37,6 +39,12 @@ public class FieldTag extends SimpleTagSupport {
 	
 	@Override
 	public void doTag() throws JspException, IOException {
+		if (field == null) {
+			throw new IllegalArgumentException("FieldTag requires @field to be set");
+		}
+		if (dynamicForm == null) {
+			throw new IllegalArgumentException("FieldTag requires @dynamiceForm to be set");
+		}
 		if (field instanceof EnumeratedFormField) {
 			renderEnumeration();
 		} else {
@@ -46,6 +54,7 @@ public class FieldTag extends SimpleTagSupport {
 	}
 
 	private void renderInput() {
+		String currentValue = dynamicForm.getValues().get(field.getName());
 		// This is exceptional in that it doesn't look like a field. It's filled out and can't be changed.
 		if (field.getInitialValue() != null && field.isReadonly()) {
 			tb.startTag("p", "class", "form-control-static");
@@ -53,12 +62,12 @@ public class FieldTag extends SimpleTagSupport {
 			tb.endTag("p");
 			
 			tb.startTag("input", "type", "hidden");
-			addDefaultAttributes();
+			addDefaultAttributes(currentValue);
 			tb.addAttribute("value", field.getInitialValue());
 			tb.endTag("input");
 		} else {
 			tb.startTag("input", "type", "text");
-			addDefaultAttributes();
+			addDefaultAttributes(currentValue);
 			if (currentValue == null && field.getInitialValue() != null) {
 				tb.addAttribute("value", field.getInitialValue());
 			}
@@ -71,8 +80,9 @@ public class FieldTag extends SimpleTagSupport {
 	}
 	
 	private void renderEnumeration() {
+		String currentValue = dynamicForm.getValues().get(field.getName());
 		tb.startTag("select");
-		addDefaultAttributes();
+		addDefaultAttributes(currentValue);
 		for (String value : ((EnumeratedFormField)field).getEnumeratedValues()) {
 			tb.startTag("option", "value", value);
 			if (value.equals(currentValue)) {
@@ -85,10 +95,10 @@ public class FieldTag extends SimpleTagSupport {
 	}
 	
 
-	private void addDefaultAttributes() {
+	private void addDefaultAttributes(String currentValue) {
 		tb.addAttribute("id", field.getName());
 		tb.addAttribute("name", String.format("values['%s']", field.getName()));
-		if (defaultedFields.contains(field.getName())) {
+		if (StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
 			tb.addAttribute("class", "form-control input-sm defaulted");
 		} else {
 			tb.addAttribute("class", "form-control input-sm");

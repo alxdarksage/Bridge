@@ -9,7 +9,7 @@
 	    </div>
 	    <h3>New ${descriptor.description}</h3>
 
-	    <c:if test="${anyDefaulted}">
+	    <c:if test="${not empty defaultedFields}">
 	       <table class="aboutDefaults">
 	           <tr>
 	               <td><div class="example defaulted">&#160;</div></td>

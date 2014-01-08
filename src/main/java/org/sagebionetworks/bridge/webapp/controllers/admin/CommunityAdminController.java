@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;

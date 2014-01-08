@@ -255,6 +255,7 @@
             </description>
         </attribute>
     </tag>
+    
     <tag>
         <name>field</name>
         <tag-class>org.sagebionetworks.bridge.webapp.jsp.FieldTag</tag-class>
@@ -268,8 +269,8 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <name>currentValue</name>
-            <required>false</required>
+            <name>dynamicForm</name>
+            <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
@@ -278,4 +279,17 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+    <tag>
+        <name>form-label</name>
+        <tag-class>org.sagebionetworks.bridge.webapp.jsp.FormLabelTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Renders a label for a form element.
+        </description>
+        <attribute>
+            <name>element</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>    
 </taglib>

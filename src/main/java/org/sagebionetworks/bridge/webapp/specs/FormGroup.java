@@ -41,11 +41,6 @@ public class FormGroup implements FormElement {
 	}
 	
 	@Override
-	public boolean isImmutable() {
-		return true;
-	}
-
-	@Override
 	public List<FormElement> getChildren() {
 		return children;
 	}
@@ -55,6 +50,11 @@ public class FormGroup implements FormElement {
 		return null;
 	}
 
+	@Override
+	public boolean isRequired() {
+		return false;
+	}
+	
 	@Override
 	public boolean isReadonly() {
 		return false;

@@ -5,14 +5,16 @@ import java.util.Map;
 import java.util.SortedMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class CompleteBloodCount implements Specification {
+	
+	private static final Logger logger = LogManager.getLogger(CompleteBloodCount.class.getName());
 
 	private static final String CREATED_ON = "createdOn";
 	private static final String MODIFIED_ON = "modifiedOn";
@@ -37,15 +39,10 @@ public class CompleteBloodCount implements Specification {
 
 	public CompleteBloodCount() {
 		FormFieldBuilder builder = new FormFieldBuilder();
-		FormField field1 = builder.forField()
-				.withName(CREATED_ON)
-				.withLabel("Created on date")
-				.asDatetime()
-				.asImmutable().create();
-		FormField field2 = builder.forField()
-				.withName(MODIFIED_ON)
-				.withLabel("Modified on date")
-				.asDatetime().create();
+		// These two do not show up on the UI. Even if you submitted an HTTP request with them reset, 
+		// they are readonly and thus would not reset.
+		FormField field1 = builder.forField().withName(CREATED_ON).withLabel("Created on date").asReadonly().asDatetime().create();
+		FormField field2 = builder.forField().withName(MODIFIED_ON).withLabel("Modified on date").asReadonly().asDatetime().create();
 		metadata.add( field1 );
 		metadata.add( field2 );
 		tableFields.put(CREATED_ON, field1);
@@ -53,19 +50,11 @@ public class CompleteBloodCount implements Specification {
 
 		List<FormElement> rows = Lists.newArrayList();
 		
-		FormField dot = builder.forField()
-				.withName(TESTED_ON)
-				.withLabel("Date of test")
-				.asDatetime().create();
+		FormField dot = builder.forField().withName(TESTED_ON).withLabel("Date of test").asDatetime().asRequired().create();
 		rows.add(dot);
 		
-		FormField eff = builder.forEnumeratedField()
-				.withName("draw_type")
-				.withLabel("Draw type")
-				.asString()
-				.asDefaultable()
-				.withEnumeration(COLLECTION_METHODS).create();
-		
+		FormField eff = builder.forEnumeratedField().withName("draw_type").withLabel("Draw type").asString()
+				.asDefaultable().withEnumeration(COLLECTION_METHODS).create();
 		rows.add(eff);
 		displayRows.add( new FormGroup("General information", rows) );
 		
@@ -121,18 +110,11 @@ public class CompleteBloodCount implements Specification {
 	
 	@Override
 	public List<FormElement> getAllFormElements() {
-		List<FormElement> elements = Lists.newArrayList();
+		List<FormElement> list = SpecificationUtils.toList(displayRows);
 		for (FormElement field : metadata) {
-			elements.add(field);
+			list.add(field);
 		}
-		for (FormElement displayRow : displayRows) {
-			for (FormElement row: displayRow.getChildren()) {
-				for (FormElement field : row.getChildren()) {
-					elements.add(field);
-				}
-			}
-		}		
-		return elements;
+		return list;
 	}
 	
 	@Override
@@ -157,19 +139,14 @@ public class CompleteBloodCount implements Specification {
 		
 		FormFieldBuilder builder = new FormFieldBuilder();
 		
-		if (unitEnumeration == PERC) {
-			FormField field = builder.forField().withName(name).withInitialValue("%").asReadonly().withLabel(description).asDouble().create();
-			row.addField(field);
-		} else {
-			FormField field = builder.forField().withName(name).withLabel(description).asDouble().create();
-			row.addField(field);
-		}
-
-		FormField units = builder.forEnumeratedField().withName(name + UNITS_SUFFIX).withLabel("Units").asString()
-				.asDefaultable().withEnumeration(unitEnumeration).create();
-		row.addField(units);
+		FormField field = builder.forField().withName(name).withLabel(description).asDouble().create();
+		row.addField(field);
 		
 		if (unitEnumeration == PERC) {
+			FormField units = builder.forField().withName(name + UNITS_SUFFIX).withLabel("Units").asString()
+					.withInitialValue("%").asReadonly().create();
+			row.addField(units);
+			
 			FormField low = builder.forField().withName(name + RANGE_LOW_SUFFIX).withLabel("Low " + description).asDouble()
 					.withInitialValue("0").asReadonly().asDefaultable().create();
 			row.addField(low);
@@ -178,6 +155,10 @@ public class CompleteBloodCount implements Specification {
 					.withInitialValue("100").asReadonly().asDouble().asDefaultable().create();
 			row.addField(high);
 		} else {
+			FormField units = builder.forEnumeratedField().withName(name + UNITS_SUFFIX).withLabel("Units").asString()
+					.asDefaultable().withEnumeration(unitEnumeration).create();
+			row.addField(units);
+			
 			FormField low = builder.forField().withName(name + RANGE_LOW_SUFFIX).withLabel("Low " + description).asDouble()
 					.asDefaultable().create();
 			row.addField(low);

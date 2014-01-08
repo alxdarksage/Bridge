@@ -13,7 +13,7 @@ public class FormField implements FormElement {
 	protected ParticipantDataColumnType type;
 	protected String initialValue;
 	protected boolean readonly;
-	protected boolean immutable;
+	protected boolean required;
 	protected boolean defaultable;
 	
 	public FormField() {
@@ -35,6 +35,11 @@ public class FormField implements FormElement {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return required;
+	}
+	
+	@Override
 	public boolean isReadonly() {
 		return readonly;
 	}
@@ -49,11 +54,6 @@ public class FormField implements FormElement {
 		return defaultable;
 	}
 	
-	@Override
-	public boolean isImmutable() {
-		return immutable;
-	}
-
 	@Override
 	public List<FormElement> getChildren() {
 		return Lists.newArrayList();

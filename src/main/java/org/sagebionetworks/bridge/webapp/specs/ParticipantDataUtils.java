@@ -69,7 +69,7 @@ public class ParticipantDataUtils {
 		for (FormElement element : spec.getAllFormElements()) {
 			if (element.getType() != null) {
 				headers.add(element.getName());
-				if (element.isImmutable()) {
+				if (element.isReadonly()) {
 					newValues.add( ClientUtils.getValueInRow(row, rowSet.getHeaders(), element.getName()) );
 				} else {
 					newValues.add( values.get(element.getName()) );
