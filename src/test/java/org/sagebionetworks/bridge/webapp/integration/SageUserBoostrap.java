@@ -1,14 +1,15 @@
 package org.sagebionetworks.bridge.webapp.integration;
 
-import static org.mockito.Mockito.calls;
-
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.client.BaseClient;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.BridgeClientImpl;
@@ -35,10 +36,10 @@ public class SageUserBoostrap {
 
 	public static void main(String[] args) {
 		SageUserBoostrap bootstrapper = new SageUserBoostrap();
-		bootstrapper.createUsers();
+		bootstrapper.createContent();
 	}
 
-	public void createUsers() {
+	public void createContent() {
 		try {
 			SynapseAdminClient adminSynapse = new SynapseAdminClientImpl();
 			setEndpoints(adminSynapse);
@@ -58,10 +59,18 @@ public class SageUserBoostrap {
 					"sleep-time-slider");
 			createData(bridge, "mood checkin", "Mood tracker", ParticipantDataRepeatType.ALWAYS, null, "Mind", "mood-slider", "Body",
 					"mood-slider");
-			createData(bridge, "cbc", "Complete Blood Count", ParticipantDataRepeatType.IF_NEW, null, "xx", "string", "yy", "string");
 			createData(bridge, "meds", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx", "string", "yy", "string");
 			createData(bridge, "info", "Personal Info", ParticipantDataRepeatType.ONCE, null, "Name", "string", "Address", "string");
 
+			CompleteBloodCount cbc = new CompleteBloodCount();
+			ParticipantDataDescriptor desc = ParticipantDataUtils.getDescriptor(cbc);
+			desc = bridge.createParticipantDataDescriptor(desc);
+			List<ParticipantDataColumnDescriptor> columns = ParticipantDataUtils.getColumnDescriptors(desc.getId(), cbc);
+			for (ParticipantDataColumnDescriptor column : columns) {
+				bridge.createParticipantDataColumnDescriptor(column);
+			}
+			bridge.appendParticipantData(desc.getId(), EMPTY_ROW_SET);
+			
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(1);

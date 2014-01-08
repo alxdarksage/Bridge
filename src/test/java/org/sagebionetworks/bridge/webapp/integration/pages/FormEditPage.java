@@ -48,10 +48,11 @@ public class FormEditPage {
 		base = base*100;
 		setValue(field, Integer.toString(base+1));
 		if (units != null) {
+			// The only units like this right now are percentages, and the low-high range is fixed as well
 			setUnits(field, units);
+			setLowRange(field, Integer.toString(base+2));
+			setHighRange(field, Integer.toString(base+3));
 		}
-		setLowRange(field, Integer.toString(base+2));
-		setHighRange(field, Integer.toString(base+3));
 	}
 	
 	private void setValue(FieldNames field, String value) {
@@ -69,8 +70,8 @@ public class FormEditPage {
 	
 	public void assertFieldConstrained(FieldNames field, String value, String expected) {
 		facade.enterField("#"+field.name().toLowerCase(), value);
-		String inFieldValue = facade.getFieldValue("#"+field.name().toLowerCase());
-		Assert.assertEquals("Value constrained", inFieldValue, expected);
+		String actual = facade.getFieldValue("#"+field.name().toLowerCase());
+		Assert.assertEquals("Value constrained", expected, actual);
 	}
 	
 	public void assertDefaultedValuesExplanationPresent() {
@@ -88,8 +89,10 @@ public class FormEditPage {
 		if (units != null) {
 			assertUnits(field, units);
 		}
-		assertLowRange(field, Integer.toString(base+2));
-		assertHighRange(field, Integer.toString(base+3));
+		String low = ("%".equals(units)) ? "0" : Integer.toString(base+2);
+		String high = ("%".equals(units)) ? "100" : Integer.toString(base+3);
+		assertLowRange(field, low);
+		assertHighRange(field, high);
 	}
 	
 	public void assertRowShowsDefault(FieldNames field, int base, String units) {
@@ -98,11 +101,11 @@ public class FormEditPage {
 		if (units != null) {
 			facade.assertCssClass(cssSelector+"_units", "defaulted");
 			assertUnits(field, units);
+			facade.assertCssClass(cssSelector+"_range_low", "defaulted");
+			assertLowRange(field, Integer.toString(base+2));
+			facade.assertCssClass(cssSelector+"_range_high", "defaulted");
+			assertHighRange(field, Integer.toString(base+3));
 		}
-		facade.assertCssClass(cssSelector+"_range_low", "defaulted");
-		assertLowRange(field, Integer.toString(base+2));
-		facade.assertCssClass(cssSelector+"_range_high", "defaulted");
-		assertHighRange(field, Integer.toString(base+3));
 	}
 	
 	private void assertValue(FieldNames field, String value) {

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -96,6 +97,16 @@ public class CompleteBloodCount implements Specification {
 	@Override
 	public String getDescription() {
 		return "Complete Blood Count";
+	}
+	
+	@Override
+	public ParticipantDataRepeatType getRepeatType() {
+		return ParticipantDataRepeatType.IF_NEW;
+	}
+	
+	@Override
+	public String getRepeatFrequency() {
+		return null;
 	}
 	
 	@Override

@@ -26,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.versionInfo.BridgeVersionInfo;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SharedClientConnection;
@@ -855,6 +857,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	public ParticipantDataDescriptor createParticipantDataDescriptor(ParticipantDataDescriptor descriptor)
 			throws SynapseException {
 		descriptor.setId(newId());
+		ParticipantDataStatus status = new ParticipantDataStatus();
+		status.setLastEntryComplete(false);
+		status.setParticipantDataDescriptorId(descriptor.getId());
+		descriptor.setStatus(status);
 		descriptorsById.put(descriptor.getId(), descriptor);
 		descriptorsByUserId.put(currentUserData.getProfile().getOwnerId(), descriptor);
 		return descriptor;
@@ -898,5 +904,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public void setAuthEndpoint(String authEndpoint) {
 		// noop
+	}
+	
+	@Override
+	public void sendParticipantDataDescriptorUpdates(ParticipantDataStatusList dataStatusList) {
+		// noop? May model this when I understand it and build something against it
 	}
 }

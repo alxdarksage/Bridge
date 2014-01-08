@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
 
 public class JournalPage {
 
@@ -15,7 +16,7 @@ public class JournalPage {
 	}
 	
 	public void clickCompleteBloodCount() {
-		WebElement element = facade.findElement(By.partialLinkText(FormIndexPage.HEADER));
+		WebElement element = facade.findElement(By.partialLinkText(new CompleteBloodCount().getName()));
 		System.out.println(element);
 		element.click();
 	}

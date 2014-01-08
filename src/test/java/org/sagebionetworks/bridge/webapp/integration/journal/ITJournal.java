@@ -87,8 +87,8 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(FieldNames.RBC, 3, "cells/mcL");
 		editPage.setRow(FieldNames.HB, 4, "mmol/L");
 		editPage.setRow(FieldNames.HCT, 5, null);
-		editPage.setRow(FieldNames.MCV, 6, null);
-		editPage.setRow(FieldNames.MCH, 7, null);
+		editPage.setRow(FieldNames.MCV, 6, "fL");
+		editPage.setRow(FieldNames.MCH, 7, "pg");
 		editPage.setRow(FieldNames.RDW, 8, "s.d.");
 		editPage.setRow(FieldNames.RET, 9, "s.d.");
 		editPage.setRow(FieldNames.WBC, 10, "cells/mcL");
@@ -98,7 +98,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(FieldNames.LYMPHOCYTES, 14, null);
 		editPage.setRow(FieldNames.MONOCYTES, 15, null);
 		editPage.setRow(FieldNames.PLT, 16, "cells/mcL");
-		editPage.setRow(FieldNames.MPV, 17, null);
+		editPage.setRow(FieldNames.MPV, 17, "fL");
 		editPage.setRow(FieldNames.PDW, 18, null);
 		editPage.submit();
 		
@@ -132,8 +132,8 @@ public class ITJournal extends WebDriverBase {
 		newPage.assertRowShowsDefault(FieldNames.RBC, 1, "cells/mcL");
 		newPage.assertRowShowsDefault(FieldNames.HB, 2, "mmol/L");
 		newPage.assertRowShowsDefault(FieldNames.HCT, 3, null);
-		newPage.assertRowShowsDefault(FieldNames.MCV, 4, null);
-		newPage.assertRowShowsDefault(FieldNames.MCH, 5, null);
+		newPage.assertRowShowsDefault(FieldNames.MCV, 4, "fL");
+		newPage.assertRowShowsDefault(FieldNames.MCH, 5, "pg");
 		newPage.assertRowShowsDefault(FieldNames.RDW, 6, "s.d.");
 		newPage.assertRowShowsDefault(FieldNames.RET, 7, "s.d.");
 		newPage.assertRowShowsDefault(FieldNames.WBC, 8, "cells/mcL");
@@ -143,7 +143,7 @@ public class ITJournal extends WebDriverBase {
 		newPage.assertRowShowsDefault(FieldNames.LYMPHOCYTES, 12, null);
 		newPage.assertRowShowsDefault(FieldNames.MONOCYTES, 13, null);
 		newPage.assertRowShowsDefault(FieldNames.PLT, 14, "cells/mcL");
-		newPage.assertRowShowsDefault(FieldNames.MPV, 15, null);
+		newPage.assertRowShowsDefault(FieldNames.MPV, 15, "fL");
 		newPage.assertRowShowsDefault(FieldNames.PDW, 16, null);
 	}
 	
@@ -182,8 +182,8 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(FieldNames.RBC, 1, "cells/mcL");
 		newPage.setRow(FieldNames.HB, 2, "mmol/L");
 		newPage.setRow(FieldNames.HCT, 3, null);
-		newPage.setRow(FieldNames.MCV, 4, null);
-		newPage.setRow(FieldNames.MCH, 5, null);
+		newPage.setRow(FieldNames.MCV, 4, "fL");
+		newPage.setRow(FieldNames.MCH, 5, "pg");
 		newPage.setRow(FieldNames.RDW, 6, "s.d.");
 		newPage.setRow(FieldNames.RET, 7, "s.d.");
 		newPage.setRow(FieldNames.WBC, 8, "cells/mcL");
@@ -193,7 +193,7 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(FieldNames.LYMPHOCYTES, 12, null);
 		newPage.setRow(FieldNames.MONOCYTES, 13, null);
 		newPage.setRow(FieldNames.PLT, 14, "cells/mcL");
-		newPage.setRow(FieldNames.MPV, 15, null);
+		newPage.setRow(FieldNames.MPV, 15, "fL");
 		newPage.setRow(FieldNames.PDW, 16, null);
 		newPage.submit();
 	}

@@ -98,6 +98,7 @@ public class FieldTag extends SimpleTagSupport {
 	private void addDefaultAttributes(String currentValue) {
 		tb.addAttribute("id", field.getName());
 		tb.addAttribute("name", String.format("values['%s']", field.getName()));
+		tb.addAttribute("data-type", field.getType().name().toLowerCase());
 		if (StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
 			tb.addAttribute("class", "form-control input-sm defaulted");
 		} else {

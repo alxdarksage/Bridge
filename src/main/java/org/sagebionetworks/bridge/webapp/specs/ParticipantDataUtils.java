@@ -21,6 +21,8 @@ public class ParticipantDataUtils {
 		ParticipantDataDescriptor descriptor = new ParticipantDataDescriptor();
 		descriptor.setName(spec.getName());
 		descriptor.setDescription(spec.getDescription());
+		descriptor.setRepeatType(spec.getRepeatType());
+		descriptor.setRepeatFrequency(spec.getRepeatFrequency());
 		return descriptor;
 	}
 	
@@ -32,7 +34,7 @@ public class ParticipantDataUtils {
 			column.setDescription(field.getLabel());
 			column.setColumnType(field.getType()); 
 			column.setParticipantDataDescriptorId(descriptorId);
-			list.add(column);			
+			list.add(column);
 		}
 		return list;
 	}

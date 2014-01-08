@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -50,6 +52,16 @@ public class LifestyleSurvey implements Specification {
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
 		// noop
+	}
+
+	@Override
+	public ParticipantDataRepeatType getRepeatType() {
+		return ParticipantDataRepeatType.ALWAYS;
+	}
+
+	@Override
+	public String getRepeatFrequency() {
+		return null;
 	}
 
 }

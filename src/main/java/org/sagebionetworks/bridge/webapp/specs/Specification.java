@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+
 public interface Specification {
 
 	public String getName();
 	public String getDescription();
+	public ParticipantDataRepeatType getRepeatType();
+	public String getRepeatFrequency();
 	
 	/**
 	 * A strategy for displaying the tree of FormElements in the UI. There can be as many of 
