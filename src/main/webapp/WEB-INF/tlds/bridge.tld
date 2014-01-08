@@ -78,6 +78,26 @@
         <name>textarea</name>
         <path>/WEB-INF/tags/forms/textarea.tag</path>
     </tag-file>
+    <tag-file>
+        <name>reminders</name>
+        <path>/WEB-INF/tags/forms/reminders.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders-due</name>
+        <path>/WEB-INF/tags/forms/reminders-due.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders-always</name>
+        <path>/WEB-INF/tags/forms/reminders-always.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders-direct</name>
+        <path>/WEB-INF/tags/forms/reminders-direct.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>comma-list</name>
+        <path>/WEB-INF/tags/forms/comma-list.tag</path>
+    </tag-file>
 
     <!-- LAYOUTS -->
     <tag-file>
