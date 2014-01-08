@@ -79,25 +79,19 @@
 	    }
 	    td {
 	        border: none ! important;
-	        padding: .5rem 0 .5rem 3rem ! important;
+	        padding: .5rem 0 .5rem 1rem ! important;
 	        display: block ! important;
 	        width: 100% ! important;
 	    }
 	    tbody {
-	        td:first-child {
-	            position: absolute ! important;
-	            margin-left: -2rem;
-	            z-index: -1;
+	        td:before {
+	           content: attr(data-title);
+	           font-variant: small-caps;
 	        }
 	        td:last-child {
 	            border-bottom: 2px solid #aaa ! important;
 	        }
         }
-        tfoot {
-	        td:first-child {
-	            display: none ! important;
-	        }
-    	}
 	    .pagination {
 	        width: 7.8rem;
 	        
@@ -105,5 +99,25 @@
 	           display: none;
 	        }
 	    }
+    }
+    .table-selectable {
+	    td {
+	        padding: .5rem 0 .5rem 3rem ! important;
+	    }
+        tbody {
+            td:first-child {
+                position: absolute ! important;
+                margin-left: -2rem;
+                z-index: 1;
+            }
+            td:first-child:before {
+                content: none;
+            }
+        }
+        tfoot {
+            td:first-child {
+                display: none ! important;
+            }
+        }
     }
 }

@@ -255,5 +255,41 @@
             </description>
         </attribute>
     </tag>
-
+    
+    <tag>
+        <name>field</name>
+        <tag-class>org.sagebionetworks.bridge.webapp.jsp.FieldTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Renders a FormField, a kind of form element in a specification that renders a form control of some kind.
+        </description>
+        <attribute>
+            <name>field</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>dynamicForm</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>defaultedFields</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    <tag>
+        <name>form-label</name>
+        <tag-class>org.sagebionetworks.bridge.webapp.jsp.FormLabelTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Renders a label for a form element.
+        </description>
+        <attribute>
+            <name>element</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>    
 </taglib>

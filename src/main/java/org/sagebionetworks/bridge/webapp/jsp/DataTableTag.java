@@ -90,7 +90,8 @@ public class DataTableTag extends SimpleTagSupport {
 
 		tb.startTag("table");
 		if (this.selectable) {
-			tb.addStyleClass("table", "table-hover", "table-selectable");
+			// Adding hover causes visual problems with the data table when it collapses for mobile. So don't add it.
+			tb.addStyleClass("table", "table-selectable");
 		} else {
 			tb.addStyleClass("table", "table-hover");
 		}
@@ -160,6 +161,9 @@ public class DataTableTag extends SimpleTagSupport {
 			addCheckboxIfSelectable(objectId);
 			for (DataTableColumnTag column : columns) {
 				tb.startTag("td");
+				if (column.getStatic() == null) {
+					tb.addAttribute("data-title", column.getLabel() + ": ");
+				}
 				if (column.getClassName() != null) {
 					tb.addAttribute("class", column.getClassName());
 				}

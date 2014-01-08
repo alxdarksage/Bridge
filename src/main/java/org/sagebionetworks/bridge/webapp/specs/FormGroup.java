@@ -41,13 +41,23 @@ public class FormGroup implements FormElement {
 	}
 	
 	@Override
-	public boolean isImmutable() {
-		return true;
+	public List<FormElement> getChildren() {
+		return children;
 	}
 
 	@Override
-	public List<FormElement> getChildren() {
-		return children;
+	public String getInitialValue() {
+		return null;
+	}
+
+	@Override
+	public boolean isRequired() {
+		return false;
+	}
+	
+	@Override
+	public boolean isReadonly() {
+		return false;
 	}
 	
 	public void addField(FormField field) {

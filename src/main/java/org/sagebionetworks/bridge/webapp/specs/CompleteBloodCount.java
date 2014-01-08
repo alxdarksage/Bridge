@@ -4,14 +4,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class CompleteBloodCount implements Specification {
+	
+	private static final Logger logger = LogManager.getLogger(CompleteBloodCount.class.getName());
 
 	private static final String CREATED_ON = "createdOn";
 	private static final String MODIFIED_ON = "modifiedOn";
@@ -35,16 +39,24 @@ public class CompleteBloodCount implements Specification {
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
 
 	public CompleteBloodCount() {
-		FormField field1 = new FormField(CREATED_ON, "Created on date", ParticipantDataColumnType.DATETIME, true, false);
-		FormField field2 = new FormField(MODIFIED_ON, "Modified on date", ParticipantDataColumnType.DATETIME, false, false);
+		FormFieldBuilder builder = new FormFieldBuilder();
+		// These two do not show up on the UI. Even if you submitted an HTTP request with them reset, 
+		// they are readonly and thus would not reset.
+		FormField field1 = builder.forField().withName(CREATED_ON).withLabel("Created on date").asReadonly().asDatetime().create();
+		FormField field2 = builder.forField().withName(MODIFIED_ON).withLabel("Modified on date").asReadonly().asDatetime().create();
 		metadata.add( field1 );
 		metadata.add( field2 );
 		tableFields.put(CREATED_ON, field1);
 		tableFields.put(MODIFIED_ON, field2);
 
 		List<FormElement> rows = Lists.newArrayList();
-		rows.add(new FormField(TESTED_ON, "Date of test", ParticipantDataColumnType.DATETIME, false, false));
-		rows.add(new EnumeratedFormField("draw_type", "Draw type", ParticipantDataColumnType.STRING, false, true, COLLECTION_METHODS));
+		
+		FormField dot = builder.forField().withName(TESTED_ON).withLabel("Date of test").asDatetime().asRequired().create();
+		rows.add(dot);
+		
+		FormField eff = builder.forEnumeratedField().withName("draw_type").withLabel("Draw type").asString()
+				.asDefaultable().withEnumeration(COLLECTION_METHODS).create();
+		rows.add(eff);
 		displayRows.add( new FormGroup("General information", rows) );
 		
 		rows = Lists.newArrayList();
@@ -88,6 +100,16 @@ public class CompleteBloodCount implements Specification {
 	}
 	
 	@Override
+	public ParticipantDataRepeatType getRepeatType() {
+		return ParticipantDataRepeatType.IF_NEW;
+	}
+	
+	@Override
+	public String getRepeatFrequency() {
+		return null;
+	}
+	
+	@Override
 	public FormLayout getFormLayout() {
 		return FormLayout.GRID;
 	}
@@ -99,18 +121,11 @@ public class CompleteBloodCount implements Specification {
 	
 	@Override
 	public List<FormElement> getAllFormElements() {
-		List<FormElement> elements = Lists.newArrayList();
+		List<FormElement> list = SpecificationUtils.toList(displayRows);
 		for (FormElement field : metadata) {
-			elements.add(field);
+			list.add(field);
 		}
-		for (FormElement displayRow : displayRows) {
-			for (FormElement row: displayRow.getChildren()) {
-				for (FormElement field : row.getChildren()) {
-					elements.add(field);
-				}
-			}
-		}		
-		return elements;
+		return list;
 	}
 	
 	@Override
@@ -121,12 +136,10 @@ public class CompleteBloodCount implements Specification {
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
 		String datetime = ParticipantDataUtils.convertToString(new DateTime());
-		if (values.get(CREATED_ON) == null) {
+		if (StringUtils.isBlank(values.get(CREATED_ON))) {
 			values.put(CREATED_ON, datetime);
 		}
-		// This is presumably better than nothing, but I wonder if this isn't
-		// an example of something that is required to be entered.
-		if (values.get(TESTED_ON) == null) {
+		if (StringUtils.isBlank(values.get(TESTED_ON))) {
 			values.put(TESTED_ON, datetime);	
 		}
 		values.put(MODIFIED_ON, datetime);
@@ -134,13 +147,37 @@ public class CompleteBloodCount implements Specification {
 	
 	private FormGroup addRow(String name, String description, List<String> unitEnumeration) {
 		FormGroup row = new FormGroup(description);
-		row.addField(new FormField(name, description, ParticipantDataColumnType.DOUBLE, false, false));
-		row.addField(new EnumeratedFormField(name + UNITS_SUFFIX, description + ": units of measurement",
-				ParticipantDataColumnType.STRING, false, true, unitEnumeration));
-		row.addField(new FormField(name + RANGE_LOW_SUFFIX, description + ": low end of normal range",
-				ParticipantDataColumnType.DOUBLE, false, true));
-		row.addField(new FormField(name + RANGE_HIGH_SUFFIX, description + ": high end of normal range",
-				ParticipantDataColumnType.DOUBLE, false, true));
+		
+		FormFieldBuilder builder = new FormFieldBuilder();
+		
+		FormField field = builder.forField().withName(name).withLabel(description).asDouble().create();
+		row.addField(field);
+		
+		if (unitEnumeration == PERC) {
+			FormField units = builder.forField().withName(name + UNITS_SUFFIX).withLabel("Units").asString()
+					.withInitialValue("%").asReadonly().create();
+			row.addField(units);
+			
+			FormField low = builder.forField().withName(name + RANGE_LOW_SUFFIX).withLabel("Low " + description).asDouble()
+					.withInitialValue("0").asReadonly().asDefaultable().create();
+			row.addField(low);
+
+			FormField high = builder.forField().withName(name + RANGE_HIGH_SUFFIX).withLabel("High " + description)
+					.withInitialValue("100").asReadonly().asDouble().asDefaultable().create();
+			row.addField(high);
+		} else {
+			FormField units = builder.forEnumeratedField().withName(name + UNITS_SUFFIX).withLabel("Units").asString()
+					.asDefaultable().withEnumeration(unitEnumeration).create();
+			row.addField(units);
+			
+			FormField low = builder.forField().withName(name + RANGE_LOW_SUFFIX).withLabel("Low " + description).asDouble()
+					.asDefaultable().create();
+			row.addField(low);
+
+			FormField high = builder.forField().withName(name + RANGE_HIGH_SUFFIX).withLabel("High " + description)
+					.asDouble().asDefaultable().create();
+			row.addField(high);
+		}
 		return row;
 	}
 

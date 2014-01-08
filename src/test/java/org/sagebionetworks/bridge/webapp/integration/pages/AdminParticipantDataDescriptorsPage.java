@@ -9,7 +9,7 @@ public class AdminParticipantDataDescriptorsPage extends EmbeddedSignInPage {
 		super(facade);
 	}
 	
-	public void clickCreateCBCDescriptor() {
+	public void clickCreateDescriptors() {
 		facade.click("#cbcAct");
 	}
 

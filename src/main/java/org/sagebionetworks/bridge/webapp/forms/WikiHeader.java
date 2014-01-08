@@ -21,11 +21,11 @@ public class WikiHeader {
 	public String getId() {
 		return id;
 	}
-	
+	/* Doesn't appear to be used, manually test before removing.
 	public String getCommunityId() {
 		return communityId;
 	}
-
+	 */
 	public boolean isLocked() {
 		return isLocked;
 	}
@@ -33,9 +33,9 @@ public class WikiHeader {
 	public String getViewURL() {
 		return String.format("/communities/%s/wikis/%s.html", communityId, id);
 	}
-	
+	/* Doesn't appear to be used, manually test before removing.
 	public String getEditURL() {
 		return String.format("/communities/%s/wikis/%s/edit.html", communityId, id);
 	}
-	
+	*/
 }

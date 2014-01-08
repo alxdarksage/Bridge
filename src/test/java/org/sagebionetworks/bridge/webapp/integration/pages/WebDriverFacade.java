@@ -14,11 +14,14 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.google.common.collect.Sets;
 
 /**
  * Add tons of convenience methods to the driver object to make the 
@@ -60,7 +63,14 @@ public class WebDriverFacade implements WebDriver {
 	
 	void enterField(String cssSelector, String value) {
 		waitUntil(cssSelector);
-		driver.findElement(By.cssSelector(cssSelector)).sendKeys(value);
+		WebElement target = driver.findElement(By.cssSelector(cssSelector));
+		try {
+			target.clear(); // This may trigger validation	
+		} catch(WebDriverException e) {
+			// readonly fields cannot be cleared, that's okay. 
+			// Tests must pass with this being true.
+		}
+		target.sendKeys(value);
 	}
 	String getFieldValue(String cssSelector) {
 		waitUntil(cssSelector);
@@ -105,6 +115,16 @@ public class WebDriverFacade implements WebDriver {
 		waitUntil(cssSelector);
 		String valueInForm = getFieldValue(cssSelector);
 		Assert.assertEquals("Correct value", expectedValue, valueInForm);
+	}
+	void assertCssClass(String cssSelector, String cssClass) {
+		waitUntil(cssSelector);
+		WebElement element = driver.findElement(By.cssSelector(cssSelector));
+		String classTokens = element.getAttribute("class");
+		if (classTokens == null) {
+			Assert.fail("Contains CSS class: " + cssClass + ", but no class attribute");
+		}
+		Set<String> tokens = Sets.newHashSet(classTokens.split("\\s+"));
+		Assert.assertTrue("Contain CSS class: " + cssClass, tokens.contains(cssClass));
 	}
 	void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
@@ -202,9 +222,9 @@ public class WebDriverFacade implements WebDriver {
 		waitForTitle(AdminParticipantDataDescriptorsPage.TITLE);
 		return new AdminParticipantDataDescriptorsPage(this);
 	}
-	public JournalHomePage waitForJournalHomePage() {
-		waitForTitle(JournalHomePage.TITLE);
-		return new JournalHomePage(this);
+	public JournalPage waitForJournalHomePage() {
+		waitForTitle(JournalPage.TITLE);
+		return new JournalPage(this);
 	}
 	
 	public AdminPage getAdminPage() {
@@ -272,9 +292,9 @@ public class WebDriverFacade implements WebDriver {
 		get(AdminParticipantDataDescriptorsPage.URL);
 		return new AdminParticipantDataDescriptorsPage(this);
 	}
-	public JournalHomePage getJournalHomePage() {
-		get(JournalHomePage.URL);
-		return new JournalHomePage(this);
+	public JournalPage getJournalPage() {
+		get(JournalPage.URL);
+		return new JournalPage(this);
 	}
 
 	public void assertNotice(String message) {

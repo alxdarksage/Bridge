@@ -137,20 +137,6 @@ public class TagBuilder {
 		}
 		return this;
 	}
-/*
-	public void endTag() {
-		if (tagStack.size() == 0) {
-			return;
-		}
-		if (withinTag) {
-			tagStack.pop();
-			sb.append(" />");
-		} else {
-			sb.append("</").append((String) tagStack.pop()).append(">");
-		}
-		withinTag = false;
-	}
-*/
     
     public void endTag(String endTag) {
         if (tagStack.size() == 0 || endTag == null) {

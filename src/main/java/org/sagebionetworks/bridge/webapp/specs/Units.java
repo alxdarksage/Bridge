@@ -34,14 +34,14 @@ public enum Units {
 	PICOMOLE("pmol", "picomole"),		// 10^-12 mol
 	FEMTOMOLE("fmol", "femtomole"),		// 10^-15 mol
 
-	CUBIC_METER("cubic m", "mole"),
-	CUBIC_DECIMETER("cubic dm", "decimole"),	// 10^-1 m
-	CUBIC_CENTIMETER("cubic cm", "centimeter"),	// 10^-2 m
-	CUBIC_MILLIMETER("cubic mm", "millimeter"),	// 10^-3 m
-	CUBIC_MICROMETER("cubic mc", "micrometer"),	// 10^-6 m
-	CUBIC_NANOMETER("cubic nm", "nanometer"),	// 10^-9 m
-	CUBIC_PICOMETER("cubic pm", "picometer"),	// 10^-12 m
-	CUBIC_FEMTOMETER("cubic fm", "femtometer"),	// 10^-15 m
+	CUBIC_METER("cu m", "mole"),
+	CUBIC_DECIMETER("cu dm", "decimole"),	// 10^-1 m
+	CUBIC_CENTIMETER("cu cm", "centimeter"),	// 10^-2 m
+	CUBIC_MILLIMETER("cu mm", "millimeter"),	// 10^-3 m
+	CUBIC_MICROMETER("cu mc", "micrometer"),	// 10^-6 m
+	CUBIC_NANOMETER("cu nm", "nanometer"),	// 10^-9 m
+	CUBIC_PICOMETER("cu pm", "picometer"),	// 10^-12 m
+	CUBIC_FEMTOMETER("cu fm", "femtometer"),	// 10^-15 m
 	
 	CELLS("cells", "cells"), // straight count
 	PERCENTAGE("%", "percentage");

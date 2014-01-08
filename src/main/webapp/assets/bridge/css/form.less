@@ -3,16 +3,30 @@
         padding: .5rem;
         max-width: 60rem;
     }
+}
+.grid {
+    &.well {
+        padding: .5rem;
+        max-width: 60rem;
+    }
     
 	th, td { padding: .5rem; }
 	th { text-align: left; vertical-align: bottom; }
 	td:first-child { width: 100%; }
 	input[type=text] { width: 5rem; display: inline-block; }
+	.form-control-static { display: inline-block; width: 5rem; padding: 7px 10px; }
 	select { width: 10rem ! important; }
 	h4 { font-family: 'Archivo Narrow'; }
 	
-    .indent { padding-left: 3rem; }
     .multi { white-space: nowrap; }
+}
+.aboutDefaults {
+    margin: 1rem 0; 
+    max-width: 600px;
+    
+    td:first-child {
+        padding-right: 1rem;
+    }
 }
 .defaulted {
     border-color: rgb(118,172,105) !important;
@@ -25,4 +39,35 @@
     border: 1px solid rgb(118,172,105);
     background-color: rgba(118,172,105,.2);
     border-radius: 3px;
+}
+@media (max-width: 600px) {
+    .grid {
+        width: 100% ! important;
+                
+        thead {
+            display: none;
+        }
+        td {
+            border: none ! important;
+            padding: .5rem 0 .5rem 1rem ! important;
+            display: block ! important;
+            width: 100% ! important;
+        }
+        td:before {
+           content: attr(data-title);
+           font-variant: small-caps;
+        }
+        td:not([data-title]) {
+            display: none ! important;
+        }
+        td:last-child {
+            border-bottom: 2px solid #aaa ! important;
+        }
+    }
+    .form-control-static {
+        margin-bottom: 1rem;
+    }
+    .form-control, .form-control-static {
+        display: inline-block ! important; 
+    }
 }

@@ -8,18 +8,15 @@ import com.google.common.collect.Lists;
 
 public class FormField implements FormElement {
 
-	protected final String name;
-	protected final String label;
-	protected final ParticipantDataColumnType type;
-	protected final boolean immutable;
-	protected final boolean defaultable;
+	protected String name;
+	protected String label;
+	protected ParticipantDataColumnType type;
+	protected String initialValue;
+	protected boolean readonly;
+	protected boolean required;
+	protected boolean defaultable;
 	
-	public FormField(final String name, final String label, final ParticipantDataColumnType type, final boolean immutable, final boolean defaultable) {
-		this.name = name;
-		this.label = label;
-		this.type = type;
-		this.immutable = immutable;
-		this.defaultable = defaultable;
+	public FormField() {
 	}
 	
 	@Override
@@ -30,6 +27,21 @@ public class FormField implements FormElement {
 	@Override
 	public String getLabel() {
 		return label;
+	}
+
+	@Override
+	public String getInitialValue() {
+		return initialValue;
+	}
+
+	@Override
+	public boolean isRequired() {
+		return required;
+	}
+	
+	@Override
+	public boolean isReadonly() {
+		return readonly;
 	}
 	
 	@Override
@@ -43,13 +55,8 @@ public class FormField implements FormElement {
 	}
 	
 	@Override
-	public boolean isImmutable() {
-		return immutable;
-	}
-
-	@Override
 	public List<FormElement> getChildren() {
 		return Lists.newArrayList();
 	}
-
+	
 }

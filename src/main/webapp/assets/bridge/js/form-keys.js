@@ -46,7 +46,7 @@
         }
         var dataType = e.target.getAttribute("data-type"),
             value = String.fromCharCode(keyCode);
-        if (dataType === "float") {
+        if (dataType === "double") {
             if (keyCode !== 190 && !LONG_REGEX.test(value)) {
                 e.preventDefault();
                 e.stopPropagation();

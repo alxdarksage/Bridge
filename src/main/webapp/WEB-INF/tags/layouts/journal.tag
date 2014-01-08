@@ -11,7 +11,7 @@
                     <c:forEach var="descriptor" items="${descriptors}">
 	                    <li class="list-group-item">
 	                        <a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html">
-	                           ${(not empty descriptor.description) ? descriptor.description : descriptor.name}
+	                           ${(not empty descriptor.name) ? descriptor.name : descriptor.description}
                            </a>
 	                    </li>
                     </c:forEach>

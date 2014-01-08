@@ -3,8 +3,10 @@ package org.sagebionetworks.bridge.webapp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,18 +15,21 @@ import java.util.SortedMap;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.CronExpression;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
-import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
@@ -32,11 +37,8 @@ import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
-import org.sagebionetworks.repo.model.ACCESS_TYPE;
-import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.PaginatedResults;
-import org.sagebionetworks.repo.model.ResourceAccess;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
 import org.sagebionetworks.repo.model.table.PaginatedRowSet;
@@ -45,6 +47,7 @@ import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -145,25 +148,9 @@ public class ClientUtils {
 		result.addError(new FieldError(formName, fieldName, null, false, new String[] { message }, null, message));
 	}
 	
-	public static String dumpACL(AccessControlList acl) {
-		StringBuilder sb = new StringBuilder("ACL: ");
-		if (acl != null) {
-			Set<ResourceAccess> accesses = acl.getResourceAccess();
-			if (accesses != null) {
-				for(ResourceAccess ra: accesses) {
-					for (ACCESS_TYPE type : ra.getAccessType()) {
-						sb.append(type.toString()).append(", ");	
-					}
-				}
-			}
-		}
-		return sb.toString();
-	}
-	
 	public static UserEntityPermissions getPermits(BridgeRequest request, String id) throws SynapseException {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
-	
 	
 	public static Specification prepareSpecificationAndDescriptor(BridgeClient client, SpecificationResolver resolver,
 			ModelAndView model, String descriptorId) throws SynapseException {
@@ -289,9 +276,9 @@ public class ClientUtils {
 		return headers;
 	}
 	
-	public static boolean defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
+	public static Set<String> defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
 			String formId) throws SynapseException {
-		boolean anyDefaulted = false;
+		Set<String> defaultedFields = Sets.newHashSet();
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
 		PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
@@ -307,11 +294,11 @@ public class ClientUtils {
 				String header = headers.get(i);
 				if (defaults.contains(header)) {
 					dynamicForm.getValues().put(header, values.get(i));
-					anyDefaulted = true;
+					defaultedFields.add(header);
 				}
 			}
 		}
-		return anyDefaulted;
+		return defaultedFields;
 	}
 	
 	private static Set<String> defaultTheseFields(Specification spec) {
@@ -333,16 +320,111 @@ public class ClientUtils {
 		return new File(directory, fileName);
 	}
 	
-	public static void dumpErrors(Logger logger, BindingResult result) {
-		if (!result.hasGlobalErrors() && !result.hasFieldErrors()) {
-			logger.debug("NO ERRORS");
+	public static void prepareDescriptorsByStatus(Model model, BridgeClient client,
+			PaginatedResults<ParticipantDataDescriptor> descriptors) throws ParseException, SynapseException {
+		List<ParticipantDataDescriptor> descriptorsAlways = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsDue = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsIfNew = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsIfChanged = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsNoPrompt = Lists.newArrayListWithExpectedSize(20);
+		Date now = new Date();
+		Calendar lastMonth = Calendar.getInstance();
+		lastMonth.roll(Calendar.MONTH, false);
+		Calendar tenMinutesAgo = Calendar.getInstance();
+		tenMinutesAgo.add(Calendar.MINUTE, -10);
+		List<ParticipantDataStatus> statusUpdateList = Lists.newArrayListWithExpectedSize(20);
+		for (ParticipantDataDescriptor descriptor : descriptors.getResults()) {
+			ParticipantDataStatus status = descriptor.getStatus();
+			boolean needsUpdate = false;
+			Date lastStarted = descriptor.getStatus().getLastStarted();
+			Date lastPrompted = descriptor.getStatus().getLastPrompted();
+			boolean lastEntryComplete = BooleanUtils.isTrue(descriptor.getStatus().getLastEntryComplete());
+
+			// we want to prompt when:
+			// - something new is due and we haven't prompted yet (lastPrompted < lastCron && lastStarted < lastCron)
+			// - something new or conditional is due and we haven't prompted for a month (?? frequency ??)
+
+			// did we ever prompt?
+			boolean firstPrompt = lastPrompted == null;
+
+			// is it a month ago, or less than 10 minutes ago (we want to make sure the user sees)
+			boolean repeatPrompt = lastPrompted != null && lastPrompted.after(lastMonth.getTime());
+
+			// is it a month ago, or less than 10 minutes ago (we want to make sure the user sees)
+			boolean repeatPromptWasRecent = lastPrompted != null && lastPrompted.after(tenMinutesAgo.getTime());
+
+			boolean shouldPrompt = firstPrompt || repeatPrompt || repeatPromptWasRecent;
+
+			boolean repeatDue = false;
+			if (!StringUtils.isEmpty(descriptor.getRepeatFrequency())) {
+				if (lastStarted != null) {
+					CronExpression cronExpression = new CronExpression(descriptor.getRepeatFrequency());
+					if (cronExpression.getNextValidTimeAfter(lastStarted).before(now)) {
+						repeatDue = true;
+					}
+				}
+			}
+
+			List<ParticipantDataDescriptor> promptList = null;
+			switch (descriptor.getRepeatType()) {
+			case ALWAYS:
+				promptList = descriptorsAlways;
+				break;
+			case IF_NEW:
+				if (shouldPrompt || repeatDue) {
+					promptList = descriptorsIfNew;
+				}
+				break;
+			case IF_CHANGED:
+				if (shouldPrompt || repeatDue) {
+					promptList = descriptorsIfChanged;
+				}
+				break;
+			case ONCE:
+				if (!lastEntryComplete && shouldPrompt) {
+					promptList = descriptorsDue;
+				}
+				break;
+			case REPEATED:
+				if (repeatDue) {
+					status.setLastEntryComplete(true);
+					needsUpdate = true;
+				}
+				if (repeatDue || (!lastEntryComplete && shouldPrompt)) {
+					promptList = descriptorsDue;
+				}
+				break;
+			}
+			if (promptList != null) {
+				promptList.add(descriptor);
+				if (!repeatPromptWasRecent) {
+					status.setLastPrompted(now);
+					needsUpdate = true;
+				}
+			} else {
+				descriptorsNoPrompt.add(descriptor);
+			}
+
+			if (needsUpdate) {
+				if (!repeatPromptWasRecent) {
+					status.setLastPrompted(now);
+				}
+				statusUpdateList.add(status);
+			}
 		}
-		for (ObjectError error : result.getGlobalErrors()) {
-			logger.debug(String.format("GLOBAl ERROR: %s: %s: %s", error.getObjectName(), error.getCode(), error.getDefaultMessage()));
+
+		if (statusUpdateList.size() > 0) {
+			ParticipantDataStatusList dataStatusList = new ParticipantDataStatusList();
+			dataStatusList.setUpdates(statusUpdateList);
+			client.sendParticipantDataDescriptorUpdates(dataStatusList);
 		}
-		for (ObjectError error : result.getFieldErrors()) {
-			logger.debug(String.format("FIELD ERROR: %s: %s: %s", error.getObjectName(), error.getCode(), error.getDefaultMessage()));
-		}
+
+		model.addAttribute("descriptorsAlways", descriptorsAlways);
+		model.addAttribute("descriptorsDue", descriptorsDue);
+		model.addAttribute("descriptorsIfNew", descriptorsIfNew);
+		model.addAttribute("descriptorsIfChanged", descriptorsIfChanged);
+		model.addAttribute("descriptorsNoPrompt", descriptorsNoPrompt);
 	}
+
 
 }

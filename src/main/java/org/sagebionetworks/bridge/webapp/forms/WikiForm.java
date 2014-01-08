@@ -31,19 +31,21 @@ public class WikiForm {
 	public void setWikiId(String wikiId) {
 		this.wikiId = wikiId;
 	}
+	/* Doesn't appear to be used, but manually test for this before removing.
 	public String getCommunityId() {
 		return communityId;
 	}
 	public void setCommunityId(String communityId) {
 		this.communityId = communityId;
 	}
+	*/
 	public boolean isIndexWiki() {
 		return isIndexWiki;
 	}
 	public void setIndexWiki(boolean isIndexWiki) {
 		this.isIndexWiki = isIndexWiki;
 	}
-	
+	/* Doesn't appear to be used, but keep it for a bit.
 	public String getEditURL() {
 		if (wikiId != null) {
 			return String.format("/communities/%s/wikis/%s/edit.html", communityId, wikiId);	
@@ -51,5 +53,5 @@ public class WikiForm {
 			return String.format("/communities/%s/wikis/new.html", communityId, wikiId);
 		}
 	}
-	
+	*/
 }

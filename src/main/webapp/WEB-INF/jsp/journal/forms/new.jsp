@@ -9,10 +9,10 @@
 	    </div>
 	    <h3>New ${descriptor.description}</h3>
 
-	    <c:if test="${anyDefaulted}">
-	       <table style="margin: 1rem 0; max-width: 600px">
+	    <c:if test="${not empty defaultedFields}">
+	       <table class="aboutDefaults">
 	           <tr>
-	               <td style="padding-right: 1rem"><div class="example defaulted">&#160;</div></td>
+	               <td><div class="example defaulted">&#160;</div></td>
 	               <td><spring:message code="DefaultsPresent"/></td>
 	           </tr>
 	       </table>

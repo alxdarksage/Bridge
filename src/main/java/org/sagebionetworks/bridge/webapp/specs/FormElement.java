@@ -22,11 +22,24 @@ public interface FormElement {
 	 */
 	public boolean isDefaultable();
 	/**
-	 * Can this value be changed after it is created?
-	 * 
+	 * Initial value for this field (the default value, as opposed to the defaulted value 
+	 * from a prior form.
 	 * @return
 	 */
-	public boolean isImmutable();
+	public String getInitialValue();
+	/**
+	 * Read only value. If a field is read only with an initial value, the value is a constant, 
+	 * but worth including in the data set. Note that a specification may itself change a 
+	 * readonly value: this only applies to the UI for the user. 
+	 * @return
+	 */
+	public boolean isReadonly();
+	/**
+	 * This value *must* be entered by the user. It cannot later be removed (only changed, 
+	 * persuant to validation criteria).
+	 * @return
+	 */
+	public boolean isRequired();
 	
 	public ParticipantDataColumnType getType();
 	

@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -95,9 +94,6 @@ public class CommunityAdminController {
 		map.setViewName("admin/communities/edit");
 
 		if (!result.hasErrors()) {
-			if (administrators == null) {
-				administrators = Collections.emptyList();
-			}
 			List<String> members = getMemberIds(request, communityId);
 			List<String> currentAdministrators = getAdministratorIds(request, communityId);
 			try {
