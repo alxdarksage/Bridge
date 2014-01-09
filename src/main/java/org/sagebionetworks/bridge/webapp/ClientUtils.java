@@ -49,6 +49,7 @@ import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
@@ -327,6 +328,7 @@ public class ClientUtils {
 		List<ParticipantDataDescriptor> descriptorsIfNew = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsIfChanged = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsNoPrompt = Lists.newArrayListWithExpectedSize(20);
+		
 		Date now = new Date();
 		Calendar lastMonth = Calendar.getInstance();
 		lastMonth.roll(Calendar.MONTH, false);
@@ -418,7 +420,7 @@ public class ClientUtils {
 			dataStatusList.setUpdates(statusUpdateList);
 			client.sendParticipantDataDescriptorUpdates(dataStatusList);
 		}
-
+		
 		model.addAttribute("descriptorsAlways", descriptorsAlways);
 		model.addAttribute("descriptorsDue", descriptorsDue);
 		model.addAttribute("descriptorsIfNew", descriptorsIfNew);

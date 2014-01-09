@@ -4,32 +4,30 @@ import java.io.IOException;
 import java.util.Set;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
-import org.sagebionetworks.bridge.webapp.specs.FormField;
+import org.springframework.validation.FieldError;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 
 /**
  * This carries a lot of information, it's easiest to render as a tag.
  *
  */
-public class FieldTag extends SimpleTagSupport {
+public class FieldTag extends SpringAwareTag {
 
 	private static final Logger logger = LogManager.getLogger(FieldTag.class.getName());
 
 	private TagBuilder tb = new TagBuilder();
-	
-	private FormField field;
+
 	private DynamicForm dynamicForm;
 	private Set<String> defaultedFields;
 	
-	public void setField(FormField field) {
-		this.field = field;
-	}
 	public void setDynamicForm(DynamicForm form) {
 		this.dynamicForm = form;
 	}
@@ -39,9 +37,7 @@ public class FieldTag extends SimpleTagSupport {
 	
 	@Override
 	public void doTag() throws JspException, IOException {
-		if (field == null) {
-			throw new IllegalArgumentException("FieldTag requires @field to be set");
-		}
+		super.doTag();
 		if (dynamicForm == null) {
 			throw new IllegalArgumentException("FieldTag requires @dynamiceForm to be set");
 		}
@@ -49,6 +45,12 @@ public class FieldTag extends SimpleTagSupport {
 			renderEnumeration();
 		} else {
 			renderInput();
+		}
+		// Might want to combine these in one span?
+		for (FieldError error : fieldErrors) {
+			tb.startTag("span", "id", field.getName() + "_errors", "class", "error-text");
+			tb.append(error.getDefaultMessage());
+			tb.endTag("span");
 		}
 		getJspContext().getOut().write(tb.toString());
 	}
@@ -96,17 +98,22 @@ public class FieldTag extends SimpleTagSupport {
 	
 
 	private void addDefaultAttributes(String currentValue) {
-		tb.addAttribute("id", field.getName());
-		tb.addAttribute("name", String.format("values['%s']", field.getName()));
-		tb.addAttribute("data-type", field.getType().name().toLowerCase());
-		if (StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
-			tb.addAttribute("class", "form-control input-sm defaulted");
-		} else {
-			tb.addAttribute("class", "form-control input-sm");
+		Set<String> classes = Sets.newHashSet("form-control", "input-sm");
+		String name = String.format("values['%s']", field.getName());
+		
+		if(!fieldErrors.isEmpty()) {
+			classes.add("error-control");
 		}
+		if (StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
+			classes.add("defaulted");
+		}
+		tb.addAttribute("id", field.getName());
+		tb.addAttribute("name", name);
+		tb.addAttribute("data-type", field.getType().name().toLowerCase());
 		if (field.isReadonly()) {
 			tb.addAttribute("readonly", "readonly");
 		}
+		tb.addAttribute("class", Joiner.on(" ").join(classes));
 	}
 	
 }

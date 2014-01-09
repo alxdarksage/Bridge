@@ -1,7 +1,7 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <script src="<c:url value="/assets/smiley-slider-gh-pages/smiley-slider.js"/>"></script>
 <c:if test="${not empty descriptorsAlways}">
-	<div class="reminder-direct">
+	<div class="alert alert-info">
 		How are you feeling right now?
 		<div>Mind <span id="mind-slider"></span></div>
 		<div>Body <div id="body-slider"></div></div>

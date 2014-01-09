@@ -139,9 +139,6 @@ public class CompleteBloodCount implements Specification {
 		if (StringUtils.isBlank(values.get(CREATED_ON))) {
 			values.put(CREATED_ON, datetime);
 		}
-		if (StringUtils.isBlank(values.get(TESTED_ON))) {
-			values.put(TESTED_ON, datetime);	
-		}
 		values.put(MODIFIED_ON, datetime);
 	}
 	

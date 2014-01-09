@@ -284,10 +284,10 @@
         <tag-class>org.sagebionetworks.bridge.webapp.jsp.FormLabelTag</tag-class>
         <body-content>scriptless</body-content>
         <description>
-            Renders a label for a form element.
+            Renders a label for a form element (not just a field).
         </description>
         <attribute>
-            <name>element</name>
+            <name>field</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

@@ -1,6 +1,6 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <c:if test="${(not empty descriptorsIfNew || not empty descriptorsIfChanged)}">
-	<div class="reminder-always">
+	<div class="reminder alert alert-success">
 		<sage:comma-list first="Do you have any new " items="${descriptorsIfNew}" separator=", " endSeparator=" or " last="?">
 			<a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/forms/${item.id}.html">
 					${(not empty item.description) ? item.description : item.name}</a
