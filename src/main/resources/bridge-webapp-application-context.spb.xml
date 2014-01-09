@@ -10,7 +10,7 @@
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 		
-   	<context:component-scan base-package="org.sagebionetworks.bridge.webapp.controllers"/>
+   	<context:component-scan base-package="org.sagebionetworks.bridge.webapp.controllers, org.sagebionetworks.bridge.webapp.validators"/>
 
     <mvc:annotation-driven />
    	<import resource="bridge-log-sweeper.spb.xml" />

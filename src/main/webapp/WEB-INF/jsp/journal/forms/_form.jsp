@@ -5,13 +5,13 @@
 			    <table>
 			        <thead>
 			            <tr>
-			                <th colspan="2"><h4><sage:form-label element="${group}"/></h4></th>
+			                <th colspan="2"><h4><sage:form-label field="${group}"/></h4></th>
 			            </tr>
 			        </thead>
 			        <tbody>
 	                    <c:forEach var="row" items="${group.children}">
 			                <tr>
-			                    <td style="width: 60%"><sage:form-label element="${row}"/></td>
+			                    <td style="width: 60%"><sage:form-label field="${row}"/></td>
 			                    <td>
                                     <sage:field field="${row}" dynamicForm="${dynamicForm}" defaultedFields="${defaultedFields}"/>
                                                 <!-- 

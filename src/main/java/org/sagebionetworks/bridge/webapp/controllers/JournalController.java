@@ -19,6 +19,7 @@ import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
+import org.sagebionetworks.bridge.webapp.validators.SpecificationBasedValidator;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -26,12 +27,18 @@ import org.sagebionetworks.repo.model.table.PaginatedRowSet;
 import org.sagebionetworks.repo.model.table.RowSet;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 @Controller
 public class JournalController {
@@ -53,36 +60,26 @@ public class JournalController {
 	public DynamicForm communityForm() {
 		return new DynamicForm();
 	}
-	
-	// @ModelAttribute("descriptors")
-	public List<ParticipantDataDescriptor> descriptors(BridgeRequest request) throws SynapseException {
-		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<ParticipantDataDescriptor> descriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
-		Collections.sort(descriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
+
+	@ModelAttribute("descriptors")
+	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
+		PaginatedResults<ParticipantDataDescriptor> allDescriptors = bridgeClient.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
+		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
 			@Override
 			public int compare(ParticipantDataDescriptor arg0, ParticipantDataDescriptor arg1) {
 				return arg0.getDescription().compareTo(arg1.getDescription());
 			}
 			
 		});
-		return descriptors.getResults();
+		return allDescriptors.getResults();
 	}
-	
 
 	@ModelAttribute
 	public void descriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
-		//Doesn't retrieve all of them, only the ones for which a user has created at least one record?
-		// TODO: Talk to Marcel about how that all works.
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<ParticipantDataDescriptor> descriptors = client.getParticipantDatas(ClientUtils.LIMIT, 0L);
-		//PaginatedResults<ParticipantDataDescriptor> descriptors = bridgeClient.getParticipantDatas(ClientUtils.LIMIT, 0L);
-
-		// Without this the UI is broken and tests fail. We may eventually sort the navigation by status,
-		// but that's not what happens at the moment.
-		model.addAttribute("descriptors", descriptors.getResults());
 		ClientUtils.prepareDescriptorsByStatus(model, bridgeClient, descriptors);
 	}
-
 
 	@RequestMapping(value = "/journal", method = RequestMethod.GET)
 	public ModelAndView viewAllForms(BridgeRequest request, ModelAndView model) throws SynapseException {
@@ -132,13 +129,19 @@ public class JournalController {
 	
 	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/new", method = RequestMethod.POST)
 	public ModelAndView createSurvey(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @ModelAttribute DynamicForm dynamicForm,
+			@PathVariable("formId") String formId, @ModelAttribute DynamicForm dynamicForm, BindingResult result,
 			ModelAndView model) throws SynapseException {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
 		spec.setSystemSpecifiedValues(dynamicForm.getValues());
+		
+		SpecificationBasedValidator validator = new SpecificationBasedValidator(spec);
+		validator.validate(dynamicForm, result);
+		if (result.hasErrors()) {
+			model.setViewName("journal/forms/new");
+			return model;
+		}
 		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValues());
 		client.appendParticipantData(formId, data);
 		
@@ -159,7 +162,6 @@ public class JournalController {
 		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
 		
 		model.addObject("rowId", rowId);
-		
 		model.setViewName("journal/forms/edit");
 		return model;
 	}
@@ -167,13 +169,20 @@ public class JournalController {
 	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/row/{rowId}", method = RequestMethod.POST)
 	public ModelAndView updateRow(BridgeRequest request, @PathVariable("participantId") String participantId,
 			@PathVariable("formId") String formId, @PathVariable("rowId") long rowId,
-			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
+			@ModelAttribute DynamicForm dynamicForm, BindingResult result, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
-		
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
 		spec.setSystemSpecifiedValues(dynamicForm.getValues());
+		
+		SpecificationBasedValidator validator = new SpecificationBasedValidator(spec);
+		validator.validate(dynamicForm, result);
+		if (result.hasErrors()) {
+			model.setViewName("journal/forms/edit");
+			return model;
+		}
+		
+		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValues(),
 				paginatedRowSet.getResults(), rowId);
 		client.updateParticipantData(formId, data);

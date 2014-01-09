@@ -2,7 +2,7 @@
     <table class="grid">
         <thead>
             <tr>
-                <th><h4><sage:form-label element="${group}"/></h4></th>
+                <th><h4><sage:form-label field="${group}"/></h4></th>
                 <th>Value</th>
                 <th>Unit</th>
                 <th>Range</th>
@@ -11,7 +11,7 @@
         <tbody>
             <c:forEach var="row" items="${group.children}">
                 <tr>
-                    <td><sage:form-label element="${row}"/></td>
+                    <td><sage:form-label field="${row}"/></td>
                     <td data-title="${row.children[0].label}: ">
                        <sage:field field="${row.children[0]}" dynamicForm="${dynamicForm}" defaultedFields="${defaultedFields}"/>    
                     </td>
