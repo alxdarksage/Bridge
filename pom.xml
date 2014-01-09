@@ -17,6 +17,7 @@
 		<commons-fileupload.version>1.2</commons-fileupload.version>
 		<commons-io.version>2.4</commons-io.version>
 		<commons-logging.version>1.1.1</commons-logging.version>
+		<commons-validator.version>1.4.0</commons-validator.version>
 		<guava.version>15.0</guava.version>
 		<gzip.filter>1.7</gzip.filter>
 		<hibernate-validator.version>5.0.1.Final</hibernate-validator.version>
@@ -168,6 +169,11 @@
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>${commons-fileupload.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>${commons-validator.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
