@@ -2,15 +2,13 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
-
 import com.google.common.collect.Lists;
 
 public class FormField implements FormElement {
 
 	protected String name;
 	protected String label;
-	protected ParticipantDataColumnType type;
+	protected UIType type;
 	protected String initialValue;
 	protected boolean readonly;
 	protected boolean required;
@@ -60,10 +58,10 @@ public class FormField implements FormElement {
 	}
 	
 	@Override
-	public ParticipantDataColumnType getType() {
+	public UIType getType() {
 		return type;
 	}
-	public void setType(ParticipantDataColumnType type) {
+	public void setType(UIType type) {
 		this.type = type;
 	}
 	

@@ -6,6 +6,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.springframework.core.convert.converter.Converter;
 
 public class SpecificationDataTableColumnTag extends SimpleTagSupport {
 
@@ -14,6 +15,7 @@ public class SpecificationDataTableColumnTag extends SimpleTagSupport {
 	private String icon;
 	private String stat;
 	private String className;
+	private Converter<Object,String> converter;
 	
 	@Override
 	public void doTag() throws JspException, IOException {
@@ -51,5 +53,10 @@ public class SpecificationDataTableColumnTag extends SimpleTagSupport {
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	
+	public Converter getConverter() {
+		return converter;
+	}
+	public void setConverter(Converter converter) {
+		this.converter = converter;
+	}	
 }

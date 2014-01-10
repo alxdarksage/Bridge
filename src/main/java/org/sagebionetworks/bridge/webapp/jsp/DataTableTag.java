@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -18,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Lists;
 
@@ -27,8 +25,6 @@ public class DataTableTag extends SimpleTagSupport {
 	private static final Logger logger = LogManager.getLogger(DataTableTag.class.getName());
 
 	private TagBuilder tb = new TagBuilder();
-
-	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy (hh:mm a)");
 
 	private PropertyUtilsBean pub = new PropertyUtilsBean();
 
@@ -74,6 +70,7 @@ public class DataTableTag extends SimpleTagSupport {
 				column.setIcon(columns.getIcon());
 				column.setLink(columns.getLink());
 				column.setStatic(columns.getStat());
+				column.setConverter(columns.getConverter());
 				first = false;
 			}
 			addColumn(column);
@@ -213,6 +210,7 @@ public class DataTableTag extends SimpleTagSupport {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Object getColumnValue(DataTableColumnTag column, Object object) {
 		Object value = "";
 		if (column.getStatic() != null) {
@@ -228,8 +226,10 @@ public class DataTableTag extends SimpleTagSupport {
 				logger.error(e);
 			}
 		}
-		if (value instanceof Date) {
-			value = formatter.format(value);
+		if (column.getConverter() != null) {
+			Object formatted = column.getConverter().convert(value);
+			logger.info(formatted);
+			value = formatted;
 		}
 		return value;
 	}

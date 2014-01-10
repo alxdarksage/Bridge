@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -9,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
@@ -45,20 +43,18 @@ public class CompleteBloodCount implements Specification {
 		FormFieldBuilder builder = new FormFieldBuilder();
 		// These two do not show up on the UI. Even if you submitted an HTTP request with them reset, 
 		// they are readonly and thus would not reset.
-		FormField field1 = builder.asDatetime().name(CREATED_ON).label("Created on date").readonly().create();
-		FormField field2 = builder.asDatetime().name(MODIFIED_ON).label("Modified on date").readonly().create();
+		FormField field1 = builder.asDateTime().name(CREATED_ON).label("Created on date").readonly().create();
+		FormField field2 = builder.asDateTime().name(MODIFIED_ON).label("Modified on date").readonly().create();
 		metadata.add( field1 );
 		metadata.add( field2 );
-		tableFields.put(TESTED_ON, field1);
-		// tableFields.put(MODIFIED_ON, field2);
 
 		List<FormElement> rows = Lists.newArrayList();
 		
-		FormField dot = builder.asDatetime().name(TESTED_ON).label("Date of test").required().create();
-		rows.add(dot);
+		FormField testedOn = builder.asDate().name(TESTED_ON).label("Date of test").required().create();
+		rows.add(testedOn);
+		tableFields.put(TESTED_ON, testedOn);
 		
-		FormField eff = builder.asEnum(COLLECTION_METHODS).name("draw_type").label("Draw type").defaultable()
-				.create();
+		FormField eff = builder.asEnum(COLLECTION_METHODS).name("draw_type").label("Draw type").defaultable().create();
 		rows.add(eff);
 		displayRows.add( new FormGroup("General information", rows) );
 		
@@ -135,14 +131,6 @@ public class CompleteBloodCount implements Specification {
 
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
-		/* This shouldn't need conversion as it appears HTML 5 date element
-		 * uses ISO Date format
-		String testDate = values.get(TESTED_ON);
-		if (testDate != null) {
-			DateTime testedOn = DateTime.parse(testDate, ISODateTimeFormat.date());
-			values.put(TESTED_ON, ParticipantDataUtils.convertToString(testedOn));
-		}
-		 */
 		String datetime = ParticipantDataUtils.convertToString(new DateTime());
 		if (StringUtils.isBlank(values.get(CREATED_ON))) {
 			values.put(CREATED_ON, datetime);
@@ -159,7 +147,7 @@ public class CompleteBloodCount implements Specification {
 		row.addField(field);
 		
 		if (unitEnumeration.size() == 1) {
-			FormField units = builder.asString(unitEnumeration.get(0)).name(name + UNITS_SUFFIX).label("Units").readonly().create();
+			FormField units = builder.asText(unitEnumeration.get(0)).name(name + UNITS_SUFFIX).label("Units").readonly().create();
 			row.addField(units);
 		} else {
 			FormField units = builder.asEnum(unitEnumeration).name(name + UNITS_SUFFIX).label("Units").defaultable().create();
@@ -184,7 +172,7 @@ public class CompleteBloodCount implements Specification {
 		FormField field = builder.asDouble().minValue(0D).maxValue(100D).name(name).label(description).create();
 		row.addField(field);
 		
-		FormField units = builder.asString("%").name(name + UNITS_SUFFIX).label("Units").readonly().create();
+		FormField units = builder.asText("%").name(name + UNITS_SUFFIX).label("Units").readonly().create();
 		row.addField(units);
 		
 		FormField low = builder.asDouble().minValue(0D).maxValue(100D).name(name + RANGE_LOW_SUFFIX)

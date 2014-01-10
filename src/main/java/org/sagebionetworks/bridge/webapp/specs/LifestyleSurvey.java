@@ -17,7 +17,7 @@ public class LifestyleSurvey implements Specification {
 	private FormField oneField;
 	
 	public LifestyleSurvey() {
-		oneField = new FormFieldBuilder().asString().name("feelings").label("Feelings").create();
+		oneField = new FormFieldBuilder().asText().name("feelings").label("Feelings").create();
 	}
 	
 	@Override

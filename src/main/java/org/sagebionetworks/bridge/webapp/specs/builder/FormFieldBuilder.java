@@ -2,8 +2,8 @@ package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import java.util.List;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
+import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 public class FormFieldBuilder {
 
@@ -30,21 +30,21 @@ public class FormFieldBuilder {
 		return temp;
 	}
 	
-	public FormFieldBuilder asString() {
+	public FormFieldBuilder asText() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
-		field.setType(ParticipantDataColumnType.STRING);
+		field.setType(UIType.TEXT_INPUT);
 		return this;
 	}
 	
-	public FormFieldBuilder asString(String initialValue) {
+	public FormFieldBuilder asText(String initialValue) {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
-		field.setType(ParticipantDataColumnType.STRING);
+		field.setType(UIType.TEXT_INPUT);
 		field.setInitialValue(initialValue);
 		return this;
 	}
@@ -60,14 +60,14 @@ public class FormFieldBuilder {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(ParticipantDataColumnType.DOUBLE);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT);
 	}
 	
 	public FormFieldBuilder asLong() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(ParticipantDataColumnType.LONG);
+		return new NumericFormFieldBuilder(UIType.INTEGER_INPUT);
 	}
 
 	public FormFieldBuilder asBoolean() {
@@ -75,16 +75,25 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
-		field.setType(ParticipantDataColumnType.BOOLEAN);
+		field.setType(UIType.CHECKBOX);
 		return this;
 	}
 	
-	public FormFieldBuilder asDatetime() {
+	public FormFieldBuilder asDate() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
-		field.setType(ParticipantDataColumnType.DATETIME);
+		field.setType(UIType.DATE);
+		return this;
+	}
+	
+	public FormFieldBuilder asDateTime() {
+		if (field != null) {
+			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
+		}
+		field = new FormField();
+		field.setType(UIType.DATETIME);
 		return this;
 	}
 	

@@ -1,11 +1,11 @@
 package org.sagebionetworks.bridge.webapp.specs.builder;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
+import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 public class NumericFormFieldBuilder extends FormFieldBuilder {
 
-	public NumericFormFieldBuilder(ParticipantDataColumnType type) {
+	public NumericFormFieldBuilder(UIType type) {
 		this.field = new NumericFormField();
 		this.field.setType(type);
 	}

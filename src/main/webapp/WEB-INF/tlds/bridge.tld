@@ -203,7 +203,11 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
-        <!-- formatter to be added -->
+        <attribute>
+            <name>converter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
     <tag>
         <name>spec-column</name>
@@ -235,7 +239,11 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
-        <!-- formatter to be added -->
+        <attribute>
+            <name>converter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
     <tag>
         <name>button</name>

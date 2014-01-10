@@ -1,9 +1,12 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+import org.springframework.core.convert.converter.Converter;
 
 public class DataTableColumnTag extends SimpleTagSupport {
 
@@ -13,6 +16,7 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	private String icon;
 	private String stat;
 	private String className;
+	private Converter<Object,String> converter;
 	
 	@Override
 	public void doTag() throws JspException, IOException {
@@ -62,6 +66,12 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	}
 	public void setClassName(String className) {
 		this.className = className;
+	}
+	public Converter getConverter() {
+		return converter;
+	}
+	public void setConverter(Converter converter) {
+		this.converter = converter;
 	}
 	
 }

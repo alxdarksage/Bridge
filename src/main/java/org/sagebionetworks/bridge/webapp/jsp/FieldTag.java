@@ -8,11 +8,10 @@ import javax.servlet.jsp.JspException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
-import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
+import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
@@ -47,8 +46,8 @@ public class FieldTag extends SpringAwareTag {
 		fieldName = String.format("values['%s']", field.getName());
 		if (field.getInitialValue() != null && field.isReadonly()) {
 			renderReadonly();
-		} else if (field.getType() == ParticipantDataColumnType.DATETIME) {
-			renderDatetime();
+		} else if (field.getType() == UIType.DATE || field.getType() == UIType.DATETIME) {
+			renderDate(field.getType().name().toLowerCase());
 		} else if (field instanceof EnumeratedFormField) {
 			renderEnumeration();
 		} else {
@@ -78,11 +77,11 @@ public class FieldTag extends SpringAwareTag {
 		tb.endTag("input");
 	}
 	
-	private void renderDatetime() {
+	private void renderDate(String subType) {
 		String currentValue = dynamicForm.getValues().get(field.getName());
 		tb.startTag("input");
 		addDefaultAttributes(currentValue);
-		tb.addAttribute("type", "date"); // not datetime, which might be an issue
+		tb.addAttribute("type", subType); // not datetime, which might be an issue
 		if (currentValue == null && field.getInitialValue() != null) {
 			tb.addAttribute("value", field.getInitialValue());
 		}
@@ -139,7 +138,7 @@ public class FieldTag extends SpringAwareTag {
 		}
 		tb.addAttribute("id", field.getName());
 		tb.addAttribute("name", fieldName);
-		tb.addAttribute("data-type", field.getType().name().toLowerCase());
+		tb.addAttribute("data-type", field.getType().getColumnType().name().toLowerCase());
 		if (field.isReadonly()) {
 			tb.addAttribute("readonly", "readonly");
 		}
@@ -147,7 +146,7 @@ public class FieldTag extends SpringAwareTag {
 	}
 	
 	private void addNumericAttributes(NumericFormField numeric) {
-		tb.addAttribute("type", "number");
+		tb.addAttribute("type", "number");  
 		if (numeric.getMinValue() != null) {
 			tb.addAttribute("min", numeric.getMinValue().toString());
 		}

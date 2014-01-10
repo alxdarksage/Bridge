@@ -2,8 +2,6 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
-
 import com.google.common.collect.Lists;
 
 public class FormGroup implements FormElement {
@@ -31,8 +29,8 @@ public class FormGroup implements FormElement {
 	}
 	
 	@Override
-	public ParticipantDataColumnType getType() {
-		return null; // no type, just a container
+	public UIType getType() {
+		return UIType.GROUP;
 	}
 
 	@Override

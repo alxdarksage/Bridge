@@ -2,8 +2,6 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
-
 public interface FormElement {
 
 	/**
@@ -41,7 +39,7 @@ public interface FormElement {
 	 */
 	public boolean isRequired();
 	
-	public ParticipantDataColumnType getType();
+	public UIType getType();
 	
 	public List<FormElement> getChildren();
 	

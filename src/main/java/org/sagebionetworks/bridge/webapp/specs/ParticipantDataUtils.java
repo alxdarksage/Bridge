@@ -7,7 +7,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.repo.model.table.Row;
@@ -29,12 +28,14 @@ public class ParticipantDataUtils {
 	public static List<ParticipantDataColumnDescriptor> getColumnDescriptors(String descriptorId, Specification spec) {
 		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList();
 		for (FormElement field : spec.getAllFormElements()) {
-			ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
-			column.setName(field.getName());
-			column.setDescription(field.getLabel());
-			column.setColumnType(field.getType()); 
-			column.setParticipantDataDescriptorId(descriptorId);
-			list.add(column);
+			if (field.getType().getColumnType() != null) {
+				ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
+				column.setName(field.getName());
+				column.setDescription(field.getLabel());
+				column.setColumnType(field.getType().getColumnType()); 
+				column.setParticipantDataDescriptorId(descriptorId);
+				list.add(column);
+			}
 		}
 		return list;
 	}
@@ -91,20 +92,24 @@ public class ParticipantDataUtils {
 		return datetime.toString(ISODateTimeFormat.dateTime());
 	}
 	
-	public static Object convertToObject(ParticipantDataColumnType type, String value) {
+	public static Object convertToObject(UIType type, String value) {
 		if (StringUtils.isNotBlank(value) && !"null".equals(value)) {
 			switch(type) {
-			case FILEHANDLEID:
-			case STRING:
-				return value;
+			case DATE:
+				return DateTime.parse(value, ISODateTimeFormat.date()).toDate();
 			case DATETIME:
 				return DateTime.parse(value, ISODateTimeFormat.dateTime()).toDate();
-			case BOOLEAN:
+			case TEXT_INPUT:
+			case SINGLE_SELECT:
+				return value;
+			case CHECKBOX:
 				return Boolean.valueOf(value);
-			case LONG:
+			case INTEGER_INPUT:
 				return Long.parseLong(value);
-			case DOUBLE:
+			case DECIMAL_INPUT:
 				return Double.parseDouble(value);
+			case GROUP:
+				return value;
 			}
 		}
 		return value;

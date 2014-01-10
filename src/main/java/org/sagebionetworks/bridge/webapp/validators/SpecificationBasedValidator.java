@@ -11,6 +11,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -51,25 +52,32 @@ public class SpecificationBasedValidator implements Validator {
 			}
 			return;
 		}
-		if (field.getType() == ParticipantDataColumnType.DOUBLE) {
+		
+		
+		ParticipantDataColumnType dataType = field.getType().getColumnType();
+		if (dataType == ParticipantDataColumnType.DOUBLE) {
 			Double converted = DoubleValidator.getInstance().validate(value);
 			if (converted == null) {
 				errors.rejectValue("values['"+field.getName()+"']", field.getName()+".not_a_decimal_number", field.getLabel() + " is not a decimal number.");
 			} else {
 				validateBoundaryRanges(field, errors, converted);
 			}
-		} else if (field.getType() == ParticipantDataColumnType.LONG) {
+		} else if (dataType == ParticipantDataColumnType.LONG) {
 			Long converted = LongValidator.getInstance().validate(value);
 			if (converted == null) {
 				errors.rejectValue("values['"+field.getName()+"']", field.getName()+".not_a_number", field.getLabel() + " is not a number.");
 			}
 			validateBoundaryRanges(field, errors, converted.doubleValue());
-		} else if (field.getType() == ParticipantDataColumnType.STRING) {
+		} else if (dataType == ParticipantDataColumnType.STRING) {
 			// regular expression matching
-		} else if (field.getType() == ParticipantDataColumnType.DATETIME) {
-			// datetime
-			// range limits
-		} else if (field.getType() == ParticipantDataColumnType.BOOLEAN) {
+		} else if (dataType == ParticipantDataColumnType.DATETIME) {
+			// Try and parse it using this method, if it fails, don't consider it a valid date.
+			try {
+				ParticipantDataUtils.convertToObject(field.getType(), value);	
+			} catch(Throwable t) {
+				errors.rejectValue("values['"+field.getName()+"']", field.getName()+".not_a_date", field.getLabel() + " is not a valid date.");
+			}
+		} else if (dataType == ParticipantDataColumnType.BOOLEAN) {
 			if (!("true".equals(value) || "false".equals(value))) {
 				errors.rejectValue("values['"+field.getName()+"']", field.getName()+".not_a_boolean", field.getLabel() + " must be true or false.");
 			}
