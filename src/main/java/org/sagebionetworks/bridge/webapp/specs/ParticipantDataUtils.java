@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,44 +43,45 @@ public class ParticipantDataUtils {
 			throw new IllegalArgumentException("getRowSetForCreate() requires values map");
 		}
 		
-		Row row = new Row();
 		List<String> newValues = Lists.newArrayList();
 		List<String> headers = Lists.newArrayList();
 		for (FormElement element : spec.getAllFormElements()) {
 			if (element.getType() != null) {
 				headers.add(element.getName());
-				newValues.add( values.get(element.getName()) );
+				String value = values.get(element.getName());
+				newValues.add(StringUtils.isEmpty(value) ? null : value);
 			}
 		}
-		row.setValues(newValues);
-		RowSet data = new RowSet();
-		data.setHeaders(headers);
-		data.setRows(Lists.newArrayList(row));
-		return data;
+		return createSingleRowRowSet(null, newValues, headers);
 	}
 	
-	public static RowSet getRowSetForUpdate(Specification spec, Map<String, String> values, RowSet rowSet, long rowId) {
+	public static RowSet getRowSetForUpdate(Specification spec, Map<String, String> values, long rowId) {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForUpdate() requires values");
 		}
 		
-		Row row = ClientUtils.getRowById(rowSet, rowId);
 		List<String> newValues = Lists.newArrayList();
 		List<String> headers = Lists.newArrayList();
 		for (FormElement element : spec.getAllFormElements()) {
 			if (element.getType() != null) {
 				headers.add(element.getName());
-				if (element.isReadonly()) {
-					newValues.add( ClientUtils.getValueInRow(row, rowSet.getHeaders(), element.getName()) );
-				} else {
-					newValues.add( values.get(element.getName()) );
+				if (!element.isReadonly()) {
+					String value = values.get(element.getName());
+					newValues.add(StringUtils.isEmpty(value) ? null : value);
 				}
 			}
 		}
+
+		return createSingleRowRowSet(rowId, newValues, headers);
+	}
+
+	private static RowSet createSingleRowRowSet(Long rowId, List<String> newValues, List<String> headers) {
+		Row row = new Row();
+		row.setRowId(rowId);
 		row.setValues(newValues);
 		RowSet data = new RowSet();
 		data.setHeaders(headers);
-		data.setRows(Lists.newArrayList(row));
+		data.setRows(Collections.singletonList(row));
 		return data;
 	}
 	

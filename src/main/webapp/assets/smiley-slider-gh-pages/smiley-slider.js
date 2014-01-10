@@ -57,6 +57,7 @@ function SmileySlider(container, imgSrc) {
     // head position
     
     var onHeadMove = null
+    var onHeadMoveDone = null
     
     function positionInt(e) {
         if (e === undefined) {
@@ -73,17 +74,26 @@ function SmileySlider(container, imgSrc) {
         if (e === undefined) {
             return lerp(0, 0, maxHeadX, 1, positionInt())
         } else if (typeof(e) == "function") {
-            onHeadMove = e
+        	var tmp = this;
+        	onHeadMoveDone = function() {
+                e.apply(tmp, arguments);
+            }
         } else {
             positionInt(lerp(0, 0, 1, maxHeadX, e))
         }
     }
     
     this.position = position    
-    setTimeout(function () {
-    	position(0.5);
-    }, 0)
 
+    this.setQuestion = function() {
+    	unset = true;
+    }
+    
+    this.removeQuestion = function() {
+    	unset = false;
+    	position(position());
+    }
+    
     //////////////////////////////////////////////////////////////
     // mouse
 
@@ -103,13 +113,12 @@ function SmileySlider(container, imgSrc) {
         document.onmousemove = function (e) {
             var pos = getRelPos(glass, e)
             
-    		unset = false;
             positionInt(pos.x - grabX)
         }
         
         var oldUp = document.onmouseup
         document.onmouseup = function (e) {
-    		unset = false;
+        	if(onHeadMoveDone) onHeadMoveDone(position());
             document.onmousemove = oldMove
             document.onmouseup = oldUp
         }
@@ -132,7 +141,6 @@ function SmileySlider(container, imgSrc) {
 
         var oldMove = document.ontouchmove
         document.ontouchmove = function (e) {
-    		unset = false;
             e.preventDefault();
             var pos = getRelPos(glass, e.touches[0])
             positionInt(pos.x - grabX)
@@ -141,7 +149,6 @@ function SmileySlider(container, imgSrc) {
         var oldEnd = document.ontouchend;
         var oldCancel = document.ontouchcancel
         document.ontouchend = document.ontouchcancel = function (e) {
-    		unset = false;
             document.ontouchmove = oldMove
             document.ontouchend = oldEnd
             document.ontouchcancel = oldCancel;

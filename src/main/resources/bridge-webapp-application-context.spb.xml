@@ -59,6 +59,24 @@
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
+
+	<bean
+	    class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+	    <property name="order" value="1" />
+	    <property name="mediaTypes">
+	        <map>
+	            <entry key="html" value="text/html"/>
+	            <entry key="json" value="application/json" />
+	        </map>
+	    </property>
+	    <property name="defaultViews">
+	        <list>
+	            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+	        </list>
+	    </property>
+	    <property name="ignoreAcceptHeader" value="false" />
+	    <property name="defaultContentType" value="application/json" />
+	</bean>
 	
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
          <property name="maxUploadSize" value="10000000"/>
@@ -93,6 +111,7 @@
         <property name="specifications">
             <list>
                 <bean class="org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.MoodTracker"/>
                 <!-- <bean class="org.sagebionetworks.bridge.webapp.specs.LifestyleSurvey"/> -->
             </list>
         </property>

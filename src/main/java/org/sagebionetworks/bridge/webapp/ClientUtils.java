@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronExpression;
 import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
@@ -53,7 +54,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class ClientUtils {
@@ -79,7 +82,54 @@ public class ClientUtils {
 	}
 	
 	public static final long LIMIT = 10000L;
+
+	public static class ParticipantColumnWithData {
+		private final ParticipantDataColumnDescriptor columnDescriptor;
+		private final String value;
+		private final String previousValue;
+
+		public ParticipantColumnWithData(ParticipantDataColumnDescriptor columnDescriptor, String value, String previousValue) {
+			this.columnDescriptor = columnDescriptor;
+			this.value = value;
+			this.previousValue = previousValue;
+		}
+
+		public ParticipantDataColumnDescriptor getColumnDescriptor() {
+			return columnDescriptor;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public String getPreviousValue() {
+			return previousValue;
+		}
+	}
 	
+	public static class ParticipantDescriptorWithData {
+		private final ParticipantDataDescriptor dataDescriptor;
+		private final Long rowId;
+		private final List<ParticipantColumnWithData> columnsWithData = Lists.newArrayList();
+
+		public ParticipantDescriptorWithData(ParticipantDataDescriptor dataDescriptor, Long rowId) {
+			this.dataDescriptor = dataDescriptor;
+			this.rowId = rowId;
+		}
+
+		public ParticipantDataDescriptor getDataDescriptor() {
+			return dataDescriptor;
+		}
+
+		public List<ParticipantColumnWithData> getColumnsWithData() {
+			return columnsWithData;
+		}
+
+		public Long getRowId() {
+			return rowId;
+		}
+	}
+
 	/**
 	 * By the time exceptions get to the client across the REST interface, they are in 
 	 * very sorry shape. They no longer reflect the type of the original exception, and 
@@ -319,7 +369,7 @@ public class ClientUtils {
 		return new File(directory, fileName);
 	}
 	
-	public static void prepareDescriptorsByStatus(Model model, BridgeClient client,
+	public static void prepareDescriptorsByStatus(Model model, final BridgeClient client,
 			PaginatedResults<ParticipantDataDescriptor> descriptors) throws ParseException, SynapseException {
 		List<ParticipantDataDescriptor> descriptorsAlways = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsDue = Lists.newArrayListWithExpectedSize(20);
@@ -369,6 +419,12 @@ public class ClientUtils {
 			switch (descriptor.getRepeatType()) {
 			case ALWAYS:
 				promptList = descriptorsAlways;
+				if (!repeatPromptWasRecent) {
+					if (!BooleanUtils.isTrue(status.getLastEntryComplete())) {
+						status.setLastEntryComplete(true);
+					}
+					needsUpdate = true;
+				}
 				break;
 			case IF_NEW:
 				if (shouldPrompt || repeatDue) {
@@ -418,8 +474,50 @@ public class ClientUtils {
 			dataStatusList.setUpdates(statusUpdateList);
 			client.sendParticipantDataDescriptorUpdates(dataStatusList);
 		}
-		
-		model.addAttribute("descriptorsAlways", descriptorsAlways);
+
+		List<ParticipantDescriptorWithData> descriptorsWithDataAlways = Lists.transform(descriptorsAlways,
+				new Function<ParticipantDataDescriptor, ParticipantDescriptorWithData>() {
+					@Override
+					public ParticipantDescriptorWithData apply(ParticipantDataDescriptor descriptor) {
+						try {
+							boolean lastEntryComplete = BooleanUtils.isTrue(descriptor.getStatus().getLastEntryComplete());
+
+							PaginatedResults<ParticipantDataColumnDescriptor> columnDescriptorResult;
+							columnDescriptorResult = client.getParticipantDataColumnDescriptors(descriptor.getId(), ClientUtils.LIMIT, 0);
+							RowSet rowset = client.getParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
+							Row lastRow = null;
+							if (!rowset.getRows().isEmpty()) {
+								lastRow = rowset.getRows().get(rowset.getRows().size() - 1);
+							}
+
+							Map<String, String> lastData = Maps.newHashMapWithExpectedSize(rowset.getHeaders().size());
+							if (lastRow != null) {
+								for (int i = rowset.getHeaders().size() - 1; i >= 0; i--) {
+									String value = lastRow.getValues().get(i);
+									lastData.put(rowset.getHeaders().get(i), value);
+								}
+							}
+
+							ParticipantDescriptorWithData descriptorWithData = new ParticipantDescriptorWithData(descriptor,
+									lastRow == null ? null : lastRow.getRowId());
+							for (ParticipantDataColumnDescriptor columnDescriptor : columnDescriptorResult.getResults()) {
+								String value = lastData.get(columnDescriptor.getName());
+								String previousValue = null;
+								if(lastEntryComplete) {
+									previousValue = value;
+									value = null;
+								}
+								ParticipantColumnWithData columnWithData = new ParticipantColumnWithData(columnDescriptor,value,previousValue);
+								descriptorWithData.columnsWithData.add(columnWithData);
+							}
+							return descriptorWithData;
+						} catch (SynapseException e) {
+							throw new RuntimeException(e.getMessage(), e);
+						}
+					}
+				});
+
+		model.addAttribute("descriptorsAlways", descriptorsWithDataAlways);
 		model.addAttribute("descriptorsDue", descriptorsDue);
 		model.addAttribute("descriptorsIfNew", descriptorsIfNew);
 		model.addAttribute("descriptorsIfChanged", descriptorsIfChanged);

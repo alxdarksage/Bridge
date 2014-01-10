@@ -345,4 +345,9 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>    
+    <!--  Custom form tags -->
+    <tag-file>
+        <name>formtag</name>
+        <path>/WEB-INF/tags/forms/formtag.tag</path>
+    </tag-file>
 </taglib>
