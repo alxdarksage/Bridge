@@ -2,24 +2,20 @@
 <script src="<c:url value="/assets/smiley-slider-gh-pages/smiley-slider.js"/>"></script>
 <c:if test="${not empty descriptorsAlways}">
 	<div class="alert alert-info">
-		How are you feeling right now?
-		<div>Mind <span id="mind-slider"></span></div>
-		<div>Body <div id="body-slider"></div></div>
-		<script type="text/javascript">
-		    var body = new SmileySlider(document.getElementById("body-slider"))
-		    var mind = new SmileySlider(document.getElementById("mind-slider"))
-		    body.position(-0.5);
-		    mind.position(-0.5);
-		    body.position(function (p) {
-		        // do something when it changes
-		    });
-		    mind.position(function (p) {
-		        // do something when it changes
-		    });
-		</script>
-		<sage:comma-list first="Do you have a new " items="${descriptorsAlways}" separator=", " endSeparator=" or " last="?">
-			<a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/forms/${item.id}.html">
-					${(not empty item.description) ? item.description : item.name}</a
-		></sage:comma-list>
+		<c:forEach var="descriptor" items="${descriptorsAlways}">
+			<a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.dataDescriptor.id}.html">${descriptor.dataDescriptor.name}</a>
+			<c:set var="id" value="id${descriptor.dataDescriptor.id}"/>
+			<c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.dataDescriptor.id}"/>
+			<form:form id="${id}-form" role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
+				<input type="hidden" id="${id}-form-rowId" name="rowId" value="${descriptor.rowId}"/>
+				<c:forEach var="column" items="${descriptor.columnsWithData}" varStatus="loop">
+					<c:if test="${(not empty column.columnDescriptor.type)}">
+						<div>
+							<sage:formtag formId="${id}-form" columnDescriptor="${column.columnDescriptor}" value="${column.previousValue}"/>
+						</div>
+					</c:if>
+				</c:forEach>
+			</form:form>
+		</c:forEach>
 	</div>
 </c:if>
