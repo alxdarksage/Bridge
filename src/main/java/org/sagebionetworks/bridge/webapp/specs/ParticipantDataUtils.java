@@ -3,9 +3,6 @@ package org.sagebionetworks.bridge.webapp.specs;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
@@ -84,35 +81,6 @@ public class ParticipantDataUtils {
 		data.setHeaders(headers);
 		data.setRows(Lists.newArrayList(row));
 		return data;
-	}
-
-	// All data is stored in ParticipantData as a string type. And most of it comes from the UI
-	// in string form, so not all types may need to be converted, but you can overload this method.
-	public static String convertToString(DateTime datetime) {
-		return datetime.toString(ISODateTimeFormat.dateTime());
-	}
-	
-	public static Object convertToObject(UIType type, String value) {
-		if (StringUtils.isNotBlank(value) && !"null".equals(value)) {
-			switch(type) {
-			case DATE:
-				return DateTime.parse(value, ISODateTimeFormat.date()).toDate();
-			case DATETIME:
-				return DateTime.parse(value, ISODateTimeFormat.dateTime()).toDate();
-			case TEXT_INPUT:
-			case SINGLE_SELECT:
-				return value;
-			case CHECKBOX:
-				return Boolean.valueOf(value);
-			case INTEGER_INPUT:
-				return Long.parseLong(value);
-			case DECIMAL_INPUT:
-				return Double.parseDouble(value);
-			case GROUP:
-				return value;
-			}
-		}
-		return value;
 	}
 	
 }

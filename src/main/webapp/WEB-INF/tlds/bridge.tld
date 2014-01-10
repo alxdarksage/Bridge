@@ -204,7 +204,7 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <name>converter</name>
+            <name>converterName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
@@ -236,11 +236,6 @@
         </attribute>
         <attribute>
             <name>className</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>converter</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

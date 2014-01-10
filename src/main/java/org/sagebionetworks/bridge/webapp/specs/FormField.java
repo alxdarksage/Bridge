@@ -2,6 +2,8 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.springframework.core.convert.converter.Converter;
+
 import com.google.common.collect.Lists;
 
 public class FormField implements FormElement {
@@ -13,6 +15,8 @@ public class FormField implements FormElement {
 	protected boolean readonly;
 	protected boolean required;
 	protected boolean defaultable;
+	protected Converter<String, Object> objectConverter;
+	protected Converter<Object, String> stringConverter;
 	
 	public FormField() {
 	}
@@ -76,6 +80,24 @@ public class FormField implements FormElement {
 	@Override
 	public List<FormElement> getChildren() {
 		return Lists.newArrayList();
+	}
+
+	@Override
+	public Converter<String, Object> getObjectConverter() {
+		return objectConverter;
+	}
+	
+	public void setObjectConverter(Converter<String, Object> objectConverter) {
+		this.objectConverter = objectConverter ;
+	}
+
+	@Override
+	public Converter<Object, String> getStringConverter() {
+		return stringConverter;
+	}
+	
+	public void setStringConverter(Converter<Object, String> stringConverter) {
+		this.stringConverter = stringConverter;
 	}
 	
 }

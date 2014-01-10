@@ -2,6 +2,15 @@ package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.webapp.converters.BooleanToStringConverter;
+import org.sagebionetworks.bridge.webapp.converters.DateStringToDateTimeConverter;
+import org.sagebionetworks.bridge.webapp.converters.DateTimeStringToDateTimeConverter;
+import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converters.DateToDateTimeStringConverter;
+import org.sagebionetworks.bridge.webapp.converters.NumberToStringConverter;
+import org.sagebionetworks.bridge.webapp.converters.StringToBooleanConverter;
+import org.sagebionetworks.bridge.webapp.converters.StringToDoubleConverter;
+import org.sagebionetworks.bridge.webapp.converters.StringToLongConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 
@@ -60,14 +69,14 @@ public class FormFieldBuilder {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, NumberToStringConverter.INSTANCE, StringToDoubleConverter.INSTANCE);
 	}
 	
 	public FormFieldBuilder asLong() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.INTEGER_INPUT);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, NumberToStringConverter.INSTANCE, StringToLongConverter.INSTANCE);
 	}
 
 	public FormFieldBuilder asBoolean() {
@@ -76,6 +85,8 @@ public class FormFieldBuilder {
 		}
 		field = new FormField();
 		field.setType(UIType.CHECKBOX);
+		field.setStringConverter(BooleanToStringConverter.INSTANCE);
+		field.setObjectConverter(StringToBooleanConverter.INSTANCE);
 		return this;
 	}
 	
@@ -85,6 +96,8 @@ public class FormFieldBuilder {
 		}
 		field = new FormField();
 		field.setType(UIType.DATE);
+		field.setStringConverter(DateToDateStringConverter.INSTANCE);
+		field.setObjectConverter(DateStringToDateTimeConverter.INSTANCE);
 		return this;
 	}
 	
@@ -94,6 +107,8 @@ public class FormFieldBuilder {
 		}
 		field = new FormField();
 		field.setType(UIType.DATETIME);
+		field.setStringConverter(DateToDateTimeStringConverter.INSTANCE);
+		field.setObjectConverter(DateTimeStringToDateTimeConverter.INSTANCE);
 		return this;
 	}
 	

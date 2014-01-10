@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -8,7 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.converters.DateToDateTimeStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;
@@ -131,7 +135,7 @@ public class CompleteBloodCount implements Specification {
 
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
-		String datetime = ParticipantDataUtils.convertToString(new DateTime());
+		String datetime = ISODateTimeFormat.dateTime().print(new DateTime());
 		if (StringUtils.isBlank(values.get(CREATED_ON))) {
 			values.put(CREATED_ON, datetime);
 		}

@@ -153,11 +153,11 @@ public class JournalController {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		model.addObject("rowId", rowId);
 		
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
 		
-		model.addObject("rowId", rowId);
 		model.setViewName("journal/forms/edit");
 		return model;
 	}
@@ -169,6 +169,7 @@ public class JournalController {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		model.addObject("rowId", rowId);
 		spec.setSystemSpecifiedValues(dynamicForm.getValues());
 		
 		SpecificationBasedValidator validator = new SpecificationBasedValidator(spec);

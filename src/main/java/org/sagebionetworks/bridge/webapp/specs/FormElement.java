@@ -2,6 +2,8 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.springframework.core.convert.converter.Converter;
+
 public interface FormElement {
 
 	/**
@@ -40,6 +42,14 @@ public interface FormElement {
 	public boolean isRequired();
 	
 	public UIType getType();
+	
+	/**
+	 * Converters to convert back and forth between a string and native representation.
+	 * @return
+	 */
+	public Converter<String,Object> getObjectConverter();
+	
+	public Converter<Object,String> getStringConverter();
 	
 	public List<FormElement> getChildren();
 	

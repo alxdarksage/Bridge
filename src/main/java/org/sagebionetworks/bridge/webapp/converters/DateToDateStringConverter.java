@@ -5,13 +5,15 @@ import java.util.Date;
 
 import org.springframework.core.convert.converter.Converter;
 
-public class DateToDateStringConverter implements Converter<Date,String> {
+public class DateToDateStringConverter implements Converter<Object,String> {
 
+	public static final DateToDateStringConverter INSTANCE = new DateToDateStringConverter();
+	
 	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
 	
 	@Override
-	public String convert(Date date) {
-		return formatter.format(date);
+	public String convert(Object date) {
+		return formatter.format((Date)date);
 	}
 
 }

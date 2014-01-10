@@ -2,12 +2,16 @@ package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
+import org.springframework.core.convert.converter.Converter;
 
 public class NumericFormFieldBuilder extends FormFieldBuilder {
 
-	public NumericFormFieldBuilder(UIType type) {
+	public NumericFormFieldBuilder(UIType type, Converter<Object,String> stringConverter,
+			Converter<String,Object> objectConverter) {
 		this.field = new NumericFormField();
 		this.field.setType(type);
+		this.field.setStringConverter(stringConverter);
+		this.field.setObjectConverter(objectConverter);
 	}
 	
 	public NumericFormFieldBuilder minValue(Double minValue) {

@@ -5,8 +5,6 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.springframework.core.convert.converter.Converter;
-
 public class DataTableColumnTag extends SimpleTagSupport {
 
 	private String label;
@@ -15,7 +13,7 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	private String icon;
 	private String stat;
 	private String className;
-	private Converter<Object,String> converter;
+	private String converterName;
 	
 	@Override
 	public void doTag() throws JspException, IOException {
@@ -66,11 +64,11 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	public Converter getConverter() {
-		return converter;
+	public String getConverterName() {
+		return converterName;
 	}
-	public void setConverter(Converter converter) {
-		this.converter = converter;
+	public void setConverterName(String converterName) {
+		this.converterName = converterName;
 	}
 	
 }
