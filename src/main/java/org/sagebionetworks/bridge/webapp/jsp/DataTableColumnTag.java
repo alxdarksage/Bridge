@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;

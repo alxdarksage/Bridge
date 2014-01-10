@@ -1,9 +1,7 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;

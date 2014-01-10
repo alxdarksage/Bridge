@@ -1,5 +1,7 @@
 package org.sagebionetworks.bridge.webapp.integration.journal;
 
+import static org.sagebionetworks.bridge.webapp.integration.pages.FormEditPage.FieldNames.*;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +12,13 @@ import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.AdminParticipantDataDescriptorsPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.FormIndexPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.FormEditPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.FormEditPage.FieldNames;
 import org.sagebionetworks.bridge.webapp.integration.pages.JournalPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class ITJournal extends WebDriverBase {
 
+	private static final String TEST_DATE = "2013-11-03";
 	private WebDriverFacade driver;
 	private JournalPage journalPage;
 
@@ -65,61 +67,62 @@ public class ITJournal extends WebDriverBase {
 		createNewSurvey();
 		FormIndexPage indexPage = journalPage.getFormIndexPage();
 		FormEditPage editPage = indexPage.getMostRecentEntry();
-		
+		editPage.assertTestDate(TEST_DATE);
 		editPage.assertDefaultedValuesExplanationNotPresent();
-		editPage.assertRow(FieldNames.RBC, 1, "cells/mcL");
-		editPage.assertRow(FieldNames.HB, 2, "mmol/L");
-		editPage.assertRow(FieldNames.HCT, 3, "%");
-		editPage.assertRow(FieldNames.MCV, 4, "fL");
-		editPage.assertRow(FieldNames.MCH, 5, "pg");
-		editPage.assertRow(FieldNames.RDW, 6, "s.d.");
-		editPage.assertRow(FieldNames.RET, 7, "s.d.");
-		editPage.assertRow(FieldNames.WBC, 8, "cells/mcL");
-		editPage.assertRow(FieldNames.WBC_DIFF, 9, "%");
-		editPage.assertRow(FieldNames.NEUTROPHIL, 10, "%");
-		editPage.assertRow(FieldNames.NEUTROPHIL_IMMATURE, 11, "%");
-		editPage.assertRow(FieldNames.LYMPHOCYTES, 12, "%");
-		editPage.assertRow(FieldNames.MONOCYTES, 13, "%");
-		editPage.assertRow(FieldNames.PLT, 14, "cells/mcL");
-		editPage.assertRow(FieldNames.MPV, 15, "fL");
-		editPage.assertRow(FieldNames.PDW, 16, "%");		
+		editPage.assertRow(RBC, 1);
+		editPage.assertRow(HB, 2);
+		editPage.assertRow(HCT, 3);
+		editPage.assertRow(MCV, 4);
+		editPage.assertRow(MCH, 5);
+		editPage.assertRow(RDW, 6);
+		editPage.assertRow(RET, 7);
+		editPage.assertRow(WBC, 8);
+		editPage.assertRow(WBC_DIFF, 9);
+		editPage.assertRow(NEUTROPHIL, 10);
+		editPage.assertRow(NEUTROPHIL_IMMATURE, 11);
+		editPage.assertRow(LYMPHOCYTES, 12);
+		editPage.assertRow(MONOCYTES, 13);
+		editPage.assertRow(PLT, 14);
+		editPage.assertRow(MPV, 15);
+		editPage.assertRow(PDW, 16);		
 		
-		editPage.setRow(FieldNames.RBC, 3, "cells/mcL");
-		editPage.setRow(FieldNames.HB, 4, "mmol/L");
-		editPage.setRow(FieldNames.HCT, 5, null);
-		editPage.setRow(FieldNames.MCV, 6, "fL");
-		editPage.setRow(FieldNames.MCH, 7, "pg");
-		editPage.setRow(FieldNames.RDW, 8, "s.d.");
-		editPage.setRow(FieldNames.RET, 9, "s.d.");
-		editPage.setRow(FieldNames.WBC, 10, "cells/mcL");
-		editPage.setRow(FieldNames.WBC_DIFF, 11, null);
-		editPage.setRow(FieldNames.NEUTROPHIL, 12, null);
-		editPage.setRow(FieldNames.NEUTROPHIL_IMMATURE, 13, null);
-		editPage.setRow(FieldNames.LYMPHOCYTES, 14, null);
-		editPage.setRow(FieldNames.MONOCYTES, 15, null);
-		editPage.setRow(FieldNames.PLT, 16, "cells/mcL");
-		editPage.setRow(FieldNames.MPV, 17, "fL");
-		editPage.setRow(FieldNames.PDW, 18, null);
+		editPage.setRow(RBC, 3);
+		editPage.setRow(HB, 4);
+		editPage.setRow(HCT, 5);
+		editPage.setRow(MCV, 6);
+		editPage.setRow(MCH, 7);
+		editPage.setRow(RDW, 8);
+		editPage.setRow(RET, 9);
+		editPage.setRow(WBC, 10);
+		editPage.setRow(WBC_DIFF, 11);
+		editPage.setRow(NEUTROPHIL, 12);
+		editPage.setRow(NEUTROPHIL_IMMATURE, 13);
+		editPage.setRow(LYMPHOCYTES, 14);
+		editPage.setRow(MONOCYTES, 15);
+		editPage.setRow(PLT, 16);
+		editPage.setRow(MPV, 17);
+		editPage.setRow(PDW, 18);
 		editPage.submit();
 		
 		editPage = indexPage.getMostRecentEntry();
 		editPage.assertDefaultedValuesExplanationNotPresent();
-		editPage.assertRow(FieldNames.RBC, 3, "cells/mcL");
-		editPage.assertRow(FieldNames.HB, 4, "mmol/L");
-		editPage.assertRow(FieldNames.HCT, 5, "%");
-		editPage.assertRow(FieldNames.MCV, 6, "fL");
-		editPage.assertRow(FieldNames.MCH, 7, "pg");
-		editPage.assertRow(FieldNames.RDW, 8, "s.d.");
-		editPage.assertRow(FieldNames.RET, 9, "s.d.");
-		editPage.assertRow(FieldNames.WBC, 10, "cells/mcL");
-		editPage.assertRow(FieldNames.WBC_DIFF, 11, "%");
-		editPage.assertRow(FieldNames.NEUTROPHIL, 12, "%");
-		editPage.assertRow(FieldNames.NEUTROPHIL_IMMATURE, 13, "%");
-		editPage.assertRow(FieldNames.LYMPHOCYTES, 14, "%");
-		editPage.assertRow(FieldNames.MONOCYTES, 15, "%");
-		editPage.assertRow(FieldNames.PLT, 16, "cells/mcL");
-		editPage.assertRow(FieldNames.MPV, 17, "fL");
-		editPage.assertRow(FieldNames.PDW, 18, "%");		
+		editPage.assertTestDate(TEST_DATE);
+		editPage.assertRow(RBC, 3);
+		editPage.assertRow(HB, 4);
+		editPage.assertRow(HCT, 5);
+		editPage.assertRow(MCV, 6);
+		editPage.assertRow(MCH, 7);
+		editPage.assertRow(RDW, 8);
+		editPage.assertRow(RET, 9);
+		editPage.assertRow(WBC, 10);
+		editPage.assertRow(WBC_DIFF, 11);
+		editPage.assertRow(NEUTROPHIL, 12);
+		editPage.assertRow(NEUTROPHIL_IMMATURE, 13);
+		editPage.assertRow(LYMPHOCYTES, 14);
+		editPage.assertRow(MONOCYTES, 15);
+		editPage.assertRow(PLT, 16);
+		editPage.assertRow(MPV, 17);
+		editPage.assertRow(PDW, 18);		
 	}
 		
 	@Test
@@ -129,22 +132,9 @@ public class ITJournal extends WebDriverBase {
 		FormEditPage newPage = indexPage.clickNewSurveyButton();
 		
 		newPage.assertDefaultedValuesExplanationPresent();
-		newPage.assertRowShowsDefault(FieldNames.RBC, 1, "cells/mcL");
-		newPage.assertRowShowsDefault(FieldNames.HB, 2, "mmol/L");
-		newPage.assertRowShowsDefault(FieldNames.HCT, 3, null);
-		newPage.assertRowShowsDefault(FieldNames.MCV, 4, "fL");
-		newPage.assertRowShowsDefault(FieldNames.MCH, 5, "pg");
-		newPage.assertRowShowsDefault(FieldNames.RDW, 6, "s.d.");
-		newPage.assertRowShowsDefault(FieldNames.RET, 7, "s.d.");
-		newPage.assertRowShowsDefault(FieldNames.WBC, 8, "cells/mcL");
-		newPage.assertRowShowsDefault(FieldNames.WBC_DIFF, 9, null);
-		newPage.assertRowShowsDefault(FieldNames.NEUTROPHIL, 10, null);
-		newPage.assertRowShowsDefault(FieldNames.NEUTROPHIL_IMMATURE, 11, null);
-		newPage.assertRowShowsDefault(FieldNames.LYMPHOCYTES, 12, null);
-		newPage.assertRowShowsDefault(FieldNames.MONOCYTES, 13, null);
-		newPage.assertRowShowsDefault(FieldNames.PLT, 14, "cells/mcL");
-		newPage.assertRowShowsDefault(FieldNames.MPV, 15, "fL");
-		newPage.assertRowShowsDefault(FieldNames.PDW, 16, null);
+		newPage.assertRowShowsDefault(RBC, 1);
+		newPage.assertRowShowsDefault(WBC, 8);
+		newPage.assertRowShowsDefault(PLT, 14);
 	}
 	
 	@Test
@@ -155,47 +145,53 @@ public class ITJournal extends WebDriverBase {
 		FormIndexPage indexPage = journalPage.getFormIndexPage();
 		FormEditPage newPage = indexPage.clickNewSurveyButton();
 		
-		newPage.assertFieldConstrained(FieldNames.RBC, "asdf-10.2", "10.2");
+		newPage.assertFieldConstrained(RBC, "asdf-10.2", "10.2");
 	}
 	
 	@Test
 	public void arrowKeysWork() {
 		// TODO: This is a minimal test and I already know arrow keys don't work across the row
 		// when there's a select control, at least in firefox.
+		createNewSurvey();
 		FormIndexPage indexPage = journalPage.getFormIndexPage();
 		indexPage.getMostRecentEntry();
 
 		WebElement first = driver.findElement(By.id("rbc"));
 		first.sendKeys(Keys.ARROW_DOWN);
 		WebElement currentElement = driver.switchTo().activeElement();
-		Assert.assertEquals("Has moved down one row", currentElement.getAttribute("value"), "201");
+		Assert.assertEquals("Has moved down one row", "3", currentElement.getAttribute("value"));
 		
 		currentElement.sendKeys(Keys.ARROW_UP);
 		currentElement = driver.switchTo().activeElement();
-		Assert.assertEquals("Has moved up one row", currentElement.getAttribute("value"), "101");
+		Assert.assertEquals("Has moved up one row", "2", currentElement.getAttribute("value"));
 	}
 
 	private void createNewSurvey() {
 		FormIndexPage indexPage = journalPage.getFormIndexPage();
 		FormEditPage newPage = indexPage.clickNewSurveyButton();
 		
-		newPage.setRow(FieldNames.RBC, 1, "cells/mcL");
-		newPage.setRow(FieldNames.HB, 2, "mmol/L");
-		newPage.setRow(FieldNames.HCT, 3, null);
-		newPage.setRow(FieldNames.MCV, 4, "fL");
-		newPage.setRow(FieldNames.MCH, 5, "pg");
-		newPage.setRow(FieldNames.RDW, 6, "s.d.");
-		newPage.setRow(FieldNames.RET, 7, "s.d.");
-		newPage.setRow(FieldNames.WBC, 8, "cells/mcL");
-		newPage.setRow(FieldNames.WBC_DIFF, 9, null);
-		newPage.setRow(FieldNames.NEUTROPHIL, 10, null);
-		newPage.setRow(FieldNames.NEUTROPHIL_IMMATURE, 11, null);
-		newPage.setRow(FieldNames.LYMPHOCYTES, 12, null);
-		newPage.setRow(FieldNames.MONOCYTES, 13, null);
-		newPage.setRow(FieldNames.PLT, 14, "cells/mcL");
-		newPage.setRow(FieldNames.MPV, 15, "fL");
-		newPage.setRow(FieldNames.PDW, 16, null);
+		newPage.setTestDate(TEST_DATE);
+		newPage.setRow(RBC, 1);
+		newPage.setRow(HB, 2);
+		newPage.setRow(HCT, 3);
+		newPage.setRow(MCV, 4);
+		newPage.setRow(MCH, 5);
+		newPage.setRow(RDW, 6);
+		newPage.setRow(RET, 7);
+		newPage.setRow(WBC, 8);
+		newPage.setRow(WBC_DIFF, 9);
+		newPage.setRow(NEUTROPHIL, 10);
+		newPage.setRow(NEUTROPHIL_IMMATURE, 11);
+		newPage.setRow(LYMPHOCYTES, 12);
+		newPage.setRow(MONOCYTES, 13);
+		newPage.setRow(PLT, 14);
+		newPage.setRow(MPV, 15);
+		newPage.setRow(PDW, 16);
 		newPage.submit();
 	}
 	
+	@Test
+	public void fieldsAreValidated() {
+		// TODO
+	}
 }
