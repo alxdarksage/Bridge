@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -16,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
+import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Lists;
 
@@ -59,7 +62,24 @@ public class DataTableTag extends SimpleTagSupport {
 	public void setCaption(String caption) {
 		this.caption = caption;
 	}
-
+	
+	public void setSpecificationColumns(SpecificationDataTableColumnTag columns) {
+		boolean first = true;
+		for (FormElement field : columns.getSpecification().getTableFields().values()) {
+			DataTableColumnTag column = new DataTableColumnTag();
+			column.setField(field.getName());
+			column.setLabel(field.getLabel());
+			if (first) {
+				column.setClassName(columns.getClassName());
+				column.setIcon(columns.getIcon());
+				column.setLink(columns.getLink());
+				column.setStatic(columns.getStat());
+				first = false;
+			}
+			addColumn(column);
+		}
+	}
+	
 	public void addColumn(DataTableColumnTag column) {
 		this.columns.add(column);
 	}

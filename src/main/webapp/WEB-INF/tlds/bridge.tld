@@ -206,6 +206,38 @@
         <!-- formatter to be added -->
     </tag>
     <tag>
+        <name>spec-column</name>
+        <tag-class>org.sagebionetworks.bridge.webapp.jsp.SpecificationDataTableColumnTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>A column in a data table</description>
+        <attribute>
+            <name>specification</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>static</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>link</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>icon</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>className</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <!-- formatter to be added -->
+    </tag>
+    <tag>
         <name>button</name>
         <tag-class>org.sagebionetworks.bridge.webapp.jsp.DataTableButtonTag</tag-class>
         <body-content>scriptless</body-content>
@@ -289,6 +321,24 @@
         <attribute>
             <name>field</name>
             <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>    
+    <tag>
+        <name>form-errors</name>
+        <tag-class>org.sagebionetworks.bridge.webapp.jsp.FormErrorsTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Renders a label for a form element (not just a field).
+        </description>
+        <attribute>
+            <name>field</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fields</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>    

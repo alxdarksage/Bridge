@@ -90,6 +90,7 @@ public class JournalController {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		model.addObject("spec", spec);
 		ClientUtils.prepareParticipantData(client, model, spec, formId);
 		model.setViewName("journal/forms/index");
 		return model;

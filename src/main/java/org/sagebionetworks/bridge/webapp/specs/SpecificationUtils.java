@@ -20,6 +20,14 @@ public class SpecificationUtils {
 		return sum;
 	}
 	
+	public static List<String> getSymbolsForUnits(Units... units) {
+		List<String> symbols = Lists.newArrayList();
+		for (Units unit : units) {
+			symbols.addAll(unit.getSymbols());
+		}
+		return symbols;
+	}
+	
 	private static void walkTree(List<FormElement> sum, FormElement element) {
 		sum.add(element);
 		if (element.getChildren() != null) {
