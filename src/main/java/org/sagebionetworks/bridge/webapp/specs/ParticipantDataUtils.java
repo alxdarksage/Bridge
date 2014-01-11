@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
-import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowSet;
 
@@ -46,7 +46,7 @@ public class ParticipantDataUtils {
 		List<String> newValues = Lists.newArrayList();
 		List<String> headers = Lists.newArrayList();
 		for (FormElement element : spec.getAllFormElements()) {
-			if (element.getType() != null) {
+			if (element.getType().getColumnType() != null) {
 				headers.add(element.getName());
 				String value = values.get(element.getName());
 				newValues.add(StringUtils.isEmpty(value) ? null : value);
@@ -63,9 +63,9 @@ public class ParticipantDataUtils {
 		List<String> newValues = Lists.newArrayList();
 		List<String> headers = Lists.newArrayList();
 		for (FormElement element : spec.getAllFormElements()) {
-			if (element.getType() != null) {
-				headers.add(element.getName());
+			if (element.getType().getColumnType() != null) {
 				if (!element.isReadonly()) {
+					headers.add(element.getName());
 					String value = values.get(element.getName());
 					newValues.add(StringUtils.isEmpty(value) ? null : value);
 				}

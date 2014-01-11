@@ -796,6 +796,11 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		}
 		RowSet oldData = participantDataByDescriptorById.get(participantDataDescriptorId);
 		if (oldData != null) {
+			// Or else you get an abstract list exception
+			List<Row> newList = new ArrayList<Row>();
+			newList.addAll(oldData.getRows());
+			newList.addAll(data.getRows());
+			oldData.setRows(newList);
 			oldData.getRows().addAll(data.getRows());
 		} else {
 			participantDataByDescriptorById.put(participantDataDescriptorId, data);
@@ -805,23 +810,32 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public RowSet updateParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
-		
-		RowSet oldData = participantDataByDescriptorById.get(participantDataDescriptorId);
-		if (oldData == null) {
+		RowSet existingData = participantDataByDescriptorById.get(participantDataDescriptorId);
+		if (existingData == null) {
 			RowSet emptyData = new RowSet();
 			emptyData.setHeaders(new ArrayList<String>());
 			emptyData.setRows(new ArrayList<Row>());
 			return emptyData;
 		}
+		if (data.getHeaders().size() != data.getRows().get(0).getValues().size()) {
+			logger.info(data.getHeaders().size() + ", " + data.getRows().get(0).getValues().size());
+			throw new IllegalArgumentException("The submitted data headers/row values are not the same length.");
+		}
 		for (Row row : data.getRows()) {
 			if (row.getRowId() == null) {
 				throw new SynapseException("Found previously unsaved row");
 			}
-			// This assumes the heading order never changes, which it could.
-			Row existing = findRowById(oldData, row.getRowId());
-			existing.setValues(row.getValues());
+			// Updates can be partial, uses the headers to determine which values are being updated.
+			Row existing = findRowById(existingData, row.getRowId());
+			
+			for (int i=0; i < data.getHeaders().size(); i++) {
+				String header = data.getHeaders().get(i);
+				int indexOf = existingData.getHeaders().indexOf(header);
+				logger.info("Header: " + header + ", indexOf: " + indexOf + ", i: " + i);
+				existing.getValues().set(indexOf, row.getValues().get(i));
+			}
 		}
-		return oldData; // or data?!?
+		return existingData;
 	}
 	
 	private Row findRowById(RowSet rowSet, Long id) {

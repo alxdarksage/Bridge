@@ -17,7 +17,6 @@ public class JournalPage {
 	
 	public void clickCompleteBloodCount() {
 		WebElement element = facade.findElement(By.partialLinkText(new CompleteBloodCount().getName()));
-		System.out.println(element);
 		element.click();
 	}
 	
