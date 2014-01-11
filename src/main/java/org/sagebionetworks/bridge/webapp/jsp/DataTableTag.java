@@ -71,20 +71,22 @@ public class DataTableTag extends SimpleTagSupport {
 	
 	public void setSpecificationColumns(SpecificationDataTableColumnTag columns) {
 		boolean first = true;
-		for (FormElement field : columns.getSpecification().getTableFields().values()) {
-			DataTableTag.converters.put(field.getName(), field.getStringConverter());
-			DataTableColumnTag column = new DataTableColumnTag();
-			column.setField(field.getName());
-			column.setLabel(field.getLabel());
-			if (first) {
-				column.setClassName(columns.getClassName());
-				column.setIcon(columns.getIcon());
-				column.setLink(columns.getLink());
-				column.setStatic(columns.getStat());
-				column.setConverterName(field.getName());
-				first = false;
+		if (columns.getSpecification() != null && columns.getSpecification().getTableFields() != null) {
+			for (FormElement field : columns.getSpecification().getTableFields().values()) {
+				DataTableTag.converters.put(field.getName(), field.getStringConverter());
+				DataTableColumnTag column = new DataTableColumnTag();
+				column.setField(field.getName());
+				column.setLabel(field.getLabel());
+				if (first) {
+					column.setClassName(columns.getClassName());
+					column.setIcon(columns.getIcon());
+					column.setLink(columns.getLink());
+					column.setStatic(columns.getStat());
+					column.setConverterName(field.getName());
+					first = false;
+				}
+				addColumn(column);
 			}
-			addColumn(column);
 		}
 	}
 	
