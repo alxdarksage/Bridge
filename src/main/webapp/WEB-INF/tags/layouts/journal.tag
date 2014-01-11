@@ -22,6 +22,9 @@
     <jsp:attribute name="content"><jsp:invoke fragment="content" /></jsp:attribute>
     <jsp:attribute name="scripts">
         <script src="<c:url value='/assets/journal.js'/>"></script>
-        <script>$("#dp3").datepicker();</script>
+        <script src="<c:url value='/static/webshims-stable/js-webshim/minified/polyfiller.js'/>"></script>
+        <script>
+        $.webshims.polyfill('forms forms-ext');
+        </script>
     </jsp:attribute>
 </sage:main>

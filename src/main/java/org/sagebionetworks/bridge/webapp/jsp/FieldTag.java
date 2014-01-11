@@ -142,6 +142,9 @@ public class FieldTag extends SpringAwareTag {
 		if (field.isReadonly()) {
 			tb.addAttribute("readonly", "readonly");
 		}
+		if (field.isRequired()) {
+			tb.addAttribute("required", "required");
+		}
 		tb.addAttribute("class", Joiner.on(" ").join(classes));
 	}
 	
