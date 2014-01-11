@@ -2,7 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
+import org.springframework.core.convert.converter.Converter;
 
 import com.google.common.collect.Lists;
 
@@ -10,6 +10,8 @@ public class FormGroup implements FormElement {
 
 	private final String label;
 	private final List<FormElement> children = Lists.newArrayList();
+	protected Converter<String, Object> objectConverter;
+	protected Converter<Object, String> stringConverter;
 	
 	public FormGroup(final String label) {
 		this.label = label;
@@ -31,8 +33,8 @@ public class FormGroup implements FormElement {
 	}
 	
 	@Override
-	public ParticipantDataColumnType getType() {
-		return null; // no type, just a container
+	public UIType getType() {
+		return UIType.GROUP;
 	}
 
 	@Override
@@ -58,6 +60,16 @@ public class FormGroup implements FormElement {
 	@Override
 	public boolean isReadonly() {
 		return false;
+	}
+
+	@Override
+	public Converter<String, Object> getObjectConverter() {
+		return objectConverter;
+	}
+
+	@Override
+	public Converter<Object, String> getStringConverter() {
+		return stringConverter;
 	}
 	
 	public void addField(FormField field) {

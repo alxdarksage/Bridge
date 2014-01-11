@@ -2,24 +2,21 @@
     <c:choose>
         <c:when test="${group.children[0].children.size() == 0}">
             <div class="form well">
-			    <table>
+			    <table class="inline">
 			        <thead>
 			            <tr>
 			                <th colspan="2"><h4><sage:form-label field="${group}"/></h4></th>
 			            </tr>
 			        </thead>
 			        <tbody>
-	                    <c:forEach var="row" items="${group.children}">
+	                    <c:forEach var="field" items="${group.children}">
 			                <tr>
-			                    <td style="width: 60%"><sage:form-label field="${row}"/></td>
+			                    <td style="width: 60%">
+                                    <sage:form-label field="${field}"/>
+                                    <sage:form-errors field="${field}"/>
+			                    </td>
 			                    <td>
-                                    <sage:field field="${row}" dynamicForm="${dynamicForm}" defaultedFields="${defaultedFields}"/>
-                                                <!-- 
-<div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
-    <input class="form-control" style="width:15rem!important" type="text" value="12-02-2012" readonly/>
-    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-</div>
-                                                     -->
+                                    <sage:field field="${field}" dynamicForm="${dynamicForm}" defaultedFields="${defaultedFields}"/>
   			                    </td>
 			                </tr>
 			            </c:forEach>

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -17,8 +18,8 @@ public class MoodTracker implements Specification {
 	private final FormField body;
 	
 	public MoodTracker() {
-		mind = new FormFieldBuilder().forField().asString().withName("Mind").withLabel("Mind").create();
-		body = new FormFieldBuilder().forField().asString().withName("Body").withLabel("Body").create();
+		mind = new FormFieldBuilder().asText().name("Mind").label("Mind").create();
+		body = new FormFieldBuilder().asText().name("Body").label("Body").create();
 	}
 	
 	@Override

@@ -17,7 +17,6 @@
 	           </tr>
 	       </table>
 	    </c:if>
-	    
 	    <c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/new.html"/>
 	    <form:form role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
 	        <%@ include file="_form.jsp" %>

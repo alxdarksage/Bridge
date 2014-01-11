@@ -4,14 +4,17 @@
             <tr>
                 <th><h4><sage:form-label field="${group}"/></h4></th>
                 <th>Value</th>
-                <th>Unit</th>
-                <th>Range</th>
+                <th>Units</th>
+                <th>Normal Range</th>
             </tr>
         </thead>
         <tbody>
             <c:forEach var="row" items="${group.children}">
                 <tr>
-                    <td><sage:form-label field="${row}"/></td>
+                    <td>
+                        <sage:form-label field="${row}"/>
+                        <sage:form-errors fields="${row.children}"/>
+                    </td>
                     <td data-title="${row.children[0].label}: ">
                        <sage:field field="${row.children[0]}" dynamicForm="${dynamicForm}" defaultedFields="${defaultedFields}"/>    
                     </td>

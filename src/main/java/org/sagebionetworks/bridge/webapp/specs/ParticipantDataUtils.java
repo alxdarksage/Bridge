@@ -4,13 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
-import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowSet;
 
@@ -30,12 +26,14 @@ public class ParticipantDataUtils {
 	public static List<ParticipantDataColumnDescriptor> getColumnDescriptors(String descriptorId, Specification spec) {
 		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList();
 		for (FormElement field : spec.getAllFormElements()) {
-			ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
-			column.setName(field.getName());
-			column.setDescription(field.getLabel());
-			column.setColumnType(field.getType()); 
-			column.setParticipantDataDescriptorId(descriptorId);
-			list.add(column);
+			if (field.getType().getColumnType() != null) {
+				ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
+				column.setName(field.getName());
+				column.setDescription(field.getLabel());
+				column.setColumnType(field.getType().getColumnType()); 
+				column.setParticipantDataDescriptorId(descriptorId);
+				list.add(column);
+			}
 		}
 		return list;
 	}
@@ -48,7 +46,7 @@ public class ParticipantDataUtils {
 		List<String> newValues = Lists.newArrayList();
 		List<String> headers = Lists.newArrayList();
 		for (FormElement element : spec.getAllFormElements()) {
-			if (element.getType() != null) {
+			if (element.getType().getColumnType() != null) {
 				headers.add(element.getName());
 				String value = values.get(element.getName());
 				newValues.add(StringUtils.isEmpty(value) ? null : value);
@@ -65,9 +63,9 @@ public class ParticipantDataUtils {
 		List<String> newValues = Lists.newArrayList();
 		List<String> headers = Lists.newArrayList();
 		for (FormElement element : spec.getAllFormElements()) {
-			if (element.getType() != null) {
-				headers.add(element.getName());
+			if (element.getType().getColumnType() != null) {
 				if (!element.isReadonly()) {
+					headers.add(element.getName());
 					String value = values.get(element.getName());
 					newValues.add(StringUtils.isEmpty(value) ? null : value);
 				}
@@ -85,31 +83,6 @@ public class ParticipantDataUtils {
 		data.setHeaders(headers);
 		data.setRows(Collections.singletonList(row));
 		return data;
-	}
-
-	// All data is stored in ParticipantData as a string type. And most of it comes from the UI
-	// in string form, so not all types may need to be converted, but you can overload this method.
-	public static String convertToString(DateTime datetime) {
-		return datetime.toString(ISODateTimeFormat.dateTime());
-	}
-	
-	public static Object convertToObject(ParticipantDataColumnType type, String value) {
-		if (StringUtils.isNotBlank(value) && !"null".equals(value)) {
-			switch(type) {
-			case FILEHANDLEID:
-			case STRING:
-				return value;
-			case DATETIME:
-				return DateTime.parse(value, ISODateTimeFormat.dateTime()).toDate();
-			case BOOLEAN:
-				return Boolean.valueOf(value);
-			case LONG:
-				return Long.parseLong(value);
-			case DOUBLE:
-				return Double.parseDouble(value);
-			}
-		}
-		return value;
 	}
 	
 }

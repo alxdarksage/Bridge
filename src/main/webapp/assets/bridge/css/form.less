@@ -19,8 +19,9 @@
 	th, td { padding: .5rem; }
 	th { text-align: left; vertical-align: bottom; }
 	td:first-child { width: 100%; }
-	input[type=text] { width: 5rem; display: inline-block; }
-	.form-control-static { display: inline-block; width: 5rem; padding: 7px 10px; }
+	input[type=text], input[type=number] { width: 6rem; display: inline-block; }
+	/* padding for this seemed unnecessary on Chrome, may be compensating on Safari */
+	.form-control-static { display: inline-block; width: 6rem; /*padding: 7px 10px;*/ }
 	select { width: 10rem ! important; }
 	h4 { font-family: 'Archivo Narrow'; }
 	
@@ -47,21 +48,34 @@
     border-radius: 3px;
 }
 @media (max-width: 600px) {
+	.inline {
+        h4 {
+            font-size: 1.7rem ! important;
+        }
+    }
     .grid {
         width: 100% ! important;
                 
         thead {
-            display: none;
+            h4 {
+                font-size: 1.7rem ! important;
+            }
+            th:not(:first-child) {
+                display: none;
+            }
         }
         td {
             border: none ! important;
-            padding: .5rem 0 .5rem 1rem ! important;
+            padding: .5rem 0 ! important;
             display: block ! important;
             width: 100% ! important;
+            vertical-align: middle;
         }
         td:before {
-           content: attr(data-title);
-           font-variant: small-caps;
+            display: inline-block;
+			content: attr(data-title);
+			width: 50% !important;
+			vertical-align: middle
         }
         td:not([data-title]) {
             display: none ! important;

@@ -31,7 +31,6 @@ import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.client.BridgeClient;
@@ -283,7 +282,7 @@ public class ClientUtils {
 				FormElement field = entry.getValue();
 				String serValue = row.getValues().get( headers.indexOf(fieldName) );
 				
-				values.add( ParticipantDataUtils.convertToObject(field.getType(), serValue) );
+				values.add( field.getObjectConverter().convert(serValue) );
 			}
 			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 		}

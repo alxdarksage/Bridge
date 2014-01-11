@@ -85,9 +85,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 
 	// Participant data
 	Map<String,ParticipantDataDescriptor> descriptorsById = Maps.newHashMap();
-	Multimap<String,ParticipantDataDescriptor> descriptorsByUserId = LinkedListMultimap.create();
-	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorId = LinkedListMultimap.create();
-	Map<String, RowSet> participantDataByDescriptorId = Maps.newHashMap();
+	Multimap<String,ParticipantDataDescriptor> descriptorsByUserById = LinkedListMultimap.create();
+	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorById = LinkedListMultimap.create();
+	Map<String, RowSet> participantDataByDescriptorById = Maps.newHashMap();
 	
 	String timPowersId;
 	
@@ -794,34 +794,48 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		for (Row row : data.getRows()) {
 			row.setRowId(Long.parseLong(newId()));
 		}
-		RowSet oldData = participantDataByDescriptorId.get(participantDataDescriptorId);
+		RowSet oldData = participantDataByDescriptorById.get(participantDataDescriptorId);
 		if (oldData != null) {
+			// Or else you get an abstract list exception
+			List<Row> newList = new ArrayList<Row>();
+			newList.addAll(oldData.getRows());
+			newList.addAll(data.getRows());
+			oldData.setRows(newList);
 			oldData.getRows().addAll(data.getRows());
 		} else {
-			participantDataByDescriptorId.put(participantDataDescriptorId, data);
+			participantDataByDescriptorById.put(participantDataDescriptorId, data);
 		}
 		return oldData; // or data?!?
 	}
 
 	@Override
 	public RowSet updateParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
-		
-		RowSet oldData = participantDataByDescriptorId.get(participantDataDescriptorId);
-		if (oldData == null) {
+		RowSet existingData = participantDataByDescriptorById.get(participantDataDescriptorId);
+		if (existingData == null) {
 			RowSet emptyData = new RowSet();
 			emptyData.setHeaders(new ArrayList<String>());
 			emptyData.setRows(new ArrayList<Row>());
 			return emptyData;
 		}
+		if (data.getHeaders().size() != data.getRows().get(0).getValues().size()) {
+			logger.info(data.getHeaders().size() + ", " + data.getRows().get(0).getValues().size());
+			throw new IllegalArgumentException("The submitted data headers/row values are not the same length.");
+		}
 		for (Row row : data.getRows()) {
 			if (row.getRowId() == null) {
 				throw new SynapseException("Found previously unsaved row");
 			}
-			// This assumes the heading order never changes, which it could.
-			Row existing = findRowById(oldData, row.getRowId());
-			existing.setValues(row.getValues());
+			// Updates can be partial, uses the headers to determine which values are being updated.
+			Row existing = findRowById(existingData, row.getRowId());
+			
+			for (int i=0; i < data.getHeaders().size(); i++) {
+				String header = data.getHeaders().get(i);
+				int indexOf = existingData.getHeaders().indexOf(header);
+				logger.info("Header: " + header + ", indexOf: " + indexOf + ", i: " + i);
+				existing.getValues().set(indexOf, row.getValues().get(i));
+			}
 		}
-		return oldData; // or data?!?
+		return existingData;
 	}
 	
 	private Row findRowById(RowSet rowSet, Long id) {
@@ -837,7 +851,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	public PaginatedRowSet getParticipantData(String participantDataDescriptorId, long limit, long offset)
 			throws SynapseException {
 		// TODO: This is not actually paged.
-		RowSet data = participantDataByDescriptorId.get(participantDataDescriptorId);
+		RowSet data = participantDataByDescriptorById.get(participantDataDescriptorId);
 		if (data == null) {
 			RowSet emptyData = new RowSet();
 			emptyData.setHeaders(new ArrayList<String>());
@@ -862,7 +876,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		status.setParticipantDataDescriptorId(descriptor.getId());
 		descriptor.setStatus(status);
 		descriptorsById.put(descriptor.getId(), descriptor);
-		descriptorsByUserId.put(currentUserData.getProfile().getOwnerId(), descriptor);
+		descriptorsByUserById.put(currentUserData.getProfile().getOwnerId(), descriptor);
 		return descriptor;
 	}
 
@@ -876,7 +890,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
 			throws SynapseException {
 		String ownerId = currentUserData.getProfile().getOwnerId();
-		return toResults(descriptorsByUserId.get(ownerId), limit, offset);
+		return toResults(descriptorsByUserById.get(ownerId), limit, offset);
 	}
 
 	@Override
@@ -886,14 +900,14 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 			throw new SynapseException("You must include a ParticipantDataDescriptor id before creating this column");
 		}
 		column.setId(newId());
-		columnsByDescriptorId.put(column.getParticipantDataDescriptorId(), column);
+		columnsByDescriptorById.put(column.getParticipantDataDescriptorId(), column);
 		return column;
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataColumnDescriptor> getParticipantDataColumnDescriptors(
 			String descriptorId, long limit, long offset) throws SynapseException {
-		return toResults(columnsByDescriptorId.get(descriptorId), limit, offset);
+		return toResults(columnsByDescriptorById.get(descriptorId), limit, offset);
 	}
 
 	@Override

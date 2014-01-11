@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -16,7 +17,7 @@ public class LifestyleSurvey implements Specification {
 	private FormField oneField;
 	
 	public LifestyleSurvey() {
-		oneField = new FormFieldBuilder().forField().asString().withName("feelings").withLabel("Feelings").create();
+		oneField = new FormFieldBuilder().asText().name("feelings").label("Feelings").create();
 	}
 	
 	@Override

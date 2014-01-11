@@ -92,6 +92,7 @@ public class JournalController {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		model.addObject("spec", spec);
 		ClientUtils.prepareParticipantData(client, model, spec, formId);
 		model.setViewName("journal/forms/index");
 		return model;
@@ -146,6 +147,7 @@ public class JournalController {
 			BindingResult result, ModelAndView model) throws SynapseException {
 
 		updateRow(request, formId, dynamicForm, result, model, rowId);
+		model.addObject("rowId", rowId);
 		if (result.hasErrors()) {
 			model.setViewName("journal/forms/edit");
 			return model;
@@ -222,12 +224,13 @@ public class JournalController {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		model.addObject("rowId", rowId);
 		
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
 		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
 		
-		model.addObject("rowId", rowId);
 		model.setViewName("journal/forms/edit");
 		return model;
 	}
+
 }

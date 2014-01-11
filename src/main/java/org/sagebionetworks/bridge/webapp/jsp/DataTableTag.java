@@ -1,10 +1,10 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -15,19 +15,28 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converters.DateToDateTimeStringConverter;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
+import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.springframework.core.convert.converter.Converter;
 
 import com.google.common.collect.Lists;
 
 public class DataTableTag extends SimpleTagSupport {
 
 	private static final Logger logger = LogManager.getLogger(DataTableTag.class.getName());
+	
+	private static Map<String, Converter<Object,String>> converters = new HashMap<String,Converter<Object,String>>();
+	static {
+		converters.put("date", new DateToDateStringConverter());
+		converters.put("datetime", new DateToDateTimeStringConverter());
+	}
 
 	private TagBuilder tb = new TagBuilder();
 
-	private SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy (hh:mm a)");
-
 	private PropertyUtilsBean pub = new PropertyUtilsBean();
+	
 
 	private String formId;
 	private String itemId;
@@ -59,7 +68,28 @@ public class DataTableTag extends SimpleTagSupport {
 	public void setCaption(String caption) {
 		this.caption = caption;
 	}
-
+	
+	public void setSpecificationColumns(SpecificationDataTableColumnTag columns) {
+		boolean first = true;
+		if (columns.getSpecification() != null && columns.getSpecification().getTableFields() != null) {
+			for (FormElement field : columns.getSpecification().getTableFields().values()) {
+				DataTableTag.converters.put(field.getName(), field.getStringConverter());
+				DataTableColumnTag column = new DataTableColumnTag();
+				column.setField(field.getName());
+				column.setLabel(field.getLabel());
+				if (first) {
+					column.setClassName(columns.getClassName());
+					column.setIcon(columns.getIcon());
+					column.setLink(columns.getLink());
+					column.setStatic(columns.getStat());
+					column.setConverterName(field.getName());
+					first = false;
+				}
+				addColumn(column);
+			}
+		}
+	}
+	
 	public void addColumn(DataTableColumnTag column) {
 		this.columns.add(column);
 	}
@@ -208,8 +238,9 @@ public class DataTableTag extends SimpleTagSupport {
 				logger.error(e);
 			}
 		}
-		if (value instanceof Date) {
-			value = formatter.format(value);
+		Converter<Object,String> converter = converters.get(column.getConverterName());
+		if (converter != null) {
+			value = converter.convert(value);
 		}
 		return value;
 	}

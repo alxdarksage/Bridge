@@ -13,4 +13,7 @@ public class EnumeratedFormField extends FormField {
 	public List<String> getEnumeratedValues() {
 		return enumeratedValues;
 	}
+	public void setEnumeratedValues(List<String> values) {
+		enumeratedValues = values;
+	}
 }

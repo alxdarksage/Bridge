@@ -8,7 +8,7 @@
         <sage:button id="newCommunityAct" type="primary" label="New Community" action="/admin/communities/new.html"/>
         <sage:column label="Name" field="name" link="/admin/communities/{id}.html" className="nowrap"/>
         <sage:column label="Description" field="description"/>
-        <sage:column label="Created" field="createdOn"/>
+        <sage:column label="Created" field="createdOn" converterName="datetime"/>
         <sage:column label="" icon="eye-open" static="View" link="/communities/{id}.html" className="nowrap"/>
         <sage:button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this community?"/>
     </sage:table>

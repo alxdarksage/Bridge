@@ -5,57 +5,43 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-public class DataTableColumnTag extends SimpleTagSupport {
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 
-	private String label;
-	private String field;
+public class SpecificationDataTableColumnTag extends SimpleTagSupport {
+
+	private Specification specification;
 	private String link;
 	private String icon;
 	private String stat;
 	private String className;
-	private String converterName;
 	
 	@Override
 	public void doTag() throws JspException, IOException {
 		DataTableTag table = (DataTableTag)getParent();
-		table.addColumn(this);
+		table.setSpecificationColumns(this);
 	}
-
-	public String getLabel() {
-		return label;
+	public Specification getSpecification() {
+		return specification;
 	}
-
-	public void setLabel(String label) {
-		this.label = label;
+	public void setSpecification(Specification specification) {
+		this.specification = specification;
 	}
-
-	public String getField() {
-		return field;
-	}
-
-	public void setField(String field) {
-		this.field = field;
-	}
-
 	public String getLink() {
 		return link;
 	}
-
 	public void setLink(String link) {
 		this.link = link;
 	}
-
 	public String getIcon() {
 		return icon;
 	}
-
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-	public String getStatic() {
+	public String getStat() {
 		return stat;
 	}
-	public void setStatic(String stat) {
+	public void setStat(String stat) {
 		this.stat = stat;
 	}
 	public String getClassName() {
@@ -64,11 +50,4 @@ public class DataTableColumnTag extends SimpleTagSupport {
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	public String getConverterName() {
-		return converterName;
-	}
-	public void setConverterName(String converterName) {
-		this.converterName = converterName;
-	}
-	
 }
