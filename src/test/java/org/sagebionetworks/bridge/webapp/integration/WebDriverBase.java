@@ -16,6 +16,7 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
+		/*
 		if (StackConfiguration.isDevelopStack()) {
 			// Does not work with version 26.0 of Firefox on my machine. Downgraded
 			// Firefox to version 25.0 for the time being.
@@ -23,6 +24,9 @@ public class WebDriverBase {
 		} else {
 			_driver = createPhantomJSDriver();
 		}
+		*/
+		_driver = createPhantomJSDriver();
+		
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
