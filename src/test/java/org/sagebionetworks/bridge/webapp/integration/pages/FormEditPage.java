@@ -8,6 +8,13 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+/**
+ * The shim we're currently using to get HTML5 form behavior, will sometimes hide fields
+ * and replace them with simulated controls. In this case the original fields are hidden
+ * and can't be accessed via WebDriver, so there is more than the usual amount of JavaScript
+ * in this test to work around that (accessing the hidden fields directly).
+ *
+ */
 public class FormEditPage {
 	
 	private static final Logger logger = LogManager.getLogger(FormEditPage.class.getName());
@@ -66,25 +73,30 @@ public class FormEditPage {
 	}
 	
 	public void setTestDate(String value) {
-		facade.enterField("#testedOn", value);
+		facade.executeJavaScript("document.querySelector('#testedOn').value = '"+value+"'");
 	}
-	public void assertTestDate(String value) {
-		facade.assertFieldValue("#testedOn", value);
+	public void assertTestDate(String expectedValue) {
+		String valueInForm = facade.executeJavaScriptForString("return document.querySelector('#testedOn').value");
+		Assert.assertEquals("Correct value", expectedValue, valueInForm);
 	}
 	private void setValue(FieldNames field, String value) {
-		facade.enterField("#"+field.name().toLowerCase(), value);
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"').value = '"+value+"'");
 	}
 	private void setUnits(FieldNames field, String value) {
-		facade.enterField("#"+field.name().toLowerCase()+"_units", value);
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"_units').value = '"+value+"'");
 	}
 	private void setLowRange(FieldNames field, String value) {
-		facade.enterField("#"+field.name().toLowerCase()+"_range_low", value);
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"_range_low').value = '"+value+"'");
 	}
 	private void setHighRange(FieldNames field, String value) {
-		facade.enterField("#"+field.name().toLowerCase()+"_range_high", value);
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"_range_high').value = '"+value+"'");
 	}
 	
 	public void assertFieldConstrained(FieldNames field, String value, String expected) {
+		// You can't set the field directly to bypass the fact that it is hidden, because this generates no 
+		// key events and the key events are being constrained. Here you must force the element to be 
+		// visible so WebDriver can interact with it.
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"').setAttribute('style','display:block!important;visibility:visible!important')");
 		facade.enterField("#"+field.name().toLowerCase(), value);
 		String actual = facade.getFieldValue("#"+field.name().toLowerCase());
 		Assert.assertEquals("Value constrained", expected, actual);

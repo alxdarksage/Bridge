@@ -155,12 +155,19 @@ public class WebDriverFacade implements WebDriver {
 		});
 	}
 	
+	public String executeJavaScriptForString(String javascript) {
+		if (driver instanceof JavascriptExecutor) {
+			return ((JavascriptExecutor) driver).executeScript(javascript).toString();
+		} else {
+			throw new RuntimeException("Cannot execute JS using this Selenium driver");
+		}
+	}
 	public void executeJavaScript(String javascript) {
 		if (driver instanceof JavascriptExecutor) {
 			((JavascriptExecutor) driver).executeScript(javascript);
 		} else {
 			throw new RuntimeException("Cannot execute JS using this Selenium driver");
-		}		
+		}
 	}
 	public AdminPage waitForAdminPage() {
 		waitForTitle(AdminPage.TITLE);
