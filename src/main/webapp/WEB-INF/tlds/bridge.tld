@@ -42,6 +42,26 @@
         <name>router</name>
         <path>/WEB-INF/tags/components/router.tag</path>
     </tag-file>
+    <tag-file>
+        <name>list</name>
+        <path>/WEB-INF/tags/components/list.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>range-norm-bar</name>
+        <path>/WEB-INF/tags/components/range-norm-bar.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>group</name>
+        <path>/WEB-INF/tags/components/group.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>range</name>
+        <path>/WEB-INF/tags/components/range.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>grid</name>
+        <path>/WEB-INF/tags/components/grid.tag</path>
+    </tag-file>
 
     <!-- FORMS (SPRING + BOOTSTRAP) -->
     <tag-file>

@@ -36,7 +36,12 @@ public class LifestyleSurvey implements Specification {
 	}
 
 	@Override
-	public FormElement getFormStructure() {
+	public FormElement getEditStructure() {
+		return oneField;
+	}
+
+	@Override
+	public FormElement getShowStructure() {
 		return oneField;
 	}
 

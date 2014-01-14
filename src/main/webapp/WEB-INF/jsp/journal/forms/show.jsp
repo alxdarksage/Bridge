@@ -13,6 +13,6 @@
         <a id="editAct" class="btn btn-sm btn-primary bottomSpaced" href="${editUrl}">
             Edit This Survey
         </a>
-        <sage:router element="${form.formStructure}"/>
+        <sage:router element="${form.showStructure}"/>
     </jsp:attribute>
 </sage:journal>

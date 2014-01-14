@@ -20,7 +20,7 @@
 	    
 	    <c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/new.html"/>
 	    <form:form role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
-            <sage:router element="${form.formStructure}"/>
+            <sage:router element="${form.editStructure}"/>
             <sage:submit code="Save"/>
             <sage:cancel url="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html"/>
 	    </form:form>

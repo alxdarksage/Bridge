@@ -39,6 +39,15 @@ public class FormFieldBuilder {
 		return temp;
 	}
 	
+	public FormFieldBuilder asValue() {
+		if (field != null) {
+			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
+		}
+		field = new FormField();
+		field.setType(UIType.VALUE);
+		return this;
+	}
+	
 	public FormFieldBuilder asText() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);

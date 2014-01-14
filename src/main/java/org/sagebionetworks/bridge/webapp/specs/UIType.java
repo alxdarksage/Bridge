@@ -13,6 +13,9 @@ public enum UIType {
 	ROW,
 	// Two fields grouped together as a range of values.
 	RANGE,
+	RANGE_NORM_BAR,
+	// Just the key to the column and its type, so the value can be output as a formatted string.
+	VALUE,
 	DATE(ParticipantDataColumnType.DATETIME),
 	DATETIME(ParticipantDataColumnType.DATETIME),
 	TEXT_INPUT(ParticipantDataColumnType.STRING),
@@ -20,6 +23,7 @@ public enum UIType {
 	DECIMAL_INPUT(ParticipantDataColumnType.DOUBLE),
 	SINGLE_SELECT(ParticipantDataColumnType.STRING),
 	CHECKBOX(ParticipantDataColumnType.BOOLEAN);
+	
 
 	private ParticipantDataColumnType columnType;
 	

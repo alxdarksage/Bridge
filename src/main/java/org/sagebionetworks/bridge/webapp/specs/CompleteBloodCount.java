@@ -30,7 +30,7 @@ public class CompleteBloodCount implements Specification {
 
 	private static final String CREATED_ON = "createdOn";
 	private static final String MODIFIED_ON = "modifiedOn";
-	private static final String TESTED_ON = "testedOn";
+	private static final String COLLECTED_ON = "collectedOn";
 
 	private static final String UNITS_SUFFIX = "_units";
 	private static final String RANGE_LOW_SUFFIX = "_range_low";
@@ -46,11 +46,10 @@ public class CompleteBloodCount implements Specification {
 	private final List<String> PG = Units.PICOGRAM.getSymbols();
 	
 	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Prick", "IV Central Line", "Central Prick");
-			
 
 	Map<String,FormElement> metadata = Maps.newHashMap();
-	// List<FormElement> metadata = Lists.newArrayList();
-	List<FormElement> displayRows = Lists.newArrayList();
+	List<FormElement> editRows = Lists.newArrayList();
+	List<FormElement> showRows = Lists.newArrayList();
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
 
 	public CompleteBloodCount() {
@@ -71,39 +70,69 @@ public class CompleteBloodCount implements Specification {
 		
 		List<FormElement> rows = Lists.newArrayList();
 		
-		FormField testedOn = builder.asDate().name(TESTED_ON).label("Date of test").required().create();
-		rows.add(testedOn);
-		tableFields.put(TESTED_ON, testedOn);
+		FormField collectedOn = builder.asDate().name(COLLECTED_ON).label("Collection date").required().create();
+		rows.add(collectedOn);
+		tableFields.put(COLLECTED_ON, collectedOn);
 		
 		FormField eff = builder.asEnum(COLLECTION_METHODS).name("draw_type").label("Draw type").defaultable().create();
 		rows.add(eff);
-		displayRows.add( new FormGroup("General information", rows) );
+		editRows.add( new FormGroup("General information", rows) );
 		
 		rows = Lists.newArrayList();
-		rows.add( addRow(MILLIONS, "rbc", "Red cells (Erythrocytes / RBC)") );
-		rows.add( addRow(DL, "hb", "Hemoglobin (Hb)") );
-		rows.add( addPercentageRow(PERC, "hct", "Hematocrit (HCT)") );
-		rows.add( addRow(FL, "mcv", "Mean corpuscular volume (MCV)") );
-		rows.add( addRow(PG, "mch", "Mean corpuscular hemoglobin (MCH)") );
-		rows.add( addPercentageRow(PERC, "rdw", "RBC distribution width (RDW)") );
-		rows.add( addPercentageRow(PERC, "ret", "Reticulocyte count (Ret)") );
-		displayRows.add( new FormGrid("Red blood cells", rows, GRID_HEADERS) );
+		rows.add( addEditRow(MILLIONS, "rbc", "Red cells (Erythrocytes / RBC)") );
+		rows.add( addEditRow(DL, "hb", "Hemoglobin (Hb)") );
+		rows.add( addEditPercRow(PERC, "hct", "Hematocrit (HCT)") );
+		rows.add( addEditRow(FL, "mcv", "Mean corpuscular volume (MCV)") );
+		rows.add( addEditRow(PG, "mch", "Mean corpuscular hemoglobin (MCH)") );
+		rows.add( addEditPercRow(PERC, "rdw", "RBC distribution width (RDW)") );
+		rows.add( addEditPercRow(PERC, "ret", "Reticulocyte count (Ret)") );
+		editRows.add( new FormGrid("Red blood cells", rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
-		rows.add( addRow(THOUSANDS, "wbc", "White cells (Leukocytes / WBC)") );
-		rows.add( addPercentageRow(PERC, "wbc_diff", "WBC differential (WBC Diff)") );
-		// But these can also be counts...
-		rows.add( addPercentageRow(PERC, "neutrophil", "Neutrophil") );
-		rows.add( addPercentageRow(PERC, "neutrophil_immature", "Immature Neutrophil (band neutrophil)") );
-		rows.add( addPercentageRow(PERC, "lymphocytes", "Lymphocytes") );
-		rows.add( addPercentageRow(PERC, "monocytes", "Monocytes") );
-		displayRows.add( new FormGrid("White blood cells", rows, GRID_HEADERS) );
+		rows.add( addEditRow(THOUSANDS, "wbc", "White cells (Leukocytes / WBC)") );
+		rows.add( addEditPercRow(PERC, "wbc_diff", "WBC differential (WBC Diff)") );
+		rows.add( addEditPercRow(PERC, "neutrophil", "Neutrophil") );
+		rows.add( addEditPercRow(PERC, "neutrophil_immature", "Immature Neutrophil (band neutrophil)") );
+		rows.add( addEditPercRow(PERC, "lymphocytes", "Lymphocytes") );
+		rows.add( addEditPercRow(PERC, "monocytes", "Monocytes") );
+		editRows.add( new FormGrid("White blood cells", rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
-		rows.add( addRow(THOUSANDS, "plt", "Platelet count (Thrombocyte / PLT)") );
-		rows.add( addRow(FL, "mpv", "Mean platelet volume (MPV)") );
-		rows.add( addPercentageRow(PERC, "pdw", "Platelet distribution width (PDW)") );
-		displayRows.add( new FormGrid("Platelets", rows, GRID_HEADERS) );
+		rows.add( addEditRow(THOUSANDS, "plt", "Platelet count (Thrombocyte / PLT)") );
+		rows.add( addEditRow(FL, "mpv", "Mean platelet volume (MPV)") );
+		rows.add( addEditPercRow(PERC, "pdw", "Platelet distribution width (PDW)") );
+		editRows.add( new FormGrid("Platelets", rows, GRID_HEADERS) );
+		
+		// EEEK
+		rows = Lists.newArrayList();
+		rows.add(builder.asValue().name(COLLECTED_ON).label("Collection date").create());
+		rows.add(builder.asValue().name("draw_type").label("Draw type").defaultable().create());
+		showRows.add( new FormGroup("General information", rows) );
+		
+		rows = Lists.newArrayList();
+		rows.add( addShowRow("rbc", "Red cells (Erythrocytes / RBC)") );
+		rows.add( addShowRow("hb", "Hemoglobin (Hb)") );
+		rows.add( addShowRow("hct", "Hematocrit (HCT)") );
+		rows.add( addShowRow("mcv", "Mean corpuscular volume (MCV)") );
+		rows.add( addShowRow("mch", "Mean corpuscular hemoglobin (MCH)") );
+		rows.add( addShowRow("rdw", "RBC distribution width (RDW)") );
+		rows.add( addShowRow("ret", "Reticulocyte count (Ret)") );
+		showRows.add( new FormGroup("Red blood cells", rows) );
+		
+		rows = Lists.newArrayList();
+		rows.add( addShowRow("wbc", "White cells (Leukocytes / WBC)") );
+		rows.add( addShowRow("wbc_diff", "WBC differential (WBC Diff)") );
+		rows.add( addShowRow("neutrophil", "Neutrophil") );
+		rows.add( addShowRow("neutrophil_immature", "Immature Neutrophil (band neutrophil)") );
+		rows.add( addShowRow("lymphocytes", "Lymphocytes") );
+		rows.add( addShowRow("monocytes", "Monocytes") );
+		showRows.add( new FormGroup("White blood cells", rows) );
+		
+		rows = Lists.newArrayList();
+		rows.add( addShowRow("plt", "Platelet count (Thrombocyte / PLT)") );
+		rows.add( addShowRow("mpv", "Mean platelet volume (MPV)") );
+		rows.add( addShowRow("pdw", "Platelet distribution width (PDW)") );
+		showRows.add( new FormGroup("Platelets", rows) );
 	}
 
 	@Override
@@ -133,13 +162,18 @@ public class CompleteBloodCount implements Specification {
 	}
 
 	@Override
-	public FormElement getFormStructure() {
-		return new FormGroup(UIType.LIST, "CBC", displayRows);
+	public FormElement getEditStructure() {
+		return new FormGroup(UIType.LIST, "CBC", editRows);
+	}
+	
+	@Override
+	public FormElement getShowStructure() {
+		return new FormGroup(UIType.LIST, "CBC",showRows);
 	}
 	
 	@Override
 	public List<FormElement> getAllFormElements() {
-		List<FormElement> list = SpecificationUtils.toList(displayRows);
+		List<FormElement> list = SpecificationUtils.toList(editRows);
 		for (FormElement field : metadata.values()) {
 			list.add(field);
 		}
@@ -191,7 +225,11 @@ public class CompleteBloodCount implements Specification {
 		}
 	}
 	
-	private FormGroup addRow(List<String> unitEnumeration, String name, String description) {
+	private FormElement addShowRow(String name, String description) {
+		return new RangeNormBar(description, name, name + UNITS_SUFFIX, name + RANGE_LOW_SUFFIX, name + RANGE_HIGH_SUFFIX);
+	}
+	
+	private FormGroup addEditRow(List<String> unitEnumeration, String name, String description) {
 		FormGroup row = new FormGroup(UIType.ROW, description);
 		
 		FormFieldBuilder builder = new FormFieldBuilder();
@@ -219,7 +257,7 @@ public class CompleteBloodCount implements Specification {
 		return row;
 	}
 	
-	private FormGroup addPercentageRow(List<String> unitEnumeration, String name, String description) {
+	private FormGroup addEditPercRow(List<String> unitEnumeration, String name, String description) {
 		FormGroup row = new FormGroup(UIType.ROW, description);
 		
 		FormFieldBuilder builder = new FormFieldBuilder();
