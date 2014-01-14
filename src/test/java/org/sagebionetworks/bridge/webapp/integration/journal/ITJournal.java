@@ -66,7 +66,7 @@ public class ITJournal extends WebDriverBase {
 	public void surveyCanBeCreatedAndUpdated() {
 		createNewSurvey();
 		FormIndexPage indexPage = journalPage.getFormIndexPage();
-		FormEditPage editPage = indexPage.getMostRecentEntry();
+		FormEditPage editPage = indexPage.getMostRecentEntry().clickEditSurveyButton();
 		editPage.assertTestDate(TEST_DATE);
 		editPage.assertDefaultedValuesExplanationNotPresent();
 		editPage.assertRow(RBC, 1);
@@ -104,7 +104,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(PDW, 18);
 		editPage.submit();
 		
-		editPage = indexPage.getMostRecentEntry();
+		editPage = indexPage.getMostRecentEntry().clickEditSurveyButton();
 		editPage.assertDefaultedValuesExplanationNotPresent();
 		editPage.assertTestDate(TEST_DATE);
 		editPage.assertRow(RBC, 3);

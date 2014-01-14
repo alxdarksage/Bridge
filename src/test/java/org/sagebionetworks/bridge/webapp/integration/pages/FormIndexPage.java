@@ -31,10 +31,10 @@ public class FormIndexPage {
 		return new FormEditPage(facade);
 	}
 	
-	public FormEditPage getMostRecentEntry() {
+	public FormShowPage getMostRecentEntry() {
 		clickLastRow();
-		facade.waitForHeader(FormEditPage.EDIT_HEADER);
-		return new FormEditPage(facade);
+		facade.waitForHeader(FormShowPage.HEADER);
+		return new FormShowPage(facade);
 	}
 	
 }

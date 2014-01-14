@@ -11,7 +11,9 @@
 	
 	    <c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/row/${rowId}.html"/>
 	    <form:form role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
-	        <%@ include file="_form.jsp" %>
+            <sage:router element="${form.formStructure}"/>
+            <sage:submit code="Save"/>
+            <sage:cancel url="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html"/>
 	    </form:form> 
     </jsp:attribute>
 </sage:journal>

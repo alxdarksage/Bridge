@@ -19,7 +19,6 @@ public class CompleteBloodCount implements Specification {
 
 	private static final Logger logger = LogManager.getLogger(CompleteBloodCount.class.getName());
 
-	private static long MICROLITER = 10000L;
 	private static long THOUSAND = 1000L;
 	private static long MILLION =  1000000L;
 	private static long BILLION =  1000000000L;
@@ -37,6 +36,8 @@ public class CompleteBloodCount implements Specification {
 	private static final String RANGE_LOW_SUFFIX = "_range_low";
 	private static final String RANGE_HIGH_SUFFIX = "_range_high";
 
+	private static final List<String> GRID_HEADERS = Lists.newArrayList("Value", "Units", "Normal Range");
+	
 	private final List<String> THOUSANDS = SpecificationUtils.getSymbolsForUnits(Units.THOUSANDS_PER_MICROLITER, Units.BILLIONS_PER_LITER);
 	private final List<String> MILLIONS = SpecificationUtils.getSymbolsForUnits(Units.MILLIONS_PER_MICROLITER, Units.TRILLIONS_PER_LITER);
 	private final List<String> PERC = Units.PERCENTAGE.getSymbols();
@@ -45,6 +46,7 @@ public class CompleteBloodCount implements Specification {
 	private final List<String> PG = Units.PICOGRAM.getSymbols();
 	
 	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Prick", "IV Central Line", "Central Prick");
+			
 
 	Map<String,FormElement> metadata = Maps.newHashMap();
 	// List<FormElement> metadata = Lists.newArrayList();
@@ -85,7 +87,7 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addRow(PG, "mch", "Mean corpuscular hemoglobin (MCH)") );
 		rows.add( addPercentageRow(PERC, "rdw", "RBC distribution width (RDW)") );
 		rows.add( addPercentageRow(PERC, "ret", "Reticulocyte count (Ret)") );
-		displayRows.add( new FormGroup("Red blood cells", rows) );
+		displayRows.add( new FormGrid("Red blood cells", rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
 		rows.add( addRow(THOUSANDS, "wbc", "White cells (Leukocytes / WBC)") );
@@ -95,13 +97,13 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addPercentageRow(PERC, "neutrophil_immature", "Immature Neutrophil (band neutrophil)") );
 		rows.add( addPercentageRow(PERC, "lymphocytes", "Lymphocytes") );
 		rows.add( addPercentageRow(PERC, "monocytes", "Monocytes") );
-		displayRows.add( new FormGroup("White blood cells", rows) );
+		displayRows.add( new FormGrid("White blood cells", rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
 		rows.add( addRow(THOUSANDS, "plt", "Platelet count (Thrombocyte / PLT)") );
 		rows.add( addRow(FL, "mpv", "Mean platelet volume (MPV)") );
 		rows.add( addPercentageRow(PERC, "pdw", "Platelet distribution width (PDW)") );
-		displayRows.add( new FormGroup("Platelets", rows) );
+		displayRows.add( new FormGrid("Platelets", rows, GRID_HEADERS) );
 	}
 
 	@Override
@@ -124,6 +126,7 @@ public class CompleteBloodCount implements Specification {
 		return null;
 	}
 	
+	// Currently, not used anywhere.
 	@Override
 	public FormLayout getFormLayout() {
 		return FormLayout.GRID;
@@ -131,7 +134,7 @@ public class CompleteBloodCount implements Specification {
 
 	@Override
 	public FormElement getFormStructure() {
-		return new FormGroup("CBC", displayRows);
+		return new FormGroup(UIType.LIST, "CBC", displayRows);
 	}
 	
 	@Override
@@ -189,7 +192,7 @@ public class CompleteBloodCount implements Specification {
 	}
 	
 	private FormGroup addRow(List<String> unitEnumeration, String name, String description) {
-		FormGroup row = new FormGroup(description);
+		FormGroup row = new FormGroup(UIType.ROW, description);
 		
 		FormFieldBuilder builder = new FormFieldBuilder();
 		
@@ -206,16 +209,18 @@ public class CompleteBloodCount implements Specification {
 		
 		FormField low = builder.asDouble().name(name + RANGE_LOW_SUFFIX).label("Low " + description).defaultable()
 				.create();
-		row.addField(low);
 
 		FormField high = builder.asDouble().name(name + RANGE_HIGH_SUFFIX).label("High " + description).defaultable()
 				.create();
-		row.addField(high);
+		FormGroup range = new FormGroup(UIType.RANGE, "Range");
+		range.addField(low);
+		range.addField(high);
+		row.addField(range);
 		return row;
 	}
 	
 	private FormGroup addPercentageRow(List<String> unitEnumeration, String name, String description) {
-		FormGroup row = new FormGroup(description);
+		FormGroup row = new FormGroup(UIType.ROW, description);
 		
 		FormFieldBuilder builder = new FormFieldBuilder();
 		
@@ -227,11 +232,14 @@ public class CompleteBloodCount implements Specification {
 		
 		FormField low = builder.asDouble().minValue(0D).maxValue(100D).name(name + RANGE_LOW_SUFFIX)
 				.label("Low " + description).defaultable().create();
-		row.addField(low);
 
 		FormField high = builder.asDouble().minValue(0D).maxValue(100D).name(name + RANGE_HIGH_SUFFIX)
 				.label("High " + description).defaultable().create();
-		row.addField(high);
+		
+		FormGroup range = new FormGroup(UIType.RANGE, "Range");
+		range.addField(low);
+		range.addField(high);
+		row.addField(range);
 		return row;
 	}
 
