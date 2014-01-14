@@ -11,7 +11,13 @@
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <import resource="classpath:bridge-webapp-application-context.spb.xml"/>
-    
+
+    <!-- Loads some dummy objects for the stubbed version of the application. 
+        For reloading the real database in development, see SageUserBootstrap 
+        (which should be renamed).
+     -->
+    <bean class="org.sagebionetworks.bridge.webapp.SageStubApplicationListener"/>
+
     <!-- These are *definitely* not singletons in the production configuration of the app, be aware of that. -->
     
     <bean id="sageServices" class="org.sagebionetworks.bridge.webapp.SageServicesStub" scope="singleton" factory-method="createInstance"/>

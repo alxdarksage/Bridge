@@ -4,7 +4,15 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 
 public enum UIType {
 	
+	NULL,
 	GROUP,
+	LIST,
+	// Lays out a set of children in columns, with the grid as a whole providing the label/errors
+	GRID,
+	// One set of fields in a grid (a row)
+	ROW,
+	// Two fields grouped together as a range of values.
+	RANGE,
 	DATE(ParticipantDataColumnType.DATETIME),
 	DATETIME(ParticipantDataColumnType.DATETIME),
 	TEXT_INPUT(ParticipantDataColumnType.STRING),
@@ -12,7 +20,7 @@ public enum UIType {
 	DECIMAL_INPUT(ParticipantDataColumnType.DOUBLE),
 	SINGLE_SELECT(ParticipantDataColumnType.STRING),
 	CHECKBOX(ParticipantDataColumnType.BOOLEAN);
-	
+
 	private ParticipantDataColumnType columnType;
 	
 	private UIType() {
@@ -24,5 +32,9 @@ public enum UIType {
 	
 	public ParticipantDataColumnType getColumnType() {
 		return this.columnType;
+	}
+	
+	public String getLowerName() {
+		return this.name().toLowerCase();
 	}
 }

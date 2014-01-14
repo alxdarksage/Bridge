@@ -10,14 +10,25 @@ public class FormGroup implements FormElement {
 
 	private final String label;
 	private final List<FormElement> children = Lists.newArrayList();
+	private final UIType type;
 	protected Converter<String, Object> objectConverter;
 	protected Converter<Object, String> stringConverter;
 	
 	public FormGroup(final String label) {
-		this.label = label;
+		this(UIType.GROUP, label);
 	}
 	
 	public FormGroup(final String label, final List<FormElement> children) {
+		this(UIType.GROUP, label, children);
+	}
+	
+	public FormGroup(UIType type, final String label) {
+		this.type = type;
+		this.label = label;
+	}
+	
+	public FormGroup(UIType type, final String label, final List<FormElement> children) {
+		this.type = type;
 		this.label = label;
 		this.children.addAll(children);
 	}
@@ -34,7 +45,7 @@ public class FormGroup implements FormElement {
 	
 	@Override
 	public UIType getType() {
-		return UIType.GROUP;
+		return type;
 	}
 
 	@Override
@@ -72,11 +83,11 @@ public class FormGroup implements FormElement {
 		return stringConverter;
 	}
 	
-	public void addField(FormField field) {
-		if (field == null) {
-			throw new IllegalArgumentException("Field cannot be null");
+	public void addField(FormElement element) {
+		if (element == null) {
+			throw new IllegalArgumentException("Form element cannot be null");
 		}
-		children.add(field);
+		children.add(element);
 	}
 
 }

@@ -17,9 +17,12 @@
 	           </tr>
 	       </table>
 	    </c:if>
+	    
 	    <c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/new.html"/>
 	    <form:form role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
-	        <%@ include file="_form.jsp" %>
-	    </form:form>    
+            <sage:router element="${form.formStructure}"/>
+            <sage:submit code="Save"/>
+            <sage:cancel url="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html"/>
+	    </form:form>
     </jsp:attribute>
 </sage:journal>

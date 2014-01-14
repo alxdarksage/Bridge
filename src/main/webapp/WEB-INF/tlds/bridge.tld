@@ -37,6 +37,12 @@
         <path>/WEB-INF/tags/signIn.tag</path>
     </tag-file>
 
+    <!-- COMPONENTS (build a UI from the FormElement tree structure) -->
+    <tag-file>
+        <name>router</name>
+        <path>/WEB-INF/tags/components/router.tag</path>
+    </tag-file>
+
     <!-- FORMS (SPRING + BOOTSTRAP) -->
     <tag-file>
         <name>cancel</name>
