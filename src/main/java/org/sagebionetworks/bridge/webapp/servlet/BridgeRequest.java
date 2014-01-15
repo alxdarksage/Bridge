@@ -49,8 +49,8 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	@Override
 	public Principal getUserPrincipal() {
 		BridgeUser user = getBridgeUser();
-		if (user != null && user.getDisplayName() != null) {
-			return new BasicUserPrincipal(user.getDisplayName());
+		if (user != null && user.getUserName() != null) {
+			return new BasicUserPrincipal(user.getUserName());
 		}
 		return null;
 	}

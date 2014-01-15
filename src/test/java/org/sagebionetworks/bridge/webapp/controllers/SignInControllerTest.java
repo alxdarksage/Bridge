@@ -70,7 +70,7 @@ public class SignInControllerTest {
 	
 	private SignInForm createSignInForm() {
 		SignInForm form = new SignInForm();
-		form.setEmail("tim.powers@sagebase.org");
+		form.setUserName("tim.powers@sagebase.org");
 		form.setPassword("password");
 		return form;
 	}

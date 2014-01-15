@@ -25,7 +25,7 @@ public class AuthenticateBaseController {
 
 	protected BridgeUser createBridgeUserFromUserSessionData(UserSessionData data) {
 		BridgeUser user = (BridgeUser) beanFactory.getBean("bridgeUser");
-		user.setDisplayName(data.getProfile().getDisplayName());
+		user.setUserName(data.getProfile().getUserName());
 		user.setOwnerId(data.getProfile().getOwnerId());
 		user.setSessionToken(data.getSession().getSessionToken());
 		user.setCommunityId("index"); // hard-coded for the moment.

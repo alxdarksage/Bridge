@@ -16,7 +16,7 @@ public class SignUpPage {
 		facade.enterField("#email", value);
 	}
 	public void setUserName(String value) {
-		facade.enterField("#displayName", value);
+		facade.enterField("#userName", value);
 	}
 	public void submit() {
 		facade.submit("#signUpForm");
@@ -29,7 +29,7 @@ public class SignUpPage {
 		facade.assertErrorMessage("#email_errors", "already exists");
 	}
 	public void assertUserNameError() {
-		facade.assertErrorMessage("#displayName_errors", "Enter a user name");
+		facade.assertErrorMessage("#userName_errors", "Enter a user name");
 	}
 	
 }

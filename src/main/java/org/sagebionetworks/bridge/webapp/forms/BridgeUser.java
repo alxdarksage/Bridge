@@ -29,7 +29,7 @@ public class BridgeUser {
 	private BridgeClient bridgeClient;
 
 	private String sessionToken;
-	private String displayName;
+	private String userName;
 	private String ownerId;
 	private String communityId;
 	private String avatarUrl;
@@ -42,12 +42,12 @@ public class BridgeUser {
 		this.sessionToken = sessionToken;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getOwnerId() {

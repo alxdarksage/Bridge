@@ -6,7 +6,7 @@
     <label><spring:message code="${label}"/></label>
     <div class="checkbox-box">
         <c:forEach items="${items}" var="item">
-            <div class="checkbox" title="${item.displayName} Membership">
+            <div class="checkbox" title="${item.label} Membership">
                 <label>
                     <c:choose>
                         <c:when test="${item.selected}">
@@ -16,7 +16,7 @@
                             <input type="checkbox" name="${field}" value="${item.id}" />
                         </c:otherwise>
                     </c:choose>
-                    ${item.displayName}
+                    ${item.label}
                 </label>
             </div>
         </c:forEach>

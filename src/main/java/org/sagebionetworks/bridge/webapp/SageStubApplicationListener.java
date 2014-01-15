@@ -45,7 +45,7 @@ public class SageStubApplicationListener implements ApplicationListener<ContextR
 					logger.info("Creating a new ParticipantDataDescriptor with its columns: " + spec.getName());
 					
 					// This has to be done as a specific user. The stub makes this easier. Just call this first.
-					((SynapseClient)client).login("test@test.com", "password");
+					((SynapseClient)client).login("test", "password");
 					
 					ParticipantDataDescriptor descriptor = ParticipantDataUtils.getDescriptor(spec);
 					descriptor = client.createParticipantDataDescriptor(descriptor);

@@ -135,10 +135,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		String id = newId();
 		UserProfile profile = new UserProfile();
 		
-		profile.setDisplayName(userName);
+		profile.setUserName(userName);
 		profile.setEmail(email);
 		profile.setOwnerId(id);
-		profile.setUserName(email);
 		Session session = new Session();
 		session.setSessionToken("session"+id);
 		if (acceptsTOU) {
@@ -149,7 +148,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		data.setIsSSO(false);
 		data.setProfile(profile);
 		data.setSession(session);
-		usersById.put(email, data);
+		usersById.put(userName, data);
 		usersById.put(id, data);
 		return data;
 	}
@@ -370,8 +369,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	}
 
 	@Override
-	public Session login(String username, String password) throws SynapseException {
-		UserSessionData data = usersById.get(username);
+	public Session login(String userName, String password) throws SynapseException {
+		UserSessionData data = usersById.get(userName);
 		if (data == null) {
 			throw new SynapseException();
 		}
@@ -436,7 +435,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public String getUserName() {
 		if (currentUserData != null && currentUserData.getProfile() != null) {
-			return currentUserData.getProfile().getDisplayName();
+			return currentUserData.getProfile().getUserName();
 		}
 		return null;
 	}
@@ -623,14 +622,14 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public void createUser(NewUser user, DomainType originClient) throws SynapseException {
-		if (usersById.get(user.getEmail()) != null) {
+		if (usersById.get(user.getUserName()) != null) {
 			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
 		}
 		
 		String USER_ID = newId();
 		
 		UserProfile profile = new UserProfile();
-		profile.setDisplayName(user.getDisplayName());
+		profile.setUserName(user.getUserName());
 		profile.setEmail(user.getEmail());
 		profile.setFirstName(user.getFirstName());
 		profile.setLastName(user.getLastName());
@@ -641,7 +640,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		data.setSession(session);
 		data.setProfile(profile);
 		// ARGH!
-		usersById.put(user.getEmail(), data);
+		usersById.put(user.getUserName(), data);
 		usersById.put(USER_ID, data);		
 	}
 
@@ -723,7 +722,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 			UserProfile profile = usersById.get(memberId).getProfile();
 			
 			UserGroupHeader header = new UserGroupHeader();
-			header.setDisplayName(profile.getDisplayName());
+			header.setUserName(profile.getUserName());
 			header.setEmail(profile.getEmail());
 			header.setFirstName(profile.getFirstName());
 			header.setIsIndividual(true);

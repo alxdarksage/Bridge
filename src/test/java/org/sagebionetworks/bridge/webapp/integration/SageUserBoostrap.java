@@ -2,7 +2,6 @@ package org.sagebionetworks.bridge.webapp.integration;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
@@ -18,7 +17,7 @@ import org.sagebionetworks.client.SynapseAdminClientImpl;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.UserProfile;
+import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowSet;
@@ -46,13 +45,22 @@ public class SageUserBoostrap {
 			adminSynapse.setUserName(StackConfiguration.getMigrationAdminUsername());
 			adminSynapse.setApiKey(StackConfiguration.getMigrationAdminAPIKey());
 
-			SynapseClient synapse = new SynapseClientImpl();
-			createUser(adminSynapse, synapse, "octaviabutler", "octaviabutler@octaviabutler.com", false);
-			createUser(adminSynapse, synapse, "timpowers", "timpowers@timpowers.com", true);
-			createUser(adminSynapse, synapse, "test", "test@test.com", true);
+			createUser(adminSynapse, "octaviabutler", "octaviabutler@octaviabutler.com", false);
+			createUser(adminSynapse, "timpowers", "timpowers@timpowers.com", true);
+			createUser(adminSynapse, "test", "test@test.com", true);
 
+			SynapseClient synapse = new SynapseClientImpl();
+			setEndpoints(synapse);
+			
+			Session session = synapse.login("test", "password");
+			session.setAcceptsTermsOfUse(true);
+			synapse.signTermsOfUse(session.getSessionToken(), true);
+			synapse.setSessionToken(session.getSessionToken());
+			
 			BridgeClient bridge = new BridgeClientImpl(synapse);
 			setEndpoints(bridge);
+			bridge.setSessionToken(session.getSessionToken());
+			
 			createData(bridge, "daily sleep checkin", "Sleep tracker", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Sleep time",
 					"sleep-time-slider");
 			createData(bridge, "daily rest checkin", "Rest tracker", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Rest time",
@@ -97,25 +105,17 @@ public class SageUserBoostrap {
 		bridge.appendParticipantData(desc.getId(), EMPTY_ROW_SET);
 	}
 
-	private void createUser(SynapseAdminClient client, SynapseClient newUserClient, String userName, String email, boolean acceptsTermsOfUse)
+	private void createUser(SynapseAdminClient client, String userName, String email, boolean acceptsTermsOfUse)
 			throws SynapseException, JSONObjectAdapterException {
 
-		setEndpoints(newUserClient);
-
-		Session session = new Session();
-		session.setAcceptsTermsOfUse(acceptsTermsOfUse);
-		session.setSessionToken(UUID.randomUUID().toString());
-		newUserClient.setSessionToken(session.getSessionToken());
-
-		UserProfile profile = new UserProfile();
-		profile.setDisplayName(userName);
-		profile.setEmail(email);
-		profile.setUserName(userName);
-
 		try {
-			newUserClient.login(email, "password");
-		} catch (Exception e) {
-			client.createUser(email, "password", profile, session);
+			NewIntegrationTestUser newUser = new NewIntegrationTestUser();
+			newUser.setUsername(userName);
+			newUser.setEmail(email);
+			newUser.setPassword("password");
+			client.createUser(newUser);
+		} catch(Exception e) {
+			System.out.println("User '" + userName + "' already exists");
 		}
 	}
 

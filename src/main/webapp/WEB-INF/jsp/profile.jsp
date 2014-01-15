@@ -1,6 +1,6 @@
 <%@ include file="directives.jsp" %>
 <sage:minimal code="Profile">
-    <h3><spring:message code="ProfileFor"/> ${profileForm.displayName}</h3>
+    <h3><spring:message code="ProfileFor"/> ${profileForm.userName}</h3>
     <sage:formErrors formName="profileForm"/>
     <c:url var="profileUrl" value="/profile.html"/>
     <form:form role="form" modelAttribute="profileForm" method="post" action="${profileUrl}" enctype="multipart/form-data">
@@ -24,7 +24,7 @@
 		        <sage:checkboxes label="CommunityMemberships" field="memberships" items="${memberships}"/>
             </div>
             <div class="col-sm-6">
-                <sage:static field="displayName" value="${profileForm.displayName}"/> 
+                <sage:static field="userName" value="${profileForm.userName}"/> 
 		        <sage:text field="firstName"/>
 		        <sage:text field="lastName"/>
 		        <sage:textarea field="summary"/>

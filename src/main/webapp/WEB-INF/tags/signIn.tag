@@ -14,7 +14,7 @@
             </div>
             <div class="userName-side">
                 <div class="userName-box">
-                    <div class="userName">${sessionScope['BridgeUser'].displayName} <span class="caret"></span></div>
+                    <div class="userName">${sessionScope['BridgeUser'].userName} <span class="caret"></span></div>
                     <div class="smenu">
                         <a id="editProfileAct" href="${editProfileUrl}"><spring:message code="EditProfile"/></a>
                         <a id="signOutButton" href="${signOutUrl}"><spring:message code="SignOut"/></a>
@@ -33,8 +33,8 @@
 			<c:url var="signInUrl" value="/signIn.html"/>
 			<form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
 			    <div class="form-group">
-			        <spring:message var="emailLabel" code="Email"/>
-			        <form:input cssClass="form-control input-sm" id="email" path="email" placeholder="${emailLabel}"/>
+			        <spring:message var="userNameLabel" code="UserName"/>
+			        <form:input cssClass="form-control input-sm" id="userName" path="userName" placeholder="${userNameLabel}"/>
 			    </div>
 			    <div class="form-group">
 			        <spring:message var="passwordLabel" code="Password"/>
