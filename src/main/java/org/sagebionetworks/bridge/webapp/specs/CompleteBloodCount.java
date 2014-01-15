@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.converters.DateStringToDateTimeConverter;
+import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;
@@ -105,7 +107,7 @@ public class CompleteBloodCount implements Specification {
 		
 		// EEEK
 		rows = Lists.newArrayList();
-		rows.add(builder.asValue().name(COLLECTED_ON).label("Collection date").create());
+		rows.add(builder.asValue(new DateStringToDateTimeConverter(), new DateToDateStringConverter()).name(COLLECTED_ON).label("Collection date").create());
 		rows.add(builder.asValue().name("draw_type").label("Draw type").defaultable().create());
 		showRows.add( new FormGroup("General information", rows) );
 		

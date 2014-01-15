@@ -18,8 +18,7 @@
         <sage:grid element="${element}"/>
     </c:when>
     <c:when test="${element.type == 'VALUE'}">
-        <%-- TODO: Formatting --%>
-        ${dynamicForm.values[element.name]}
+        <sage:value dynamicForm="${dynamicForm}" field="${element}"/>
     </c:when>
     <c:otherwise>
         <sage:field dynamicForm="${dynamicForm}" field="${element}" defaultedFields="${defaultedFields}"/>
