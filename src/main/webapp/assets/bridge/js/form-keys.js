@@ -1,8 +1,16 @@
 (function() {
+    $("#removeDefaultsAct").on('click', function(e) {
+		$("#dynamicForm .defaulted").each(function() {
+			$(this).val('').removeClass('defaulted');
+		});
+    });
+    
+    // With the inclusion of number fields, the arrow keys adjust the numbers,
+    // and this doesn't work anymore. Currently abandoning.
+/*    
     var COLUMNS = 4,
-        // FLOAT_REGEX = /[\d.]/,
         LONG_REGEX = /\d/,
-        METAS = [/*tab*/ 8, /*backspace*/ 9],
+        METAS = [8, 9],
         fields = $("#dynamicForm input, #dynamicForm select");
     
     if (fields.size() === 0) {
@@ -58,4 +66,5 @@
             }
         }
     });
+    */
 })();

@@ -70,7 +70,8 @@ public class FormUtils {
 		for (int i=0; i < rowSet.getHeaders().size(); i++) {
 			String header = rowSet.getHeaders().get(i);
 			String value = row.getValues().get(i);
-			if (value == null) {
+			// This seems to be set on the service side to "null"... hide that.
+			if (value == null || "null".equals(value)) {
 				value = "";
 			}
 			values.put(header,value);

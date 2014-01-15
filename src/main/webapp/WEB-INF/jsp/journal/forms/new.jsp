@@ -7,7 +7,7 @@
 	        <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187;
 	        <a href="${formsUrl}">All "${descriptor.description}" Surveys</a> 
 	    </div>
-	    <h3>New ${descriptor.description}</h3>
+	    <h3>New ${descriptor.name}</h3>
 
 	    <c:if test="${not empty defaultedFields}">
 	       <table class="aboutDefaults">

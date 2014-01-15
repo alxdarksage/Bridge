@@ -47,6 +47,7 @@ import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -282,7 +283,12 @@ public class ClientUtils {
 				FormElement field = entry.getValue();
 				String serValue = row.getValues().get( headers.indexOf(fieldName) );
 				
-				values.add( field.getObjectConverter().convert(serValue) );
+				Converter<String,Object> converter = field.getObjectConverter();
+				if (converter != null) {
+					values.add(converter.convert(serValue));	
+				} else {
+					values.add(serValue);
+				}
 			}
 			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 		}

@@ -7,7 +7,7 @@
             <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187;
             <a href="${formsUrl}">All "${descriptor.description}" Surveys</a> 
         </div>
-        <h3>${descriptor.description}</h3>
+        <h3>${descriptor.name}</h3>
     
         <c:url var="editUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/row/${rowId}/edit.html"/>
         <a id="editAct" class="btn btn-sm btn-primary bottomSpaced" href="${editUrl}">

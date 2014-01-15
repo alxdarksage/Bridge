@@ -3,11 +3,13 @@ package org.sagebionetworks.bridge.webapp.specs;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * This is just a test that we can have different forms.
@@ -18,18 +20,18 @@ public class MoodTracker implements Specification {
 	private final FormField body;
 	
 	public MoodTracker() {
-		mind = new FormFieldBuilder().asText().name("Mind").label("Mind").create();
-		body = new FormFieldBuilder().asText().name("Body").label("Body").create();
+		mind = new FormFieldBuilder().asDouble().name("Mind").label("Mind").create();
+		body = new FormFieldBuilder().asDouble().name("Body").label("Body").create();
 	}
 	
 	@Override
 	public String getName() {
-		return "Mood tracker";
+		return "Mood Tracker";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Mood";
+		return "Mood tracker";
 	}
 
 	@Override
@@ -39,12 +41,12 @@ public class MoodTracker implements Specification {
 
 	@Override
 	public FormElement getEditStructure() {
-		return new FormGroup("CBC", getAllFormElements());
+		return new FormGroup("Mood Tracker", getAllFormElements());
 	}
 
 	@Override
 	public FormElement getShowStructure() {
-		return new FormGroup("CBC", getAllFormElements());
+		return new FormGroup("Mood Tracker", getAllFormElements());
 	}
 	
 	@Override
@@ -54,7 +56,10 @@ public class MoodTracker implements Specification {
 
 	@Override
 	public SortedMap<String, FormElement> getTableFields() {
-		return null;
+		TreeMap<String,FormElement> map = Maps.newTreeMap();
+		map.put("Mind", mind);
+		map.put("Body", body);
+		return map;
 	}
 
 	@Override

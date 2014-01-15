@@ -5,7 +5,7 @@
 	        <c:url var="journalUrl" value="/journal.html"/>
 	        <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187; 
 	    </div>
-	    <h3>All "${descriptor.description}" Surveys</h3>
+	    <h3>All "${spec.name}" Surveys</h3>
 	    
 	    <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html" 
 	        itemId="id" items="${records}" caption="${form.description} Surveys">
