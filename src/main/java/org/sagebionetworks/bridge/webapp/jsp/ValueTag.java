@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.util.logging.LogManager;
 
 import javax.servlet.jsp.JspException;
 

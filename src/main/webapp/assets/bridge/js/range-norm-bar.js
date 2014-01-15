@@ -25,7 +25,7 @@ function rangeNormBar(bar, value, unit, minValue, maxValue) {
         context.fillStyle = "rgb(240,240,240)";
         context.fillRect(75,0,150,150);
         
-        var adjValue = 25 + (value-minValue)*(50)/(maxValue-minValue)
+        var adjValue = 25 + (value-minValue)*(50)/(maxValue-minValue);
         adjValue = ((adjValue)*3) - 2; // converting to pixels.
         if (adjValue < 0) adjValue = 0;
         if (adjValue > 296) adjValue = 296;

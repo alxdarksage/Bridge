@@ -2,12 +2,8 @@ package org.sagebionetworks.bridge.webapp.integration.journal;
 
 import static org.sagebionetworks.bridge.webapp.integration.pages.FormEditPage.FieldNames.*;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.AdminParticipantDataDescriptorsPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.FormIndexPage;
