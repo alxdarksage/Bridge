@@ -158,6 +158,10 @@ public class FieldTag extends SpringAwareTag {
 		if (numeric.getMaxValue() != null) {
 			tb.addAttribute("max", numeric.getMaxValue().toString());
 		}
+		// It's weird but if you don't do this, you can't enter decimal values.
+		if (numeric.getType() == UIType.DECIMAL_INPUT) {
+			tb.addAttribute("step", "any");
+		}
 	}
 	
 }

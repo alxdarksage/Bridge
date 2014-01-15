@@ -38,10 +38,15 @@ public class MoodTracker implements Specification {
 	}
 
 	@Override
-	public FormElement getFormStructure() {
+	public FormElement getEditStructure() {
 		return new FormGroup("CBC", getAllFormElements());
 	}
 
+	@Override
+	public FormElement getShowStructure() {
+		return new FormGroup("CBC", getAllFormElements());
+	}
+	
 	@Override
 	public List<FormElement> getAllFormElements() {
 		return Lists.<FormElement> newArrayList(mind, body);
@@ -66,5 +71,6 @@ public class MoodTracker implements Specification {
 	public String getRepeatFrequency() {
 		return null;
 	}
+
 
 }

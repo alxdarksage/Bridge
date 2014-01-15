@@ -13,6 +13,7 @@ import org.sagebionetworks.bridge.webapp.converters.StringToDoubleConverter;
 import org.sagebionetworks.bridge.webapp.converters.StringToLongConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
+import org.springframework.core.convert.converter.Converter;
 
 public class FormFieldBuilder {
 
@@ -37,6 +38,21 @@ public class FormFieldBuilder {
 		FormField temp = field;
 		field = null;
 		return temp;
+	}
+	
+	public FormFieldBuilder asValue() {
+		return asValue(null, null);
+	}
+	
+	public FormFieldBuilder asValue(Converter<String,Object> objectConverter, Converter<Object,String> stringConverter) {
+		if (field != null) {
+			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
+		}
+		field = new FormField();
+		field.setType(UIType.VALUE);
+		field.setStringConverter(stringConverter);
+		field.setObjectConverter(objectConverter);
+		return this;
 	}
 	
 	public FormFieldBuilder asText() {

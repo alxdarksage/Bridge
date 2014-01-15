@@ -73,10 +73,10 @@ public class FormEditPage {
 	}
 	
 	public void setTestDate(String value) {
-		facade.executeJavaScript("document.querySelector('#testedOn').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#collectedOn').value = '"+value+"'");
 	}
 	public void assertTestDate(String expectedValue) {
-		String valueInForm = facade.executeJavaScriptForString("return document.querySelector('#testedOn').value");
+		String valueInForm = facade.executeJavaScriptForString("return document.querySelector('#collectedOn').value");
 		Assert.assertEquals("Correct value", expectedValue, valueInForm);
 	}
 	private void setValue(FieldNames field, String value) {

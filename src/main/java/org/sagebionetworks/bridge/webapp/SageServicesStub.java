@@ -801,7 +801,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 			newList.addAll(oldData.getRows());
 			newList.addAll(data.getRows());
 			oldData.setRows(newList);
-			oldData.getRows().addAll(data.getRows());
 		} else {
 			participantDataByDescriptorById.put(participantDataDescriptorId, data);
 		}
