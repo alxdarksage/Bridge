@@ -3,7 +3,7 @@
 <sage:formErrors formName="signInForm"/>
 <c:url var="signInUrl" value="/signIn.html"/> <!-- Required for Spring form -->
 <form:form role="form" modelAttribute="signInForm" method="post" action="${signInUrl}">
-    <sage:text field="email"/>
+    <sage:text field="userName"/>
     <sage:password field="password"/>
     <input type="hidden" name="origin" value="${requestScope.origin}"/>
     <sage:submit code="SignIn"/>

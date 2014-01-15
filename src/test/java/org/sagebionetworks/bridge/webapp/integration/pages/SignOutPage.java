@@ -16,9 +16,9 @@ public class SignOutPage {
 		this.facade = facade;
 	}
 	
-	public void login(String email, String password) {
-		if (email != null) {
-			facade.enterField("#email", email);	
+	public void login(String userName, String password) {
+		if (userName != null) {
+			facade.enterField("#userName", userName);	
 		}
 		if (password != null) {
 			facade.enterField("#password", password);
@@ -39,11 +39,11 @@ public class SignOutPage {
 	}
 	
 	public void assertGlobalError() {
-		facade.assertErrorMessage("#signInForm_errors", "Unable to sign in. Email or password may be incorrect.");
+		facade.assertErrorMessage("#signInForm_errors", "Unable to sign in. User name or password may be incorrect.");
 	}
 	
-	public void assertEmailError() {
-		facade.assertErrorMessage("#email_errors", "Enter a valid email address");
+	public void assertUserNameError() {
+		facade.assertErrorMessage("#userName_errors", "Enter a valid user name");
 	}
 	
 	public void assertPasswordError() {

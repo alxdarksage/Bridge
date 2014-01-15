@@ -41,7 +41,7 @@ public class SignInController extends AuthenticateBaseController {
 		// Shouldn't happen that user is authenticated, but.
 		if (!request.isUserAuthenticated()) {
 			try {
-				Session session = synapseClient.login(signInForm.getEmail(), signInForm.getPassword());
+				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword());
 				if (!session.getAcceptsTermsOfUse()) {
 					request.saveSignInForm(signInForm);
 					return "redirect:/termsOfUse.html";

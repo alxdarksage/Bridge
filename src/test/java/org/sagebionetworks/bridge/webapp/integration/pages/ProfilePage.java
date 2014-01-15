@@ -36,8 +36,8 @@ public class ProfilePage extends EmbeddedSignInPage {
 		facade.assertErrorMessage("#memberships_errors", "Need at least one admin.");
 	}
 	
-	public void setDisplayName(String value) {
-		facade.enterField("#displayName", value);
+	public void setUserName(String value) {
+		facade.enterField("#userName", value);
 	}
 	public void setFirstName(String value) {
 		facade.enterField("#firstName", value);

@@ -38,7 +38,7 @@ public class FormUtils {
 	
 	public static NewUser valuesToNewUser(NewUser newUser, SignUpForm signUpForm) {
 		newUser.setEmail(signUpForm.getEmail());
-		newUser.setDisplayName(signUpForm.getDisplayName());
+		newUser.setUserName(signUpForm.getUserName());
 		return newUser;
 	}
 	
@@ -50,7 +50,7 @@ public class FormUtils {
 	}
 	
 	public static ProfileForm valuesToProfileForm(ProfileForm form, UserProfile profile) {
-		form.setDisplayName(profile.getDisplayName());
+		form.setUserName(profile.getUserName());
 		form.setFirstName(profile.getFirstName());
 		form.setLastName(profile.getLastName());
 		form.setSummary(profile.getSummary());

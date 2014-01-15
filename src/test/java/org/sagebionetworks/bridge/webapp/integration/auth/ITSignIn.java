@@ -20,15 +20,14 @@ public class ITSignIn extends WebDriverBase {
 	public void dedicatedSignInFormRejectsEmptyForm() {
 		SignInPage page = driver.getSignInPage();
 		page.submit();
-		page.assertEmailError();
+		page.assertUserNameError();
 		page.assertPasswordError();
 	}
 	
 	@Test
-	public void dedicatedSignInFormRejectsInvalidEmailAddress() {
+	public void dedicatedSignInFormRejectsNoPassword() {
 		SignInPage page = driver.getSignInPage();
 		page.signIn("timpowers", null);
-		page.assertEmailError();
 		page.assertPasswordError();
 	}
 	
@@ -93,18 +92,17 @@ public class ITSignIn extends WebDriverBase {
 		cpage.getEmbeddedSignIn().submit();
 		
 		SignInPage spage = driver.waitForSignInPage();
-		spage.assertEmailError();
+		spage.assertUserNameError();
 		spage.assertPasswordError();
 	}
 	
 	@Test
-	public void embeddedSignInFormRejectsInvalidEmailAddress() {
+	public void embeddedSignInFormRejectsNoPassword() {
 		CommunityPage cpage = driver.getCommunityPage();
 		
 		cpage.getEmbeddedSignIn().signIn("timpowers", null);
 		
 		SignInPage spage = driver.waitForSignInPage();
-		spage.assertEmailError();
 		spage.assertPasswordError();
 	}
 	

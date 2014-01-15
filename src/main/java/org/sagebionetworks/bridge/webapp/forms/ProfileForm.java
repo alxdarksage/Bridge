@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ProfileForm {
 
-	private String displayName;
+	private String userName;
 	private String firstName;
 	private String lastName;
 	private String summary;
@@ -12,11 +12,11 @@ public class ProfileForm {
 	
 	private MultipartFile photoFile;
 	
-	public String getDisplayName() {
-		return displayName;
+	public String getUserName() {
+		return userName;
 	}
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	public String getFirstName() {
 		return firstName;

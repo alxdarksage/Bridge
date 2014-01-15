@@ -3,7 +3,6 @@ package org.sagebionetworks.bridge.webapp.controllers;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
@@ -41,11 +40,6 @@ public class SignUpController {
 		if (!result.hasErrors()) {
 			try {
 				NewUser newUser = FormUtils.valuesToNewUser(new NewUser(), signUpForm);
-				// In development, you must supply a password and you get an error if you do not. In production, 
-				// you cannot supply a password. In fact, that's bad, and we don't allow it through signUpForm.
-				if (!StackConfiguration.isProductionStack()) {
-					newUser.setPassword("password");
-				}
 				synapseClient.createUser(newUser, DomainType.BRIDGE);
 				request.setNotification("RegistrationEmailSent");
 				return "redirect:"+request.getOrigin();

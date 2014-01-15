@@ -133,8 +133,8 @@ public class CommunityAdminController {
 		
 		List<CheckboxItem> items = Lists.newArrayList();
 		for (UserGroupHeader member : members) {
-			logger.info("Community has this member: " + member.getDisplayName());
-			CheckboxItem ci = new CheckboxItem(member.getDisplayName(), member.getOwnerId());
+			logger.info("Community has this member: " + member.getUserName());
+			CheckboxItem ci = new CheckboxItem(member.getUserName(), member.getOwnerId());
 			if (isUserAdmin(acl, member.getOwnerId())) {
 				ci.setSelected(true);
 			}

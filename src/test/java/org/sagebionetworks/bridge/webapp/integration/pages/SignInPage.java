@@ -13,21 +13,21 @@ public class SignInPage {
 	}
 	
 	public void signInAsTimPowers() {
-		signIn("timpowers@timpowers.com", "password");
+		signIn("timpowers", "password");
 	}
 	
 	public void signInAsOctaviaButler() {
-		signIn("octaviabutler@octaviabutler.com", "password");
+		signIn("octaviabutler", "password");
 	}
 	
 	public void signInAsJoeTest() {
-		signIn("test@test.com", "password");
+		signIn("test", "password");
 	}
 	
-	public void signIn(String email, String password) {
-		if (email != null) {
-			facade.waitUntil("#email");
-			facade.enterField("#email", email);	
+	public void signIn(String userName, String password) {
+		if (userName != null) {
+			facade.waitUntil("#userName");
+			facade.enterField("#userName", userName);	
 		}
 		if (password != null) {
 			facade.waitUntil("#password");
@@ -49,11 +49,11 @@ public class SignInPage {
 	}
 	
 	public void assertGlobalError() {
-		facade.assertErrorMessage("#signInForm_errors", "Unable to sign in. Email or password may be incorrect.");
+		facade.assertErrorMessage("#signInForm_errors", "Unable to sign in. User name or password may be incorrect.");
 	}
 	
-	public void assertEmailError() {
-		facade.assertErrorMessage("#email_errors", "Enter a valid email address");
+	public void assertUserNameError() {
+		facade.assertErrorMessage("#userName_errors", "Enter a valid user name");
 	}
 	
 	public void assertPasswordError() {

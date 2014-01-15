@@ -39,8 +39,8 @@ public class ITSignUp extends WebDriverBase {
 	public void signUpShowsNotice() {
 		driver.getPortalPage();
 		SignUpPage page = driver.getSignUpPage();
-		page.setEmail("bob@bobcat.com");
 		page.setUserName("bob");
+		page.setEmail("bob@bobcat.com");
 		page.submit();
 		
 		driver.waitForPortalPage();
@@ -62,7 +62,7 @@ public class ITSignUp extends WebDriverBase {
 		driver.waitForPortalPage();
 		
 		CommunityPage communityPage = driver.getCommunityPage();
-		communityPage.getEmbeddedSignIn().signIn(email, "testdude");
+		communityPage.getEmbeddedSignIn().signIn("testdude", "password");
 		
 		TermsOfUsePage touPage = driver.waitForTOUPage();
 
@@ -70,7 +70,7 @@ public class ITSignUp extends WebDriverBase {
 		touPage.clickCancel();
 		
 		communityPage = driver.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().signIn(email, "testdude");
+		communityPage.getEmbeddedSignIn().signIn("testdude", "password");
 		
 		// submit without accepting terms of use
 		touPage = driver.waitForTOUPage();
@@ -86,7 +86,7 @@ public class ITSignUp extends WebDriverBase {
 
 		// Signing back in, no more terms of service
 		SignOutPage signOutPage = driver.waitForSignedOutPage();
-		signOutPage.login(email, "testdude");
+		signOutPage.login("testdude", "password");
 		driver.waitForCommunityPage();
 	}
 	

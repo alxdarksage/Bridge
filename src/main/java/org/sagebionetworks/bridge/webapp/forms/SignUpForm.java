@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class SignUpForm {
 
 	@NotEmpty
-	private String displayName;
+	private String userName;
 	@Email
 	@NotEmpty
 	private String email;
@@ -19,11 +19,11 @@ public class SignUpForm {
 		this.email = email;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }

@@ -3,11 +3,11 @@ package org.sagebionetworks.bridge.webapp.forms;
 public class CheckboxItem {
 
 	private boolean selected;
-	private String displayName;
+	private String label;
 	private String id;
 	
-	public CheckboxItem(String displayName, String id) {
-		this.displayName = displayName;
+	public CheckboxItem(String label, String id) {
+		this.label = label;
 		this.id = id;
 	}
 
@@ -19,8 +19,8 @@ public class CheckboxItem {
 		this.selected = selected;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public String getLabel() {
+		return label;
 	}
 
 	public String getId() {
