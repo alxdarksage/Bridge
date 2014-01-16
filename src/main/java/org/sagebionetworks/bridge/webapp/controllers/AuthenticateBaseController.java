@@ -42,11 +42,6 @@ public class AuthenticateBaseController {
 	}
 	
 	protected String getOnErrorReturnPage(SignInForm signInForm, BridgeRequest request) {
-		/*
-		if (StringUtils.isBlank(request.getServletPath())) {
-			return ""; // test only, I believe
-		}
-		*/
 		return "auth/signIn";
 	}
 

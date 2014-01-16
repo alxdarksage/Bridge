@@ -26,6 +26,7 @@ public class WebDriverBase {
 		
 		Window window = _driver.manage().window();
 		window.setSize(new Dimension(1024,400));
+		_driver.manage().deleteAllCookies();
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
 		return _driver;
 	}

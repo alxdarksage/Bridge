@@ -14,6 +14,8 @@ import java.util.SortedMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +28,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
@@ -64,6 +67,8 @@ public class ClientUtils {
 	
 	private static final Logger logger = LogManager.getLogger(ClientUtils.class.getName());
 
+	private static final String SYNAPSE_SESSION_COOKIE_NAME = "synapse";
+	
 	public static class ExceptionInfo {
 		
 		private int code;
@@ -530,5 +535,28 @@ public class ClientUtils {
 		model.addAttribute("descriptorsNoPrompt", descriptorsNoPrompt);
 	}
 
+	public static String getSynapseSessionCookie(BridgeRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (int i=0; i < cookies.length; i++) {
+				if (cookies[i].getName().equals(SYNAPSE_SESSION_COOKIE_NAME)) {
+					return cookies[i].getValue();
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static void setSynapseSessionCookie(BridgeRequest request, HttpServletResponse response, int expiry) {
+		BridgeUser user = request.getBridgeUser();
+		String value = "";
+		if (expiry != 0 && user != null && user.isAuthenticated()) {
+			value = user.getBridgeClient().getCurrentSessionToken();
+		}
+		Cookie cookie = new Cookie(SYNAPSE_SESSION_COOKIE_NAME, value);
+		cookie.setPath("/");
+		cookie.setMaxAge(expiry); // thirty minutes in seconds
+		response.addCookie(cookie);
+	}	
 
 }

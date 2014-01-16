@@ -49,7 +49,7 @@ public class SignInController extends AuthenticateBaseController {
 				UserSessionData userSessionData = synapseClient.getUserSessionData();
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
-				logger.info("User #{} signed in.", user.getOwnerId());
+				logger.info("User signed in.");
 				
 			} catch (SynapseException e) {
 				ClientUtils.formError(result, "signInForm", "IncorrectLogin");

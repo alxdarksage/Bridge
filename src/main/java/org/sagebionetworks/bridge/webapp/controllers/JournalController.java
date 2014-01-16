@@ -1,10 +1,13 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +22,7 @@ import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.table.PaginatedRowSet;
+import org.sagebionetworks.repo.model.table.Row;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,7 +31,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 @Controller
 public class JournalController extends JournalControllerBase {
@@ -96,6 +103,33 @@ public class JournalController extends JournalControllerBase {
 		request.setNotification("Not implemented");
 		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";
 	}
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/export", method = RequestMethod.GET)
+	@ResponseBody
+	public void exportTrackers(BridgeRequest request, HttpServletResponse response,
+			@PathVariable("participantId") String participantId, @PathVariable("trackerId") String trackerId)
+			throws SynapseException, IOException {
+		
+		BridgeClient client = request.getBridgeUser().getBridgeClient();
+		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
+		
+		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
+		
+		// TODO: Remove columns users don't see
+		// TODO: Convert all the "null" strings to empty strings
+		// TODO: Name for tracker that's unique to the tracker
+		
+		response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=export.csv");
+		CSVWriter writer = new CSVWriter(response.getWriter());
+		writer.writeNext(paginatedRowSet.getResults().getHeaders().toArray(new String[] {}));
+		for (Row row : paginatedRowSet.getResults().getRows()) {
+			writer.writeNext(row.getValues().toArray(new String[] {}));
+		}
+		writer.close();
+		response.flushBuffer();
+	}
+	
 	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.GET)
 	public ModelAndView newTracker(BridgeRequest request, @PathVariable("participantId") String participantId,
