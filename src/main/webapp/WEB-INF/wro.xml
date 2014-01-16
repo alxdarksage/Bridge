@@ -26,7 +26,6 @@
 	</group>
 
 	<group name="footer">
-	    <js>/assets/jquery/jquery-1.10.2.js</js>
 	    <js>/assets/modernizr/modernizr-2.7.1.js</js>
 	    <js>/assets/humane/humane.js</js>
 		<js>/assets/bridge/js/main.js</js>
