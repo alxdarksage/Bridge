@@ -34,9 +34,9 @@
 		<!-- This allows us to track outgoing http connection issues. See: http://blog.nigelsim.org/2011/06/17/debugging-connection-pool-leak-in-apache-http-client/--> 
 		<logger name="org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager" level="debug" additivity="false">
 			<appender-ref ref="webapp-http-out" />
-		</logger>	
+		</logger>
 		<logger name="org.sagebionetworks" level="all" additivity="true">
-            <appender-ref ref="console" />
+            <!-- <appender-ref ref="console" /> -->
 			<appender-ref ref="webapp" />
 		</logger>
 		<root level="error">

@@ -5,15 +5,15 @@
 	        <c:url var="journalUrl" value="/journal.html"/>
 	        <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187; 
 	    </div>
-	    <h3>All "${spec.name}" Surveys</h3>
+	    <h3>All ${spec.name}s</h3>
 	    
-	    <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html" 
-	        itemId="id" items="${records}" caption="${form.description} Surveys">
-	        <sage:button id="newSurveyAct" type="primary" label="New Survey" 
-	            action="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/new.html"/>
+	    <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
+	        itemId="id" items="${records}" caption="${form.description}s">
+	        <sage:button id="newTrackerAct" type="primary" label="New Tracker" 
+	            action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
 
 	            <sage:spec-column specification="${spec}" 
-	               link="/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}/row/{id}.html"/>
+	               link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
 	        <%-- 
 	        <sage:button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
 	        --%>

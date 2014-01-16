@@ -1,13 +1,13 @@
 package org.sagebionetworks.bridge.webapp.integration.journal;
 
-import static org.sagebionetworks.bridge.webapp.integration.pages.FormEditPage.FieldNames.*;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.AdminParticipantDataDescriptorsPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.FormIndexPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.FormEditPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.TrackerIndexPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.JournalPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
@@ -35,12 +35,12 @@ public class ITJournal extends WebDriverBase {
 	
 	@Test
 	public void canCancel() {
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
 		
-		FormEditPage page = indexPage.clickNewSurveyButton();
+		TrackerEditPage page = indexPage.clickNewTrackerButton();
 		page.clickCancelButton();
 		
-		journalPage.waitForFormIndexPage();
+		journalPage.waitForTrackerIndexPage();
 	}
 	
 	@Test
@@ -54,15 +54,15 @@ public class ITJournal extends WebDriverBase {
 	
 	@Test
 	public void hasCorrectContentTitle() {
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
 		indexPage.assertCorrectHeader();
 	}
 	
 	@Test
-	public void surveyCanBeCreatedAndUpdated() {
-		createNewSurvey();
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
-		FormEditPage editPage = indexPage.getMostRecentEntry().clickEditSurveyButton();
+	public void trackerCanBeCreatedAndUpdated() {
+		createTrackerSurvey();
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerEditPage editPage = indexPage.getMostRecentEntry().clickEditTrackerButton();
 		editPage.assertTestDate(TEST_DATE);
 		editPage.assertDefaultedValuesExplanationNotPresent();
 		editPage.assertRow(RBC, 1);
@@ -100,7 +100,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(PDW, 18);
 		editPage.submit();
 		
-		editPage = indexPage.getMostRecentEntry().clickEditSurveyButton();
+		editPage = indexPage.getMostRecentEntry().clickEditTrackerButton();
 		editPage.assertDefaultedValuesExplanationNotPresent();
 		editPage.assertTestDate(TEST_DATE);
 		editPage.assertRow(RBC, 3);
@@ -122,10 +122,10 @@ public class ITJournal extends WebDriverBase {
 	}
 		
 	@Test
-	public void verifyValuesAreDefaultedFromPriorSurvey() {
-		createNewSurvey();
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
-		FormEditPage newPage = indexPage.clickNewSurveyButton();
+	public void verifyValuesAreDefaultedFromPriorTracker() {
+		createTrackerSurvey();
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
 		
 		newPage.assertDefaultedValuesExplanationPresent();
 		newPage.assertRowShowsDefault(RBC, 1);
@@ -138,8 +138,8 @@ public class ITJournal extends WebDriverBase {
 		// Might be better to allow strings to simulate typing different kinds of stuff in.
 		// verify that values are constrained to valid values (doubles, longs, percentages)
 
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
-		FormEditPage newPage = indexPage.clickNewSurveyButton();
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
 		
 		newPage.assertFieldConstrained(RBC, "asdf-10.2", "10.2");
 	}
@@ -149,7 +149,7 @@ public class ITJournal extends WebDriverBase {
 		// TODO: This is a minimal test and I already know arrow keys don't work across the row
 		// when there's a select control, at least in firefox.
 		createNewSurvey();
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
+		TrackerIndexPage indexPage = journalPage.getFormIndexPage();
 		indexPage.getMostRecentEntry();
 
 		WebElement first = driver.findElement(By.id("rbc"));
@@ -163,9 +163,9 @@ public class ITJournal extends WebDriverBase {
 	}
 	*/
 
-	private void createNewSurvey() {
-		FormIndexPage indexPage = journalPage.getFormIndexPage();
-		FormEditPage newPage = indexPage.clickNewSurveyButton();
+	private void createTrackerSurvey() {
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
 		
 		newPage.setTestDate(TEST_DATE);
 		newPage.setRow(RBC, 1);

@@ -20,10 +20,10 @@ public class JournalControllerBase {
 	@Resource(name = "specificationResolver")
 	protected SpecificationResolver specResolver;
 
-	protected RowSet createRow(BridgeRequest request, String formId, DynamicForm dynamicForm, BindingResult result, ModelAndView model)
-			throws SynapseException {
+	protected RowSet createRow(BridgeRequest request, String trackerId, DynamicForm dynamicForm, BindingResult result,
+			ModelAndView model) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		spec.setSystemSpecifiedValues(dynamicForm.getValues());
 		
 		if (result != null) {
@@ -34,13 +34,13 @@ public class JournalControllerBase {
 			}
 		}
 		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValues());
-		return client.appendParticipantData(formId, data);
+		return client.appendParticipantData(trackerId, data);
 	}
 	
-	protected RowSet updateRow(BridgeRequest request, String formId, DynamicForm dynamicForm, BindingResult result, ModelAndView model,
-			long rowId) throws SynapseException {
+	protected RowSet updateRow(BridgeRequest request, String trackerId, DynamicForm dynamicForm, BindingResult result,
+			ModelAndView model, long rowId) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		spec.setSystemSpecifiedValues(dynamicForm.getValues());
 
 		if (result != null) {
@@ -51,7 +51,7 @@ public class JournalControllerBase {
 			}
 		}
 		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValues(), rowId);
-		return client.updateParticipantData(formId, data);
+		return client.updateParticipantData(trackerId, data);
 	}
 
 }

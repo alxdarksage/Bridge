@@ -66,9 +66,9 @@ public class SageUserBoostrap {
 					"0 0 4 * * ? *", "Rest time", "sleep-time-slider");
 			createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind",
 					"mood-slider", "Body", "mood-slider");
-			createData(bridge, "Medications", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
+			createData(bridge, "Medication Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
 					"string", "yy", "string");
-			createData(bridge, "Personal Info", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
+			createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
 					"string", "Address", "string");
 
 			CompleteBloodCount cbc = new CompleteBloodCount();

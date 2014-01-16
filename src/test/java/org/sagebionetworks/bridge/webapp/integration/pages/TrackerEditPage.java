@@ -15,9 +15,9 @@ import org.openqa.selenium.WebElement;
  * in this test to work around that (accessing the hidden fields directly).
  *
  */
-public class FormEditPage {
+public class TrackerEditPage {
 	
-	private static final Logger logger = LogManager.getLogger(FormEditPage.class.getName());
+	private static final Logger logger = LogManager.getLogger(TrackerEditPage.class.getName());
 
 	public enum FieldNames {
 		RBC("M/uL"),
@@ -47,7 +47,7 @@ public class FormEditPage {
 	
 	protected WebDriverFacade facade;
 
-	public FormEditPage(WebDriverFacade facade) {
+	public TrackerEditPage(WebDriverFacade facade) {
 		this.facade = facade;
 	}
 	

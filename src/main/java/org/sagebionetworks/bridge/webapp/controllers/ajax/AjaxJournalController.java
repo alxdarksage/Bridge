@@ -20,25 +20,26 @@ import com.google.common.collect.Maps;
 @Controller
 public class AjaxJournalController extends JournalControllerBase {
 
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/ajax/new", method = RequestMethod.POST)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/ajax/new", method = RequestMethod.POST)
 	@ResponseBody
 	public Object appendValuesAjax(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
+			@PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model)
+			throws SynapseException {
 
-		RowSet data = createRow(request, formId, dynamicForm, null, model);
+		RowSet data = createRow(request, trackerId, dynamicForm, null, model);
 
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("rowId", data.getRows().get(0).getRowId());
 		return result;
 	}
 
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/ajax/row/{rowId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/ajax/row/{rowId}", method = RequestMethod.POST)
 	@ResponseBody
 	public Object setValuesAjax(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @PathVariable("rowId") long rowId, @ModelAttribute DynamicForm dynamicForm,
-			ModelAndView model) throws SynapseException {
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId,
+			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 
-		RowSet data = updateRow(request, formId, dynamicForm, null, model, rowId);
+		RowSet data = updateRow(request, trackerId, dynamicForm, null, model, rowId);
 
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("rowId", data.getRows().get(0).getRowId());

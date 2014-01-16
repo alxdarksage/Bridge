@@ -2,13 +2,13 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 
 import org.openqa.selenium.By;
 
-public class FormIndexPage {
+public class TrackerIndexPage {
 	
 	public static final String HEADER = "Complete Blood Count";
 
 	protected WebDriverFacade facade;
 
-	public FormIndexPage(WebDriverFacade facade) {
+	public TrackerIndexPage(WebDriverFacade facade) {
 		this.facade = facade;
 	}
 	
@@ -25,16 +25,16 @@ public class FormIndexPage {
 		facade.click("#row"+Integer.toString(count-1) + " a");
 	}
 	
-	public FormEditPage clickNewSurveyButton() {
-		facade.click("#newSurveyAct");
-		facade.waitForHeader(FormEditPage.NEW_HEADER);
-		return new FormEditPage(facade);
+	public TrackerEditPage clickNewTrackerButton() {
+		facade.click("#newTrackerAct");
+		facade.waitForHeader(TrackerEditPage.NEW_HEADER);
+		return new TrackerEditPage(facade);
 	}
 	
-	public FormShowPage getMostRecentEntry() {
+	public TrackerShowPage getMostRecentEntry() {
 		clickLastRow();
-		facade.waitForHeader(FormShowPage.HEADER);
-		return new FormShowPage(facade);
+		facade.waitForHeader(TrackerShowPage.HEADER);
+		return new TrackerShowPage(facade);
 	}
 	
 }

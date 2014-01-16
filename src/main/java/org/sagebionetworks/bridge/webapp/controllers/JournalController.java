@@ -50,8 +50,8 @@ public class JournalController extends JournalControllerBase {
 		PaginatedResults<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
 		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
 			@Override
-			public int compare(ParticipantDataDescriptor arg0, ParticipantDataDescriptor arg1) {
-				return arg0.getDescription().compareTo(arg1.getDescription());
+			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
+				return pdd0.getDescription().compareTo(pdd1.getDescription());
 			}
 			
 		});
@@ -66,114 +66,114 @@ public class JournalController extends JournalControllerBase {
 	}
 
 	@RequestMapping(value = "/journal", method = RequestMethod.GET)
-	public ModelAndView viewAllForms(BridgeRequest request, ModelAndView model) throws SynapseException {
+	public ModelAndView viewJournal(BridgeRequest request, ModelAndView model) throws SynapseException {
 		// Force redirect to sign in
 		request.getBridgeUser().getBridgeClient();
 		model.setViewName("journal/index");
 		return model;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.GET)
 	public ModelAndView viewForms(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, ModelAndView model) throws SynapseException {
+			@PathVariable("trackerId") String trackerId, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("spec", spec);
-		ClientUtils.prepareParticipantData(client, model, spec, formId);
-		model.setViewName("journal/forms/index");
+		ClientUtils.prepareParticipantData(client, model, spec, trackerId);
+		model.setViewName("journal/trackers/index");
 		return model;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}", method = RequestMethod.POST, params = "delete=delete")
-	public String batchForms(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @RequestParam("rowSelect") Set<String> rowSelects)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")
+	public String batchTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @RequestParam("rowSelect") Set<String> rowSelects)
 			throws SynapseException {
 		
 		if (rowSelects != null) {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
 		}
 		request.setNotification("Not implemented");
-		return "redirect:/journal/"+participantId+"/forms/"+formId+".html";
+		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/new", method = RequestMethod.GET)
-	public ModelAndView newSurvey(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.GET)
+	public ModelAndView newTracker(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model)
 			throws SynapseException {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
-		Set<String> defaultedFields = ClientUtils.defaultValuesFromPriorForm(client, spec, dynamicForm, formId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		Set<String> defaultedFields = ClientUtils.defaultValuesFromPriorTracker(client, spec, dynamicForm, trackerId);
 		model.addObject("defaultedFields", defaultedFields);
 		
-		model.setViewName("journal/forms/new");
+		model.setViewName("journal/trackers/new");
 		return model;
 	}
 
 	
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/new", method = RequestMethod.POST)
-	public ModelAndView createSurvey(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @ModelAttribute DynamicForm dynamicForm, BindingResult result,
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.POST)
+	public ModelAndView createTracker(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm, BindingResult result,
 			ModelAndView model) throws SynapseException {
 
-		createRow(request, formId, dynamicForm, result, model);
+		createRow(request, trackerId, dynamicForm, result, model);
 		if (result.hasErrors()) {
-			model.setViewName("journal/forms/new");
+			model.setViewName("journal/trackers/new");
 			return model;
 		}
 		
-		request.setNotification("Survey updated.");
-		model.setViewName("redirect:/journal/"+participantId+"/forms/"+formId+".html");
+		request.setNotification("Tracker updated.");
+		model.setViewName("redirect:/journal/"+participantId+"/trackers/"+trackerId+".html");
 		return model;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/row/{rowId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}", method = RequestMethod.GET)
 	public ModelAndView viewRow(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @PathVariable("rowId") long rowId, ModelAndView model,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, ModelAndView model,
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
+		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
 		
-		model.setViewName("journal/forms/show");
+		model.setViewName("journal/trackers/show");
 		return model;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/row/{rowId}/edit", method = RequestMethod.GET)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}/edit", method = RequestMethod.GET)
 	public ModelAndView editRow(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @PathVariable("rowId") long rowId, ModelAndView model,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, ModelAndView model,
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, formId);
+		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
+		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
 		
-		model.setViewName("journal/forms/edit");
+		model.setViewName("journal/trackers/edit");
 		return model;
 	}
 
-	@RequestMapping(value = "/journal/{participantId}/forms/{formId}/row/{rowId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}", method = RequestMethod.POST)
 	public ModelAndView updateRow(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("formId") String formId, @PathVariable("rowId") long rowId, @ModelAttribute DynamicForm dynamicForm,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, @ModelAttribute DynamicForm dynamicForm,
 			BindingResult result, ModelAndView model) throws SynapseException {
 
-		updateRow(request, formId, dynamicForm, result, model, rowId);
+		updateRow(request, trackerId, dynamicForm, result, model, rowId);
 		model.addObject("rowId", rowId);
 		if (result.hasErrors()) {
-			model.setViewName("journal/forms/edit");
+			model.setViewName("journal/trackers/edit");
 			return model;
 		}
 
-		request.setNotification("Survey updated.");
-		model.setViewName("redirect:/journal/" + participantId + "/forms/" + formId + ".html");
+		request.setNotification("Tracker updated.");
+		model.setViewName("redirect:/journal/" + participantId + "/trackers/" + trackerId + ".html");
 		return model;
 	}
 

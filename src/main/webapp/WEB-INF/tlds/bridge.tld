@@ -37,30 +37,54 @@
         <path>/WEB-INF/tags/signIn.tag</path>
     </tag-file>
 
-    <!-- COMPONENTS (build a UI from the FormElement tree structure) -->
+    <!-- Tracker components -->
     <tag-file>
         <name>router</name>
-        <path>/WEB-INF/tags/components/router.tag</path>
+        <path>/WEB-INF/tags/trackers/router.tag</path>
     </tag-file>
     <tag-file>
         <name>list</name>
-        <path>/WEB-INF/tags/components/list.tag</path>
+        <path>/WEB-INF/tags/trackers/list.tag</path>
     </tag-file>
     <tag-file>
         <name>range-norm-bar</name>
-        <path>/WEB-INF/tags/components/range-norm-bar.tag</path>
+        <path>/WEB-INF/tags/trackers/range-norm-bar.tag</path>
     </tag-file>
     <tag-file>
         <name>group</name>
-        <path>/WEB-INF/tags/components/group.tag</path>
+        <path>/WEB-INF/tags/trackers/group.tag</path>
     </tag-file>
     <tag-file>
         <name>range</name>
-        <path>/WEB-INF/tags/components/range.tag</path>
+        <path>/WEB-INF/tags/trackers/range.tag</path>
     </tag-file>
     <tag-file>
         <name>grid</name>
-        <path>/WEB-INF/tags/components/grid.tag</path>
+        <path>/WEB-INF/tags/trackers/grid.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders</name>
+        <path>/WEB-INF/tags/trackers/reminders.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders-due</name>
+        <path>/WEB-INF/tags/trackers/reminders-due.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders-always</name>
+        <path>/WEB-INF/tags/trackers/reminders-always.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>reminders-direct</name>
+        <path>/WEB-INF/tags/trackers/reminders-direct.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>comma-list</name>
+        <path>/WEB-INF/tags/trackers/comma-list.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>formtag</name>
+        <path>/WEB-INF/tags/trackers/formtag.tag</path>
     </tag-file>
 
     <!-- FORMS (SPRING + BOOTSTRAP) -->
@@ -103,26 +127,6 @@
     <tag-file>
         <name>textarea</name>
         <path>/WEB-INF/tags/forms/textarea.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>reminders</name>
-        <path>/WEB-INF/tags/forms/reminders.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>reminders-due</name>
-        <path>/WEB-INF/tags/forms/reminders-due.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>reminders-always</name>
-        <path>/WEB-INF/tags/forms/reminders-always.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>reminders-direct</name>
-        <path>/WEB-INF/tags/forms/reminders-direct.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>comma-list</name>
-        <path>/WEB-INF/tags/forms/comma-list.tag</path>
     </tag-file>
 
     <!-- LAYOUTS -->
@@ -389,9 +393,4 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>    
-    <!--  Custom form tags -->
-    <tag-file>
-        <name>formtag</name>
-        <path>/WEB-INF/tags/forms/formtag.tag</path>
-    </tag-file>
 </taglib>

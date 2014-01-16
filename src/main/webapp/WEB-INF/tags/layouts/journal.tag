@@ -5,12 +5,12 @@
 <sage:main code="${code}">
     <jsp:attribute name="navigation">
         <div class="panel panel-default">
-            <div class="panel-heading"><b>Forms</b></div>
+            <div class="panel-heading"><b><spring:message code="Trackers"/></b></div>
             <div class="panel-body">
                 <ul class="list-group">
                     <c:forEach var="descriptor" items="${descriptors}">
 	                    <li class="list-group-item">
-	                        <a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/forms/${descriptor.id}.html">
+	                        <a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html">
 	                           ${(not empty descriptor.name) ? descriptor.name : descriptor.description}
                            </a>
 	                    </li>
