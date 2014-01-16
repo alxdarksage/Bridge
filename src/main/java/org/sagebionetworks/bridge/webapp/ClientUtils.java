@@ -225,8 +225,10 @@ public class ClientUtils {
 		if (specification == null) {
 			throw new SynapseNotFoundException("Could not find Specification for a Descriptor with the name " + descriptor.getName());
 		}
-		model.addObject("descriptor", descriptor);
-		model.addObject("form", specification);
+		if (model != null) {
+			model.addObject("descriptor", descriptor);
+			model.addObject("form", specification);
+		}
 		return specification;
 	}
 	

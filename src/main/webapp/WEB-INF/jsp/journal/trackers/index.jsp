@@ -11,6 +11,8 @@
 	        itemId="id" items="${records}" caption="${form.description}s">
 	        <sage:button id="newTrackerAct" type="primary" label="New Tracker" 
 	            action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
+            <sage:button id="exportAct" type="default" label="Export (*.csv)"
+                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
 
 	            <sage:spec-column specification="${spec}" 
 	               link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
@@ -18,9 +20,5 @@
 	        <sage:button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
 	        --%>
 	    </sage:table>
-	    
-	    <c:url var="exportUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
-	    <a class="btn btn-sm btn-default" href="${exportUrl}">Export (*.csv)</a>
-	    
     </jsp:attribute>
 </sage:journal>

@@ -18,6 +18,7 @@ import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -112,22 +115,28 @@ public class JournalController extends JournalControllerBase {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, null, trackerId);
 		
 		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
-		
-		// TODO: Remove columns users don't see
-		// TODO: Convert all the "null" strings to empty strings
-		// TODO: Name for tracker that's unique to the tracker
-		
 		response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=export.csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
 		CSVWriter writer = new CSVWriter(response.getWriter());
 		writer.writeNext(paginatedRowSet.getResults().getHeaders().toArray(new String[] {}));
 		for (Row row : paginatedRowSet.getResults().getRows()) {
-			writer.writeNext(row.getValues().toArray(new String[] {}));
+			writer.writeNext( removeNullStrings(row.getValues()) );
 		}
+		writer.flush();
 		writer.close();
 		response.flushBuffer();
+	}
+
+	private String[] removeNullStrings(List<String> list) {
+		for (int i=0; i < list.size(); i++) {
+			if ("null".equals(list.get(i))) {
+				list.set(i, "");
+			}
+		}
+		return list.toArray(new String[] {});
 	}
 	
 	
