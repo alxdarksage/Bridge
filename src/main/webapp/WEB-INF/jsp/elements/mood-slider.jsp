@@ -1,10 +1,10 @@
 <%@include file="../directives.jsp" %>
 <%
-	Object formId = request.getAttribute("formId");
+	Object trackerId = request.getAttribute("trackerId");
 	Object columnDescriptor = request.getAttribute("columnDescriptor");
 	Object value = request.getAttribute("value");
 %>
-<c:set var="id" value="${formId}-${columnDescriptor.name}"/>
+<c:set var="id" value="${trackerId}-${columnDescriptor.name}"/>
 ${columnDescriptor.name}<span id="${id}-slider"></span>
 <input type="hidden" id="${id}-value" name="values['${columnDescriptor.name}']" value="${value}"/>
 <div id="${id}-out"></div>
@@ -14,14 +14,14 @@ ${columnDescriptor.name}<span id="${id}-slider"></span>
 	slider.position(${empty value ? 0.5 : value});
     slider.position(function (p) {
         var mySlider = this;
-    	var form = $("#${formId}");
+    	var form = $("#${trackerId}");
     	var valueInput = $("#${id}-value");
-    	var rowIdInput = $("#${formId}-rowId");
+    	var rowIdInput = $("#${trackerId}-rowId");
 
     	valueInput.val(p);
     	var rowId = rowIdInput.val();
     	var url = form.attr("action") + "/ajax" + (rowId == '' ? '/new' : '/row/' + rowId) + ".html";
-        var serialized = $("#${formId}").serialize();
+        var serialized = $("#${trackerId}").serialize();
          $.ajax({
              success: function(data) {
                  rowIdInput.val(data.rowId);

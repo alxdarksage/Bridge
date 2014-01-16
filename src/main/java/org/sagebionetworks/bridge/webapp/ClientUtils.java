@@ -47,6 +47,7 @@ import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -266,10 +267,10 @@ public class ClientUtils {
 		}
 	}
 
-	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String formId) throws SynapseException {
+	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String trackerId) throws SynapseException {
 		List<RowObject> records = Lists.newArrayList();
 		
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0);
+		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		RowSet rowSet = paginatedRowSet.getResults();
 		List<String> headers = rowSet.getHeaders();
 		SortedMap<String,FormElement> tabs = spec.getTableFields();
@@ -282,7 +283,12 @@ public class ClientUtils {
 				FormElement field = entry.getValue();
 				String serValue = row.getValues().get( headers.indexOf(fieldName) );
 				
-				values.add( field.getObjectConverter().convert(serValue) );
+				Converter<String,Object> converter = field.getObjectConverter();
+				if (converter != null) {
+					values.add(converter.convert(serValue));	
+				} else {
+					values.add(serValue);
+				}
 			}
 			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 		}
@@ -325,12 +331,12 @@ public class ClientUtils {
 		return headers;
 	}
 	
-	public static Set<String> defaultValuesFromPriorForm(BridgeClient client, Specification spec, DynamicForm dynamicForm,
-			String formId) throws SynapseException {
+	public static Set<String> defaultValuesFromPriorTracker(BridgeClient client, Specification spec,
+			DynamicForm dynamicForm, String trackerId) throws SynapseException {
 		Set<String> defaultedFields = Sets.newHashSet();
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
-		PaginatedRowSet rowSet = client.getParticipantData(formId, ClientUtils.LIMIT, 0L);
+		PaginatedRowSet rowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0L);
 		if (rowSet.getTotalNumberOfResults() > 0L) {
 			Set<String> defaults = defaultTheseFields(spec);
 			List<String> headers = rowSet.getResults().getHeaders();

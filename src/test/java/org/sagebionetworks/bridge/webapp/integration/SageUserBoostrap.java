@@ -59,16 +59,17 @@ public class SageUserBoostrap {
 			
 			BridgeClient bridge = new BridgeClientImpl(synapse);
 			setEndpoints(bridge);
-			bridge.setSessionToken(session.getSessionToken());
 			
-			createData(bridge, "daily sleep checkin", "Sleep tracker", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Sleep time",
-					"sleep-time-slider");
-			createData(bridge, "daily rest checkin", "Rest tracker", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Rest time",
-					"sleep-time-slider");
-			createData(bridge, "mood checkin", "Mood tracker", ParticipantDataRepeatType.ALWAYS, null, "Mind", "mood-slider", "Body",
-					"mood-slider");
-			createData(bridge, "meds", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx", "string", "yy", "string");
-			createData(bridge, "info", "Personal Info", ParticipantDataRepeatType.ONCE, null, "Name", "string", "Address", "string");
+			createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED,
+					"0 0 4 * * ? *", "Sleep time", "sleep-time-slider");
+			createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED,
+					"0 0 4 * * ? *", "Rest time", "sleep-time-slider");
+			createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind",
+					"mood-slider", "Body", "mood-slider");
+			createData(bridge, "Medication Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
+					"string", "yy", "string");
+			createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
+					"string", "Address", "string");
 
 			CompleteBloodCount cbc = new CompleteBloodCount();
 			ParticipantDataDescriptor desc = ParticipantDataUtils.getDescriptor(cbc);
@@ -85,7 +86,7 @@ public class SageUserBoostrap {
 		}
 	}
 
-	private void createData(BridgeClient bridge, String description, String name, ParticipantDataRepeatType repeatType,
+	private void createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
 			String repeatFrequency, String... cols) throws SynapseException {
 		ParticipantDataDescriptor desc = new ParticipantDataDescriptor();
 		desc.setDescription(description);

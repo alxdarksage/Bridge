@@ -19,16 +19,29 @@
 	    line-height: 25px;
 	    z-index: 2;
 	}
-	.unit {
-	    font-variant: small-caps;
+	.value {
 	    font-size: 14px;
+        font-weight: bold;
+	    padding: 0 .2rem;
+	}
+	.unit {
+	    font-size: 12px;
+	    padding: 0 .2rem;
+	}
+	.rangetrue {
+	    .value {
+	        background-color: rgba(240,240,240,.5);
+	    }
+	    .unit {
+	        background-color: rgba(240,240,240,.5);
+	    }
+					
 	}
 	.range {
 	    position: absolute;
-	    bottom: 0;
+	    bottom: 0px;
 	    right: 2px;
 	    font-size: 12px;
-	    color: #aaa;
 	    z-index: 2;
 	    background-color: rgba(255,255,255,.8);
 	}

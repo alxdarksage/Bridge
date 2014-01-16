@@ -20,13 +20,13 @@ public class JournalPage {
 		element.click();
 	}
 	
-	public FormIndexPage getFormIndexPage() {
+	public TrackerIndexPage getTrackerIndexPage() {
 		clickCompleteBloodCount();
-		return waitForFormIndexPage();
+		return waitForTrackerIndexPage();
 	}
 	
-	public FormIndexPage waitForFormIndexPage() {
-		facade.waitForHeader(FormIndexPage.HEADER);
-		return new FormIndexPage(facade);
+	public TrackerIndexPage waitForTrackerIndexPage() {
+		facade.waitForHeader(TrackerIndexPage.HEADER);
+		return new TrackerIndexPage(facade);
 	}
 }

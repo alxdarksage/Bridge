@@ -139,12 +139,12 @@ public class CompleteBloodCount implements Specification {
 
 	@Override
 	public String getName() {
-		return "CBC";
+		return "Complete Blood Count Tracker";
 	}
 	
 	@Override
 	public String getDescription() {
-		return "Complete Blood Count";
+		return "Complete Blood Count Tracker";
 	}
 	
 	@Override

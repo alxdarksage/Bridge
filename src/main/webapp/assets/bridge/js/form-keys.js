@@ -1,8 +1,16 @@
 (function() {
+    $("#removeDefaultsAct").on('click', function(e) {
+		$("#dynamicForm .defaulted").each(function() {
+			$(this).val('').removeClass('defaulted');
+		});
+    });
+    
+    // With the inclusion of number fields, the arrow keys adjust the numbers,
+    // and this doesn't work anymore. Currently abandoning.
+
     var COLUMNS = 4,
-        // FLOAT_REGEX = /[\d.]/,
         LONG_REGEX = /\d/,
-        METAS = [/*tab*/ 8, /*backspace*/ 9],
+        METAS = [8, 9],
         fields = $("#dynamicForm input, #dynamicForm select");
     
     if (fields.size() === 0) {
@@ -11,6 +19,7 @@
     
     fields.get(0).focus();
     
+    /*
     function move(element, delta) {
         var index = fields.indexOf(element);
         if (inBounds(index+delta)) {
@@ -26,12 +35,14 @@
     function inBounds(index) {
         return index >= 0 && index < fields.size();
     }
+    */
     
     $(document.documentElement).on('keydown', function(e) {
         if (e.target.nodeName !== "INPUT") {
             return;
         }
         var keyCode = e.keyCode;
+        /*
         if (METAS.indexOf(keyCode) > -1 || e.ctrlKey || e.shiftKey || e.metaKey || e.altKey) {
             return;
         }
@@ -44,6 +55,7 @@
         } else if (keyCode === 40) {
             move(e.target, COLUMNS); // down
         }
+        */
         var dataType = e.target.getAttribute("data-type"),
             value = String.fromCharCode(keyCode);
         if (dataType === "double") {
