@@ -120,4 +120,6 @@
         </property>
     </bean>
     
+    <bean id="authenticationFilterBean" class="org.sagebionetworks.bridge.webapp.servlet.AuthenticationFilter"/>
+    
 </beans>

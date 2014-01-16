@@ -72,7 +72,11 @@
 
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
-        <filter-class>org.sagebionetworks.bridge.webapp.servlet.AuthenticationFilter</filter-class>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>authenticationFilterBean</param-value>
+        </init-param> 
     </filter>
     <filter-mapping>
         <!-- Should not pass static resources through the auth filter, although we do want 
@@ -81,6 +85,7 @@
         <filter-name>AuthenticationFilter</filter-name>  
         <url-pattern>*.html</url-pattern>
         <url-pattern>/communities/*</url-pattern>
+        <url-pattern>/journal/*</url-pattern>
     </filter-mapping>
     
     <filter>
@@ -96,6 +101,14 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     
+    <listener>
+	    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+	    <param-name>contextConfigLocation</param-name>
+	    <param-value>/WEB-INF/spring-dispatcher-servlet.xml</param-value>
+	</context-param>
+	 
     <error-page>
         <!-- Doesn't seem like this catches subclasses. -->
         <exception-type>java.lang.Throwable</exception-type>

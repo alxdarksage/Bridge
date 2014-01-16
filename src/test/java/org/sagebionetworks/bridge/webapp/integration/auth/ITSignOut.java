@@ -32,8 +32,8 @@ public class ITSignOut extends WebDriverBase {
 		communityPage = facade.waitForCommunityPage();
 		communityPage.getProfilePanelPage().clickSignOut();
 		
-		facade.getProfilePage();
-		facade.waitForSignInPage();
+		//facade.getProfilePage();
+		//facade.waitForSignInPage();
 	}
 	
 }

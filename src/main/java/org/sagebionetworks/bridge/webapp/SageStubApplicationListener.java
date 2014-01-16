@@ -41,6 +41,9 @@ public class SageStubApplicationListener implements ApplicationListener<ContextR
 				SpecificationResolver specResolver = (SpecificationResolver)context.getBean("specificationResolver");
 				
 				PaginatedResults<ParticipantDataDescriptor> descriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
+				if (descriptors.getTotalNumberOfResults() > 0L) {
+					return; // we've already done this, the services are in-memory, we're done.
+				}
 				for (Specification spec: specResolver.getAllSpecifications()) {
 					
 					logger.info("Creating a new ParticipantDataDescriptor with its columns: " + spec.getName());

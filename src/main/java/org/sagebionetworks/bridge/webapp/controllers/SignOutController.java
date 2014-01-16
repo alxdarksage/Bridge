@@ -1,9 +1,11 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -26,7 +28,7 @@ public class SignOutController {
 	}
 
 	@RequestMapping(method = { RequestMethod.GET, RequestMethod.POST })
-	public String get(BridgeRequest request, HttpSession session, SignInForm signInForm) throws SynapseException {
+	public String get(BridgeRequest request, HttpSession session, HttpServletResponse response, SignInForm signInForm) throws SynapseException {
 		BridgeUser user = request.getBridgeUser();
 		
 		// You're about to delete this, so copy it to the request and refer to it there.
@@ -36,7 +38,8 @@ public class SignOutController {
 			SynapseClient client = user.getSynapseClient();
 			client.logout();
 			session.invalidate();
-			logger.info("User #{} signed off.", user.getOwnerId());
+			ClientUtils.setSynapseSessionCookie(request, response, 0);
+			logger.info("User signed out.");
 		}
 		return "auth/signedOut";
 	}

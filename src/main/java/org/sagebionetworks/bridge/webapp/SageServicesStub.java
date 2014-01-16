@@ -391,6 +391,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public UserSessionData getUserSessionData() throws SynapseException {
+		if (currentUserData == null) {
+			throw new SynapseException();
+		}
 		return currentUserData;
 	}
 
