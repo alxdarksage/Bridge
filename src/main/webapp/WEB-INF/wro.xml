@@ -35,8 +35,8 @@
         <js>/assets/bridge/js/range-norm-bar.js</js>
 	</group>
 	
-    <group name="journal">
-        <js>/assets/bridge/js/form-keys.js</js>
+    <group name="trackers">
+        <js>/assets/bridge/js/trackers.js</js>
     </group>
 	
 </groups>

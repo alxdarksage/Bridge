@@ -236,7 +236,7 @@ public class CompleteBloodCount implements Specification {
 		
 		FormFieldBuilder builder = new FormFieldBuilder();
 		
-		FormField field = builder.asDouble().name(name).label(description).create();
+		FormField field = builder.asDouble().minValue(0D).name(name).label(description).create();
 		row.addField(field);
 		
 		if (unitEnumeration.size() == 1) {

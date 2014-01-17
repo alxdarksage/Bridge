@@ -57,16 +57,11 @@ public class CommunityAdminController {
 			BindingResult result, ModelAndView model) throws SynapseException {
 		model.setViewName("admin/communities/new");
 		if (!result.hasErrors()) {
-			try {
-				BridgeClient client = request.getBridgeUser().getBridgeClient();
-				Community community = FormUtils.valuesToCommunity(new Community(), communityForm);
-				client.createCommunity(community);
-				model.setViewName("redirect:/admin/communities/index.html");
-				request.setNotification("CommunityCreated");
-			} catch(SynapseException e) {
-				String message = ClientUtils.parseSynapseException(e, 500, "Invalid Entity name");
-				ClientUtils.fieldError(result, "communityForm", "name", message);
-			}
+			BridgeClient client = request.getBridgeUser().getBridgeClient();
+			Community community = FormUtils.valuesToCommunity(new Community(), communityForm);
+			client.createCommunity(community);
+			model.setViewName("redirect:/admin/communities/index.html");
+			request.setNotification("CommunityCreated");
 		}
 		return model;
 	}
@@ -97,6 +92,10 @@ public class CommunityAdminController {
 			List<String> members = getMemberIds(request, communityId);
 			List<String> currentAdministrators = getAdministratorIds(request, communityId);
 			try {
+				// Yes you need this. You'll get an NPE against the real system when nothing is checked.
+				if (administrators == null) {
+					administrators = Lists.newArrayList(); 
+				}
 				// Add, then remove, or you can get strange error conditions based on intermediate 
 				// state of having no one assigned.
 				for (String memberId : members) {

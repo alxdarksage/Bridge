@@ -112,22 +112,28 @@ public class JournalController extends JournalControllerBase {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, null, trackerId);
 		
 		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
-		
-		// TODO: Remove columns users don't see
-		// TODO: Convert all the "null" strings to empty strings
-		// TODO: Name for tracker that's unique to the tracker
-		
 		response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=export.csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
 		CSVWriter writer = new CSVWriter(response.getWriter());
 		writer.writeNext(paginatedRowSet.getResults().getHeaders().toArray(new String[] {}));
 		for (Row row : paginatedRowSet.getResults().getRows()) {
-			writer.writeNext(row.getValues().toArray(new String[] {}));
+			writer.writeNext( removeNullStrings(row.getValues()) );
 		}
+		writer.flush();
 		writer.close();
 		response.flushBuffer();
+	}
+
+	private String[] removeNullStrings(List<String> list) {
+		for (int i=0; i < list.size(); i++) {
+			if ("null".equals(list.get(i))) {
+				list.set(i, "");
+			}
+		}
+		return list.toArray(new String[] {});
 	}
 	
 	
