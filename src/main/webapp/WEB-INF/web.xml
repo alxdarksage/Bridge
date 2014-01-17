@@ -106,7 +106,7 @@
 	</listener>
 	<context-param>
 	    <param-name>contextConfigLocation</param-name>
-	    <param-value>/WEB-INF/spring-dispatcher-servlet.xml</param-value>
+	    <param-value>classpath:bridge-webapp-application-context.spb.xml</param-value>
 	</context-param>
 	 
     <error-page>

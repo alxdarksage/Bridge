@@ -399,21 +399,25 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 
 	@Override
 	public S3FileHandle createFileHandle(File temp, String contentType) throws SynapseException, IOException {
+		// If this was compressed, uncompress it before storing it. The actual implementation stores compressed
+		// and only uncompressed when you call downloadV2WikiMarkdown(). 
+		String markdown = null;
+		try {
+			markdown = org.sagebionetworks.downloadtools.FileUtils.readCompressedFileAsString(temp);	
+		} catch(Exception e) {
+			// assume it wasn't compressed.
+			markdown = FileUtils.readFileToString(temp);
+		}
+		if (markdown == null) {
+			throw new SynapseException(new NotFoundException());
+		}
 		S3FileHandle handle = new S3FileHandle();
-		// This isn't going to be easy to stub out! We need to read in the content and save it in markdownsByFileHandleId,
-		// as that's the only place we're using it right now, with a new id, and put that ID in the handle.
 		String id = newId();
-		String markdown = FileUtils.readFileToString(temp);
-		markdownsByFileHandleId.put(id, markdown);
 		handle.setId(id);
 		handle.setFileName(temp.getName());
-		// Create a preview item as well? Where to store it?
-		/*
-		id = newId();
-		PreviewFileHandle pfh = new PreviewFileHandle();
-		pfh.setId(id);
-		pfh.setFileName("preview.png");
-		*/
+		
+		markdownsByFileHandleId.put(id, markdown);
+
 		return handle;
 	}
 	
