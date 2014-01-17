@@ -2,25 +2,17 @@ package org.sagebionetworks.bridge.webapp.forms;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.sagebionetworks.bridge.webapp.validators.SynapseName;
 
 public class CommunityForm {
 
 	@NotEmpty
+	@SynapseName
 	private String name;
 	private String description;
 	private String id;
 	private String administrators; // just here to hold an error...
 	
-	/*
-	public String getFormName() {
-		if (StringUtils.isBlank(id)) {
-			return "NewCommunity";
-		} else if (StringUtils.isBlank(name)) {
-			return "Community";
-		}
-		return name;
-	}
-	*/
 	public String getFormId() {
 		if (StringUtils.isBlank(id)) {
 			return "new";
