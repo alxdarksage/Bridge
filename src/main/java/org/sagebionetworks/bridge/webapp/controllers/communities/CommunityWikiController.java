@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +19,7 @@ import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.downloadtools.FileUtils;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
 import org.sagebionetworks.repo.model.file.FileHandle;
@@ -81,7 +81,8 @@ public class CommunityWikiController {
 			
 			String userId = request.getBridgeUser().getOwnerId();
 			File temp = ClientUtils.createTempFile(request, userId+".html");
-			FileUtils.writeStringToFile(temp, wikiForm.getMarkdown());
+			
+			FileUtils.writeStringToCompressedFile(temp, wikiForm.getMarkdown());
 			FileHandle handle = client.createFileHandle(temp, "text/html");
 			
 			V2WikiPage root = client.getV2RootWikiPage(communityId, ObjectType.ENTITY);
@@ -136,7 +137,7 @@ public class CommunityWikiController {
 			SynapseClient client = request.getBridgeUser().getSynapseClient();
 			File tempDir = (File)request.getAttribute(ServletContext.TEMPDIR);
 			File temp = new File(tempDir, wiki.getId()+".html");
-			FileUtils.writeStringToFile(temp, wikiForm.getMarkdown());
+			FileUtils.writeStringToCompressedFile(temp, wikiForm.getMarkdown());
 			FileHandle handle = client.createFileHandle(temp, "text/html");
 			
 			wiki.setMarkdownFileHandleId(handle.getId());
