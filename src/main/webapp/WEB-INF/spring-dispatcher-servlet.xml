@@ -11,5 +11,57 @@
     <!-- Uses the normal app context file unless it's overwritten by a system property, 
         e.g. for integration tests. -->
     <import resource="${bridge-app-context:classpath:bridge-webapp-application-context.spb.xml}" />
+    
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
 
+    <bean
+        class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1" />
+        <property name="mediaTypes">
+            <map>
+                <entry key="html" value="text/html"/>
+                <entry key="json" value="application/json" />
+            </map>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+            </list>
+        </property>
+        <property name="ignoreAcceptHeader" value="false" />
+        <property name="defaultContentType" value="application/json" />
+    </bean>
+    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+         <property name="maxUploadSize" value="10000000"/>
+    </bean>
+    
+    <!-- Localization -->
+    <!-- 
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>messages</value>
+            </list>
+        </property>
+    </bean>
+     -->
+     
+    <!-- Uses the accept header by default, and that's just fine. A good test would be to compare all the keys
+        in the English file to all the other files, just to verify that you've filled them all out.
+     -->
+    <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource" id="messageSource">  
+        <property name="basenames">  
+            <list>  
+                <value>classpath:messages/messages</value>
+            </list>
+        </property>  
+        <property name="cacheSeconds" value="0"/>  
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+    </bean>
+    
 </beans>

@@ -22,12 +22,16 @@
             return;
         }
         var keyCode = e.keyCode;
-        var dataType = e.target.getAttribute("data-type"),
-            value = String.fromCharCode(keyCode);
-        // You have to allow for tab and shift tab, arrow keys
-        if (keyCode < 48 || keyCode > 90) {
+        // Allow for ctrl-a/z/x/c/v
+        if ([65,67,86,88,90].indexOf(keyCode) > -1 && (e.metaKey || e.ctrlKey)) {
         	return;
         }
+        // Allow for tab and shift tab, arrow keys, backspace, etc
+        if ([8, 9, 16, 17, 18, 37, 38, 39, 40, 13, 27, 91, 93].indexOf(keyCode) > -1) {
+        	return;
+        }
+        var dataType = e.target.getAttribute("data-type"),
+        	value = String.fromCharCode(keyCode);
         // This does not allow for negative numbers.
         if (dataType === "double") {
             if (keyCode !== 190 && !LONG_REGEX.test(value)) {
