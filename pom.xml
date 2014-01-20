@@ -427,8 +427,82 @@
 	</build>
 	
 	<profiles>
+        <profile>
+            <id>integration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.tomcat.maven</groupId>
+                        <artifactId>tomcat7-maven-plugin</artifactId>
+                        <version>${tomcat7-maven-plugin.version}</version>
+                        <configuration>
+                            <port>8888</port>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <skipITs>false</skipITs>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <version>${cargo-maven2-plugin.version}</version>
+                        <configuration>
+                            <container>
+                                <containerId>tomcat7x</containerId>
+                                <zipUrlInstaller>
+                                    <url>http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.6/bin/apache-tomcat-7.0.6.zip</url>
+                                </zipUrlInstaller>
+                                <systemProperties>
+                                    <org.sagebionetworks.stackEncryptionKey>${org.sagebionetworks.stackEncryptionKey}</org.sagebionetworks.stackEncryptionKey>
+                                    <org.sagebionetworks.stack.configuration.url>${org.sagebionetworks.stack.configuration.url}</org.sagebionetworks.stack.configuration.url>
+                                    <org.sagebionetworks.stack>${org.sagebionetworks.stack}</org.sagebionetworks.stack>
+                                    <org.sagebionetworks.stack.instance>${org.sagebionetworks.stack.instance}</org.sagebionetworks.stack.instance>
+                                    <org.sagebionetworks.stack.iam.id>${org.sagebionetworks.stack.iam.id}</org.sagebionetworks.stack.iam.id>
+                                    <org.sagebionetworks.stack.iam.key>${org.sagebionetworks.stack.iam.key}</org.sagebionetworks.stack.iam.key>
+                                    <org.sagebionetworks.rest.api.endpoint>${tomcat.endpoint}/${org.sagebionetworks.repository.context}</org.sagebionetworks.rest.api.endpoint>
+                                    <bridge-app-context>classpath:test-bridge-webapp-application-context.spb.xml</bridge-app-context>
+                                </systemProperties>                        
+                            </container>
+                            <configuration>
+                                <properties>
+                                    <cargo.servlet.port>8888</cargo.servlet.port>
+                                    <cargo.tomcat.ajp.port>8889</cargo.tomcat.ajp.port>
+                                    <cargo.rmi.port>8890</cargo.rmi.port>
+                                    <cargo.jvmargs>${surefireArgLine}</cargo.jvmargs>
+                                </properties>
+                            </configuration>
+                        </configuration>
+                        <executions>
+                            <!-- start server before integration tests -->
+                            <execution>
+                                <id>start-container</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <!-- stop server after integration tests -->
+                            <execution>
+                                <id>stop-container</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>                    
+                </plugins>
+            </build>
+        </profile>
+        <!-- identical to the integration tests, but run against a faster and more isolated Stub version
+            of the Synapse/Bridge services.
+         -->
 		<profile>
-			<id>integration</id>
+			<id>ui</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -512,8 +586,9 @@
 		                    </container>
 		                    <configuration>
 		                        <properties>
-		                            <cargo.servlet.port>8888</cargo.servlet.port>
-		                            <cargo.tomcat.ajp.port>8889</cargo.tomcat.ajp.port>
+                                    <cargo.servlet.port>8888</cargo.servlet.port>
+                                    <cargo.tomcat.ajp.port>8889</cargo.tomcat.ajp.port>
+                                    <cargo.rmi.port>8890</cargo.rmi.port>
 		                            <cargo.jvmargs>${surefireArgLine}</cargo.jvmargs>
 		                        </properties>
 		                    </configuration>

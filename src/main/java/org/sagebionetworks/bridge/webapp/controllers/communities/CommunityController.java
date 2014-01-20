@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.controllers.communities;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping(value = "/communities")
 public class CommunityController {
 	
 	private static Logger logger = LogManager.getLogger(CommunityController.class.getName());
@@ -58,8 +58,32 @@ public class CommunityController {
 	public CommunityForm communityForm() {
 		return new CommunityForm();
 	}
+	
+	/**
+	 * Not currently in the UI, but it allows us to easily retrieve a community in tests.
+	 * @param request
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/community", method = RequestMethod.GET)
+	public ModelAndView getUsersDefaultCommunity(BridgeRequest request, ModelAndView model) throws Exception {
+		List<Community> communities = request.getBridgeUser().getCommunities();
+		if (communities != null && !communities.isEmpty()) {
+			String communityId = communities.get(0).getId();
+			prepareIndexPage(request, model, communityId, null);
+		} else {
+			// Not logged in, just show the first one returned.
+			communities = bridgeClient.getAllCommunities(ClientUtils.LIMIT, 0L).getResults();
+			if (communities != null && !communities.isEmpty()) {
+				String communityId = communities.get(0).getId();
+				prepareIndexPage(request, model, communityId, null);
+			}
+		}
+		return model;
+	}
 
-	@RequestMapping(value = "/{communityId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/communities/{communityId}", method = RequestMethod.GET)
 	public ModelAndView get(BridgeRequest request, @PathVariable("communityId") String communityId, ModelAndView model)
 			throws Exception {
 		
@@ -67,7 +91,7 @@ public class CommunityController {
 		return model;
 	}
 	
-	@RequestMapping(value = "/{communityId}/wikis/{wikiId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/communities/{communityId}/wikis/{wikiId}", method = RequestMethod.GET)
 	public ModelAndView viewWiki(BridgeRequest request, @PathVariable("communityId") String communityId,
 			@PathVariable("wikiId") String wikiId, ModelAndView model) throws Exception {
 		
@@ -75,7 +99,7 @@ public class CommunityController {
 		return model;
 	}
 	
-	@RequestMapping(value = "/{communityId}/join", method = RequestMethod.GET)
+	@RequestMapping(value = "/communities/{communityId}/join", method = RequestMethod.GET)
 	public String join(BridgeRequest request, @PathVariable("communityId") String communityId) throws Exception {
 		// We could verify that the user hasn't already joined, but why.
 		

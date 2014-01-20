@@ -4,7 +4,6 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 public class CommunityAdminPage extends AdminPages {
 	
 	public static final String TITLE = "Community Administration";
-	public static final String URL = "/admin/communities/1.html";
 	
 	public CommunityAdminPage(WebDriverFacade facade) {
 		super(facade);

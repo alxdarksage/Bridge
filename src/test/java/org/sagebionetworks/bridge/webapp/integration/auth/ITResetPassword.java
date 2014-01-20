@@ -40,14 +40,15 @@ public class ITResetPassword extends WebDriverBase {
 	
 	@Test
 	public void cancelPasswordResetRequest() {
-		// Just verify this exists.
-		CommunityPage communityPage = driver.getCommunityPage();
-		communityPage.getEmbeddedSignIn().clickForgotPassword();
+		driver.getCommunityPage();
+		
+		SignInPage signInPage = driver.waitForSignInPage();
+		signInPage.clickForgotPassword();
 		
 		RequestResetPasswordPage page = driver.waitForRequestResetPasswordPage();
 		page.clickCancel();
 		
-		driver.waitForCommunityPage();
+		driver.waitForSignInPage();
 	}
 	
 	@Test

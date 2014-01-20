@@ -34,14 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * /communities/#
- * 		/wikis/new (GET, POST to create)
- * 		/wikis/#/edit (GET, POST to update)
- * 		/wikis/#/browse (attachments)
- * 		/wikis/#/upload (files as attachments)
- *      /wikis/#/all (all other wiki pages for cross navigation)
- */
 @Controller
 @RequestMapping(value = "/communities")
 public class CommunityWikiController {

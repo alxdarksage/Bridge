@@ -8,17 +8,14 @@
                 <c:when test="${active == 'Home'}">
                     <li class="active list-group-item"><spring:message code="AdminHome"/></li>
                     <li class="list-group-item"><a id="communitiesAct" href='<c:url value="/admin/communities/index.html"/>'><spring:message code="Communities"/></a></li>
-                    <li class="list-group-item"><a id="pddAct" href='<c:url value="/admin/descriptors/index.html"/>'><spring:message code="Participant Data Descriptors"/></a></li>
                 </c:when>
                 <c:when test="${active == 'Communities'}">
                     <li class="list-group-item"><a id="adminAct" href='<c:url value="/admin/index.html"/>'><spring:message code="AdminHome"/></a></li>
 		            <li class="active list-group-item"><spring:message code="Communities"/></li>
-		            <li class="list-group-item"><a id="pddAct" href='<c:url value="/admin/descriptors/index.html"/>'><spring:message code="Participant Data Descriptors"/></a></li>
                 </c:when>
                 <c:when test="${active == 'PDD'}">
                     <li class="list-group-item"><a id="adminAct" href='<c:url value="/admin/index.html"/>'><spring:message code="AdminHome"/></a></li>
                     <li class="list-group-item"><a id="communitiesAct" href='<c:url value="/admin/communities/index.html"/>'><spring:message code="Communities"/></a></li>
-                    <li class="list-group-item active"><spring:message code="Participant Data Descriptors"/></li>
                 </c:when>
             </c:choose>
         </ul>

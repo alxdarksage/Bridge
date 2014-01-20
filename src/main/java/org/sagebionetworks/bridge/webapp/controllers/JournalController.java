@@ -58,7 +58,7 @@ public class JournalController extends JournalControllerBase {
 		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
 			@Override
 			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
-				return pdd0.getDescription().compareTo(pdd1.getDescription());
+				return pdd0.getName().compareTo(pdd1.getName());
 			}
 			
 		});
@@ -128,11 +128,13 @@ public class JournalController extends JournalControllerBase {
 	}
 
 	private String[] removeNullStrings(List<String> list) {
+		/*
 		for (int i=0; i < list.size(); i++) {
 			if ("null".equals(list.get(i))) {
 				list.set(i, "");
 			}
 		}
+		*/
 		return list.toArray(new String[] {});
 	}
 	

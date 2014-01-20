@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignOutPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignUpPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.TermsOfUsePage;
@@ -53,24 +54,27 @@ public class ITSignUp extends WebDriverBase {
 		
 		// Needs to be random because server is not being start/stopped when 
 		// I'm testing during development, only when Maven does the thing.
+		String userName = getUniqueUserName();
 		String email = getUniqueEmail();
 		
+		page.setUserName(userName);
 		page.setEmail(email);
-		page.setUserName("testdude");
 		page.submit();
 		
 		driver.waitForPortalPage();
 		
-		CommunityPage communityPage = driver.getCommunityPage();
-		communityPage.getEmbeddedSignIn().signIn("testdude", "password");
+		driver.getCommunityPage();
+		
+		SignInPage signInPage = driver.waitForSignInPage();
+		signInPage.signIn(userName, "password");
 		
 		TermsOfUsePage touPage = driver.waitForTOUPage();
 
 		// cancel
 		touPage.clickCancel();
 		
-		communityPage = driver.waitForCommunityPage();
-		communityPage.getEmbeddedSignIn().signIn("testdude", "password");
+		signInPage = driver.waitForSignInPage();
+		signInPage.signIn(userName, "password");
 		
 		// submit without accepting terms of use
 		touPage = driver.waitForTOUPage();
@@ -81,12 +85,12 @@ public class ITSignUp extends WebDriverBase {
 		touPage.checkTermsOfUseAgreement();
 		touPage.submit();
 		
-		communityPage = driver.waitForCommunityPage();
+		CommunityPage communityPage = driver.waitForCommunityPage();
 		communityPage.getProfilePanelPage().clickSignOut();
 
 		// Signing back in, no more terms of service
 		SignOutPage signOutPage = driver.waitForSignedOutPage();
-		signOutPage.login("testdude", "password");
+		signOutPage.login(userName, "password");
 		driver.waitForCommunityPage();
 	}
 	

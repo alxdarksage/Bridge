@@ -27,9 +27,8 @@ public class ITCommunityWiki extends WebDriverBase {
 	public void canLoadAndQuitEditor() {
 		CommunityPage page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsTimPowers();
-		page.clickEditButton();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
 		
-		CommunityWikiPage wpage = driver.waitForCommunityWikiPage();
 		wpage.clickQuitEditing();
 		
 		page = driver.waitForCommunityPage();
@@ -37,8 +36,9 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void canLoadIndexCkEditor() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
 		
 		wpage.clickNavigationTab();
 		wpage.clickEditIndex();
@@ -47,8 +47,9 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void canLoadFullCKEditor() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
 		
 		wpage.clickNewPage();
 		wpage.assertFullEditorToolbars();
@@ -56,8 +57,9 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void canCreateAndDeleteNewPage() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
 		wpage.clickNewPage();
 		
 		wpage.setTitle("New Page");
@@ -71,8 +73,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void validatesPageFields() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNewPage();
 		wpage.submit();
 		
@@ -82,8 +86,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void canEditAndRevertNavigationWiki() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNavigationTab();
 		wpage.clickEditIndex();
 		
@@ -100,8 +106,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void quitFromIndexTakesUserToWelcomeWiki() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNavigationTab();
 		wpage.clickEditIndex();
 		wpage.clickQuitEditing();
@@ -110,8 +118,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void deleteCurrentWikiTakesUserToWelcomeWiki() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNewPage();
 		wpage.setTitle("Bridge Page 1");
 		wpage.setHTML("Bridge");
@@ -122,9 +132,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void canCreateALinkToAnotherPage() {
-		// Create page
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNewPage();
 		wpage.setTitle("Bridge Page 2");
 		wpage.setHTML("Bridge");
@@ -146,10 +157,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	}
 	
 	public void canUploadAndInsertAnImage() {
-		// This runs up against the inability of webdriver to 
-		// script the file upload process.
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNewPage();
 		wpage.setTitle("Bridge Page 3");
 		
@@ -163,8 +174,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void userNavigationHighlightsWhenLoaded() throws MalformedURLException {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNewPage();
 		wpage.setTitle("Bridge Page 4");
 		wpage.setHTML("Bridge");
@@ -178,12 +191,12 @@ public class ITCommunityWiki extends WebDriverBase {
 		
 		wpage.clickQuitEditing();
 		
-		CommunityPage page = driver.getCommunityPage();
+		page = driver.getCommunityPage();
 		page.clickPage("Bridge Page 4");
 		page.assertNavigationElementForPageHighlighted("Bridge Page 4");
 		
 		// Delete Page
-		wpage = driver.getCommunityWikiPage();
+		wpage = page.getCommunityWikiPage();
 		wpage.deletePage("Bridge Page 4");
 		
 		// Fix navigation
@@ -195,8 +208,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void cannotSaveDangerousHTML() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNavigationTab();
 		wpage.clickEditIndex();
 		
@@ -207,8 +222,10 @@ public class ITCommunityWiki extends WebDriverBase {
 	
 	@Test
 	public void canSaveIndexWikiWithoutContent() {
-		CommunityWikiPage wpage = driver.getCommunityWikiPage();
-		wpage.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityPage page = driver.getCommunityPage();
+		page.getEmbeddedSignIn().signInAsTimPowers();
+		CommunityWikiPage wpage = page.getCommunityWikiPage();
+		
 		wpage.clickNavigationTab();
 		wpage.clickEditIndex();
 		

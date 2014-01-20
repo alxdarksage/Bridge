@@ -41,7 +41,7 @@ public class WebDriverFacade implements WebDriver {
 	public boolean isGhostdriver() {
 		return (driver instanceof PhantomJSDriver);
 	}
-	
+
 	void takeScreenshot() {
 		try {
 			String name = Long.toString(new Date().getTime());
@@ -181,10 +181,6 @@ public class WebDriverFacade implements WebDriver {
 		waitForTitle(CommunityPage.TITLE);
 		return new CommunityPage(this);
 	}
-	public CommunityAdminPage waitForCommunityAdminPage() {
-		waitForTitle(CommunityAdminPage.TITLE);
-		return new CommunityAdminPage(this);
-	}
 	public ErrorPage waitForErrorPage() {
 		waitUntil("h3#error-pane");
 		return new ErrorPage(this);
@@ -221,14 +217,6 @@ public class WebDriverFacade implements WebDriver {
 		waitForTitle(SignUpPage.TITLE);
 		return new SignUpPage(this);
 	}
-	public CommunityWikiPage waitForCommunityWikiPage() {
-		waitForTitle(CommunityWikiPage.TITLE);
-		return new CommunityWikiPage(this);
-	}
-	public AdminParticipantDataDescriptorsPage waitForAdminParticipantDataDescriptorsPage() {
-		waitForTitle(AdminParticipantDataDescriptorsPage.TITLE);
-		return new AdminParticipantDataDescriptorsPage(this);
-	}
 	public JournalPage waitForJournalHomePage() {
 		waitForTitle(JournalPage.TITLE);
 		return new JournalPage(this);
@@ -246,11 +234,6 @@ public class WebDriverFacade implements WebDriver {
 		get(CommunityPage.URL);
 		return new CommunityPage(this);
 	}
-	public CommunityAdminPage getCommunityAdminPage() {
-		get(CommunityAdminPage.URL);
-		return new CommunityAdminPage(this);
-	}
-	
 	public ErrorPage getErrorPage(){ 
 		waitUntil("h3#error-pane");
 		return new ErrorPage(this);
@@ -271,7 +254,7 @@ public class WebDriverFacade implements WebDriver {
 		if (includeToken) {
 			get(ResetPasswordPage.URL+"?token=testToken");
 		} else {
-			get(ResetPasswordPage.URL);	
+			get(ResetPasswordPage.URL);
 		}
 		return new ResetPasswordPage(this);
 	}
@@ -290,14 +273,6 @@ public class WebDriverFacade implements WebDriver {
 	public TermsOfUsePage getTermsOfUsePage() {
 		get(TermsOfUsePage.URL);
 		return new TermsOfUsePage(this);
-	}
-	public CommunityWikiPage getCommunityWikiPage() {
-		get(CommunityWikiPage.URL);
-		return new CommunityWikiPage(this);
-	}
-	public AdminParticipantDataDescriptorsPage getAdminParticipantDataDescriptorsPage() {
-		get(AdminParticipantDataDescriptorsPage.URL);
-		return new AdminParticipantDataDescriptorsPage(this);
 	}
 	public JournalPage getJournalPage() {
 		get(JournalPage.URL);
