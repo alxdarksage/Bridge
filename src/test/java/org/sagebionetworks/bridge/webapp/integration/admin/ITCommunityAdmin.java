@@ -54,13 +54,10 @@ public class ITCommunityAdmin extends WebDriverBase {
 		AdminPage adminPage = driver.getAdminPage();
 		
 		adminPage.clickCommunities();
-		CommunitiesAdminPage caPage = driver.waitForCommunitiesAdminPage();
-		caPage.clickNewCommunity();
+		CommunitiesAdminPage casPage = driver.waitForCommunitiesAdminPage();
+		CommunityAdminPage communityPage = casPage.clickNewCommunity();
 		
-		CommunityAdminPage communityPage = driver.waitForCommunityAdminPage();
 		communityPage.submit();
-
-		communityPage = driver.waitForCommunityAdminPage();
 		communityPage.assertNameError();
 	}
 	
@@ -68,35 +65,31 @@ public class ITCommunityAdmin extends WebDriverBase {
 	public void createAndDeleteCommunity() {
 		// NOTE: This test is a problem because if there's a failure, then 
 		// there is this community in the db, and it'll fail. 
-		CommunitiesAdminPage caPage = driver.getCommunitiesAdminPage();
-		caPage.clickNewCommunity();
+		CommunitiesAdminPage casPage = driver.getCommunitiesAdminPage();
+		CommunityAdminPage communityPage = casPage.clickNewCommunity();
 		
 		// Create
-		CommunityAdminPage communityPage = driver.waitForCommunityAdminPage();
 		communityPage.setName("Test Community");
 		communityPage.setDescription("This is a test community");
 		communityPage.submit();
-		caPage = driver.waitForCommunitiesAdminPage();		
+		casPage = driver.waitForCommunitiesAdminPage();		
 		driver.assertNotice("Community created.");
 		
 		// Delete
-		caPage.selectRow("Test Community");
-		caPage.clickDelete();
+		casPage.selectRow("Test Community");
+		casPage.clickDelete();
 		driver.assertNotice("Community deleted.");
-		Assert.assertFalse(caPage.rowExists("Test Community"));
+		Assert.assertFalse(casPage.rowExists("Test Community"));
 	}
 	
 	@Test
 	public void canCancelCreateCommunity() {
-		CommunitiesAdminPage caPage = driver.getCommunitiesAdminPage();
-		caPage.clickNewCommunity();
+		CommunitiesAdminPage casPage = driver.getCommunitiesAdminPage();
+		CommunityAdminPage communityPage = casPage.clickNewCommunity();
 		
-		CommunityAdminPage communityPage = driver.waitForCommunityAdminPage();
 		communityPage.submit(); // just to verify it works even after a post
-		
-		communityPage = driver.waitForCommunityAdminPage();
 		communityPage.clickCancel();
 		
-		caPage = driver.waitForCommunitiesAdminPage();
+		casPage = driver.waitForCommunitiesAdminPage();
 	}
 }

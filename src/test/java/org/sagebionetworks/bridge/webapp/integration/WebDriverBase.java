@@ -48,9 +48,12 @@ public class WebDriverBase {
 		_driver.close();
 		_driver.quit();
 	}
+
+	protected String getUniqueUserName() {
+		return "test" + Long.toString(new Date().getTime());
+	}
 	
 	protected String getUniqueEmail() {
 		return "test" + Long.toString(new Date().getTime()) + "@test.com";
 	}
-
 }

@@ -91,10 +91,12 @@ public class ITCommunity extends WebDriverBase {
 		page.clickJoinButton();
 		page.getProfilePanelPage().clickSignOut();
 		
+		// Now return as Tim Powers and try and remove yourself
 		page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsTimPowers();
 		
-		CommunityAdminPage capage = driver.getCommunityAdminPage();
+		CommunitiesAdminPage adminPage = driver.getCommunitiesAdminPage();
+		CommunityAdminPage capage = adminPage.getCommunityAdminPage();
 		capage.toggleAdminCheckbox("test");
 		capage.submit();
 		
@@ -120,8 +122,8 @@ public class ITCommunity extends WebDriverBase {
 		// test has to add back tim as an admin
 		page = driver.getCommunityPage();
 		page.getEmbeddedSignIn().signInAsJoeTest();
-		
-		capage = driver.getCommunityAdminPage();
+		CommunitiesAdminPage casPage = driver.getCommunitiesAdminPage();
+		capage = casPage.getCommunityAdminPage();
 		capage.toggleAdminCheckbox("timpowers");
 		capage.submit();
 		

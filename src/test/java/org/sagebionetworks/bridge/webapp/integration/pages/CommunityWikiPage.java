@@ -13,7 +13,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class CommunityWikiPage extends EmbeddedSignInPage {
 	
 	public static final String TITLE = "Fanconi Anemia Site Editor";
-	public static final String URL = "/communities/1/wikis/6/edit.html";
 
 	public CommunityWikiPage(WebDriverFacade facade) {
 		super(facade);

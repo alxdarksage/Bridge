@@ -30,7 +30,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.versionInfo.BridgeVersionInfo;
 import org.sagebionetworks.client.BridgeClient;
-import org.sagebionetworks.client.SharedClientConnection;
+import org.sagebionetworks.client.SynapseAdminClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -46,6 +46,7 @@ import org.sagebionetworks.repo.model.TeamMembershipStatus;
 import org.sagebionetworks.repo.model.UserGroupHeader;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
+import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
@@ -68,7 +69,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public abstract class SageServicesStub implements SynapseClient, BridgeClient {
+public abstract class SageServicesStub implements SynapseClient, BridgeClient, SynapseAdminClient {
 	
 	private static final Logger logger = LogManager.getLogger(SageServicesStub.class.getName());
 
@@ -89,21 +90,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorById = LinkedListMultimap.create();
 	Map<String, RowSet> participantDataByDescriptorById = Maps.newHashMap();
 	
-	String timPowersId;
-	
-	// This has to be above the ID used for community. Before this can be run against
-	// the real back end service, we need a way to retrieve the *actual* ID of 
-	// the community that is created.
 	int idCount = 2;
 
 	public SageServicesStub() {
-		System.out.println("---------------------------------------- BEING CREATED");
-		
-		UserSessionData data = createUser("timpowers", "timpowers@timpowers.com", true);
-		timPowersId = data.getProfile().getOwnerId();
-		createCommunity("1", "Fanconi Anemia", "This is a very rare but very serious disease, affecting about 1,000 people worldwide.", data);
-		createUser("octaviabutler", "octaviabutler@octaviabutler.com", false);
-		createUser("test", "test@test.com", true);
+		logger.info("---------------------------- SageServicesStub CREATED");
 	}
 
 	/**
@@ -116,7 +106,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(SageServicesStub.class);
 		enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
-		enhancer.setInterfaces(new Class[] { SynapseClient.class, BridgeClient.class });
+		enhancer.setInterfaces(new Class[] { SynapseClient.class, BridgeClient.class, SynapseAdminClient.class });
 		enhancer.setInterceptDuringConstruction(false);
 		enhancer.setCallback(new MethodInterceptor() {
 			@Override
@@ -130,31 +120,25 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 
 		return (SageServicesStub) proxy;
 	}
-
-	private UserSessionData createUser(String userName, String email, boolean acceptsTOU) {
+	
+	@Override
+	public long createUser(NewIntegrationTestUser user) throws SynapseException, JSONObjectAdapterException {
 		String id = newId();
 		UserProfile profile = new UserProfile();
-		
-		profile.setUserName(userName);
-		profile.setEmail(email);
+		profile.setUserName(user.getUsername());
+		profile.setEmail(user.getEmail());
 		profile.setOwnerId(id);
 		Session session = new Session();
 		session.setSessionToken("session"+id);
-		if (acceptsTOU) {
-			agreedTOUs.add(id);
-		}
-		session.setAcceptsTermsOfUse(acceptsTOU);
 		UserSessionData data = new UserSessionData();
 		data.setIsSSO(false);
 		data.setProfile(profile);
 		data.setSession(session);
-		usersById.put(userName, data);
+		usersById.put(user.getUsername(), data);
 		usersById.put(id, data);
-		return data;
+		return Long.parseLong(id);
 	}
 
-	// IMPORTANT: The fact that we're looking for a specific ID in the tests would prevent this from
-	// running against the real back end, that needs to be fixed.
 	private Community createCommunity(String id, String name, String description, UserSessionData user) {
 		Community community = new Community();
 		community.setId(id);
@@ -286,25 +270,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	public String getCurrentSessionToken() {
 		return this.sessionToken;
 	}
-
-	@Override
-	public SharedClientConnection getSharedClientConnection() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public String getBridgeEndpoint() {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
-	@Override
-	public void setBridgeEndpoint(String repoEndpoint) {
-		throw new UnsupportedOperationException("Not implemented.");
-		
-	}
-
+	
 	@Override
 	public Community createCommunity(Community community) throws SynapseException {
 		return createCommunity(newId(), community.getName(), community.getDescription(), currentUserData);
@@ -630,7 +596,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 	@Override
 	public void createUser(NewUser user, DomainType originClient) throws SynapseException {
 		if (usersById.get(user.getUserName()) != null) {
-			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User 'test@test.com' already exists\n\"}");
+			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User '"+user.getUserName()+"' already exists\n\"}");
 		}
 		
 		String USER_ID = newId();
@@ -681,11 +647,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		// 1. Brand new user, needs to sign TOU
 		// 2. Returning user who hasn't signed TOU?
 		// 3. Returning user who should just be logged in to default start page
-		
-		// The user will always be Tim Powers, session AAA.
-		currentUserData = usersById.get(timPowersId);
+		currentUserData = usersById.values().iterator().next();
 		Session session = new Session();
-		session.setSessionToken(timPowersId);
+		session.setSessionToken(currentUserData.getProfile().getOwnerId());
 		return session;		
 	}
 
@@ -825,6 +789,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient {
 		if (data.getHeaders().size() != data.getRows().get(0).getValues().size()) {
 			logger.info(data.getHeaders().size() + ", " + data.getRows().get(0).getValues().size());
 			throw new IllegalArgumentException("The submitted data headers/row values are not the same length.");
+		}
+		// Why does this happen? I do not know. I'm not sure it's worth figuring out.
+		if (existingData.getHeaders().isEmpty()) {
+			existingData.setHeaders(data.getHeaders());
 		}
 		for (Row row : data.getRows()) {
 			if (row.getRowId() == null) {

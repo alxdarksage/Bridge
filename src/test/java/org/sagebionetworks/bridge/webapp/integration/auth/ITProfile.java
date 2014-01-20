@@ -21,6 +21,7 @@ public class ITProfile extends WebDriverBase {
 		SignInPage page = driver.getSignInPage();
 		page.signInAsTimPowers();
 		
+		driver.waitForPortalPage();
 		driver.getCommunityPage();
 		
 		ProfilePage ppage = driver.getProfilePage();
@@ -35,6 +36,7 @@ public class ITProfile extends WebDriverBase {
 		SignInPage page = driver.getSignInPage();
 		page.signInAsTimPowers();
 		
+		driver.waitForPortalPage();
 		driver.getCommunityPage();
 		
 		ProfilePage ppage = driver.getProfilePage();

@@ -15,8 +15,16 @@ public class CommunitiesAdminPage extends AdminPages {
 		super(facade);
 	}
 	
-	public void clickNewCommunity() {
+	public CommunityAdminPage getCommunityAdminPage() {
+		clickRow("Fanconi Anemia");
+		facade.waitForTitle(CommunityAdminPage.TITLE);
+		return new CommunityAdminPage(facade);
+	}
+	
+	public CommunityAdminPage clickNewCommunity() {
 		facade.click("#newCommunityAct");
+		facade.waitForTitle(CommunityAdminPage.TITLE);
+		return new CommunityAdminPage(facade);
 	}
 	
 	public WebElement getRowByName(String name) {
@@ -35,6 +43,11 @@ public class CommunitiesAdminPage extends AdminPages {
 	public void selectRow(String name) {
 		WebElement parent = getRowByName(name);
 		parent.findElement(By.cssSelector("input[type=checkbox]")).click();
+	}
+	
+	public void clickRow(String name) {
+		WebElement parent = getRowByName(name);
+		parent.findElement(By.cssSelector("a")).click();
 	}
 	
 	public void assertRowSelected(String name) {

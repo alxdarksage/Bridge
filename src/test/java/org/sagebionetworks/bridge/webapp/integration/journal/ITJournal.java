@@ -5,7 +5,6 @@ import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPag
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
-import org.sagebionetworks.bridge.webapp.integration.pages.AdminParticipantDataDescriptorsPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.TrackerIndexPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.JournalPage;
@@ -21,15 +20,8 @@ public class ITJournal extends WebDriverBase {
 	@Before
 	public void createDriver() {
 		driver = initDriver();
-		
-		// Create descriptor records if they don't exist.
-		driver.getAdminParticipantDataDescriptorsPage();
-		SignInPage signInPage = driver.waitForSignInPage();
+		SignInPage signInPage = driver.getSignInPage();
 		signInPage.signInAsJoeTest();
-		
-		AdminParticipantDataDescriptorsPage page = driver.waitForAdminParticipantDataDescriptorsPage();
-		page.clickCreateDescriptors();
-		
 		journalPage = driver.getJournalPage();
 	}
 	

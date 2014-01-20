@@ -9,7 +9,7 @@ import org.openqa.selenium.WebElement;
 public class CommunityPage extends EmbeddedSignInPage {
 
 	public static final String TITLE = "Fanconi Anemia";
-	public static final String URL = "/communities/1.html";
+	public static final String URL = "/community.html";
 
 	public CommunityPage(WebDriverFacade facade) {
 		super(facade);
@@ -26,6 +26,12 @@ public class CommunityPage extends EmbeddedSignInPage {
 	public void clickPage(String pageName) {
 		facade.waitUntilPartialLink(pageName);
 		facade.findElement(By.partialLinkText(pageName)).click();
+	}
+	
+	public CommunityWikiPage getCommunityWikiPage() {
+		clickEditButton();
+		facade.waitForTitle(CommunityWikiPage.TITLE);
+		return new CommunityWikiPage(facade);
 	}
 
 	public void assertNavigationElementForPageHighlighted(String pageName) {
