@@ -54,6 +54,9 @@ import org.sagebionetworks.repo.model.dao.WikiPageKey;
 import org.sagebionetworks.repo.model.file.FileHandle;
 import org.sagebionetworks.repo.model.file.FileHandleResults;
 import org.sagebionetworks.repo.model.file.S3FileHandle;
+import org.sagebionetworks.repo.model.principal.AliasCheckRequest;
+import org.sagebionetworks.repo.model.principal.AliasCheckResponse;
+import org.sagebionetworks.repo.model.principal.AliasType;
 import org.sagebionetworks.repo.model.table.PaginatedRowSet;
 import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowSet;
@@ -153,7 +156,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		V2WikiPage root = createWikiPage(user, "Root", null, "Root");
 		wikiPagesById.put(community.getId(), root);
 		
-		V2WikiPage page = createWikiPage(user, "Welcome Page", root.getId(), "Welcome");
+		V2WikiPage page = createWikiPage(user, "Welcome to " + name, root.getId(), "Welcome");
 		community.setWelcomePageWikiId(page.getId());
 		
 		page = createWikiPage(user, root.getId(), "Index Page", "Index");
@@ -593,12 +596,41 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		throw new IllegalArgumentException("Do not use this method from bridge");
 	}
 
+	/**
+	 * This returns false if either the userName or the email are a duplicate.
+	 */
+	@Override
+	public AliasCheckResponse checkAliasAvailable(AliasCheckRequest request) throws SynapseException {
+		logger.info("---------------------------------------------------------------- checkAliasAvailable");
+		String value = request.getAlias();
+		AliasCheckResponse response = new AliasCheckResponse();
+		response.setAvailable(true);
+		for (UserSessionData data : usersById.values()) {
+			String email = data.getProfile().getEmail();
+			if (email.equals(value) && request.getType() == AliasType.USER_EMAIL) {
+				response.setAvailable(false);
+			}
+			String userName = data.getProfile().getUserName();
+			if (userName.equals(value) && request.getType() == AliasType.USER_NAME) {
+				response.setAvailable(false);
+			}
+		}
+		return response;
+	}
+	
 	@Override
 	public void createUser(NewUser user, DomainType originClient) throws SynapseException {
 		if (usersById.get(user.getUserName()) != null) {
 			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User '"+user.getUserName()+"' already exists\n\"}");
 		}
-		
+		// Check email too
+		for (UserSessionData data : usersById.values()) {
+			String email = data.getProfile().getEmail();
+			if (user.getEmail().equals(email)) {
+				throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User email '"+email+"' already exists\n\"}");
+			}
+		}
+
 		String USER_ID = newId();
 		
 		UserProfile profile = new UserProfile();

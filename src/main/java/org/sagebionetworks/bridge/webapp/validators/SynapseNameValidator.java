@@ -15,6 +15,9 @@ public class SynapseNameValidator implements ConstraintValidator<SynapseName, St
 	public void initialize(SynapseName name) {
 	}
 
+	// User names
+	// public static final String VALID_USERNAME_REGEX = "^[A-Za-z0-9._-]{3,}"
+	
 	@Override
 	public boolean isValid(String name, ConstraintValidatorContext context) {
 		return (name != null && name.matches("[a-zA-Z0-9-_\\s\\.]{3,}"));

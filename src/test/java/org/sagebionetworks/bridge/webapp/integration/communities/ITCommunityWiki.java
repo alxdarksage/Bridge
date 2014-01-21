@@ -142,7 +142,7 @@ public class ITCommunityWiki extends WebDriverBase {
 		wpage.submit();
 		
 		// Link to page.
-		wpage.clickPageToEdit("Welcome Page");
+		wpage.clickPageToEdit("Welcome to Fanconi Anemia");
 		wpage.clickInsertLinkButton();
 		
 		wpage.clickDialogPagesTab();

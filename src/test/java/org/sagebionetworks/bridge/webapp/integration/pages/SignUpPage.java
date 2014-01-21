@@ -24,12 +24,13 @@ public class SignUpPage {
 	public void assertEmailError() {
 		facade.assertErrorMessage("#email_errors", "Enter a valid email address");
 	}
-	public void assertEmailDuplicateError() {
-		facade.assertErrorMessage("#email_errors", "User");
-		facade.assertErrorMessage("#email_errors", "already exists");
-	}
 	public void assertUserNameError() {
 		facade.assertErrorMessage("#userName_errors", "Enter a user name");
 	}
-	
+	public void assertEmailDuplicateError() {
+		facade.assertErrorMessage("#email_errors", "User email has been taken");
+	}
+	public void assertUserNameDuplicateError() {
+		facade.assertErrorMessage("#userName_errors", "User name has been taken");
+	}
 }
