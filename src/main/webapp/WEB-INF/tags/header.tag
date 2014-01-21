@@ -2,8 +2,15 @@
 <%@ attribute name="code" required="true" %>
 <div class="header row">
     <div class="col-sm-6 community-header">
-        <c:url var="communityUrl" value="/communities/${community.id}.html"/>
-        <a href="${communityUrl}">
+        <c:choose>
+            <c:when test="${not empty community}">
+                <c:url var="headerUrl" value="/communities/${community.id}.html"/>    
+            </c:when>
+            <c:otherwise>
+                <c:url var="headerUrl" value="/portal/index.html"/>
+            </c:otherwise>
+        </c:choose>
+        <a href="${headerUrl}">
             <spring:message code="${code}"/>
         </a>
     </div>

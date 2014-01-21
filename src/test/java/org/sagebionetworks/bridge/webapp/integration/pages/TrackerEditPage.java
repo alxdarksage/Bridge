@@ -73,10 +73,10 @@ public class TrackerEditPage {
 	}
 	
 	public void setTestDate(String value) {
-		facade.executeJavaScript("document.querySelector('#collectedOn').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#collected_on').value = '"+value+"'");
 	}
 	public void assertTestDate(String expectedValue) {
-		String valueInForm = facade.executeJavaScriptForString("return document.querySelector('#collectedOn').value");
+		String valueInForm = facade.executeJavaScriptForString("return document.querySelector('#collected_on').value");
 		Assert.assertEquals("Correct value", expectedValue, valueInForm);
 	}
 	private void setValue(FieldNames field, String value) {

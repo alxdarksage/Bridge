@@ -261,7 +261,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 
 	@Override
 	public void appendUserAgent(String toAppend) {
-		logger.debug("--> appendUserAgent: " + toAppend);
+		// logger.debug("--> appendUserAgent: " + toAppend);
 	}
 
 	@Override
@@ -430,7 +430,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 
 	@Override
 	public UserProfile getUserProfile(String ownerId) throws SynapseException {
-		logger.info("--> getUserProfile: " + ownerId);
 		return usersById.get(ownerId).getProfile();
 	}
 
@@ -601,7 +600,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	 */
 	@Override
 	public AliasCheckResponse checkAliasAvailable(AliasCheckRequest request) throws SynapseException {
-		logger.info("---------------------------------------------------------------- checkAliasAvailable");
 		String value = request.getAlias();
 		AliasCheckResponse response = new AliasCheckResponse();
 		response.setAvailable(true);
