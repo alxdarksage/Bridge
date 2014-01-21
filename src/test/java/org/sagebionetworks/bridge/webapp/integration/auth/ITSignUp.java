@@ -30,11 +30,28 @@ public class ITSignUp extends WebDriverBase {
 	}
 	
 	@Test
-	public void signUpFormRejectsIfOneFieldInError() {
+	public void signUpRejectsIfOneFieldLeftBlank() {
 		SignUpPage page = driver.getSignUpPage();
+		page.setUserName("");
 		page.setEmail("bob@bobcat.com");
 		page.submit();
 		page.assertUserNameError();
+		
+		page.setUserName("dude");
+		page.setEmail("");
+		page.submit();
+		page.assertEmailError();
+	}
+	
+	@Test
+	public void signUpRejectsInvalidUserName() {
+		driver.getPortalPage();
+		SignUpPage page = driver.getSignUpPage();
+
+		page.setUserName("Tim Powers");
+		page.setEmail("powers@powers.com");
+		page.submit();
+		page.assertInvalidUserNameError();
 	}
 	
 	@Test
@@ -42,12 +59,10 @@ public class ITSignUp extends WebDriverBase {
 		driver.getPortalPage();
 		SignUpPage page = driver.getSignUpPage();
 		
-		String userName = getUniqueUserName();
-		String email = getUniqueEmail();
-		page.setUserName(userName);
-		page.setEmail(email);
+		page.setUserName( getUniqueUserName() );
+		page.setEmail( getUniqueEmail() );
 		page.submit();
-		
+
 		driver.waitForPortalPage();
 		driver.assertNotice("sent you an email with instructions on completing your registration");
 	}

@@ -2,12 +2,14 @@ package org.sagebionetworks.bridge.webapp.servlet;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -27,7 +29,7 @@ public class OriginFilter implements Filter {
 			"/signOut.html", "/signedOut.html", "/signUp.html", 
 			"/requestResetPassword.html", "/resetPassword.html", "/termsOfUse.html", 
 			"/termsOfUse/cancel.html", "/openId.html", "/openIdCallback.html", 
-			"/profile.html");
+			"/profile.html", "/export.html", "/portal/index.html");
 	}
 
 	@Override
@@ -44,9 +46,8 @@ public class OriginFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		BridgeRequest bridgeRequest = new BridgeRequest(request);
-
-		String servletPath = request.getServletPath();
 		
+		String servletPath = request.getServletPath();
 		// If this was only done for requests, not forwards or includes, it would always be *.html?
 		if (!excludedURLs.contains(servletPath) && !servletPath.contains("/files/") && servletPath.endsWith(".html")) {
 			logger.debug("Setting the origin URL as: " + servletPath);

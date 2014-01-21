@@ -62,6 +62,19 @@ public class ITCommunityAdmin extends WebDriverBase {
 	}
 	
 	@Test
+	public void createCommunityValidatesName() {
+		AdminPage adminPage = driver.getAdminPage();
+		
+		adminPage.clickCommunities();
+		CommunitiesAdminPage casPage = driver.waitForCommunitiesAdminPage();
+		CommunityAdminPage communityPage = casPage.clickNewCommunity();
+		
+		communityPage.setName("\"This is an invalid name\"");
+		communityPage.submit();
+		communityPage.assertInvalidNameError();
+	}
+	
+	@Test
 	public void createAndDeleteCommunity() {
 		// NOTE: This test is a problem because if there's a failure, then 
 		// there is this community in the db, and it'll fail. 

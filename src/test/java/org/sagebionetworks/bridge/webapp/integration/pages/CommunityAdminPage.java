@@ -23,6 +23,9 @@ public class CommunityAdminPage extends AdminPages {
 	public void assertNameError() {
 		facade.assertErrorMessage("#name_errors", "A name is required");
 	}
+	public void assertInvalidNameError() {
+		facade.assertErrorMessage("#name_errors", "Name can only contain letters, numbers, spaces, dot (.), dash (-), underscore (_) and must be at least 3 characters long.");
+	}
 	
 	public void submit() {
 		facade.submit("#communityForm");
