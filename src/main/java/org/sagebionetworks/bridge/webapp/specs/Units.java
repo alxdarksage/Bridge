@@ -17,11 +17,11 @@ public enum Units {
 	DECILITER("deciliter", "dL"), 		// 10^-1 L
 	CENTILITER("centiliter", "cL"), 	// 10^-2 L
 	MILLILITER("millilter", "mL"), 		// 10^-3 L
-	MICROLITER("microliter", "mcL", "uL", "µL"), 	// 10^-6 L or µL or uL
+	MICROLITER("microliter", "mcL", "uL", "µL"), 	// 10^-6 L
 	NANOLITER("nanoliter", "nL"), 		// 10^-9 L
 	PICOLITER("picoliter", "pL"), 		// 10^-12 L
 	FEMTOLITER("femtoliter", "fL"),		// 10^-15
-	
+
 	GRAM("gram", "g"),
 	DECIGRAM("decigram", "dg"),			// 10^-1 g
 	CENTIGRAM("centigram", "cg"),		// 10^-2 g
@@ -30,12 +30,12 @@ public enum Units {
 	NANOGRAM("nanogram", "ng"),			// 10^-9 g
 	PICOGRAM("picogram", "pg"),			// 10^-12 g
 	FEMTOGRAM("femtogram", "fg"),		// 10^-15 g
-	
+
 	MOLE("mole", "mol"),
 	DECIMOLE("decimole", "dmol"),		// 10^-1 mol
 	CENTIMOLE("centimole", "cmol"),		// 10^-2 mol
 	MILLIMOLE("millimole", "mmol"),		// 10^-3 mol
-	MICROMOLE("micromole", "mcmol"),	// 10^-6 mol
+	MICROMOLE("micromole", "mcmol", "umol", "µmol"),	// 10^-6 mol
 	NANOMOLE("nanomole", "nmol"),		// 10^-9 mol
 	PICOMOLE("picomole", "pmol"),		// 10^-12 mol
 	FEMTOMOLE("femtomole", "fmol"),		// 10^-15 mol
@@ -53,7 +53,7 @@ public enum Units {
 	
 	THOUSANDS_PER_MICROLITER("thousands per microliter", Units.MICROLITER, "K"),
 	BILLIONS_PER_LITER("billions per liter", Units.LITER, "10e9", "9"),
-	
+
 	MILLIONS_PER_MICROLITER("millions per microliter", Units.MICROLITER, "M"),
 	MILLIONS_PER_CUBIC_MILLIMETER("millions per cubic millimeter", Units.CUBIC_MILLIMETER, "M"),
 	TRILLIONS_PER_LITER("trillions per liter", Units.LITER, "10e12", "12");

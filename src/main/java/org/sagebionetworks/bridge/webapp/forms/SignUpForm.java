@@ -2,10 +2,12 @@ package org.sagebionetworks.bridge.webapp.forms;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.sagebionetworks.bridge.webapp.validators.SynapseUserName;
 
 public class SignUpForm {
 
 	@NotEmpty
+	@SynapseUserName
 	private String userName;
 	@Email
 	@NotEmpty

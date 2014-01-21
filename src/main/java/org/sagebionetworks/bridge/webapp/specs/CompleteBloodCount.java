@@ -30,9 +30,9 @@ public class CompleteBloodCount implements Specification {
 	private static final String WBC_CONVERTED = "wbc (K/mcL)";
 	private static final String RBC_CONVERTED = "rbc (M/mcL)";
 
-	private static final String CREATED_ON = "createdOn";
-	private static final String MODIFIED_ON = "modifiedOn";
-	private static final String COLLECTED_ON = "collectedOn";
+	private static final String CREATED_ON = "created_on";
+	private static final String MODIFIED_ON = "modified_on";
+	private static final String COLLECTED_ON = "collected_on";
 
 	private static final String UNITS_SUFFIX = "_units";
 	private static final String RANGE_LOW_SUFFIX = "_range_low";
@@ -82,21 +82,21 @@ public class CompleteBloodCount implements Specification {
 		
 		rows = Lists.newArrayList();
 		rows.add( addEditRow(MILLIONS, "rbc", "Red cells (Erythrocytes / RBC)") );
-		rows.add( addEditRow(DL, "hb", "Hemoglobin (Hb)") );
-		rows.add( addEditPercRow(PERC, "hct", "Hematocrit (HCT)") );
+		rows.add( addEditRow(DL, "hb", "Hemoglobin (Hb)") ); // Canadian form was given in g/L, this will have to change
+		rows.add( addEditPercRow(PERC, "hct", "Hematocrit (HCT)") ); // Canadian form: L/L
 		rows.add( addEditRow(FL, "mcv", "Mean corpuscular volume (MCV)") );
 		rows.add( addEditRow(PG, "mch", "Mean corpuscular hemoglobin (MCH)") );
 		rows.add( addEditPercRow(PERC, "rdw", "RBC distribution width (RDW)") );
-		rows.add( addEditPercRow(PERC, "ret", "Reticulocyte count (Ret)") );
+		rows.add( addEditPercRow(PERC, "ret", "Reticulocyte count (Ret)") ); // or 10e9/L
 		editRows.add( new FormGrid("Red blood cells", rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
 		rows.add( addEditRow(THOUSANDS, "wbc", "White cells (Leukocytes / WBC)") );
 		rows.add( addEditPercRow(PERC, "wbc_diff", "WBC differential (WBC Diff)") );
-		rows.add( addEditPercRow(PERC, "neutrophil", "Neutrophil") );
-		rows.add( addEditPercRow(PERC, "neutrophil_immature", "Immature Neutrophil (band neutrophil)") );
-		rows.add( addEditPercRow(PERC, "lymphocytes", "Lymphocytes") );
-		rows.add( addEditPercRow(PERC, "monocytes", "Monocytes") );
+		rows.add( addEditPercRow(PERC, "neutrophil", "Neutrophil") ); // 10e9/L
+		rows.add( addEditPercRow(PERC, "neutrophil_immature", "Immature Neutrophil (band neutrophil)") ); // ALSO: Segs, 10e9/L
+		rows.add( addEditPercRow(PERC, "lymphocytes", "Lymphocytes") ); // 10e9/L
+		rows.add( addEditPercRow(PERC, "monocytes", "Monocytes") ); // 10e9/L
 		editRows.add( new FormGrid("White blood cells", rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
