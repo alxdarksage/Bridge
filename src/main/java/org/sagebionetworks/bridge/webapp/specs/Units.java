@@ -17,7 +17,7 @@ public enum Units {
 	DECILITER("deciliter", "dL"), 		// 10^-1 L
 	CENTILITER("centiliter", "cL"), 	// 10^-2 L
 	MILLILITER("millilter", "mL"), 		// 10^-3 L
-	MICROLITER("microliter", "mcL", "uL", "µL"), 	// 10^-6 L
+	MICROLITER("microliter", "µL", "mcL", "uL"), 	// 10^-6 L
 	NANOLITER("nanoliter", "nL"), 		// 10^-9 L
 	PICOLITER("picoliter", "pL"), 		// 10^-12 L
 	FEMTOLITER("femtoliter", "fL"),		// 10^-15
@@ -35,7 +35,7 @@ public enum Units {
 	DECIMOLE("decimole", "dmol"),		// 10^-1 mol
 	CENTIMOLE("centimole", "cmol"),		// 10^-2 mol
 	MILLIMOLE("millimole", "mmol"),		// 10^-3 mol
-	MICROMOLE("micromole", "mcmol", "umol", "µmol"),	// 10^-6 mol
+	MICROMOLE("micromole", "µmol", "mcmol", "umol"),	// 10^-6 mol
 	NANOMOLE("nanomole", "nmol"),		// 10^-9 mol
 	PICOMOLE("picomole", "pmol"),		// 10^-12 mol
 	FEMTOMOLE("femtomole", "fmol"),		// 10^-15 mol

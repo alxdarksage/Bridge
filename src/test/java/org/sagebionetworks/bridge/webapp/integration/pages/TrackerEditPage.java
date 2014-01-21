@@ -28,14 +28,12 @@ public class TrackerEditPage {
 		RDW("%"),
 		RET("%"),
 		WBC("K/uL"),
-		WBC_DIFF("%"),
-		NEUTROPHIL("%"),
-		NEUTROPHIL_IMMATURE("%"),
-		LYMPHOCYTES("%"),
-		MONOCYTES("%"),
+		NEUTROPHIL_PERC("%"),
+		NEUTROPHIL_IMMATURE_PERC("%"),
+		LYMPHOCYTES_PERC("%"),
+		MONOCYTES_PERC("%"),
 		PLT("K/uL"),
-		MPV("fL"),
-		PDW("%");
+		MPV("fL");
 		
 		private FieldNames(String unit) { this.unit = unit; }
 		private String unit;
