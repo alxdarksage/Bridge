@@ -2,8 +2,10 @@ package org.sagebionetworks.bridge.webapp.integration.auth;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.sagebionetworks.bridge.webapp.integration.TestEnvironment;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.ErrorPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.RequestResetPasswordPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.ResetPasswordPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
@@ -88,12 +90,21 @@ public class ITResetPassword extends WebDriverBase {
 	
 	@Test
 	public void resetPasswordFormWorks() {
-		ResetPasswordPage page = driver.getResetPasswordPage(true);
-		page.setPassword("antwerp");
-		page.setPasswordConfirm("antwerp");
-		page.submit();
-		
-		driver.waitForPortalPage();
-		driver.assertNotice("Your password has been changed.");		
+		// Why: You need a valid token from Synapse to go all the way through this use case,
+		// and that is sent via email (or not) and not available.
+		if (TestEnvironment.isUI()) {
+			// Can only do this where we can fake the token, otherwise you are not authorized, it fails
+			ResetPasswordPage page = driver.getResetPasswordPage(true);
+			page.setPassword("antwerp");
+			page.setPasswordConfirm("antwerp");
+			page.submit();
+
+			// unauthorized is one possibility
+			ErrorPage error = driver.waitForErrorPage();
+			error.assertErrorTitle("Unauthorized");
+			
+			driver.waitForPortalPage();
+			driver.assertNotice("Your password has been changed.");
+		}
 	}
 }

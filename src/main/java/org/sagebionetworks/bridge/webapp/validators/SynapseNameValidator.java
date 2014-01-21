@@ -14,10 +14,10 @@ public class SynapseNameValidator implements ConstraintValidator<SynapseName, St
 	@Override
 	public void initialize(SynapseName name) {
 	}
-
+	
 	@Override
 	public boolean isValid(String name, ConstraintValidatorContext context) {
-		return (name != null && name.matches("[a-zA-Z0-9-_\\s\\.]{3,}"));
+		return (name != null && name.matches("^[a-zA-Z0-9-_\\s\\.]{3,}"));
 	}
 
 }
