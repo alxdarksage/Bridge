@@ -1,17 +1,21 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.util.Collections;
+
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
-import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.BridgeClientImpl;
 import org.sagebionetworks.client.SynapseAdminClient;
@@ -33,6 +37,8 @@ import com.google.common.collect.Maps;
  * development). Same data is created through the clients, however implemented.  
  */
 public class SageBootstrap {
+	
+	private static final Logger logger = LogManager.getLogger(SageBootstrap.class.getName());
 
 	public interface ClientProvider {
 		public SynapseAdminClient getAdminClient();
@@ -107,12 +113,17 @@ public class SageBootstrap {
 				"0 0 4 * * ? *", "Rest time", "sleep-time-slider");
 		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind",
 				"mood-slider", "Body", "mood-slider");
-		createData(bridge, "Medication Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
+		/*
+		createData(bridge, "MedicationTracker Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
 				"string", "yy", "string");
+		*/
 		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
 				"string", "Address", "string");
 		
-		CompleteBloodCount spec = new CompleteBloodCount();
+		Specification spec = new MedicationTracker();
+		createData(bridge, spec);
+		
+		spec = new CompleteBloodCount();
 		String trackerId = createData(bridge, spec);
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-10-23", "rbc", "3.7", "rbc_units", "M/uL", "rbc_range_low", "4", "rbc_range_high", "4.9", "hb", "12.7", "hb_units", "dL", "hb_range_low", "11", "hb_range_high", "13.3", "hct", "37", "hct_units", "%", "hct_range_low", "32", "hct_range_high", "38", "mcv", "100", "mcv_units", "fL", "mcv_range_low", "75.9", "mcv_range_high", "86.5", "mch", "34.3", "mch_units", "pg", "mch_range_low", "25.4", "mch_range_high", "29.4", "rdw", "13.2", "rdw_units", "%", "rdw_range_low", "12.7", "rdw_range_high", "14.6", "ret_units", "%", "wbc", "3.6", "wbc_units", "K/uL", "wbc_range_low", "4.5", "wbc_range_high", "10.5", "wbc_diff_units", "%", "neutrophil", "30", "neutrophil_units", "%", "neutrophil_range_low", "36", "neutrophil_range_high", "74", "neutrophil_immature", "0", "neutrophil_immature_units", "%", "neutrophil_immature_range_low", "0", "neutrophil_immature_range_high", "1", "lymphocytes", "53", "lymphocytes_units", "%", "lymphocytes_range_low", "14", "lymphocytes_range_high", "48", "monocytes", "9", "monocytes_units", "%", "monocytes_range_low", "4", "monocytes_range_high", "9", "plt", "120", "plt_units", "K/uL", "plt_range_low", "140", "plt_range_high", "440", "mpv_units", "fL", "pdw_units", "%", "created_on", "2014-01-14T09:57:53.723-08:00", "modified_on", "2014-01-14T09:57:53.723-08:00", "wbc (K/mcL)", "3.6", "rbc (M/mcL)", "3.7", "plt (K/mcL)", "120");
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-12-23",  "rbc", "4.16",  "rbc_units", "10e12/L",  "rbc_range_low", "3.8",  "rbc_range_high", "5.2",  "hb", "13.9",  "hb_units", "dL",  "hb_range_low", "11.7",  "hb_range_high", "15.7",  "hct", "40",  "hct_units", "%",  "hct_range_low", "35",  "hct_range_high", "47",  "mcv", "96",  "mcv_units", "fL",  "mcv_range_low", "76",  "mcv_range_high", "100",  "mch", "33.4",  "mch_units", "pg",  "mch_range_low", "26.5",  "mch_range_high", "33",  "rdw", "12.8",  "rdw_units", "%",  "rdw_range_low", "10",  "rdw_range_high", "15",  "ret_units", "%",  "wbc", "11.1",  "wbc_units", "10e9/L",  "wbc_range_low", "4",  "wbc_range_high", "11",  "wbc_diff_units", "%",  "neutrophil", "87.8",  "neutrophil_units", "%",  "neutrophil_immature", ".3",  "neutrophil_immature_units", "%",  "lymphocytes", "3.7",  "lymphocytes_units", "%",  "monocytes", "7",  "monocytes_units", "%",  "plt", "193",  "plt_units", "10e9/L",  "plt_range_low", "150",  "plt_range_high", "450",  "mpv_units", "fL",  "pdw_units", "%",  "created_on", "2014-01-14T10:17:33.488-08:00",  "modified_on", "2014-01-14T10:17:33.488-08:00",  "wbc (K/mcL)", "11.1",  "rbc (M/mcL)", "4.16",  "plt (K/mcL)", "193.0");
@@ -163,6 +174,7 @@ public class SageBootstrap {
 	
 	private String createData(BridgeClient bridge, Specification spec) throws Exception {
 		ParticipantDataDescriptor desc = ParticipantDataUtils.getDescriptor(spec);
+		logger.info("Creating " + desc.getName());
 		desc = bridge.createParticipantDataDescriptor(desc);
 		List<ParticipantDataColumnDescriptor> columns = ParticipantDataUtils.getColumnDescriptors(desc.getId(), spec);
 		for (ParticipantDataColumnDescriptor column : columns) {

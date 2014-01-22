@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -72,7 +73,10 @@ public class DataTableTag extends SimpleTagSupport {
 	public void setSpecificationColumns(SpecificationDataTableColumnTag columns) {
 		boolean first = true;
 		if (columns.getSpecification() != null && columns.getSpecification().getTableFields() != null) {
-			for (FormElement field : columns.getSpecification().getTableFields().values()) {
+			SortedMap<String,FormElement> map = columns.getSpecification().getTableFields();
+			
+			for (String name : map.keySet()) {
+				FormElement field = map.get(name);
 				DataTableTag.converters.put(field.getName(), field.getStringConverter());
 				DataTableColumnTag column = new DataTableColumnTag();
 				column.setField(field.getName());
@@ -230,7 +234,7 @@ public class DataTableTag extends SimpleTagSupport {
 		} else if (".".equals(column.getField())) {
 			value = column.getField();
 		} else if (object instanceof RowObject) {
-			value = ((RowObject) object).getValueForHeader(column.getField());
+			value = ((RowObject) object).getValuesMap().get(column.getField());
 		} else {
 			try {
 				value = pub.getProperty(object, column.getField());
@@ -238,10 +242,12 @@ public class DataTableTag extends SimpleTagSupport {
 				logger.error(e);
 			}
 		}
+		/*
 		Converter<Object,String> converter = converters.get(column.getConverterName());
 		if (converter != null) {
 			value = converter.convert(value);
 		}
+		*/
 		return value;
 	}
 

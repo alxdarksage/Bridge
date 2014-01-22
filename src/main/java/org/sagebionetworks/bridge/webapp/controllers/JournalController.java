@@ -120,24 +120,12 @@ public class JournalController extends JournalControllerBase {
 		CSVWriter writer = new CSVWriter(response.getWriter());
 		writer.writeNext(paginatedRowSet.getResults().getHeaders().toArray(new String[] {}));
 		for (Row row : paginatedRowSet.getResults().getRows()) {
-			writer.writeNext( removeNullStrings(row.getValues()) );
+			writer.writeNext( row.getValues().toArray(new String[] {}));
 		}
 		writer.flush();
 		writer.close();
 		response.flushBuffer();
 	}
-
-	private String[] removeNullStrings(List<String> list) {
-		/*
-		for (int i=0; i < list.size(); i++) {
-			if ("null".equals(list.get(i))) {
-				list.set(i, "");
-			}
-		}
-		*/
-		return list.toArray(new String[] {});
-	}
-	
 	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.GET)
 	public ModelAndView newTracker(BridgeRequest request, @PathVariable("participantId") String participantId,

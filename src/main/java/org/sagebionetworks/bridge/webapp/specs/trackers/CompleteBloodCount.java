@@ -1,4 +1,4 @@
-package org.sagebionetworks.bridge.webapp.specs;
+package org.sagebionetworks.bridge.webapp.specs.trackers;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,16 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.webapp.converters.DateStringToDateTimeConverter;
 import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
+import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.FormField;
+import org.sagebionetworks.bridge.webapp.specs.FormGrid;
+import org.sagebionetworks.bridge.webapp.specs.FormGroup;
+import org.sagebionetworks.bridge.webapp.specs.FormLayout;
+import org.sagebionetworks.bridge.webapp.specs.RangeNormBar;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
+import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
+import org.sagebionetworks.bridge.webapp.specs.UIType;
+import org.sagebionetworks.bridge.webapp.specs.Units;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;
@@ -57,11 +67,11 @@ public class CompleteBloodCount implements Specification {
 	private static final String MPV_LABEL = "Mean platelet volume (MPV)";
 	private static final String PLT_LABEL = "Platelet count (Thrombocyte / PLT)";
 	private static final String NEUTROPHIL_LABEL = "Neutrophil count";
-	private static final String NEUTROPHIL_IMMATURE_LABEL = "Immature neutrophil/&shy;segments/&shy;granulocytes (bands) count";
+	private static final String NEUTROPHIL_IMMATURE_LABEL = "Immature neutrophil, segments, or granulocytes (bands) count";
 	private static final String LYMPHOCYTES_LABEL = "Lymphocytes count";
 	private static final String MONOCYTES_LABEL = "Monocytes count";
 	private static final String NEUTROPHIL_PERC_LABEL = "Neutrophil";
-	private static final String IMMATURE_NEUTROPHIL_PERC_LABEL = "Immature neutrophil/&shy;segments/&shy;granulocytes (bands)";
+	private static final String IMMATURE_NEUTROPHIL_PERC_LABEL = "Immature neutrophil, segments, or granulocytes (bands)";
 	private static final String LYMPHOCYTES_PERC_LABEL = "Lymphocytes";
 	private static final String MONOCYTES_PERC_LABEL = "Monocytes";
 	private static final String WBC_LABEL = "White cells (Leukocytes / WBC)";
@@ -91,7 +101,7 @@ public class CompleteBloodCount implements Specification {
 	private final List<String> FL = Units.FEMTOLITER.getSymbols();
 	private final List<String> PG = Units.PICOGRAM.getSymbols();
 	
-	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Stick", "Central Line", "Peripheral stick (arm or leg)");
+	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Stick", "Central Line", "Peripheral Stick (arm or leg)");
 
 	Map<String,FormElement> metadata = Maps.newHashMap();
 	List<FormElement> editRows = Lists.newArrayList();
@@ -204,7 +214,6 @@ public class CompleteBloodCount implements Specification {
 		return null;
 	}
 	
-	// Currently, not used anywhere.
 	@Override
 	public FormLayout getFormLayout() {
 		return FormLayout.GRID;

@@ -10,6 +10,9 @@ public class DateStringToDateTimeConverter implements Converter<String,Object> {
 
 	@Override
 	public Object convert(String source) {
+		if (source == null) {
+			return source;
+		}
 		return DateTime.parse(source, ISODateTimeFormat.date()).toDate();
 	}
 

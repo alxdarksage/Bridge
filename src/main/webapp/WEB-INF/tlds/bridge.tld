@@ -63,6 +63,10 @@
         <path>/WEB-INF/tags/trackers/grid.tag</path>
     </tag-file>
     <tag-file>
+        <name>inline-editor</name>
+        <path>/WEB-INF/tags/trackers/inline-editor.tag</path>
+    </tag-file>
+    <tag-file>
         <name>reminders</name>
         <path>/WEB-INF/tags/trackers/reminders.tag</path>
     </tag-file>
@@ -86,8 +90,16 @@
         <name>formtag</name>
         <path>/WEB-INF/tags/trackers/formtag.tag</path>
     </tag-file>
+    <tag-file>
+        <name>tabular</name>
+        <path>/WEB-INF/tags/trackers/tabular.tag</path>
+    </tag-file>
 
     <!-- FORMS (SPRING + BOOTSTRAP) -->
+    <tag-file>
+        <name>button</name>
+        <path>/WEB-INF/tags/forms/button.tag</path>
+    </tag-file>
     <tag-file>
         <name>cancel</name>
         <path>/WEB-INF/tags/forms/cancel.tag</path>
@@ -271,7 +283,7 @@
         </attribute>
     </tag>
     <tag>
-        <name>button</name>
+        <name>table-button</name>
         <tag-class>org.sagebionetworks.bridge.webapp.jsp.DataTableButtonTag</tag-class>
         <body-content>scriptless</body-content>
         <description>
@@ -334,7 +346,7 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <name>dynamicForm</name>
+            <name>valuesMapHolder</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
@@ -357,7 +369,7 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <name>dynamicForm</name>
+            <name>valuesMapHolder</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

@@ -4,11 +4,12 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-public class DynamicForm {
+public class DynamicForm implements HasValuesMap {
 	
 	private Map<String, String> values = Maps.newHashMap();
 
-	public Map<String, String> getValues() {
+	@Override
+	public Map<String, String> getValuesMap() {
 		return values;
 	}
 
