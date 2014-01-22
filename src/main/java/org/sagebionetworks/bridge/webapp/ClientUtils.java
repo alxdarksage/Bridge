@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -24,10 +25,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronExpression;
 import org.sagebionetworks.bridge.model.Community;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.RowObject;
@@ -44,7 +50,6 @@ import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
-import org.sagebionetworks.repo.model.table.PaginatedRowSet;
 import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
@@ -60,8 +65,8 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.ibm.icu.text.SimpleDateFormat;
 
 public class ClientUtils {
 	
@@ -88,53 +93,6 @@ public class ClientUtils {
 	}
 	
 	public static final long LIMIT = 10000L;
-
-	public static class ParticipantColumnWithData {
-		private final ParticipantDataColumnDescriptor columnDescriptor;
-		private final String value;
-		private final String previousValue;
-
-		public ParticipantColumnWithData(ParticipantDataColumnDescriptor columnDescriptor, String value, String previousValue) {
-			this.columnDescriptor = columnDescriptor;
-			this.value = value;
-			this.previousValue = previousValue;
-		}
-
-		public ParticipantDataColumnDescriptor getColumnDescriptor() {
-			return columnDescriptor;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public String getPreviousValue() {
-			return previousValue;
-		}
-	}
-	
-	public static class ParticipantDescriptorWithData {
-		private final ParticipantDataDescriptor dataDescriptor;
-		private final Long rowId;
-		private final List<ParticipantColumnWithData> columnsWithData = Lists.newArrayList();
-
-		public ParticipantDescriptorWithData(ParticipantDataDescriptor dataDescriptor, Long rowId) {
-			this.dataDescriptor = dataDescriptor;
-			this.rowId = rowId;
-		}
-
-		public ParticipantDataDescriptor getDataDescriptor() {
-			return dataDescriptor;
-		}
-
-		public List<ParticipantColumnWithData> getColumnsWithData() {
-			return columnsWithData;
-		}
-
-		public Long getRowId() {
-			return rowId;
-		}
-	}
 
 	/**
 	 * By the time exceptions get to the client across the REST interface, they are in 
@@ -277,18 +235,16 @@ public class ClientUtils {
 	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String trackerId) throws SynapseException {
 		List<RowObject> records = Lists.newArrayList();
 		
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		RowSet rowSet = paginatedRowSet.getResults();
-		List<String> headers = rowSet.getHeaders();
+		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		SortedMap<String,FormElement> tabs = spec.getTableFields();
 		
 		// TODO: Inefficient.
-		for (Row row : rowSet.getRows()) {
+		for (ParticipantDataRow row : paginatedRowSet.getResults()) {
 			List<String> values = Lists.newArrayList();
 			for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
 				String fieldName = entry.getKey();
 				FormElement field = entry.getValue();
-				String serValue = row.getValues().get( headers.indexOf(fieldName) );
+				String serValue = getValueAsString(row.getData().get(fieldName));
 				
 				Converter<String,Object> converter = field.getObjectConverter();
 				if (converter != null) {
@@ -346,26 +302,30 @@ public class ClientUtils {
 		Set<String> defaultedFields = Sets.newHashSet();
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
-		PaginatedRowSet rowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0L);
-		if (rowSet.getTotalNumberOfResults() > 0L) {
-			Set<String> defaults = defaultTheseFields(spec);
-			List<String> headers = rowSet.getResults().getHeaders();
-			
-			long len = rowSet.getTotalNumberOfResults();
-			Row finalRow = rowSet.getResults().getRows().get((int)len-1);
-			List<String> values = finalRow.getValues();
-
-			for (int i=0; i < headers.size(); i++) {
-				String header = headers.get(i);
-				if (defaults.contains(header)) {
-					dynamicForm.getValuesMap().put(header, values.get(i));
-					defaultedFields.add(header);
-				}
+		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
+		if (currentRow.getPreviousData() != null) {
+			for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
+				dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
+				defaultedFields.add(entry.getKey());
 			}
 		}
 		return defaultedFields;
 	}
 	
+	public static String getValueAsString(ParticipantDataValue value) {
+		if (value instanceof ParticipantDataDatetimeValue) {
+			return new SimpleDateFormat("yyyy-MM-dd").format(((ParticipantDataDatetimeValue) value).getValue());
+		} else {
+			return ValueTranslator.toString(value);
+		}
+	}
+
+	public static ParticipantDataValue getStringAsValue(String str) {
+		ParticipantDataStringValue value = new ParticipantDataStringValue();
+		value.setValue(str);
+		return value;
+	}
+
 	private static Set<String> defaultTheseFields(Specification spec) {
 		Set<String> matches = Sets.newHashSet();
 		for (FormElement element : spec.getAllFormElements()) {
@@ -491,42 +451,12 @@ public class ClientUtils {
 			client.sendParticipantDataDescriptorUpdates(dataStatusList);
 		}
 
-		List<ParticipantDescriptorWithData> descriptorsWithDataAlways = Lists.transform(descriptorsAlways,
-				new Function<ParticipantDataDescriptor, ParticipantDescriptorWithData>() {
+		List<ParticipantDataCurrentRow> descriptorsWithDataAlways = Lists.transform(descriptorsAlways,
+				new Function<ParticipantDataDescriptor, ParticipantDataCurrentRow>() {
 					@Override
-					public ParticipantDescriptorWithData apply(ParticipantDataDescriptor descriptor) {
+					public ParticipantDataCurrentRow apply(ParticipantDataDescriptor descriptor) {
 						try {
-							boolean lastEntryComplete = BooleanUtils.isTrue(descriptor.getStatus().getLastEntryComplete());
-
-							PaginatedResults<ParticipantDataColumnDescriptor> columnDescriptorResult;
-							columnDescriptorResult = client.getParticipantDataColumnDescriptors(descriptor.getId(), ClientUtils.LIMIT, 0);
-							RowSet rowset = client.getParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
-							Row lastRow = null;
-							if (!rowset.getRows().isEmpty()) {
-								lastRow = rowset.getRows().get(rowset.getRows().size() - 1);
-							}
-
-							Map<String, String> lastData = Maps.newHashMapWithExpectedSize(rowset.getHeaders().size());
-							if (lastRow != null) {
-								for (int i = rowset.getHeaders().size() - 1; i >= 0; i--) {
-									String value = lastRow.getValues().get(i);
-									lastData.put(rowset.getHeaders().get(i), value);
-								}
-							}
-
-							ParticipantDescriptorWithData descriptorWithData = new ParticipantDescriptorWithData(descriptor,
-									lastRow == null ? null : lastRow.getRowId());
-							for (ParticipantDataColumnDescriptor columnDescriptor : columnDescriptorResult.getResults()) {
-								String value = lastData.get(columnDescriptor.getName());
-								String previousValue = null;
-								if(lastEntryComplete) {
-									previousValue = value;
-									value = null;
-								}
-								ParticipantColumnWithData columnWithData = new ParticipantColumnWithData(columnDescriptor,value,previousValue);
-								descriptorWithData.columnsWithData.add(columnWithData);
-							}
-							return descriptorWithData;
+							return client.getCurrentParticipantData(descriptor.getId());
 						} catch (SynapseException e) {
 							throw new RuntimeException(e.getMessage(), e);
 						}

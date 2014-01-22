@@ -2,11 +2,11 @@ package org.sagebionetworks.bridge.webapp.controllers.ajax;
 
 import java.util.Map;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.controllers.JournalControllerBase;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +26,10 @@ public class AjaxJournalController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model)
 			throws SynapseException {
 
-		RowSet data = createRow(request, trackerId, dynamicForm, null, model);
+		ParticipantDataRow data = createRow(request, trackerId, dynamicForm, null, model);
 
 		Map<String, Object> result = Maps.newHashMap();
-		result.put("rowId", data.getRows().get(0).getRowId());
+		result.put("rowId", data.getRowId());
 		return result;
 	}
 
@@ -39,10 +39,10 @@ public class AjaxJournalController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId,
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 
-		RowSet data = updateRow(request, trackerId, dynamicForm, null, model, rowId);
+		ParticipantDataRow data = updateRow(request, trackerId, dynamicForm, null, model, rowId);
 
 		Map<String, Object> result = Maps.newHashMap();
-		result.put("rowId", data.getRows().get(0).getRowId());
+		result.put("rowId", data.getRowId());
 		return result;
 	}
 

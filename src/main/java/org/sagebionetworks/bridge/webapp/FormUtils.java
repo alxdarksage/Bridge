@@ -3,6 +3,8 @@ package org.sagebionetworks.bridge.webapp;
 import java.util.Map;
 
 import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
@@ -10,11 +12,10 @@ import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Maps.EntryTransformer;
 
 /**
  * Manual copying of data from object to object. Not always wise to 
@@ -64,18 +65,13 @@ public class FormUtils {
 		return profile;
 	}
 	
-	public static DynamicForm valuesToDynamicForm(DynamicForm dynamicForm, RowSet rowSet, long rowId) {
-		Row row = ClientUtils.getRowById(rowSet, rowId);
-		Map<String,String> values = Maps.newHashMap();
-		for (int i=0; i < rowSet.getHeaders().size(); i++) {
-			String header = rowSet.getHeaders().get(i);
-			String value = row.getValues().get(i);
-			// This seems to be set on the service side to "null"... hide that.
-			if (value == null || "null".equals(value)) {
-				value = "";
+	public static DynamicForm valuesToDynamicForm(DynamicForm dynamicForm, ParticipantDataRow row) {
+		Map<String, String> values = Maps.transformEntries(row.getData(), new EntryTransformer<String, ParticipantDataValue, String>() {
+			@Override
+			public String transformEntry(String key, ParticipantDataValue value) {
+				return ClientUtils.getValueAsString(value);
 			}
-			values.put(header,value);
-		}
+		});
 		dynamicForm.setValues(values);
 		return dynamicForm;
 	}

@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
@@ -21,8 +23,6 @@ import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
-import org.sagebionetworks.repo.model.table.PaginatedRowSet;
-import org.sagebionetworks.repo.model.table.Row;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +35,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import au.com.bytecode.opencsv.CSVWriter;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Controller
 public class JournalController extends JournalControllerBase {
@@ -111,16 +114,24 @@ public class JournalController extends JournalControllerBase {
 			throws SynapseException, IOException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
+		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, null, trackerId);
 		
 		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
 		response.setContentType("text/csv");
         response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
-		CSVWriter writer = new CSVWriter(response.getWriter());
-		writer.writeNext(paginatedRowSet.getResults().getHeaders().toArray(new String[] {}));
-		for (Row row : paginatedRowSet.getResults().getRows()) {
-			writer.writeNext( row.getValues().toArray(new String[] {}));
+        Set<String> headers = Sets.newTreeSet();
+        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			headers.addAll(row.getData().keySet());
+		}
+        CSVWriter writer = new CSVWriter(response.getWriter());
+		writer.writeNext(headers.toArray(new String[] {}));
+        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			List<String> values = Lists.newArrayListWithCapacity(headers.size());
+			for (String header : headers) {
+				values.add(ValueTranslator.toString(row.getData().get(header)));
+			}
+			writer.writeNext( values.toArray(new String[] {}));
 		}
 		writer.flush();
 		writer.close();
@@ -167,8 +178,8 @@ public class JournalController extends JournalControllerBase {
 		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
+		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
+		FormUtils.valuesToDynamicForm(dynamicForm, row);
 		
 		model.setViewName("journal/trackers/show");
 		return model;
@@ -183,8 +194,8 @@ public class JournalController extends JournalControllerBase {
 		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
-		PaginatedRowSet paginatedRowSet = client.getParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		FormUtils.valuesToDynamicForm(dynamicForm, paginatedRowSet.getResults(), rowId);
+		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
+		FormUtils.valuesToDynamicForm(dynamicForm, row);
 		
 		model.setViewName("journal/trackers/edit");
 		return model;
