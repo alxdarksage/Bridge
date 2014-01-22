@@ -1,16 +1,23 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ParticipantDataUtils {
 	
@@ -38,51 +45,53 @@ public class ParticipantDataUtils {
 		return list;
 	}
 	
-	public static RowSet getRowSetForCreate(Specification spec, Map<String, String> values) {
+	public static List<ParticipantDataRow> getRowsForCreate(Specification spec, Map<String, String> values) {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForCreate() requires values map");
 		}
 		
-		List<String> newValues = Lists.newArrayList();
-		List<String> headers = Lists.newArrayList();
-		for (FormElement element : spec.getAllFormElements()) {
-			if (element.getType().getColumnType() != null) {
-				headers.add(element.getName());
-				String value = values.get(element.getName());
-				newValues.add(StringUtils.isEmpty(value) ? null : value);
-			}
-		}
-		return createSingleRowRowSet(null, newValues, headers);
+		return specToParticipantDataRow(spec, values, null);
 	}
 	
-	public static RowSet getRowSetForUpdate(Specification spec, Map<String, String> values, long rowId) {
+	public static List<ParticipantDataRow> getRowsForUpdate(Specification spec, Map<String, String> values, long rowId) {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForUpdate() requires values");
 		}
 		
-		List<String> newValues = Lists.newArrayList();
-		List<String> headers = Lists.newArrayList();
+		return specToParticipantDataRow(spec, values, rowId);
+	}
+
+	private static List<ParticipantDataRow> specToParticipantDataRow(Specification spec, Map<String, String> values, Long rowId) {
+		Map<String, ParticipantDataValue> data = Maps.newHashMap();
 		for (FormElement element : spec.getAllFormElements()) {
-			if (element.getType().getColumnType() != null) {
-				if (!element.isReadonly()) {
-					headers.add(element.getName());
-					String value = values.get(element.getName());
-					newValues.add(StringUtils.isEmpty(value) ? null : value);
+			ParticipantDataColumnType columnType = element.getType().getColumnType();
+			if (columnType != null) {
+				switch (columnType) {
+				case DATETIME:
+					String dateStringValue = values.get(element.getName());
+					if (dateStringValue != null && dateStringValue.length() > 0) {
+						try {
+							Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateStringValue);
+							ParticipantDataDatetimeValue dateValue = new ParticipantDataDatetimeValue();
+							dateValue.setValue(date.getTime());
+							data.put(element.getName(), dateValue);
+						} catch (ParseException e) {
+							throw new RuntimeException("Could not parse date " + dateStringValue);
+						}
+					}
+					break;
+				default:
+					ParticipantDataValue value = ValueTranslator.transformToValue(values, element.getName(), columnType);
+					if (value != null) {
+						data.put(element.getName(), value);
+					}
+					break;
 				}
 			}
 		}
-
-		return createSingleRowRowSet(rowId, newValues, headers);
-	}
-
-	private static RowSet createSingleRowRowSet(Long rowId, List<String> newValues, List<String> headers) {
-		Row row = new Row();
+		ParticipantDataRow row = new ParticipantDataRow();
 		row.setRowId(rowId);
-		row.setValues(newValues);
-		RowSet data = new RowSet();
-		data.setHeaders(headers);
-		data.setRows(Collections.singletonList(row));
-		return data;
+		row.setData(data);
+		return Collections.singletonList(row);
 	}
-	
 }

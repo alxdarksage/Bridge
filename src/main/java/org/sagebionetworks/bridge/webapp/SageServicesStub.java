@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.versionInfo.BridgeVersionInfo;
@@ -40,6 +41,7 @@ import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.PaginatedResults;
+import org.sagebionetworks.repo.model.PaginatedResultsUtil;
 import org.sagebionetworks.repo.model.ResourceAccess;
 import org.sagebionetworks.repo.model.Team;
 import org.sagebionetworks.repo.model.TeamMembershipStatus;
@@ -57,9 +59,6 @@ import org.sagebionetworks.repo.model.file.S3FileHandle;
 import org.sagebionetworks.repo.model.principal.AliasCheckRequest;
 import org.sagebionetworks.repo.model.principal.AliasCheckResponse;
 import org.sagebionetworks.repo.model.principal.AliasType;
-import org.sagebionetworks.repo.model.table.PaginatedRowSet;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.repo.web.NotFoundException;
@@ -91,8 +90,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	Map<String,ParticipantDataDescriptor> descriptorsById = Maps.newHashMap();
 	Multimap<String,ParticipantDataDescriptor> descriptorsByUserById = LinkedListMultimap.create();
 	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorById = LinkedListMultimap.create();
-	Map<String, RowSet> participantDataByDescriptorById = Maps.newHashMap();
-	
+	Map<String, List<ParticipantDataRow>> participantDataByDescriptorById = Maps.newHashMap();
 	int idCount = 2;
 
 	public SageServicesStub() {
@@ -780,94 +778,55 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	// For the purposes of these next two methods, we really don't care that one is on behalf of another person.
 	
 	@Override
-	public RowSet appendParticipantData(String participantIdentifier, String participantDataDescriptorId, RowSet data)
+	public List<ParticipantDataRow> appendParticipantData(String participantIdentifier, String participantDataDescriptorId, List<ParticipantDataRow> data)
 			throws SynapseException {
 		return internalAppendParticipantData(participantDataDescriptorId, data);
 	}
 	
 	@Override
-	public RowSet appendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
+	public List<ParticipantDataRow> appendParticipantData(String participantDataDescriptorId, List<ParticipantDataRow> data) throws SynapseException {
 		return internalAppendParticipantData(participantDataDescriptorId, data);
 	}
 	
-	public RowSet internalAppendParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
-		for (Row row : data.getRows()) {
+	public List<ParticipantDataRow> internalAppendParticipantData(String participantDataDescriptorId, List<ParticipantDataRow> data)
+			throws SynapseException {
+		for (ParticipantDataRow row : data) {
 			row.setRowId(Long.parseLong(newId()));
 		}
-		RowSet oldData = participantDataByDescriptorById.get(participantDataDescriptorId);
+		List<ParticipantDataRow> oldData = participantDataByDescriptorById.get(participantDataDescriptorId);
 		if (oldData != null) {
-			// Or else you get an abstract list exception
-			List<Row> newList = new ArrayList<Row>();
-			newList.addAll(oldData.getRows());
-			newList.addAll(data.getRows());
-			oldData.setRows(newList);
+			oldData.addAll(data);
 		} else {
 			participantDataByDescriptorById.put(participantDataDescriptorId, data);
 		}
-		return oldData; // or data?!?
+		return data;
 	}
 
 	@Override
-	public RowSet updateParticipantData(String participantDataDescriptorId, RowSet data) throws SynapseException {
-		RowSet existingData = participantDataByDescriptorById.get(participantDataDescriptorId);
+	public List<ParticipantDataRow> updateParticipantData(String participantDataDescriptorId, List<ParticipantDataRow> data)
+			throws SynapseException {
+		List<ParticipantDataRow> existingData = participantDataByDescriptorById.get(participantDataDescriptorId);
 		if (existingData == null) {
-			RowSet emptyData = new RowSet();
-			emptyData.setHeaders(new ArrayList<String>());
-			emptyData.setRows(new ArrayList<Row>());
-			return emptyData;
+			throw new SynapseException("cannot update " + participantDataDescriptorId);
 		}
-		if (data.getHeaders().size() != data.getRows().get(0).getValues().size()) {
-			logger.info(data.getHeaders().size() + ", " + data.getRows().get(0).getValues().size());
-			throw new IllegalArgumentException("The submitted data headers/row values are not the same length.");
-		}
-		// Why does this happen? I do not know. I'm not sure it's worth figuring out.
-		if (existingData.getHeaders().isEmpty()) {
-			existingData.setHeaders(data.getHeaders());
-		}
-		for (Row row : data.getRows()) {
-			if (row.getRowId() == null) {
-				throw new SynapseException("Found previously unsaved row");
-			}
-			// Updates can be partial, uses the headers to determine which values are being updated.
-			Row existing = findRowById(existingData, row.getRowId());
-			
-			for (int i=0; i < data.getHeaders().size(); i++) {
-				String header = data.getHeaders().get(i);
-				int indexOf = existingData.getHeaders().indexOf(header);
-				logger.info("Header: " + header + ", indexOf: " + indexOf + ", i: " + i);
-				existing.getValues().set(indexOf, row.getValues().get(i));
+
+		for (ParticipantDataRow dataRow : data) {
+			for (ParticipantDataRow existingDataRow : existingData) {
+				if (existingDataRow.getRowId().equals(dataRow.getRowId())) {
+					existingDataRow.getData().putAll(dataRow.getData());
+					break;
+				}
 			}
 		}
 		return existingData;
 	}
 	
-	private Row findRowById(RowSet rowSet, Long id) {
-		for (Row row : rowSet.getRows()) {
-			if (row.getRowId().equals(id)) {
-				return row;
-			}
-		}
-		return null;
-	}
-
 	@Override
-	public PaginatedRowSet getParticipantData(String participantDataDescriptorId, long limit, long offset)
+	public PaginatedResults<ParticipantDataRow> getRawParticipantData(String participantDataDescriptorId, long limit, long offset)
 			throws SynapseException {
 		// TODO: This is not actually paged.
-		RowSet data = participantDataByDescriptorById.get(participantDataDescriptorId);
-		if (data == null) {
-			RowSet emptyData = new RowSet();
-			emptyData.setHeaders(new ArrayList<String>());
-			emptyData.setRows(new ArrayList<Row>());
-			PaginatedRowSet pagedRowSet = new PaginatedRowSet();
-			pagedRowSet.setResults(emptyData);
-			pagedRowSet.setTotalNumberOfResults(0L);
-			return pagedRowSet;
-		}
-		PaginatedRowSet pagedRowSet = new PaginatedRowSet();
-		pagedRowSet.setResults(data);
-		pagedRowSet.setTotalNumberOfResults((long)data.getRows().size());
-		return pagedRowSet;
+		List<ParticipantDataRow> data = participantDataByDescriptorById.get(participantDataDescriptorId);
+		return PaginatedResultsUtil.createPaginatedResults(data, limit, offset);
 	}
 	
 	@Override

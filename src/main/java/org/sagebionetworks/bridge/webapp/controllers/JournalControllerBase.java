@@ -1,7 +1,10 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -11,21 +14,20 @@ import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.bridge.webapp.validators.SpecificationBasedValidator;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 public class JournalControllerBase {
-	
+
 	@Resource(name = "specificationResolver")
 	protected SpecificationResolver specResolver;
 
-	protected RowSet createRow(BridgeRequest request, String trackerId, DynamicForm dynamicForm, BindingResult result,
+	protected ParticipantDataRow createRow(BridgeRequest request, String trackerId, DynamicForm dynamicForm, BindingResult result,
 			ModelAndView model) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		spec.setSystemSpecifiedValues(dynamicForm.getValuesMap());
-		
+
 		if (result != null) {
 			SpecificationBasedValidator validator = new SpecificationBasedValidator(spec);
 			validator.validate(dynamicForm, result);
@@ -33,11 +35,12 @@ public class JournalControllerBase {
 				return null;
 			}
 		}
-		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValuesMap());
-		return client.appendParticipantData(trackerId, data);
+		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForCreate(spec, dynamicForm.getValuesMap());
+		data = client.appendParticipantData(trackerId, data);
+		return data.get(0);
 	}
-	
-	protected RowSet updateRow(BridgeRequest request, String trackerId, DynamicForm dynamicForm, BindingResult result,
+
+	protected ParticipantDataRow updateRow(BridgeRequest request, String trackerId, DynamicForm dynamicForm, BindingResult result,
 			ModelAndView model, long rowId) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
@@ -50,8 +53,9 @@ public class JournalControllerBase {
 				return null;
 			}
 		}
-		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValuesMap(), rowId);
-		return client.updateParticipantData(trackerId, data);
+		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForUpdate(spec, dynamicForm.getValuesMap(), rowId);
+		data = client.updateParticipantData(trackerId, data);
+		return data.get(0);
 	}
 
 }

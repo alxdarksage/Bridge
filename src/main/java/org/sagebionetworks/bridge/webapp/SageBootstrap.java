@@ -12,6 +12,7 @@ import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
@@ -83,13 +84,6 @@ public class SageBootstrap {
 	
 	private ClientProvider provider;
 	
-	private static final RowSet EMPTY_ROW_SET;
-	static {
-		EMPTY_ROW_SET = new RowSet();
-		EMPTY_ROW_SET.setHeaders(Collections.<String> emptyList());
-		EMPTY_ROW_SET.setRows(Collections.<Row> emptyList());
-	}
-
 	public SageBootstrap(ClientProvider provider) {
 		this.provider = provider;
 	}
@@ -169,7 +163,7 @@ public class SageBootstrap {
 			col.setType(cols[index++]);
 			bridge.createParticipantDataColumnDescriptor(col);
 		}
-		bridge.appendParticipantData(desc.getId(), EMPTY_ROW_SET);
+		bridge.appendParticipantData(desc.getId(), Collections.<ParticipantDataRow> emptyList());
 	}
 	
 	private String createData(BridgeClient bridge, Specification spec) throws Exception {
@@ -188,7 +182,7 @@ public class SageBootstrap {
 		for (int i=0; i < values.length; i+=2) {
 			map.put(values[i], values[i+1]);
 		}
-		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, map);
+		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForCreate(spec, map);
 		client.appendParticipantData(trackerId, data);
 	}
 	
