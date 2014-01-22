@@ -65,14 +65,12 @@ public class ITJournal extends WebDriverBase {
 		editPage.assertRow(RDW, 6);
 		editPage.assertRow(RET, 7);
 		editPage.assertRow(WBC, 8);
-		editPage.assertRow(WBC_DIFF, 9);
-		editPage.assertRow(NEUTROPHIL, 10);
-		editPage.assertRow(NEUTROPHIL_IMMATURE, 11);
-		editPage.assertRow(LYMPHOCYTES, 12);
-		editPage.assertRow(MONOCYTES, 13);
+		editPage.assertRow(NEUTROPHIL_PERC, 10);
+		editPage.assertRow(NEUTROPHIL_IMMATURE_PERC, 11);
+		editPage.assertRow(LYMPHOCYTES_PERC, 12);
+		editPage.assertRow(MONOCYTES_PERC, 13);
 		editPage.assertRow(PLT, 14);
 		editPage.assertRow(MPV, 15);
-		editPage.assertRow(PDW, 16);		
 		
 		editPage.setRow(RBC, 3);
 		editPage.setRow(HB, 4);
@@ -82,14 +80,12 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(RDW, 8);
 		editPage.setRow(RET, 9);
 		editPage.setRow(WBC, 10);
-		editPage.setRow(WBC_DIFF, 11);
-		editPage.setRow(NEUTROPHIL, 12);
-		editPage.setRow(NEUTROPHIL_IMMATURE, 13);
-		editPage.setRow(LYMPHOCYTES, 14);
-		editPage.setRow(MONOCYTES, 15);
+		editPage.setRow(NEUTROPHIL_PERC, 12);
+		editPage.setRow(NEUTROPHIL_IMMATURE_PERC, 13);
+		editPage.setRow(LYMPHOCYTES_PERC, 14);
+		editPage.setRow(MONOCYTES_PERC, 15);
 		editPage.setRow(PLT, 16);
 		editPage.setRow(MPV, 17);
-		editPage.setRow(PDW, 18);
 		editPage.submit();
 		
 		editPage = indexPage.getMostRecentEntry().clickEditTrackerButton();
@@ -103,14 +99,12 @@ public class ITJournal extends WebDriverBase {
 		editPage.assertRow(RDW, 8);
 		editPage.assertRow(RET, 9);
 		editPage.assertRow(WBC, 10);
-		editPage.assertRow(WBC_DIFF, 11);
-		editPage.assertRow(NEUTROPHIL, 12);
-		editPage.assertRow(NEUTROPHIL_IMMATURE, 13);
-		editPage.assertRow(LYMPHOCYTES, 14);
-		editPage.assertRow(MONOCYTES, 15);
+		editPage.assertRow(NEUTROPHIL_PERC, 12);
+		editPage.assertRow(NEUTROPHIL_IMMATURE_PERC, 13);
+		editPage.assertRow(LYMPHOCYTES_PERC, 14);
+		editPage.assertRow(MONOCYTES_PERC, 15);
 		editPage.assertRow(PLT, 16);
 		editPage.assertRow(MPV, 17);
-		editPage.assertRow(PDW, 18);		
 	}
 		
 	@Test
@@ -168,14 +162,12 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(RDW, 6);
 		newPage.setRow(RET, 7);
 		newPage.setRow(WBC, 8);
-		newPage.setRow(WBC_DIFF, 9);
-		newPage.setRow(NEUTROPHIL, 10);
-		newPage.setRow(NEUTROPHIL_IMMATURE, 11);
-		newPage.setRow(LYMPHOCYTES, 12);
-		newPage.setRow(MONOCYTES, 13);
+		newPage.setRow(NEUTROPHIL_PERC, 10);
+		newPage.setRow(NEUTROPHIL_IMMATURE_PERC, 11);
+		newPage.setRow(LYMPHOCYTES_PERC, 12);
+		newPage.setRow(MONOCYTES_PERC, 13);
 		newPage.setRow(PLT, 14);
 		newPage.setRow(MPV, 15);
-		newPage.setRow(PDW, 16);
 		newPage.submit();
 	}
 	

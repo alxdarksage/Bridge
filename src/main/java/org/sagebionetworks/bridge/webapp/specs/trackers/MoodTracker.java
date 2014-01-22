@@ -1,4 +1,4 @@
-package org.sagebionetworks.bridge.webapp.specs;
+package org.sagebionetworks.bridge.webapp.specs.trackers;
 
 import java.util.List;
 import java.util.Map;
@@ -6,6 +6,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.FormField;
+import org.sagebionetworks.bridge.webapp.specs.FormGroup;
+import org.sagebionetworks.bridge.webapp.specs.FormLayout;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 
 import com.google.common.collect.Lists;

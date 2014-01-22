@@ -6,7 +6,7 @@
 %>
 <c:set var="id" value="${trackerId}-${columnDescriptor.name}"/>
 ${columnDescriptor.name}<span id="${id}-slider"></span>
-<input type="hidden" id="${id}-value" name="values['${columnDescriptor.name}']" value="${value}"/>
+<input type="hidden" id="${id}-value" name="valuesMap['${columnDescriptor.name}']" value="${value}"/>
 <div id="${id}-out"></div>
 <script type="text/javascript">
     var slider = new SmileySlider(document.getElementById("${id}-slider"));

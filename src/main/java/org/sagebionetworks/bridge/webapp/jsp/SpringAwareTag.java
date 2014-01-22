@@ -41,7 +41,7 @@ public class SpringAwareTag extends SimpleTagSupport {
 	}
 	
 	private List<FieldError> getErrors() {
-		String name = String.format("values['%s']", field.getName());
+		String name = String.format("valuesMap['%s']", field.getName());
 		return requestContext.getErrors("dynamicForm").getFieldErrors(name);
 	}	
 }

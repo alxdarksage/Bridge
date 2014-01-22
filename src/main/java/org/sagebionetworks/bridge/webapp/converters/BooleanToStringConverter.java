@@ -8,7 +8,9 @@ public class BooleanToStringConverter implements Converter<Object,String> {
 	
 	@Override
 	public String convert(Object source) {
-		// though obviously, just about anything has a toString()
+		if (source == null) {
+			return null;
+		}
 		return ((Boolean)source).toString();
 	}
 

@@ -17,10 +17,16 @@
     <c:when test="${element.type == 'GRID'}">
         <sage:grid element="${element}"/>
     </c:when>
+    <c:when test="${element.type == 'INLINE_EDITOR'}">
+        <sage:inline-editor element="${element}"/>
+    </c:when>
+    <c:when test="${element.type == 'TABULAR'}">
+        <sage:tabular element="${element}"/>
+    </c:when>
     <c:when test="${element.type == 'VALUE'}">
-        <sage:value dynamicForm="${dynamicForm}" field="${element}"/>
+        <sage:value valuesMapHolder="${dynamicForm}" field="${element}"/>
     </c:when>
     <c:otherwise>
-        <sage:field dynamicForm="${dynamicForm}" field="${element}" defaultedFields="${defaultedFields}"/>
+        <sage:field valuesMapHolder="${dynamicForm}" field="${element}" defaultedFields="${defaultedFields}"/>
     </c:otherwise>
 </c:choose>

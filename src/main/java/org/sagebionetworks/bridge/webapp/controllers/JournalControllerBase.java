@@ -24,7 +24,7 @@ public class JournalControllerBase {
 			ModelAndView model) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
-		spec.setSystemSpecifiedValues(dynamicForm.getValues());
+		spec.setSystemSpecifiedValues(dynamicForm.getValuesMap());
 		
 		if (result != null) {
 			SpecificationBasedValidator validator = new SpecificationBasedValidator(spec);
@@ -33,7 +33,7 @@ public class JournalControllerBase {
 				return null;
 			}
 		}
-		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValues());
+		RowSet data = ParticipantDataUtils.getRowSetForCreate(spec, dynamicForm.getValuesMap());
 		return client.appendParticipantData(trackerId, data);
 	}
 	
@@ -41,7 +41,7 @@ public class JournalControllerBase {
 			ModelAndView model, long rowId) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
-		spec.setSystemSpecifiedValues(dynamicForm.getValues());
+		spec.setSystemSpecifiedValues(dynamicForm.getValuesMap());
 
 		if (result != null) {
 			SpecificationBasedValidator validator = new SpecificationBasedValidator(spec);
@@ -50,7 +50,7 @@ public class JournalControllerBase {
 				return null;
 			}
 		}
-		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValues(), rowId);
+		RowSet data = ParticipantDataUtils.getRowSetForUpdate(spec, dynamicForm.getValuesMap(), rowId);
 		return client.updateParticipantData(trackerId, data);
 	}
 

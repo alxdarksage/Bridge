@@ -8,7 +8,7 @@ import javax.servlet.jsp.JspException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
+import org.sagebionetworks.bridge.webapp.forms.HasValuesMap;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
@@ -27,11 +27,11 @@ public class FieldTag extends SpringAwareTag {
 	private TagBuilder tb = new TagBuilder();
 
 	private String fieldName;
-	private DynamicForm dynamicForm;
+	private HasValuesMap valuesMapHolder;
 	private Set<String> defaultedFields;
 	
-	public void setDynamicForm(DynamicForm form) {
-		this.dynamicForm = form;
+	public void setValuesMapHolder(HasValuesMap valuesMapHolder) {
+		this.valuesMapHolder = valuesMapHolder;
 	}
 	public void setDefaultedFields(Set<String> defaultedFields) {
 		this.defaultedFields = defaultedFields;
@@ -40,11 +40,12 @@ public class FieldTag extends SpringAwareTag {
 	@Override
 	public void doTag() throws JspException, IOException {
 		super.doTag();
-		if (dynamicForm == null) {
-			throw new IllegalArgumentException("FieldTag requires @dynamiceForm to be set");
+		if (valuesMapHolder == null) {
+			throw new IllegalArgumentException("FieldTag requires @valuesMapHolder to be set");
 		}
-		fieldName = String.format("values['%s']", field.getName());
-		if (field.getInitialValue() != null && field.isReadonly()) {
+		fieldName = String.format("valuesMap['%s']", field.getName());
+		
+		if (field.isReadonly()) {
 			renderReadonly();
 		} else if (field.getType() == UIType.DATE || field.getType() == UIType.DATETIME) {
 			renderDate(field.getType().name().toLowerCase());
@@ -53,64 +54,47 @@ public class FieldTag extends SpringAwareTag {
 		} else {
 			renderInput();
 		}
-		// This needs to be grouped at the layout level, not always right under the field itself.
-		/*
-		for (FieldError error : fieldErrors) {
-			tb.startTag("span", "id", field.getName() + "_errors", "class", "error-text");
-			tb.append(error.getDefaultMessage());
-			tb.endTag("span");
-		}
-		*/
 		getJspContext().getOut().write(tb.toString());
 	}
 
 	// This is exceptional in that it doesn't look like a field. It's filled out and can't be changed.
 	private void renderReadonly() {
+		String value = getValue();
 		tb.startTag("p", "class", "form-control-static");
-		tb.append(field.getInitialValue());
+		tb.append(value);
 		tb.endTag("p");
 		
 		tb.startTag("input", "type", "hidden");
 		tb.addAttribute("id", field.getName());
 		tb.addAttribute("name", fieldName);
-		tb.addAttribute("value", field.getInitialValue());
+		tb.addAttribute("value", value);
 		tb.endTag("input");
 	}
 	
 	private void renderDate(String subType) {
-		String currentValue = dynamicForm.getValues().get(field.getName());
+		String value = getValue();
 		tb.startTag("input");
-		addDefaultAttributes(currentValue);
+		addDefaultAttributes(value);
 		tb.addAttribute("type", subType); // not datetime, which might be an issue
-		if (currentValue == null && field.getInitialValue() != null) {
-			tb.addAttribute("value", field.getInitialValue());
-		}
-		if (currentValue != null) {
-			tb.addAttribute("value", currentValue);
-		}
+		tb.addAttribute("value", value);
 		tb.endTag("input");
 	}
-	
+
 	private void renderInput() {
-		String currentValue = dynamicForm.getValues().get(field.getName());
+		String value = getValue();
 		tb.startTag("input");
-		addDefaultAttributes(currentValue);
+		addDefaultAttributes(value);
 		if (field instanceof NumericFormField) {
 			addNumericAttributes((NumericFormField)field);
 		} else {
 			tb.addAttribute("type", "text");
 		}
-		if (currentValue == null && field.getInitialValue() != null) {
-			tb.addAttribute("value", field.getInitialValue());
-		}
-		if (currentValue != null) {
-			tb.addAttribute("value", currentValue);
-		}
+		tb.addAttribute("value", value);
 		tb.endTag("input");
 	}
 	
 	private void renderEnumeration() {
-		String currentValue = dynamicForm.getValues().get(field.getName());
+		String currentValue = getValue(); // valuesMapHolder.getValues().get(field.getName());
 		tb.startTag("select");
 		addDefaultAttributes(currentValue);
 		tb.startTag("option", "value", "");
@@ -127,13 +111,21 @@ public class FieldTag extends SpringAwareTag {
 		tb.endTag("select");
 	}
 	
+	private String getValue() {
+		String currentValue = valuesMapHolder.getValuesMap().get(field.getName());
+		if (currentValue == null && field.getInitialValue() != null) {
+			return field.getInitialValue();
+		}
+		return currentValue;
+	}
+	
 	private void addDefaultAttributes(String currentValue) {
 		Set<String> classes = Sets.newHashSet("form-control", "input-sm");
 		
 		if(!fieldErrors.isEmpty()) {
 			classes.add("error-control");
 		}
-		if (StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
+		if (field.isDefaultable() && StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
 			classes.add("defaulted");
 		}
 		tb.addAttribute("id", field.getName());

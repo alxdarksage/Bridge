@@ -33,6 +33,13 @@ public class FormGroup implements FormElement {
 		this.children.addAll(children);
 	}
 	
+	public void add(FormElement element) {
+		if (element == null) {
+			throw new IllegalArgumentException("Child element in a FormGroup cannot be null");
+		}
+		this.children.add(element);
+	}
+	
 	@Override
 	public String getName() {
 		return label;

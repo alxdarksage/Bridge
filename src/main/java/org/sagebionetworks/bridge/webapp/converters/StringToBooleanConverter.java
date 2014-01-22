@@ -8,6 +8,9 @@ public class StringToBooleanConverter implements Converter<String,Object> {
 	
 	@Override
 	public Object convert(String source) {
+		if (source == null) {
+			return null;
+		}
 		return Boolean.parseBoolean(source);
 	}
 
