@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.util.Collections;
-
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
@@ -26,8 +26,6 @@ import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.Session;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
 import com.google.common.collect.Maps;
@@ -101,18 +99,16 @@ public class SageBootstrap {
 		
 		// This should be propagated at this point to the bridge client which uses that Synapse client
 		BridgeClient bridge = provider.getBridgeClient();
-		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED,
-				"0 0 4 * * ? *", "Sleep time", "sleep-time-slider");
-		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED,
-				"0 0 4 * * ? *", "Rest time", "sleep-time-slider");
-		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind",
-				"mood-slider", "Body", "mood-slider");
-		/*
-		createData(bridge, "MedicationTracker Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
-				"string", "yy", "string");
-		*/
-		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
-				"string", "Address", "string");
+		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Sleep time",
+				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
+		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Rest time",
+				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
+		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind", "mood-slider",
+				ParticipantDataColumnType.DOUBLE, "Body", "mood-slider", ParticipantDataColumnType.DOUBLE);
+		createData(bridge, "Medication Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx", "string",
+				ParticipantDataColumnType.STRING, "yy", "string", ParticipantDataColumnType.STRING);
+		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name", "string",
+				ParticipantDataColumnType.STRING, "Address", "string", ParticipantDataColumnType.STRING);
 		
 		Specification spec = new MedicationTracker();
 		createData(bridge, spec);
@@ -147,7 +143,7 @@ public class SageBootstrap {
 	}
 	
 	private void createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
-			String repeatFrequency, String... cols) throws SynapseException {
+			String repeatFrequency, Object... cols) throws SynapseException {
 		ParticipantDataDescriptor desc = new ParticipantDataDescriptor();
 		desc.setDescription(description);
 		desc.setName(name);
@@ -158,9 +154,10 @@ public class SageBootstrap {
 		while (index < cols.length) {
 			ParticipantDataColumnDescriptor col = new ParticipantDataColumnDescriptor();
 			col.setParticipantDataDescriptorId(desc.getId());
-			col.setName(cols[index++]);
+			col.setName((String) cols[index++]);
 			col.setDescription("");
-			col.setType(cols[index++]);
+			col.setType((String) cols[index++]);
+			col.setColumnType((ParticipantDataColumnType) cols[index++]);
 			bridge.createParticipantDataColumnDescriptor(col);
 		}
 		bridge.appendParticipantData(desc.getId(), Collections.<ParticipantDataRow> emptyList());
