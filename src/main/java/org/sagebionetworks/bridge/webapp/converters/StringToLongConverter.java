@@ -8,6 +8,9 @@ public class StringToLongConverter implements Converter<String,Object> {
 	
 	@Override
 	public Object convert(String string) {
+		if (string == null) {
+			return null;
+		}
 		return Long.parseLong((String)string);
 	}
 

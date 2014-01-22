@@ -61,9 +61,9 @@
     <bean id="specificationResolver" class="org.sagebionetworks.bridge.webapp.specs.SpecificationResolver">
         <property name="specifications">
             <list>
-                <bean class="org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount"/>
-                <bean class="org.sagebionetworks.bridge.webapp.specs.MoodTracker"/>
-                <!-- <bean class="org.sagebionetworks.bridge.webapp.specs.LifestyleSurvey"/> -->
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MoodTracker"/>
             </list>
         </property>
     </bean>

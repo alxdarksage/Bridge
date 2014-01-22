@@ -284,7 +284,7 @@ public class ClientUtils {
 		
 		// TODO: Inefficient.
 		for (Row row : rowSet.getRows()) {
-			List<Object> values = Lists.newArrayList();
+			List<String> values = Lists.newArrayList();
 			for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
 				String fieldName = entry.getKey();
 				FormElement field = entry.getValue();
@@ -292,10 +292,13 @@ public class ClientUtils {
 				
 				Converter<String,Object> converter = field.getObjectConverter();
 				if (converter != null) {
-					values.add(converter.convert(serValue));	
-				} else {
-					values.add(serValue);
+					Object object = converter.convert(serValue);
+					Converter<Object,String> converter2 = field.getStringConverter();
+					if (converter2 != null) {
+						serValue = converter2.convert(object);
+					}
 				}
+				values.add(serValue);
 			}
 			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
 		}
@@ -355,7 +358,7 @@ public class ClientUtils {
 			for (int i=0; i < headers.size(); i++) {
 				String header = headers.get(i);
 				if (defaults.contains(header)) {
-					dynamicForm.getValues().put(header, values.get(i));
+					dynamicForm.getValuesMap().put(header, values.get(i));
 					defaultedFields.add(header);
 				}
 			}

@@ -16,6 +16,11 @@ public enum UIType {
 	RANGE_NORM_BAR,
 	// Just the key to the column and its type, so the value can be output as a formatted string.
 	VALUE,
+	// Shows a horizontal editor for a record as a whole
+	INLINE_EDITOR,
+	// Component that looks like data tables elsewhere in the application, but it contains FormElement components, 
+	// and so can edit one or more ParticipantData records
+	TABULAR,
 	DATE(ParticipantDataColumnType.DATETIME),
 	DATETIME(ParticipantDataColumnType.DATETIME),
 	TEXT_INPUT(ParticipantDataColumnType.STRING),

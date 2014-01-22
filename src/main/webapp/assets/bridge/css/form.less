@@ -1,6 +1,10 @@
 .error-text {
     color: #b94a48;
 }
+.multi { 
+	white-space: nowrap; display: inline; 
+}
+
 /* This is all specific to trackers. */
 .form {
     &.well {
@@ -25,13 +29,16 @@
 	.form-control-static { display: inline-block; width: 6rem; /*padding: 7px 10px;*/ }
 	select { width: 10rem ! important; }
 	h4 { font-family: 'Archivo Narrow'; }
-	
-    .multi { white-space: nowrap; }
 }
 .group {
     width: 100%;
-    td {
-        width: 50%;
+    td:first-child {
+        width: 100%;
+    }
+    tbody {
+        input, select {
+            width: 30rem;
+        }
     }
 }
 
@@ -62,7 +69,6 @@
         }
         td {
             display: block ! important;
-            width: 100%;
         }
         td:last-child {
             padding-bottom: 1rem;
@@ -84,20 +90,20 @@
             border: none ! important;
             padding: .5rem 0 ! important;
             display: block ! important;
-            width: 100% ! important;
             vertical-align: middle;
+            
         }
         td:before {
             display: inline-block;
 			content: attr(data-title);
 			width: 50% !important;
-			vertical-align: middle
+			vertical-align: middle;
         }
         td:not([data-title]) {
             display: none ! important;
         }
         td:last-child {
-            border-bottom: 2px solid #aaa ! important;
+            border-bottom: 1px solid #aaa ! important;
         }
     }
     .form-control-static {

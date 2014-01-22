@@ -2,7 +2,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.sagebionetworks.bridge.webapp.specs.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
 
 public class JournalPage {
 

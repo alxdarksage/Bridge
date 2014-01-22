@@ -51,7 +51,7 @@ public class FormErrorsTag extends SpringAwareTag {
 	private List<FieldError> getErrorsForAllFields() {
 		List<FieldError> errorsForAllFields = Lists.newArrayList();
 		for (FormElement element : fields) {
-			String name = String.format("values['%s']", element.getName());
+			String name = String.format("valuesMap['%s']", element.getName());
 			Errors errors = requestContext.getErrors("dynamicForm");
 			if (errors != null) {
 				List<FieldError> fieldErrors = errors.getFieldErrors(name);

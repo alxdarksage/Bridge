@@ -4,27 +4,27 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
+import org.sagebionetworks.bridge.webapp.forms.HasValuesMap;
 
 public class ValueTag extends SpringAwareTag {
 
-	private DynamicForm dynamicForm;
+	private HasValuesMap valuesMapHolder;
 	
-	public void setDynamicForm(DynamicForm form) {
-		this.dynamicForm = form;
+	public void setValuesMapHolder(HasValuesMap valuesMapHolder) {
+		this.valuesMapHolder = valuesMapHolder;
 	}
 	
 	@Override
 	public void doTag() throws JspException, IOException {
 		super.doTag();
-		if (dynamicForm == null) {
-			throw new IllegalArgumentException("ValueTag requires @dynamiceForm to be set");
+		if (valuesMapHolder == null) {
+			throw new IllegalArgumentException("ValueTag requires @valuesMapHolder to be set");
 		}
-		String currentValue = dynamicForm.getValues().get(field.getName());
+		String currentValue = valuesMapHolder.getValuesMap().get(field.getName());
 		if (field.getObjectConverter() != null && field.getStringConverter() != null) {
 			Object parsed = field.getObjectConverter().convert(currentValue);
 			currentValue = field.getStringConverter().convert(parsed);
 		}
-		getJspContext().getOut().write(currentValue);
+		getJspContext().getOut().write("<span class='multi'>"+currentValue+"</span>");
 	}
 }

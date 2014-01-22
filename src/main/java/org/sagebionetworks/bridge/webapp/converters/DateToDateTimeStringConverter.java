@@ -12,6 +12,9 @@ public class DateToDateTimeStringConverter implements Converter<Object,String> {
 	
 	@Override
 	public String convert(Object date) {
+		if (date == null) {
+			return null;
+		}
 		return formatter.format((Object)date);
 	}
 }

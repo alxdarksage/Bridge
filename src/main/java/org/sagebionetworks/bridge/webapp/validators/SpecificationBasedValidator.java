@@ -34,7 +34,7 @@ public class SpecificationBasedValidator implements Validator {
 	@Override
 	public void validate(Object form, Errors errors) {
 		DynamicForm dynamicForm = (DynamicForm)form;
-		Map<String,String> values = dynamicForm.getValues();
+		Map<String,String> values = dynamicForm.getValuesMap();
 		
 		for(FormElement field : spec.getAllFormElements()) {
 			if (field.getType().getColumnType() != null) {
@@ -54,7 +54,7 @@ public class SpecificationBasedValidator implements Validator {
 		String value = values.get(field.getName());
 		if (StringUtils.isBlank(value)) {
 			if (field.isRequired()) {
-				errors.rejectValue("values['"+field.getName()+"']", field.getName()+".required", field.getLabel() + " is required.");
+				errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".required", field.getLabel() + " is required.");
 			}
 			return;
 		}
@@ -75,7 +75,7 @@ public class SpecificationBasedValidator implements Validator {
 			} catch(Throwable e) {
 				String message = field.getLabel() + " is not a "+dataType.name().toLowerCase()+".";
 				String key = field.getName() + ".invalid_" + dataType.name().toLowerCase();
-				errors.rejectValue("values['"+field.getName()+"']", key, message);
+				errors.rejectValue("valuesMap['"+field.getName()+"']", key, message);
 			}
 		}
 	}
@@ -83,10 +83,10 @@ public class SpecificationBasedValidator implements Validator {
 	private void validateBoundaryRanges(FormElement field, Errors errors, Double converted) {
 		NumericFormField numeric = (NumericFormField)field;
 		if (numeric.getMinValue() != null && converted < numeric.getMinValue()) {
-			errors.rejectValue("values['"+field.getName()+"']", field.getName()+".too_small", field.getLabel() + " is less than "+numeric.getMinValue().toString()+".");
+			errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".too_small", field.getLabel() + " is less than "+numeric.getMinValue().toString()+".");
 		}
 		if (numeric.getMaxValue() != null && converted > numeric.getMaxValue()) {
-			errors.rejectValue("values['"+field.getName()+"']", field.getName()+".too_large", field.getLabel() + " is greater than "+numeric.getMaxValue().toString()+".");
+			errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".too_large", field.getLabel() + " is greater than "+numeric.getMaxValue().toString()+".");
 		}
 	}
 

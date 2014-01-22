@@ -5,20 +5,31 @@
 	        <c:url var="journalUrl" value="/journal.html"/>
 	        <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187; 
 	    </div>
-	    <h3>All ${spec.name}s</h3>
-	    
-	    <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
-	        itemId="id" items="${records}" caption="${form.description}s">
-	        <sage:button id="newTrackerAct" type="primary" label="New Tracker" 
-	            action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
-            <sage:button id="exportAct" type="default" label="Export (*.csv)"
-                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
-
-	            <sage:spec-column specification="${spec}" 
-	               link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
-	        <%-- 
-	        <sage:button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
-	        --%>
-	    </sage:table>
+        <c:choose>
+            <c:when test="${spec.formLayout == 'ALL_RECORDS_ONE_PAGE_INLINE'}">
+                <h3>${spec.name}</h3>
+                <div class="bottomSpaced">
+                    <sage:button href="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"  
+                        id="exportAct">Export (*.csv)</sage:button>
+                </div>
+                <sage:router element="${spec.editStructure}"/>
+            </c:when>
+            <c:otherwise>
+                <h3>All ${spec.name}s</h3>
+		        <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
+		            itemId="id" items="${records}" caption="${form.description}s">
+		            <sage:table-button id="newTrackerAct" type="primary" label="New Tracker" 
+		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
+		            <sage:table-button id="exportAct" type="default" label="Export (*.csv)"
+		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
+		
+	                <sage:spec-column specification="${spec}" 
+	                   link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
+                    <%-- 
+                    <sage:table-button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
+                    --%>
+		        </sage:table>
+            </c:otherwise>
+        </c:choose>
     </jsp:attribute>
 </sage:journal>
