@@ -73,19 +73,5 @@ public class TrackersAdminController {
 		request.setNotification("Created any outstanding trackers.");
 		return "redirect:/admin/trackers/index.html";
 	}
-	
-	@RequestMapping(value = "/trackers/index", method = RequestMethod.POST, params = "delete=delete")
-	public String batchTrackers(BridgeRequest request, @RequestParam("rowSelect") List<String> rowSelects)
-			throws SynapseException {
-		if (rowSelects != null) {
-			BridgeClient client = request.getBridgeUser().getBridgeClient();
-			for (String id : rowSelects) {
-				client.deleteParticipantDataDescriptor(id);
-			}
-			request.setNotification( rowSelects.size() > 1 ? "TrackersDeleted" : "TrackerDeleted" );
-		}
-		return "redirect:/admin/trackers/index.html";
-	}
-	
-	
+
 }
