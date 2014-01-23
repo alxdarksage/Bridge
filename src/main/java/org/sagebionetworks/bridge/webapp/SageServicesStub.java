@@ -849,12 +849,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public void deleteParticipantDataDescriptor(String id) throws SynapseException {
-		descriptorsById.remove(id);
-		descriptorsByUserId.remove(currentUserData.getProfile().getOwnerId(), id);
-	}
-
-	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
 			throws SynapseException {
 		return toResults(descriptorsById.values(), limit, offset);
@@ -893,7 +887,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		currentRow.setDescriptor(found);
 		
 		ParticipantDataRow emptyRow = new ParticipantDataRow();
-		emptyRow.setData(Maps.<String, ParticipantDataValue>newHashMap());
+		emptyRow.setData(Collections.<String, ParticipantDataValue>emptyMap());
 		
 		ParticipantDataStatus status = found.getStatus();
 		if (status.getLastEntryComplete()) {
