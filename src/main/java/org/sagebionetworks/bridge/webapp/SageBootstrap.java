@@ -113,14 +113,16 @@ public class SageBootstrap {
 	 */
 	public void createTrackers() throws SynapseException, Exception {
 		BridgeClient bridge = provider.getBridgeClient();
-		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED,
-				"0 0 4 * * ? *", "Sleep time", "sleep-time-slider");
-		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED,
-				"0 0 4 * * ? *", "Rest time", "sleep-time-slider");
-		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind",
-				"mood-slider", "Body", "mood-slider");
-		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
-				"string", "Address", "string");
+		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Sleep time",
+				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
+		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Rest time",
+				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
+		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind", "mood-slider",
+				ParticipantDataColumnType.DOUBLE, "Body", "mood-slider", ParticipantDataColumnType.DOUBLE);
+		createData(bridge, "Medication Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx", "string",
+				ParticipantDataColumnType.STRING, "yy", "string", ParticipantDataColumnType.STRING);
+		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name", "string",
+				ParticipantDataColumnType.STRING, "Address", "string", ParticipantDataColumnType.STRING);
 		
 		Specification spec = new MedicationTracker();
 		createData(bridge, spec);

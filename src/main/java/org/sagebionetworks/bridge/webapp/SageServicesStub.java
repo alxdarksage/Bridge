@@ -30,6 +30,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.versionInfo.BridgeVersionInfo;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseAdminClient;
@@ -891,19 +892,25 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		currentRow.setStatus(found.getStatus());
 		currentRow.setDescriptor(found);
 		
+		ParticipantDataRow emptyRow = new ParticipantDataRow();
+		emptyRow.setData(Maps.<String, ParticipantDataValue>newHashMap());
+		
 		ParticipantDataStatus status = found.getStatus();
 		if (status.getLastEntryComplete()) {
 			logger.info("Last entry is considered complete");
 			if (rows.size() >= 1) {
-				currentRow.setPreviousData(rows.get(rows.size()-1));	
+				currentRow.setPreviousData(rows.get(rows.size()-1));
+				currentRow.setCurrentData(emptyRow);
 			}
 		} else {
 			logger.info("Last entry is NOT considered complete");
 			if (rows.size() >= 1) {
+				currentRow.setPreviousData(emptyRow);
 				currentRow.setCurrentData(rows.get(rows.size()-1));	
 			}
 			if (rows.size() >= 2) {
-				currentRow.setPreviousData(rows.get(rows.size()-2));	
+				currentRow.setPreviousData(rows.get(rows.size()-2));
+				currentRow.setCurrentData(emptyRow);
 			}
 		}
 		return currentRow;
