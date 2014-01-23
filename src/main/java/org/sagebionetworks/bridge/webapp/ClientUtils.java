@@ -313,6 +313,11 @@ public class ClientUtils {
 					defaultedFields.add(entry.getKey());
 				}
 			}
+			/* marcel's, previous is always present, really?
+			for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
+				dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
+				defaultedFields.add(entry.getKey());
+			}*/
 		}
 		return defaultedFields;
 	}

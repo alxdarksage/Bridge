@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
@@ -27,8 +28,6 @@ import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.Session;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
 import com.google.common.collect.Lists;
@@ -154,7 +153,7 @@ public class SageBootstrap {
 	}
 	
 	private void createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
-			String repeatFrequency, String... cols) throws SynapseException {
+			String repeatFrequency, Object... cols) throws SynapseException {
 		ParticipantDataDescriptor desc = new ParticipantDataDescriptor();
 		desc.setDescription(description);
 		desc.setName(name);
@@ -165,9 +164,10 @@ public class SageBootstrap {
 		while (index < cols.length) {
 			ParticipantDataColumnDescriptor col = new ParticipantDataColumnDescriptor();
 			col.setParticipantDataDescriptorId(desc.getId());
-			col.setName(cols[index++]);
+			col.setName((String) cols[index++]);
 			col.setDescription("");
-			col.setType(cols[index++]);
+			col.setType((String) cols[index++]);
+			col.setColumnType((ParticipantDataColumnType) cols[index++]);
 			bridge.createParticipantDataColumnDescriptor(col);
 		}
 		bridge.appendParticipantData(desc.getId(), Collections.<ParticipantDataRow> emptyList());
