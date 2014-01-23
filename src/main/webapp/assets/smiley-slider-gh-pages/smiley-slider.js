@@ -85,8 +85,8 @@ function SmileySlider(container, imgSrc) {
     
     this.position = position;
 
-    this.setQuestion = function() {
-    	unset = true;
+    this.setQuestion = function(question) {
+    	unset = question;
     }
     
     this.removeQuestion = function() {

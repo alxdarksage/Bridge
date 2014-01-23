@@ -1,18 +1,19 @@
 <%@page import="org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue"%>
 <%@include file="../directives.jsp" %>
 <%
-	Object trackerId = request.getAttribute("trackerId");
-	Object columnDescriptor = request.getAttribute("columnDescriptor");
-	ParticipantDataDoubleValue value = (ParticipantDataDoubleValue)request.getAttribute("value");
+	ParticipantDataDoubleValue currentValue = (ParticipantDataDoubleValue)request.getAttribute("previousValue");
+	ParticipantDataDoubleValue previousValue = (ParticipantDataDoubleValue)request.getAttribute("currentValue");
+	Double value = currentValue != null ? currentValue.getValue() : (previousValue != null ? previousValue.getValue() : 0.5);
+	boolean isCurrent = (currentValue != null);
 %>
 <c:set var="id" value="${trackerId}-${columnDescriptor.name}"/>
 ${columnDescriptor.name}<span id="${id}-slider"></span>
-<input type="hidden" id="${id}-value" name="valuesMap['${columnDescriptor.name}']" value="${empty value ? 0.5 : value.getValue()}"/>
+<input type="hidden" id="${id}-value" name="valuesMap['${columnDescriptor.name}']" value="<%= value %>"/>
 <div id="${id}-out"></div>
 <script type="text/javascript">
     var slider = new SmileySlider(document.getElementById("${id}-slider"));
-	slider.setQuestion();
-	slider.position(${empty value ? 0.5 : value.getValue()});
+	slider.setQuestion(<%= !isCurrent %>);
+	slider.position(<%= value %>);
     slider.position(function (p) {
         var mySlider = this;
     	var form = $("#${trackerId}");

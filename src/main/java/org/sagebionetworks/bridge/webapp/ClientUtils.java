@@ -303,11 +303,9 @@ public class ClientUtils {
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
 		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
-		if (currentRow.getPreviousData() != null) {
-			for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
-				dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
-				defaultedFields.add(entry.getKey());
-			}
+		for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
+			dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
+			defaultedFields.add(entry.getKey());
 		}
 		return defaultedFields;
 	}
