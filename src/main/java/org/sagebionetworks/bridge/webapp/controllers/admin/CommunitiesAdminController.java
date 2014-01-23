@@ -59,17 +59,10 @@ public class CommunitiesAdminController {
 			throws SynapseException {
 		if (rowSelects != null) {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
-			
-			int count = 0;
 			for (String id : rowSelects) {
 				client.deleteCommunity(id);
-				count++;
 			}
-			if (count == 1) {
-				request.setNotification("CommunityDeleted");
-			} else if (count > 1) {
-				request.setNotification("CommunitiesDeleted");
-			}
+			request.setNotification( rowSelects.size() > 1 ? "CommunitiesDeleted" : "CommunityDeleted" );
 		}
 		return "redirect:/admin/communities/index.html";
 	}

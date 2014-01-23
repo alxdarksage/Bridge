@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.util.Collections;
-
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +12,8 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
@@ -30,6 +31,7 @@ import org.sagebionetworks.repo.model.table.Row;
 import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -99,7 +101,18 @@ public class SageBootstrap {
 		client.signTermsOfUse(session.getSessionToken(), true);
 		client.setSessionToken(session.getSessionToken());
 		
-		// This should be propagated at this point to the bridge client which uses that Synapse client
+		createTrackers();
+		
+		BridgeClient bridge = provider.getBridgeClient();
+		createCommunity(bridge, "Fanconi Anemia", "This is a very rare but very serious disease, affecting about 1,000 people worldwide.");
+	}
+
+	/**
+	 * This is called from the admin section as there's no way to create these on staging, otherwise.
+	 * @throws SynapseException
+	 * @throws Exception
+	 */
+	public void createTrackers() throws SynapseException, Exception {
 		BridgeClient bridge = provider.getBridgeClient();
 		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED,
 				"0 0 4 * * ? *", "Sleep time", "sleep-time-slider");
@@ -107,10 +120,6 @@ public class SageBootstrap {
 				"0 0 4 * * ? *", "Rest time", "sleep-time-slider");
 		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind",
 				"mood-slider", "Body", "mood-slider");
-		/*
-		createData(bridge, "MedicationTracker Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx",
-				"string", "yy", "string");
-		*/
 		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name",
 				"string", "Address", "string");
 		
@@ -125,8 +134,6 @@ public class SageBootstrap {
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-09-26",  "rbc", "4.96",  "rbc_units", "M/uL",  "rbc_range_low", "4.2",  "rbc_range_high", "5.8",  "hb", "15.6",  "hb_units", "dL",  "hb_range_low", "13.2",  "hb_range_high", "17.1",  "hct", "48.3",  "hct_units", "%",  "hct_range_low", "38.5",  "hct_range_high", "50",  "mcv", "97.4",  "mcv_units", "fL",  "mcv_range_low", "80",  "mcv_range_high", "100",  "mch", "31.5",  "mch_units", "pg",  "mch_range_low", "27",  "mch_range_high", "33",  "rdw", "15.7",  "rdw_units", "%",  "rdw_range_low", "11",  "rdw_range_high", "15",  "ret", "0",  "ret_units", "%",  "wbc", "5.6",  "wbc_units", "K/uL",  "wbc_range_low", "3.8",  "wbc_range_high", "10.8",  "wbc_diff_units", "%",  "neutrophil", "42.1",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes", "40.2",  "lymphocytes_units", "%",  "monocytes", "8.7",  "monocytes_units", "%",  "plt", "203",  "plt_units", "K/uL",  "plt_range_low", "140",  "plt_range_high", "400",  "mpv_units", "fL",  "pdw_units", "%",  "created_on", "2014-01-14T11:00:00.501-08:00",  "modified_on", "2014-01-14T11:00:00.501-08:00",  "wbc (K/mcL)", "5.6",  "rbc (M/mcL)", "4.96",  "plt (K/mcL)", "203");
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2014-01-13",  "rbc", "3.83",  "rbc_units", "M/uL",  "rbc_range_low", "4",  "rbc_range_high", "5.3",  "hb", "13.1",  "hb_units", "dL",  "hb_range_low", "12",  "hb_range_high", "16",  "hct", "38.3",  "hct_units", "%",  "hct_range_low", "35",  "hct_range_high", "47",  "mcv", "99.9",  "mcv_units", "fL",  "mcv_range_low", "76",  "mcv_range_high", "90",  "mch", "34.3",  "mch_units", "pg",  "mch_range_low", "25",  "mch_range_high", "31",  "rdw", "11.8",  "rdw_units", "%",  "rdw_range_low", "11.5",  "rdw_range_high", "14.5",  "ret_units", "%",  "wbc", "3.8",  "wbc_units", "K/uL",  "wbc_range_low", "4",  "wbc_range_high", "12",  "wbc_diff_units", "%",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes_units", "%",  "monocytes_units", "%",  "plt", "205",  "plt_units", "K/uL",  "plt_range_low", "150",  "plt_range_high", "450",  "mpv_units", "fL",  "pdw_units", "%",  "created_on", "2014-01-20T16:08:57.294-08:00",  "modified_on", "2014-01-20T16:08:57.294-08:00",  "wbc (K/mcL)", "3.8",  "rbc (M/mcL)", "3.83",  "plt (K/mcL)", "205");
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-12-11",  "rbc", "4.42",  "rbc_units", "M/uL",  "rbc_range_low", "3.8",  "rbc_range_high", "5.1",  "hb", "13.4",  "hb_units", "dL",  "hb_range_low", "12",  "hb_range_high", "16",  "hct", "40.1",  "hct_units", "%",  "hct_range_low", "37",  "hct_range_high", "47",  "mcv", "90.8",  "mcv_units", "fL",  "mcv_range_low", "81",  "mcv_range_high", "99",  "mch", "30.3",  "mch_units", "pg",  "mch_range_low", "26",  "mch_range_high", "34",  "rdw", "12.7",  "rdw_units", "%",  "rdw_range_low", "11.5",  "rdw_range_high", "15",  "ret_units", "%",  "wbc", "5.1",  "wbc_units", "K/uL",  "wbc_range_low", "3.8",  "wbc_range_high", "10.8",  "wbc_diff_units", "%",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes", "32.2",  "lymphocytes_units", "%",  "lymphocytes_range_low", "15",  "lymphocytes_range_high", "40",  "monocytes", "8.4",  "monocytes_units", "%",  "monocytes_range_low", "0",  "monocytes_range_high", "10",  "plt", "375",  "plt_units", "K/uL",  "plt_range_low", "140",  "plt_range_high", "400",  "mpv", "8.4",  "mpv_units", "fL",  "mpv_range_low", "7.4",  "mpv_range_high", "10.4",  "pdw_units", "%",  "created_on", "2014-01-20T16:14:52.767-08:00",  "modified_on", "2014-01-20T16:14:52.767-08:00",  "wbc (K/mcL)", "5.1",  "rbc (M/mcL)", "4.42",  "plt (K/mcL)", "375");
-
-		createCommunity(bridge, "Fanconi Anemia", "This is a very rare but very serious disease, affecting about 1,000 people worldwide.");
 	}
 	
 	private void createUser(SynapseAdminClient admin, SynapseClient synapse, String userName, String email, boolean acceptsTermsOfUse)
@@ -184,6 +191,19 @@ public class SageBootstrap {
 		}
 		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForCreate(spec, map);
 		client.appendParticipantData(trackerId, data);
+		ParticipantDataStatusList statuses = finishThisEntry(trackerId);
+		client.sendParticipantDataDescriptorUpdates(statuses);
+	}
+	
+	private ParticipantDataStatusList finishThisEntry(String id) {
+		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
+		List<ParticipantDataStatus> updates = Lists.newArrayList();
+		ParticipantDataStatus status = new ParticipantDataStatus();
+		status.setParticipantDataDescriptorId(id);
+		status.setLastEntryComplete(true);
+		updates.add(status);
+		statuses.setUpdates(updates);
+		return statuses;
 	}
 	
 	private void createCommunity(BridgeClient client, String name, String description) throws SynapseException {
