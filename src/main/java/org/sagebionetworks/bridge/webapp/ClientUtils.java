@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +32,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
@@ -303,15 +305,24 @@ public class ClientUtils {
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
 		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
+		Set<String> defaults = defaultTheseFields(spec);
 		for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
-			dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
-			defaultedFields.add(entry.getKey());
+			if (defaults.contains(entry.getKey())) {
+				dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
+				defaultedFields.add(entry.getKey());
+			}
 		}
 		return defaultedFields;
 	}
 	
 	public static String getValueAsString(ParticipantDataValue value) {
-		if (value instanceof ParticipantDataDatetimeValue) {
+		if (value instanceof ParticipantDataDoubleValue) {
+			// This intelligently trims the number, but if the user likes entering 2.0 or 0.2, then
+			// it's going to look different coming back. We're not preserving the value as entered.
+			// That'll require Lab or String.
+			Double d = ((ParticipantDataDoubleValue)value).getValue();
+			return new DecimalFormat("0.###").format(d);
+		} else if (value instanceof ParticipantDataDatetimeValue) {
 			return new SimpleDateFormat("yyyy-MM-dd").format(((ParticipantDataDatetimeValue) value).getValue());
 		} else {
 			return ValueTranslator.toString(value);

@@ -38,6 +38,7 @@ public class SageStubApplicationListener implements ApplicationListener<ContextR
 				SageBootstrap bootstrap = new SageBootstrap(new StubClientProvider((SageServicesStub)object));
 				bootstrap.create();
 			} catch(Throwable throwable) {
+				throwable.printStackTrace();
 				logger.error(throwable);
 			}
 		}

@@ -102,6 +102,7 @@ public class JournalController extends JournalControllerBase {
 		
 		if (rowSelects != null) {
 			BridgeClient client = request.getBridgeUser().getBridgeClient();
+			request.setNotification( rowSelects.size() > 1 ? "TrackersDeleted" : "TrackerDeleted" );
 		}
 		request.setNotification("Not implemented");
 		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";

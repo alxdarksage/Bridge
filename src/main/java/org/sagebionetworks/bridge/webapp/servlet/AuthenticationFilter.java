@@ -70,7 +70,8 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 				logger.info("User re-established Synapse session");				
 			}
 		} catch (SynapseException e) {
-			logger.info("Cannot re-establish session for user: " + e.getMessage());
+			ClientUtils.setSynapseSessionCookie(request, response, 0);
+			logger.info("Cannot re-establish session for user: " + e.getMessage() + ", deleting cookie");
 		}
 	}
 	
