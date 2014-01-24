@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.integration.journal;
 
 import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.*;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
@@ -174,5 +175,18 @@ public class ITJournal extends WebDriverBase {
 	@Test
 	public void fieldsAreValidated() {
 		// TODO
+	}
+	
+	@Test
+	public void canDeleteTrackerRows() {
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		int rowCount = indexPage.getDataTable().getRowCount();
+		
+		indexPage.getDataTable().selectRow("October 23, 2013");
+		indexPage.getDataTable().clickDelete();
+		
+		indexPage = journalPage.getTrackerIndexPage();
+		int nextRowCount = indexPage.getDataTable().getRowCount();
+		Assert.assertEquals(nextRowCount+1, rowCount);
 	}
 }

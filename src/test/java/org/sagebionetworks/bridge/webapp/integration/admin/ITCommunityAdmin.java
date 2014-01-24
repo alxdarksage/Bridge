@@ -24,29 +24,29 @@ public class ITCommunityAdmin extends WebDriverBase {
 	@Test
 	public void rowCanBeSelected() {
 		CommunitiesAdminPage caPage = driver.getCommunitiesAdminPage();
-		caPage.assertDeleteDisabled();
-		caPage.selectRow("Fanconi Anemia");
-		caPage.assertDeleteEnabled();
-		caPage.assertRowSelected("Fanconi Anemia");
+		caPage.getDataTable().assertDeleteDisabled();
+		caPage.getDataTable().selectRow("Fanconi Anemia");
+		caPage.getDataTable().assertDeleteEnabled();
+		caPage.getDataTable().assertRowSelected("Fanconi Anemia");
 		
-		caPage.selectRow("Fanconi Anemia");
-		caPage.assertDeleteDisabled();
+		caPage.getDataTable().selectRow("Fanconi Anemia");
+		caPage.getDataTable().assertDeleteDisabled();
 	}
 	
 	@Test
 	public void masterCheckboxTogglesRows() {
 		CommunitiesAdminPage caPage = driver.getCommunitiesAdminPage();
 		
-		caPage.assertDeleteDisabled();
-		caPage.assertAllRowsDeselected();
+		caPage.getDataTable().assertDeleteDisabled();
+		caPage.getDataTable().assertAllRowsDeselected();
 		
-		caPage.clickMasterCheckbox();
-		caPage.assertDeleteEnabled();
-		caPage.assertAllRowsSelected();
+		caPage.getDataTable().clickMasterCheckbox();
+		caPage.getDataTable().assertDeleteEnabled();
+		caPage.getDataTable().assertAllRowsSelected();
 		
-		caPage.clickMasterCheckbox();
-		caPage.assertDeleteDisabled();
-		caPage.assertAllRowsDeselected();
+		caPage.getDataTable().clickMasterCheckbox();
+		caPage.getDataTable().assertDeleteDisabled();
+		caPage.getDataTable().assertAllRowsDeselected();
 	}
 	
 	@Test
@@ -89,10 +89,10 @@ public class ITCommunityAdmin extends WebDriverBase {
 		driver.assertNotice("Community created.");
 		
 		// Delete
-		casPage.selectRow("Test Community");
-		casPage.clickDelete();
+		casPage.getDataTable().selectRow("Test Community");
+		casPage.getDataTable().clickDelete();
 		driver.assertNotice("Community deleted.");
-		Assert.assertFalse(casPage.rowExists("Test Community"));
+		Assert.assertFalse(casPage.getDataTable().rowExists("Test Community"));
 	}
 	
 	@Test

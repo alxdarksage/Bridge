@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.controllers;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
+import org.sagebionetworks.repo.model.IdList;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -93,19 +96,6 @@ public class JournalController extends JournalControllerBase {
 		ClientUtils.prepareParticipantData(client, model, spec, trackerId);
 		model.setViewName("journal/trackers/index");
 		return model;
-	}
-	
-	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")
-	public String batchTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("trackerId") String trackerId, @RequestParam("rowSelect") Set<String> rowSelects)
-			throws SynapseException {
-		
-		if (rowSelects != null) {
-			BridgeClient client = request.getBridgeUser().getBridgeClient();
-			request.setNotification( rowSelects.size() > 1 ? "TrackersDeleted" : "TrackerDeleted" );
-		}
-		request.setNotification("Not implemented");
-		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";
 	}
 	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/export", method = RequestMethod.GET)
@@ -217,6 +207,29 @@ public class JournalController extends JournalControllerBase {
 		request.setNotification("Tracker updated.");
 		model.setViewName("redirect:/journal/" + participantId + "/trackers/" + trackerId + ".html");
 		return model;
+	}
+	
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")
+	public String batchTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @RequestParam("rowSelect") List<String> rowSelects)
+			throws SynapseException {
+		
+		if (rowSelects != null) {
+			// Spring silently accepts List<Long> as a rowSelect parameter type, but it does no conversion
+			// without registering a lot of crazy conversion stuff.
+			List<Long> newList = new ArrayList<Long>();
+			for (String value : rowSelects) {
+				newList.add(Long.parseLong(value));
+			}
+			IdList idList = new IdList();
+			idList.setList(newList);
+			
+			BridgeClient client = request.getBridgeUser().getBridgeClient();
+			client.deleteParticipantDataRows(trackerId, idList);
+			request.setNotification( rowSelects.size() > 1 ? "RowsDeleted" : "RowDeleted" );
+		}
+		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";
 	}
 
 }

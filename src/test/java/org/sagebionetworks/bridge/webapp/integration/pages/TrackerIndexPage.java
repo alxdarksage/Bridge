@@ -7,9 +7,17 @@ public class TrackerIndexPage {
 	public static final String HEADER = "Complete Blood Count";
 
 	protected WebDriverFacade facade;
-
+	private DataTableInPage dataTable;
+	
 	public TrackerIndexPage(WebDriverFacade facade) {
 		this.facade = facade;
+	}
+	
+	public DataTableInPage getDataTable() {
+		if (dataTable == null) {
+			dataTable = new DataTableInPage(facade);
+		}
+		return dataTable;
 	}
 	
 	public void assertCorrectHeader() {

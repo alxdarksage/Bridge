@@ -25,9 +25,7 @@
 		
 	                <sage:spec-column specification="${spec}" 
 	                   link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
-                    <%-- 
                     <sage:table-button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
-                    --%>
 		        </sage:table>
             </c:otherwise>
         </c:choose>

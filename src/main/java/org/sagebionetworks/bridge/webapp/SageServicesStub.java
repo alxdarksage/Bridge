@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,7 @@ import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.DomainType;
+import org.sagebionetworks.repo.model.IdList;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.PaginatedResultsUtil;
@@ -830,8 +832,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public PaginatedResults<ParticipantDataRow> getRawParticipantData(String participantDataDescriptorId, long limit, long offset)
 			throws SynapseException {
-		// TODO: This is not actually paged.
 		List<ParticipantDataRow> data = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (data == null) {
+			data = Collections.emptyList();
+		}
 		return PaginatedResultsUtil.createPaginatedResults(data, limit, offset);
 	}
 	
@@ -942,6 +946,17 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		for (ParticipantDataStatus status : dataStatusList.getUpdates()) {
 			ParticipantDataDescriptor descriptor = descriptorsById.get(status.getParticipantDataDescriptorId());
 			descriptor.setStatus(status);
+		}
+	}
+	
+	@Override
+	public void deleteParticipantDataRows(String participantDataDescriptorId, IdList rowsIds) throws SynapseException {
+		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
+		for (Iterator<ParticipantDataRow> i = rows.iterator(); i.hasNext(); ) {
+			ParticipantDataRow row = i.next();
+			if (rowsIds.getList().contains(row.getRowId())) {
+				i.remove();
+			}
 		}
 	}
 }
