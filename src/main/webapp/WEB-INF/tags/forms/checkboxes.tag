@@ -2,6 +2,7 @@
 <%@ attribute name="field" required="true" type="java.lang.String"  %>
 <%@ attribute name="items" required="true" type="java.util.List" %>
 <%@ attribute name="label" required="true" type="java.lang.String" %>
+<%@ attribute name="required" required="false" %>
 <div class="form-group">
     <label><spring:message code="${label}"/></label>
     <div class="checkbox-box">
@@ -17,6 +18,7 @@
                         </c:otherwise>
                     </c:choose>
                     ${item.label}
+                    <c:if test="${required}"><span class="error-text">*</span></c:if>
                 </label>
             </div>
         </c:forEach>

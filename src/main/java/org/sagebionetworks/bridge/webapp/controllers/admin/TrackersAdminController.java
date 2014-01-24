@@ -67,10 +67,20 @@ public class TrackersAdminController {
 			@Override public SynapseClient getSynapseClient() { return null; }
 			@Override public BridgeClient getBridgeClient() { return request.getBridgeUser().getBridgeClient(); }
 		});
-		
 		bootstrap.createTrackers();
 
 		request.setNotification("Created any outstanding trackers.");
+		return "redirect:/admin/trackers/index.html";
+	}
+	
+	@RequestMapping(value = "/trackers/update", method = RequestMethod.GET)
+	public String updateTrackers(final BridgeRequest request) throws Exception {
+		// Going to walk the specifications and create any new columns that need to be created 
+		// to support the spec. You can't go the other way: given some data, not clear what to do 
+		// with it (unless we have a default "naked form" that just shows the fields in some
+		// default way, until a form design is added).
+		
+		request.setNotification("Based on tracker specifications, updated the participant data object model(s).");
 		return "redirect:/admin/trackers/index.html";
 	}
 

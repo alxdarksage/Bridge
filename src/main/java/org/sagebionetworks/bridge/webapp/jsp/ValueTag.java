@@ -21,10 +21,12 @@ public class ValueTag extends SpringAwareTag {
 			throw new IllegalArgumentException("ValueTag requires @valuesMapHolder to be set");
 		}
 		String currentValue = valuesMapHolder.getValuesMap().get(field.getName());
-		if (field.getObjectConverter() != null && field.getStringConverter() != null) {
-			Object parsed = field.getObjectConverter().convert(currentValue);
-			currentValue = field.getStringConverter().convert(parsed);
+		if (currentValue != null) {
+			if (field.getObjectConverter() != null && field.getStringConverter() != null) {
+				Object parsed = field.getObjectConverter().convert(currentValue);
+				currentValue = field.getStringConverter().convert(parsed);
+			}
+			getJspContext().getOut().write("<span class='multi'>"+currentValue+"</span>");
 		}
-		getJspContext().getOut().write("<span class='multi'>"+currentValue+"</span>");
 	}
 }

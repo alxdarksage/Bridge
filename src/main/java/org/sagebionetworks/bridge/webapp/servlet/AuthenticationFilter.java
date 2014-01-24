@@ -41,6 +41,7 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 			ClientUtils.setSynapseSessionCookie(request, response, 30 * 60); // 30 minutes
 		} else {
 			request.setBridgeUser(BridgeUser.PUBLIC_USER);
+			ClientUtils.setSynapseSessionCookie(request, response, 0);
 		}
 		
 		// This is pretty silly as a form of security, but Spring Security is overkill
@@ -71,7 +72,7 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 			}
 		} catch (SynapseException e) {
 			ClientUtils.setSynapseSessionCookie(request, response, 0);
-			logger.info("Cannot re-establish session for user: " + e.getMessage() + ", deleting cookie");
+			logger.info("Cannot re-establish session for user: " + e.getMessage());
 		}
 	}
 	

@@ -170,6 +170,9 @@ public class JournalController extends JournalControllerBase {
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
+		
+		ClientUtils.logSensitive(logger, row.getData());
+		
 		FormUtils.valuesToDynamicForm(dynamicForm, row);
 		
 		model.setViewName("journal/trackers/show");

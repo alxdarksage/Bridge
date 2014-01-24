@@ -53,7 +53,7 @@ public class ResetPasswordController {
 		if (!result.hasErrors()) {
 			synapseClient.changePassword(resetPasswordForm.getToken(), resetPasswordForm.getPassword());
 			request.setNotification("PasswordChanged");
-			return "redirect:" + BridgeRequest.DEFAULT_ORIGIN_URL;
+			return "redirect:/signOut.html";
 		}
 		return "auth/resetPassword";
 	}

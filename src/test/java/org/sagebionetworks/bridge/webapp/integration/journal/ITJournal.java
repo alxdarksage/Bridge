@@ -62,7 +62,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.assertRow(HB, 2);
 		editPage.assertRow(HCT, 3);
 		editPage.assertRow(MCV, 4);
-		editPage.assertRow(MCH, 5);
+		//editPage.assertRow(MCH, 5);
 		editPage.assertRow(RDW, 6);
 		editPage.assertRow(RET, 7);
 		editPage.assertRow(WBC, 8);
@@ -77,7 +77,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(HB, 4);
 		editPage.setRow(HCT, 5);
 		editPage.setRow(MCV, 6);
-		editPage.setRow(MCH, 7);
+		//editPage.setRow(MCH, 7);
 		editPage.setRow(RDW, 8);
 		editPage.setRow(RET, 9);
 		editPage.setRow(WBC, 10);
@@ -96,7 +96,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.assertRow(HB, 4);
 		editPage.assertRow(HCT, 5);
 		editPage.assertRow(MCV, 6);
-		editPage.assertRow(MCH, 7);
+		//editPage.assertRow(MCH, 7);
 		editPage.assertRow(RDW, 8);
 		editPage.assertRow(RET, 9);
 		editPage.assertRow(WBC, 10);
@@ -159,7 +159,7 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(HB, 2);
 		newPage.setRow(HCT, 3);
 		newPage.setRow(MCV, 4);
-		newPage.setRow(MCH, 5);
+		//newPage.setRow(MCH, 5);
 		newPage.setRow(RDW, 6);
 		newPage.setRow(RET, 7);
 		newPage.setRow(WBC, 8);

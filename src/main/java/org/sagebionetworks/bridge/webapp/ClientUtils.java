@@ -25,6 +25,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronExpression;
+import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
@@ -504,6 +505,17 @@ public class ClientUtils {
 		cookie.setPath("/");
 		cookie.setMaxAge(expiry); // thirty minutes in seconds
 		response.addCookie(cookie);
-	}	
+	}
+	
+	public static void logSensitive(Logger logr, Map<String,ParticipantDataValue> values) {
+		if (StackConfiguration.isDevelopStack()) {
+			logr.info(" ---- value map ---- ");
+			for (Map.Entry<String, ParticipantDataValue> entry : values.entrySet()) {
+				ParticipantDataValue value = entry.getValue();
+				String truncated = value.toString().split(" value=")[1];
+				logr.info( String.format("key: %s, value: %s", entry.getKey(), truncated.substring(0, truncated.length()-2)) );
+			}
+		}
+	}
 
 }

@@ -51,7 +51,7 @@ public class CompleteBloodCount implements Specification {
 	private static final String WBC_FIELD = "wbc";
 	private static final String RET_FIELD = "ret";
 	private static final String RDW_FIELD = "rdw";
-	private static final String MCH_FIELD = "mch";
+	// private static final String MCH_FIELD = "mch";
 	private static final String MCV_FIELD = "mcv";
 	private static final String HCT_FIELD = "hct";
 	private static final String HB_FIELD = "hb";
@@ -77,7 +77,7 @@ public class CompleteBloodCount implements Specification {
 	private static final String WBC_LABEL = "White cells (Leukocytes / WBC)";
 	private static final String RET_LABEL = "Reticulocyte count (Ret)";
 	private static final String RDW_LABEL = "RBC distribution width (RDW)";
-	private static final String MCH_LABEL = "Mean corpuscular hemoglobin (MCH)";
+	//private static final String MCH_LABEL = "Mean corpuscular hemoglobin (MCH)";
 	private static final String MCV_LABEL = "Mean corpuscular volume (MCV)";
 	private static final String HCT_LABEL = "Hematocrit (HCT)";
 	private static final String HB_LABEL = "Hemoglobin (Hb)";
@@ -97,9 +97,10 @@ public class CompleteBloodCount implements Specification {
 	private final List<String> THOUSANDS = SpecificationUtils.getSymbolsForUnits(Units.THOUSANDS_PER_MICROLITER, Units.BILLIONS_PER_LITER);
 	private final List<String> MILLIONS = SpecificationUtils.getSymbolsForUnits(Units.MILLIONS_PER_MICROLITER, Units.TRILLIONS_PER_LITER);
 	private final List<String> PERC = Units.PERCENTAGE.getSymbols();
-	private final List<String> DL = Units.DECILITER.getSymbols();
+	// TODO: This needs to be converted.
+	private final List<String> DL = SpecificationUtils.getSymbolsForUnits(Units.DECILITER, Units.GRAMS_PER_LITER);
 	private final List<String> FL = Units.FEMTOLITER.getSymbols();
-	private final List<String> PG = Units.PICOGRAM.getSymbols();
+	private final List<String> VARIATION = SpecificationUtils.getSymbolsForUnits(Units.CV_OR_SD);
 	
 	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Stick", "Central Line", "Peripheral Stick (arm or leg)");
 
@@ -136,11 +137,11 @@ public class CompleteBloodCount implements Specification {
 		
 		rows = Lists.newArrayList();
 		rows.add( addEditRow(MILLIONS, RBC_FIELD, RBC_LABEL) );
-		rows.add( addEditRow(DL, HB_FIELD, HB_LABEL) ); // Canadian form was given in g/L, this will have to change
-		rows.add( addEditPercRow(PERC, HCT_FIELD, HCT_LABEL) ); // Canadian form: L/L
+		rows.add( addEditRow(DL, HB_FIELD, HB_LABEL) ); 
+		rows.add( addEditPercRow(PERC, HCT_FIELD, HCT_LABEL) );
 		rows.add( addEditRow(FL, MCV_FIELD, MCV_LABEL) );
-		rows.add( addEditRow(PG, MCH_FIELD, MCH_LABEL) );
-		rows.add( addEditPercRow(PERC, RDW_FIELD, RDW_LABEL) );
+		//rows.add( addEditRow(PG, MCH_FIELD, MCH_LABEL) );
+		rows.add( addEditPercRow(VARIATION, RDW_FIELD, RDW_LABEL) );
 		rows.add( addEditPercRow(PERC, RET_FIELD, RET_LABEL) ); // or 10e9/L
 		editRows.add( new FormGrid(RED_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
 		
@@ -175,7 +176,7 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addShowRow(HB_FIELD, HB_LABEL) );
 		rows.add( addShowRow(HCT_FIELD, HCT_LABEL) );
 		rows.add( addShowRow(MCV_FIELD, MCV_LABEL) );
-		rows.add( addShowRow(MCH_FIELD, MCH_LABEL) );
+		//rows.add( addShowRow(MCH_FIELD, MCH_LABEL) );
 		rows.add( addShowRow(RDW_FIELD, RDW_LABEL) );
 		rows.add( addShowRow(RET_FIELD, RET_LABEL) );
 		showRows.add( new FormGroup(RED_BLOOD_CELLS_LABEL, rows) );
