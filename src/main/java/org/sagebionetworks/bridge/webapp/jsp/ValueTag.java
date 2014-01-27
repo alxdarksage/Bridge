@@ -22,10 +22,13 @@ public class ValueTag extends SpringAwareTag {
 		}
 		String currentValue = valuesMapHolder.getValuesMap().get(field.getName());
 		if (currentValue != null) {
-			if (field.getObjectConverter() != null && field.getStringConverter() != null) {
-				Object parsed = field.getObjectConverter().convert(currentValue);
+			
+			/*
+			if (field.getParticipantDataValueConverter() != null && field.getStringConverter() != null) {
+				Object parsed = field.getParticipantDataValueConverter().convert(currentValue);
 				currentValue = field.getStringConverter().convert(parsed);
 			}
+			*/
 			getJspContext().getOut().write("<span class='multi'>"+currentValue+"</span>");
 		}
 	}

@@ -5,11 +5,8 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.sagebionetworks.bridge.webapp.specs.Specification;
-
 public class SpecificationDataTableColumnTag extends SimpleTagSupport {
 
-	private Specification specification;
 	private String link;
 	private String icon;
 	private String stat;
@@ -17,14 +14,8 @@ public class SpecificationDataTableColumnTag extends SimpleTagSupport {
 	
 	@Override
 	public void doTag() throws JspException, IOException {
-		DataTableTag table = (DataTableTag)getParent();
-		table.setSpecificationColumns(this);
-	}
-	public Specification getSpecification() {
-		return specification;
-	}
-	public void setSpecification(Specification specification) {
-		this.specification = specification;
+		SpecificationDataTableTag table = (SpecificationDataTableTag)getParent();
+		table.setSpecificationColumn(this);
 	}
 	public String getLink() {
 		return link;

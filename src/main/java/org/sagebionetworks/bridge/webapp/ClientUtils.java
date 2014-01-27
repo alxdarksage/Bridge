@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -39,7 +38,6 @@ import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
-import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
@@ -58,13 +56,14 @@ import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -236,32 +235,8 @@ public class ClientUtils {
 	}
 
 	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String trackerId) throws SynapseException {
-		List<RowObject> records = Lists.newArrayList();
-		
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		SortedMap<String,FormElement> tabs = spec.getTableFields();
-		
-		// TODO: Inefficient.
-		for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			List<String> values = Lists.newArrayList();
-			for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
-				String fieldName = entry.getKey();
-				FormElement field = entry.getValue();
-				String serValue = getValueAsString(row.getData().get(fieldName));
-				
-				Converter<String,Object> converter = field.getObjectConverter();
-				if (converter != null) {
-					Object object = converter.convert(serValue);
-					Converter<Object,String> converter2 = field.getStringConverter();
-					if (converter2 != null) {
-						serValue = converter2.convert(object);
-					}
-				}
-				values.add(serValue);
-			}
-			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
-		}
-		model.addObject("records", records);
+		model.addObject("records", paginatedRowSet.getResults());
 	}
 	
 	public static Row getRowById(RowSet rowSet, long rowId) {
@@ -306,11 +281,14 @@ public class ClientUtils {
 		// Right now these are sorted first to last entered, so we'd default from the last in the list.
 		// I would like this to change to reverse the order, then this'll need to change as well.
 		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
-		// This absolutely throws an NPE if there are no records at all.
+		// TODO: Change on the server-side will make this check unnecessary.
 		if (currentRow.getPreviousData() != null) {
 			Set<String> defaults = defaultTheseFields(spec);
 			for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
 				if (defaults.contains(entry.getKey())) {
+					
+					// get the converter for this field.
+					
 					dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
 					defaultedFields.add(entry.getKey());
 				}
@@ -332,7 +310,6 @@ public class ClientUtils {
 			return ValueTranslator.toString(value);
 		}
 	}
-
 	public static ParticipantDataValue getStringAsValue(String str) {
 		ParticipantDataStringValue value = new ParticipantDataStringValue();
 		value.setValue(str);
@@ -516,6 +493,29 @@ public class ClientUtils {
 				logr.info( String.format("key: %s, value: %s", entry.getKey(), truncated.substring(0, truncated.length()-2)) );
 			}
 		}
+	}
+	
+	public static void exportParticipantData(HttpServletResponse response, Specification spec,
+			PaginatedResults<ParticipantDataRow> paginatedRowSet) throws IOException {
+		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
+		response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
+        Set<String> headers = Sets.newTreeSet();
+        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			headers.addAll(row.getData().keySet());
+		}
+        CSVWriter writer = new CSVWriter(response.getWriter());
+		writer.writeNext(headers.toArray(new String[] {}));
+        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			List<String> values = Lists.newArrayListWithCapacity(headers.size());
+			for (String header : headers) {
+				values.add(ValueTranslator.toString(row.getData().get(header)));
+			}
+			writer.writeNext( values.toArray(new String[] {}));
+		}
+		writer.flush();
+		writer.close();
+		response.flushBuffer();
 	}
 
 }

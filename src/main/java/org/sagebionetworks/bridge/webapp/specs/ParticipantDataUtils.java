@@ -1,20 +1,15 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
+import org.springframework.core.convert.converter.Converter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -64,29 +59,11 @@ public class ParticipantDataUtils {
 	private static List<ParticipantDataRow> specToParticipantDataRow(Specification spec, Map<String, String> values, Long rowId) {
 		Map<String, ParticipantDataValue> data = Maps.newHashMap();
 		for (FormElement element : spec.getAllFormElements()) {
-			ParticipantDataColumnType columnType = element.getType().getColumnType();
-			if (columnType != null) {
-				switch (columnType) {
-				case DATETIME:
-					String dateStringValue = values.get(element.getName());
-					if (dateStringValue != null && dateStringValue.length() > 0) {
-						try {
-							Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateStringValue);
-							ParticipantDataDatetimeValue dateValue = new ParticipantDataDatetimeValue();
-							dateValue.setValue(date.getTime());
-							data.put(element.getName(), dateValue);
-						} catch (ParseException e) {
-							throw new RuntimeException("Could not parse date " + dateStringValue);
-						}
-					}
-					break;
-				default:
-					ParticipantDataValue value = ValueTranslator.transformToValue(values, element.getName(), columnType);
-					if (value != null) {
-						data.put(element.getName(), value);
-					}
-					break;
-				}
+			Converter<List<String>,ParticipantDataValue> converter = element.getParticipantDataValueConverter();
+			String value = values.get(element.getName());
+			if (converter != null && StringUtils.isNotBlank(value)) {
+				ParticipantDataValue pdv = converter.convert(Lists.newArrayList(value));
+				data.put(element.getName(), pdv);
 			}
 		}
 		ParticipantDataRow row = new ParticipantDataRow();

@@ -1,11 +1,15 @@
 package org.sagebionetworks.bridge.webapp.validators;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.util.StringUtils;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
@@ -15,6 +19,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
+
+import com.google.common.collect.Lists;
 
 public class SpecificationBasedValidator implements Validator {
 
@@ -60,16 +66,16 @@ public class SpecificationBasedValidator implements Validator {
 		}
 		logger.info("Field: " + field.getName() + ", value: " + value);
 		ParticipantDataColumnType dataType = field.getType().getColumnType();
-		Converter<String,Object> converter = field.getObjectConverter();
+		Converter<List<String>,ParticipantDataValue> converter = field.getParticipantDataValueConverter();
 		if (converter != null) {
 			try {
-				Object captured = converter.convert(value);
+				ParticipantDataValue captured = converter.convert(Lists.newArrayList(value));
 				
 				if (dataType == ParticipantDataColumnType.DOUBLE) {
-					Double converted = (Double)captured;
+					Double converted = ((ParticipantDataDoubleValue)captured).getValue();
 					validateBoundaryRanges(field, errors, converted);
 				} else if (dataType == ParticipantDataColumnType.LONG) {
-					Long converted = (Long)captured;
+					Long converted = ((ParticipantDataLongValue)captured).getValue();
 					validateBoundaryRanges(field, errors, converted.doubleValue());
 				}
 			} catch(Throwable e) {

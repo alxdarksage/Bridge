@@ -2,15 +2,19 @@ package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import java.util.List;
 
-import org.sagebionetworks.bridge.webapp.converters.BooleanToStringConverter;
-import org.sagebionetworks.bridge.webapp.converters.DateStringToDateTimeConverter;
-import org.sagebionetworks.bridge.webapp.converters.DateTimeStringToDateTimeConverter;
-import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
-import org.sagebionetworks.bridge.webapp.converters.DateToDateTimeStringConverter;
-import org.sagebionetworks.bridge.webapp.converters.NumberToStringConverter;
-import org.sagebionetworks.bridge.webapp.converters.StringToBooleanConverter;
-import org.sagebionetworks.bridge.webapp.converters.StringToDoubleConverter;
-import org.sagebionetworks.bridge.webapp.converters.StringToLongConverter;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.converter.BooleanConverter;
+import org.sagebionetworks.bridge.webapp.converter.BooleanToStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.DateToLongFormatDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.DoubleConverter;
+import org.sagebionetworks.bridge.webapp.converter.DoubleToStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
+import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.ISODateTimeConverter;
+import org.sagebionetworks.bridge.webapp.converter.LongConverter;
+import org.sagebionetworks.bridge.webapp.converter.LongToStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.StringConverter;
+import org.sagebionetworks.bridge.webapp.converter.StringToStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 import org.springframework.core.convert.converter.Converter;
@@ -35,23 +39,30 @@ public class FormFieldBuilder {
 		if (field.getLabel() == null) {
 			throw new IllegalArgumentException("Must set a field label before calling create()");
 		}
+		if (field.getParticipantDataValueConverter() == null) {
+			throw new IllegalArgumentException("Must set a participant data value converter");
+		}
+		if (field.getStringConverter() == null) {
+			throw new IllegalArgumentException("Must set a PDV to string converter");
+		}
 		FormField temp = field;
 		field = null;
 		return temp;
 	}
 	
 	public FormFieldBuilder asValue() {
-		return asValue(null, null);
+		return asValue(StringConverter.INSTANCE, StringToStringConverter.INSTANCE);
 	}
 	
-	public FormFieldBuilder asValue(Converter<String,Object> objectConverter, Converter<Object,String> stringConverter) {
+	public FormFieldBuilder asValue(Converter<List<String>, ParticipantDataValue> pdvConverter,
+			Converter<ParticipantDataValue, List<String>> stringConverter) {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
 		field.setType(UIType.VALUE);
 		field.setStringConverter(stringConverter);
-		field.setObjectConverter(objectConverter);
+		field.setParticipantDataValueConverter(pdvConverter);
 		return this;
 	}
 	
@@ -61,6 +72,8 @@ public class FormFieldBuilder {
 		}
 		field = new FormField();
 		field.setType(UIType.TEXT_INPUT);
+		field.setParticipantDataValueConverter(StringConverter.INSTANCE);
+		field.setStringConverter(StringToStringConverter.INSTANCE);
 		return this;
 	}
 	
@@ -71,6 +84,8 @@ public class FormFieldBuilder {
 		field = new FormField();
 		field.setType(UIType.TEXT_INPUT);
 		field.setInitialValue(initialValue);
+		field.setParticipantDataValueConverter(StringConverter.INSTANCE);
+		field.setStringConverter(StringToStringConverter.INSTANCE);
 		return this;
 	}
 	
@@ -85,14 +100,14 @@ public class FormFieldBuilder {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, NumberToStringConverter.INSTANCE, StringToDoubleConverter.INSTANCE);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, DoubleToStringConverter.INSTANCE, DoubleConverter.INSTANCE);
 	}
 	
 	public FormFieldBuilder asLong() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, NumberToStringConverter.INSTANCE, StringToLongConverter.INSTANCE);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, LongToStringConverter.INSTANCE, LongConverter.INSTANCE);
 	}
 
 	public FormFieldBuilder asBoolean() {
@@ -102,7 +117,7 @@ public class FormFieldBuilder {
 		field = new FormField();
 		field.setType(UIType.CHECKBOX);
 		field.setStringConverter(BooleanToStringConverter.INSTANCE);
-		field.setObjectConverter(StringToBooleanConverter.INSTANCE);
+		field.setParticipantDataValueConverter(BooleanConverter.INSTANCE);
 		return this;
 	}
 	
@@ -112,8 +127,8 @@ public class FormFieldBuilder {
 		}
 		field = new FormField();
 		field.setType(UIType.DATE);
-		field.setStringConverter(DateToDateStringConverter.INSTANCE);
-		field.setObjectConverter(DateStringToDateTimeConverter.INSTANCE);
+		field.setStringConverter(DateToISODateStringConverter.INSTANCE);
+		field.setParticipantDataValueConverter(ISODateConverter.INSTANCE);
 		return this;
 	}
 	
@@ -123,8 +138,8 @@ public class FormFieldBuilder {
 		}
 		field = new FormField();
 		field.setType(UIType.DATETIME);
-		field.setStringConverter(DateToDateTimeStringConverter.INSTANCE);
-		field.setObjectConverter(DateTimeStringToDateTimeConverter.INSTANCE);
+		field.setStringConverter(DateToLongFormatDateStringConverter.INSTANCE);
+		field.setParticipantDataValueConverter(ISODateTimeConverter.INSTANCE);
 		return this;
 	}
 	

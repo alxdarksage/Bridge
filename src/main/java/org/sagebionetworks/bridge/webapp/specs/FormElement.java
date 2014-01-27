@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
 public interface FormElement {
@@ -47,9 +48,9 @@ public interface FormElement {
 	 * Converters to convert back and forth between a string and native representation.
 	 * @return
 	 */
-	public Converter<String,Object> getObjectConverter();
+	public Converter<List<String>,ParticipantDataValue> getParticipantDataValueConverter();
 	
-	public Converter<Object,String> getStringConverter();
+	public Converter<ParticipantDataValue,List<String>> getStringConverter();
 	
 	public List<FormElement> getChildren();
 	

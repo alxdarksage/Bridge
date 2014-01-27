@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
-import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
@@ -36,12 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import au.com.bytecode.opencsv.CSVWriter;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 @Controller
 public class JournalController extends JournalControllerBase {
 
@@ -60,15 +53,16 @@ public class JournalController extends JournalControllerBase {
 	@ModelAttribute("descriptors")
 	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
-		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
+		List<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L)
+				.getResults();
+		Collections.sort(allDescriptors, new Comparator<ParticipantDataDescriptor>() {
 			@Override
 			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
 				return pdd0.getName().compareTo(pdd1.getName());
 			}
 			
 		});
-		return allDescriptors.getResults();
+		return allDescriptors;
 	}
 
 	@ModelAttribute
@@ -107,26 +101,7 @@ public class JournalController extends JournalControllerBase {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, null, trackerId);
-		
-		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
-		response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
-        Set<String> headers = Sets.newTreeSet();
-        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			headers.addAll(row.getData().keySet());
-		}
-        CSVWriter writer = new CSVWriter(response.getWriter());
-		writer.writeNext(headers.toArray(new String[] {}));
-        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			List<String> values = Lists.newArrayListWithCapacity(headers.size());
-			for (String header : headers) {
-				values.add(ValueTranslator.toString(row.getData().get(header)));
-			}
-			writer.writeNext( values.toArray(new String[] {}));
-		}
-		writer.flush();
-		writer.close();
-		response.flushBuffer();
+		ClientUtils.exportParticipantData(response, spec, paginatedRowSet);
 	}
 	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.GET)

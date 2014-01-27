@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -862,6 +861,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		
 		ParticipantDataDescriptor found = descriptorsById.get(participantDataDescriptorId);
 		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (rows == null) {
+			rows = Collections.emptyList();
+		}
 		ParticipantDataCurrentRow currentRow = new ParticipantDataCurrentRow();
 		currentRow.setStatus(found.getStatus());
 		currentRow.setDescriptor(found);

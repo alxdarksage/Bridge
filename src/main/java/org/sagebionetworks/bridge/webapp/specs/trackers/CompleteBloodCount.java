@@ -10,8 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
-import org.sagebionetworks.bridge.webapp.converters.DateStringToDateTimeConverter;
-import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
+import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.FormGrid;
@@ -128,6 +129,7 @@ public class CompleteBloodCount implements Specification {
 		List<FormElement> rows = Lists.newArrayList();
 		
 		FormField collectedOn = builder.asDate().name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).required().create();
+		collectedOn.setStringConverter(DateToShortFormatDateStringConverter.INSTANCE);
 		rows.add(collectedOn);
 		tableFields.put(COLLECTED_ON_FIELD, collectedOn);
 		
@@ -167,7 +169,7 @@ public class CompleteBloodCount implements Specification {
 		
 		// Show-only view
 		rows = Lists.newArrayList();
-		rows.add(builder.asValue(new DateStringToDateTimeConverter(), new DateToDateStringConverter()).name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).create());
+		rows.add(builder.asValue(ISODateConverter.INSTANCE, DateToISODateStringConverter.INSTANCE).name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).create());
 		rows.add(builder.asValue().name(DRAW_TYPE_FIELD).label(DRAW_TYPE_LABEL).defaultable().create());
 		showRows.add( new FormGroup(GENERAL_INFORMATION_LABEL, rows) );
 
