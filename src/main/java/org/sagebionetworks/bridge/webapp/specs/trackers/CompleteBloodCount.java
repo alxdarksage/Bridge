@@ -12,7 +12,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
-import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.FormGrid;
@@ -128,12 +127,7 @@ public class CompleteBloodCount implements Specification {
 		metadata.put(convertible3.getName(), convertible3);
 		
 		List<FormElement> rows = Lists.newArrayList();
-		
-		FormField collectedOn = builder.asDate().name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).required().create();
-		// Tests say this wasn't happening, revisit after refactor
-		// collectedOn.setStringConverter(DateToShortFormatDateStriungConverter.INSTANCE);
-		rows.add(collectedOn);
-		tableFields.put(COLLECTED_ON_FIELD, collectedOn);
+		rows.add(builder.asDate().name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).required().create());
 		
 		FormField eff = builder.asEnum(COLLECTION_METHODS).name(DRAW_TYPE_FIELD).label(DRAW_TYPE_LABEL).defaultable().create();
 		rows.add(eff);
@@ -171,9 +165,13 @@ public class CompleteBloodCount implements Specification {
 		
 		// Show-only view
 		rows = Lists.newArrayList();
-		rows.add(builder.asValue(ISODateConverter.INSTANCE, DateToISODateStringConverter.INSTANCE).name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).create());
+		FormField collectedOn = builder
+				.asValue(ISODateConverter.INSTANCE, DateToShortFormatDateStringConverter.INSTANCE)
+				.name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).create();
+		rows.add(collectedOn);
 		rows.add(builder.asValue().name(DRAW_TYPE_FIELD).label(DRAW_TYPE_LABEL).defaultable().create());
 		showRows.add( new FormGroup(GENERAL_INFORMATION_LABEL, rows) );
+		tableFields.put(COLLECTED_ON_FIELD, collectedOn);		
 
 		rows = Lists.newArrayList();
 		rows.add( addShowRow(RBC_FIELD, RBC_LABEL) );
@@ -233,7 +231,7 @@ public class CompleteBloodCount implements Specification {
 	
 	@Override
 	public FormElement getShowStructure() {
-		return new FormGroup(UIType.LIST, "CBC",showRows);
+		return new FormGroup(UIType.LIST, "CBC", showRows);
 	}
 	
 	@Override

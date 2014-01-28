@@ -2,11 +2,22 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
 public interface FormElement {
 
+	/**
+	 * Get the ParticipantDataColumnDescriptor column for this form element, if it exists. 
+	 * Depending on context, this can be the <i>design</i> version of the column, or 
+	 * the <i>actual</i> and persisted column (the persisted column will override the 
+	 * design column when rendering the UI).
+	 * 
+	 * @return
+	 */
+	public ParticipantDataColumnDescriptor getDataColumn();
+	
 	/**
 	 * The form name, and the name of the field in the table where the information is saved.
 	 * @return

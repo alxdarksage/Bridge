@@ -1,12 +1,10 @@
 package org.sagebionetworks.bridge.webapp;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
-import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
@@ -16,15 +14,12 @@ import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
-import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Maps.EntryTransformer;
 import com.google.common.collect.Sets;
 
 /**
@@ -98,6 +93,7 @@ public class FormUtils {
 		return defaultedFields;
 	}
 
+	/*
 	public static DynamicForm valuesToDynamicForm(Specification spec, DynamicForm dynamicForm, ParticipantDataRow row) {
 		final Map<String,FormElement> map = SpecificationUtils.toMapByName(spec.getAllFormElements());
 		Map<String, String> values = Maps.transformEntries(row.getData(), new EntryTransformer<String, ParticipantDataValue, String>() {
@@ -113,4 +109,5 @@ public class FormUtils {
 		dynamicForm.setValues(values);
 		return dynamicForm;
 	}
+	*/
 }

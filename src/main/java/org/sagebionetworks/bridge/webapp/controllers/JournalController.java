@@ -17,6 +17,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
+import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
@@ -145,10 +146,9 @@ public class JournalController extends JournalControllerBase {
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
-		
 		ClientUtils.logSensitive(logger, row.getData());
-		
-		FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
+		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getShowStructure(), row));
+		// FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/show");
 		return model;
@@ -164,7 +164,8 @@ public class JournalController extends JournalControllerBase {
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
-		FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
+		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getEditStructure(), row));
+		// FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/edit");
 		return model;

@@ -4,8 +4,14 @@
 
     <tlib-version>1.0</tlib-version>
     <jsp-version>2.0</jsp-version>
-    <short-name>table</short-name>
+    <short-name>sage</short-name>
     <uri>http://sagebase.org/bridge</uri>
+
+	<function>
+	    <name>valuesMapHolder</name>
+	    <function-class>org.sagebionetworks.bridge.webapp.jsp.JspFunctions</function-class>
+	    <function-signature>org.sagebionetworks.bridge.webapp.forms.HasValuesMap valuesMapHolder(org.sagebionetworks.bridge.webapp.specs.FormElement, org.sagebionetworks.bridge.model.data.ParticipantDataRow)</function-signature>
+	</function>
 
     <!-- TAGFILES (NOT LAYOUTS) -->
     <tag-file>
@@ -378,11 +384,6 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <name>participantDataRow</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
             <name>defaultedFields</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -402,11 +403,6 @@
         </attribute>
         <attribute>
             <name>valuesMapHolder</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>participantDataRow</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

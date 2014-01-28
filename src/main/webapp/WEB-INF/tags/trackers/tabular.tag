@@ -12,12 +12,11 @@
 	                </th>
 	            </c:forEach>
 	        </tr>
-            <c:forEach var="participantDataRow" items="${records}">
+            <c:forEach var="row" items="${records}">
 	            <tr>
 	                <c:forEach var="el" items="${element.children}">
                         <td style="width:${100 / fn:length(element.children)}%">
-                            <%-- This is a kludge. Both objects provide getValues() to EL. --%>
-                            <c:set var="participantDataRow" value="${participantDataRow}" scope="request" />
+                            <c:set var="dynamicForm" value="${sage:valuesMapHolder(form.showStructure, row)}" scope="request" />
                             <sage:router element="${el}"/>
                         </td>
 	                </c:forEach>
