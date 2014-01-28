@@ -1,13 +1,19 @@
 package org.sagebionetworks.bridge.webapp.integration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
@@ -16,9 +22,9 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
+		// Does not work with version 26.0 of Firefox on my machine. 
+		// Downgraded Firefox to version 25.0 for the time being.
 		if (StackConfiguration.isDevelopStack()) {
-			// Does not work with version 26.0 of Firefox on my machine. 
-			// Downgraded Firefox to version 25.0 for the time being.
 			_driver = createFirefoxDriver();
 		} else {
 			_driver = createPhantomJSDriver();
@@ -42,9 +48,10 @@ public class WebDriverBase {
 	private WebDriverFacade createFirefoxDriver() {
 		return new WebDriverFacade(new FirefoxDriver());
 	}
-		
+	
 	@After
 	public void closeDriver() {
+		_driver.takeScreenshot();
 		_driver.close();
 		_driver.quit();
 	}

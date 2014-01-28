@@ -172,7 +172,6 @@ public class ITJournal extends WebDriverBase {
 		newPage.submit();
 	}
 	
-	@Test
 	public void fieldsAreValidated() {
 		// TODO
 	}

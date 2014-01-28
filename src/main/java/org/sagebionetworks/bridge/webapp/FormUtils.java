@@ -93,21 +93,4 @@ public class FormUtils {
 		return defaultedFields;
 	}
 
-	/*
-	public static DynamicForm valuesToDynamicForm(Specification spec, DynamicForm dynamicForm, ParticipantDataRow row) {
-		final Map<String,FormElement> map = SpecificationUtils.toMapByName(spec.getAllFormElements());
-		Map<String, String> values = Maps.transformEntries(row.getData(), new EntryTransformer<String, ParticipantDataValue, String>() {
-			@Override
-			public String transformEntry(String key, ParticipantDataValue value) {
-				List<String> values = map.get(key).getStringConverter().convert(value);
-				if (values != null && !values.isEmpty()) {
-					return values.get(0);
-				}
-				return null;
-			}
-		});
-		dynamicForm.setValues(values);
-		return dynamicForm;
-	}
-	*/
 }

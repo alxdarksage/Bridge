@@ -148,7 +148,6 @@ public class JournalController extends JournalControllerBase {
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
 		ClientUtils.logSensitive(logger, row.getData());
 		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getShowStructure(), row));
-		// FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/show");
 		return model;
@@ -165,7 +164,6 @@ public class JournalController extends JournalControllerBase {
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
 		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getEditStructure(), row));
-		// FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/edit");
 		return model;
