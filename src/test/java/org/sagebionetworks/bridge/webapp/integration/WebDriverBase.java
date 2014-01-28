@@ -1,19 +1,13 @@
 package org.sagebionetworks.bridge.webapp.integration;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 

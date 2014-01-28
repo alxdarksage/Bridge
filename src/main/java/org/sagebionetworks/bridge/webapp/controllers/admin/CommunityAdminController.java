@@ -130,7 +130,7 @@ public class CommunityAdminController {
 		List<UserGroupHeader> members = client.getCommunityMembers(communityId, ClientUtils.LIMIT, 0).getResults();
 		AccessControlList acl = synapseClient.getACL(communityId);
 		
-		List<CheckboxItem> items = Lists.newArrayListWithExpectedSize(members.size());
+		List<CheckboxItem> items = Lists.newArrayListWithCapacity(members.size());
 		for (UserGroupHeader member : members) {
 			logger.info("Community has this member: " + member.getUserName());
 			CheckboxItem ci = new CheckboxItem(member.getUserName(), member.getOwnerId());
@@ -156,7 +156,7 @@ public class CommunityAdminController {
 	private List<String> getMemberIds(BridgeRequest request, String communityId) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		List<UserGroupHeader> members = client.getCommunityMembers(communityId, ClientUtils.LIMIT, 0).getResults();
-		List<String> list = Lists.newArrayListWithExpectedSize(members.size());
+		List<String> list = Lists.newArrayListWithCapacity(members.size());
 		for (UserGroupHeader member : members) {
 			list.add(member.getOwnerId());
 		}

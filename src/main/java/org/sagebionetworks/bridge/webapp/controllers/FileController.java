@@ -178,7 +178,7 @@ public class FileController {
 	}
 	
 	private List<File> retrieveFilesFromRequest(BridgeRequest request, UploadForm uploadForm) throws ServletException {
-		List<File> files = Lists.newArrayListWithExpectedSize(1);
+		List<File> files = Lists.newArrayListWithCapacity(1);
 		
 		InputStream inputStream = null;
 		OutputStream outputStream = null;

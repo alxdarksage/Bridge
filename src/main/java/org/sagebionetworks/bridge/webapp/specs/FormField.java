@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 public class FormField implements FormElement {
 
 	private ParticipantDataColumnDescriptor dataColumn;
-	//protected String name;
 	protected String label;
 	protected UIType type;
 	protected boolean readonly;
