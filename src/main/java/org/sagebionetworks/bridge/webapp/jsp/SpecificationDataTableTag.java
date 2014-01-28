@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Lists;
@@ -203,10 +204,7 @@ public class SpecificationDataTableTag extends SimpleTagSupport {
 	}
 
 	protected String getColumnValue(FormElement element, ParticipantDataValue pdv) {
-		String value = element.getStringConverter().convert(pdv).get(0);
-		
-		logger.info("element.getStringConverter().convert(pdv).get(0): " + value);
-		
+		String value = ParticipantDataUtils.getOneValue(element.getStringConverter().convert(pdv));
 		if (value == null) {
 			value = "";
 		}

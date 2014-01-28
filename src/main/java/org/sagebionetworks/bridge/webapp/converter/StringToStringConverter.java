@@ -14,6 +14,9 @@ public class StringToStringConverter implements Converter<ParticipantDataValue, 
 	
 	@Override
 	public List<String> convert(ParticipantDataValue pdv) {
+		if (pdv == null) {
+			return null;
+		}
 		return Lists.newArrayList(((ParticipantDataStringValue)pdv).getValue());
 	}
 

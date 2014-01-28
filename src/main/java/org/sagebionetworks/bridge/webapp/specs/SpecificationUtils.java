@@ -1,18 +1,43 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class SpecificationUtils {
 
-	public static List<FormElement> toList(List<FormElement> elements) {
+	public static Map<String,FormElement> toMapByName(List<FormElement> elements) {
+		Map<String,FormElement> map = Maps.newHashMap();
+		for (FormElement element : elements) {
+			if (element.getName() != null) {
+				map.put(element.getName(), element);
+			}
+		}
+		return map;
+	}
+	
+	public static List<FormElement> toList(Collection<FormElement> elements) {
 		List<FormElement> sum = Lists.newArrayList();
 		for (FormElement element : elements) {
 			walkTree(sum, element);	
 		}
 		return sum;
 	}
+	
+	public static List<FormElement> toList(Collection<FormElement> e1, Collection<FormElement> e2) {
+		List<FormElement> sum = Lists.newArrayList();
+		for (FormElement element : e1) {
+			walkTree(sum, element);	
+		}
+		for (FormElement element : e2) {
+			walkTree(sum, element);	
+		}
+		return sum;
+	}
+	
 	
 	public static List<FormElement> toList(FormElement element) {
 		List<FormElement> sum = Lists.newArrayList();

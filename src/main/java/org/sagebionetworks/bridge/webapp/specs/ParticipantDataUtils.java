@@ -44,7 +44,6 @@ public class ParticipantDataUtils {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForCreate() requires values map");
 		}
-		
 		return specToParticipantDataRow(spec, values, null);
 	}
 	
@@ -52,8 +51,15 @@ public class ParticipantDataUtils {
 		if (values == null) {
 			throw new IllegalArgumentException("getRowSetForUpdate() requires values");
 		}
-		
 		return specToParticipantDataRow(spec, values, rowId);
+	}
+	
+	// Due to labs and other compound fields, we have to check for this in many cases.
+	public static String getOneValue(List<String> values) {
+		if (values == null || values.isEmpty()) {
+			return null;
+		}
+		return values.get(0);
 	}
 
 	private static List<ParticipantDataRow> specToParticipantDataRow(Specification spec, Map<String, String> values, Long rowId) {

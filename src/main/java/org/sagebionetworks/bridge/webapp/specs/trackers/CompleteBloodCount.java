@@ -109,6 +109,7 @@ public class CompleteBloodCount implements Specification {
 	List<FormElement> editRows = Lists.newArrayList();
 	List<FormElement> showRows = Lists.newArrayList();
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
+	List<FormElement> allFormElements;
 
 	public CompleteBloodCount() {
 		FormFieldBuilder builder = new FormFieldBuilder();
@@ -129,7 +130,8 @@ public class CompleteBloodCount implements Specification {
 		List<FormElement> rows = Lists.newArrayList();
 		
 		FormField collectedOn = builder.asDate().name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).required().create();
-		collectedOn.setStringConverter(DateToShortFormatDateStringConverter.INSTANCE);
+		// Tests say this wasn't happening, revisit after refactor
+		// collectedOn.setStringConverter(DateToShortFormatDateStriungConverter.INSTANCE);
 		rows.add(collectedOn);
 		tableFields.put(COLLECTED_ON_FIELD, collectedOn);
 		
@@ -195,6 +197,8 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addShowRow(PLT_FIELD, PLT_LABEL) );
 		rows.add( addShowRow(MPV_FIELD, MPV_LABEL) );
 		showRows.add( new FormGroup(PLATELETS_LABEL, rows) );
+		
+		allFormElements = SpecificationUtils.toList(editRows, metadata.values());
 	}
 
 	@Override
@@ -234,11 +238,7 @@ public class CompleteBloodCount implements Specification {
 	
 	@Override
 	public List<FormElement> getAllFormElements() {
-		List<FormElement> list = SpecificationUtils.toList(editRows);
-		for (FormElement field : metadata.values()) {
-			list.add(field);
-		}
-		return list;
+		return allFormElements;
 	}
 	
 	@Override

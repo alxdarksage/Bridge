@@ -378,6 +378,11 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <name>participantDataRow</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>defaultedFields</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -397,7 +402,12 @@
         </attribute>
         <attribute>
             <name>valuesMapHolder</name>
-            <required>true</required>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>participantDataRow</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>

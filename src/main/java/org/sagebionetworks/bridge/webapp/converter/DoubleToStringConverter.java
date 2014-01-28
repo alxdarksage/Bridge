@@ -15,6 +15,9 @@ public class DoubleToStringConverter implements Converter<ParticipantDataValue, 
 
 	@Override
 	public List<String> convert(ParticipantDataValue source) {
+		if (source == null) {
+			return null;
+		}
 		Double d = ((ParticipantDataDoubleValue)source).getValue();
 		return Lists.newArrayList(new DecimalFormat("0.###").format(d));
 	}

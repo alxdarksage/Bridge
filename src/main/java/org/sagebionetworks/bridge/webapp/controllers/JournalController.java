@@ -111,7 +111,7 @@ public class JournalController extends JournalControllerBase {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
-		Set<String> defaultedFields = ClientUtils.defaultValuesFromPriorTracker(client, spec, dynamicForm, trackerId);
+		Set<String> defaultedFields = FormUtils.defaultsToDynamicForm(dynamicForm, client, spec, trackerId);
 		model.addObject("defaultedFields", defaultedFields);
 		
 		model.setViewName("journal/trackers/new");
@@ -141,14 +141,14 @@ public class JournalController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
 		
 		ClientUtils.logSensitive(logger, row.getData());
 		
-		FormUtils.valuesToDynamicForm(dynamicForm, row);
+		FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/show");
 		return model;
@@ -160,11 +160,11 @@ public class JournalController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
-		FormUtils.valuesToDynamicForm(dynamicForm, row);
+		FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/edit");
 		return model;

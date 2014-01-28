@@ -19,6 +19,9 @@ public class DateToISODateStringConverter implements Converter<ParticipantDataVa
 
 	@Override
 	public List<String> convert(ParticipantDataValue pdv) {
+		if (pdv == null) {
+			return null;
+		}
 		long time = ((ParticipantDataDatetimeValue)pdv).getValue();
 		return Lists.newArrayList(ISODateTimeFormat.date().print(time));
 	}
