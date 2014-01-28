@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +41,7 @@ import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
 import org.sagebionetworks.repo.model.DomainType;
+import org.sagebionetworks.repo.model.IdList;
 import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.PaginatedResultsUtil;
@@ -87,6 +88,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	Map<String,Team> teamsById = Maps.newHashMap();
 	Map<Team,Set<String>> memberships = Maps.newHashMap();
 	Map<String,String> markdownsByFileHandleId = Maps.newHashMap();
+	Map<String,String> emailByUserId = Maps.newHashMap();
 
 	// Participant data
 	Map<String,ParticipantDataDescriptor> descriptorsById = Maps.newHashMap();
@@ -129,7 +131,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		String id = newId();
 		UserProfile profile = new UserProfile();
 		profile.setUserName(user.getUsername());
-		profile.setEmail(user.getEmail());
 		profile.setOwnerId(id);
 		Session session = new Session();
 		session.setSessionToken("session"+id);
@@ -139,17 +140,20 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		data.setSession(session);
 		usersById.put(user.getUsername(), data);
 		usersById.put(id, data);
+		emailByUserId.put(id, user.getEmail());
 		return Long.parseLong(id);
 	}
 
 	private Community createCommunity(String id, String name, String description, UserSessionData user) {
+		String email = emailByUserId.get(user.getProfile().getOwnerId());
+		
 		Community community = new Community();
 		community.setId(id);
 		community.setName(name);
 		community.setDescription(description);
-		community.setCreatedBy(user.getProfile().getEmail());
+		community.setCreatedBy(email);
 		community.setCreatedOn(new Date());
-		community.setModifiedBy(user.getProfile().getEmail());
+		community.setModifiedBy(email);
 		community.setModifiedOn(new Date());
 		
 		// The hidden root page, under a key directly related to the community.
@@ -177,9 +181,11 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	private V2WikiPage createWikiPage(UserSessionData user, String title, String parentId, String markdown) {
+		String email = emailByUserId.get(user.getProfile().getOwnerId());
+		
 		V2WikiPage page = new V2WikiPage();
 		page.setTitle(title);
-		page.setCreatedBy(user.getProfile().getEmail());
+		page.setCreatedBy(email);
 		page.setCreatedOn(new Date());
 		page.setId(newId());
 		if (parentId != null) {
@@ -220,21 +226,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 
 	private String newId() {
 		return Integer.toString(++idCount);
-	}	
-	
-	private <T> List<T> paginate(List<T> list, long limit, long offset) {
-		if (list == null) {
-			return Collections.emptyList();
-		}
-		if (list.isEmpty()) {
-			return list;
-		}
-		int start = (int)offset;
-		int end = (int)limit;
-		int lastIndex = list.size();
-		start = (start > lastIndex) ? lastIndex : (start < 0) ? 0 : start;
-		end = (end > lastIndex) ? lastIndex : (end < 1) ? 1 : end;
-		return list.subList(start, end);
 	}
 	
 	private <T extends JSONEntity> PaginatedResults<T> toResults(List<T> list) {
@@ -242,21 +233,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		results.setResults(list);
 		results.setTotalNumberOfResults(list.size());
 		return results;
-	}
-	
-	private <T extends JSONEntity> PaginatedResults<T> toResults(List<T> list, long limit, long offset) {
-		List<T> newList = paginate(list, limit, offset);
-		PaginatedResults<T> results = new PaginatedResults<T>();
-		results.setResults(newList);
-		results.setTotalNumberOfResults(list.size());
-		return results;
-	}
-	
-	private <T extends JSONEntity> PaginatedResults<T> toResults(Collection<T> coll, long limit, long offset) {
-		if (coll == null) {
-			return new PaginatedResults<T>();
-		}
-		return toResults(Lists.newArrayList(coll), limit, offset);
 	}
 
 	@Override
@@ -604,7 +580,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		AliasCheckResponse response = new AliasCheckResponse();
 		response.setAvailable(true);
 		for (UserSessionData data : usersById.values()) {
-			String email = data.getProfile().getEmail();
+			String email = emailByUserId.get(data.getProfile().getOwnerId());
 			if (email.equals(value) && request.getType() == AliasType.USER_EMAIL) {
 				response.setAvailable(false);
 			}
@@ -623,17 +599,17 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		}
 		// Check email too
 		for (UserSessionData data : usersById.values()) {
-			String email = data.getProfile().getEmail();
+			String email = emailByUserId.get(data.getProfile().getOwnerId());
 			if (user.getEmail().equals(email)) {
 				throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User email '"+email+"' already exists\n\"}");
 			}
 		}
 
 		String USER_ID = newId();
+		emailByUserId.put(USER_ID, user.getEmail());
 		
 		UserProfile profile = new UserProfile();
 		profile.setUserName(user.getUserName());
-		profile.setEmail(user.getEmail());
 		profile.setFirstName(user.getFirstName());
 		profile.setLastName(user.getLastName());
 		profile.setOwnerId(USER_ID);
@@ -703,12 +679,12 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 				}
 			}
 		}
-		return toResults(memberCommunities, limit, offset);
+		return PaginatedResultsUtil.createPaginatedResults(memberCommunities, limit, offset);
 	}
 
 	@Override
 	public PaginatedResults<Community> getAllCommunities(long limit, long offset) throws SynapseException {
-		return toResults(new ArrayList<Community>(communitiesById.values()));
+		return PaginatedResultsUtil.createPaginatedResults(new ArrayList<Community>(communitiesById.values()), limit, offset);
 	}
 
 	@Override
@@ -724,14 +700,14 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			
 			UserGroupHeader header = new UserGroupHeader();
 			header.setUserName(profile.getUserName());
-			header.setEmail(profile.getEmail());
+			header.setEmail(emailByUserId.get(profile.getOwnerId()));
 			header.setFirstName(profile.getFirstName());
 			header.setIsIndividual(true);
 			header.setLastName(profile.getLastName());
 			header.setOwnerId(profile.getOwnerId());
 			headers.add(header);
 		}
-		return toResults(headers);
+		return PaginatedResultsUtil.createPaginatedResults(headers, limit, offset);
 	}
 	
 	@Override
@@ -830,8 +806,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public PaginatedResults<ParticipantDataRow> getRawParticipantData(String participantDataDescriptorId, long limit, long offset)
 			throws SynapseException {
-		// TODO: This is not actually paged.
 		List<ParticipantDataRow> data = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (data == null) {
+			data = Collections.emptyList();
+		}
 		return PaginatedResultsUtil.createPaginatedResults(data, limit, offset);
 	}
 	
@@ -851,14 +829,15 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
 			throws SynapseException {
-		return toResults(descriptorsById.values(), limit, offset);
+		return PaginatedResultsUtil.createPaginatedResults(Lists.newArrayList(descriptorsById.values()), limit, offset);
 	}
 
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
 			throws SynapseException {
 		String ownerId = currentUserData.getProfile().getOwnerId();
-		return toResults(descriptorsByUserId.get(ownerId), limit, offset);
+		return PaginatedResultsUtil.createPaginatedResults(Lists.newArrayList(descriptorsByUserId.get(ownerId)), limit,
+				offset);
 	}
 	
 	@Override
@@ -882,6 +861,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		
 		ParticipantDataDescriptor found = descriptorsById.get(participantDataDescriptorId);
 		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
+		if (rows == null) {
+			rows = Collections.emptyList();
+		}
 		ParticipantDataCurrentRow currentRow = new ParticipantDataCurrentRow();
 		currentRow.setStatus(found.getStatus());
 		currentRow.setDescriptor(found);
@@ -924,7 +906,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public PaginatedResults<ParticipantDataColumnDescriptor> getParticipantDataColumnDescriptors(
 			String descriptorId, long limit, long offset) throws SynapseException {
-		return toResults(columnsByDescriptorById.get(descriptorId), limit, offset);
+		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList(columnsByDescriptorById.get(descriptorId));
+		return PaginatedResultsUtil.createPaginatedResults(list, limit, offset);
 	}
 
 	@Override
@@ -942,6 +925,17 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		for (ParticipantDataStatus status : dataStatusList.getUpdates()) {
 			ParticipantDataDescriptor descriptor = descriptorsById.get(status.getParticipantDataDescriptorId());
 			descriptor.setStatus(status);
+		}
+	}
+	
+	@Override
+	public void deleteParticipantDataRows(String participantDataDescriptorId, IdList rowsIds) throws SynapseException {
+		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
+		for (Iterator<ParticipantDataRow> i = rows.iterator(); i.hasNext(); ) {
+			ParticipantDataRow row = i.next();
+			if (rowsIds.getList().contains(row.getRowId())) {
+				i.remove();
+			}
 		}
 	}
 }

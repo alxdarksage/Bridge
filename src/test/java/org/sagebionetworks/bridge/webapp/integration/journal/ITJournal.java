@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.integration.journal;
 
 import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.*;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
@@ -61,7 +62,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.assertRow(HB, 2);
 		editPage.assertRow(HCT, 3);
 		editPage.assertRow(MCV, 4);
-		editPage.assertRow(MCH, 5);
+		//editPage.assertRow(MCH, 5);
 		editPage.assertRow(RDW, 6);
 		editPage.assertRow(RET, 7);
 		editPage.assertRow(WBC, 8);
@@ -76,7 +77,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(HB, 4);
 		editPage.setRow(HCT, 5);
 		editPage.setRow(MCV, 6);
-		editPage.setRow(MCH, 7);
+		//editPage.setRow(MCH, 7);
 		editPage.setRow(RDW, 8);
 		editPage.setRow(RET, 9);
 		editPage.setRow(WBC, 10);
@@ -95,7 +96,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.assertRow(HB, 4);
 		editPage.assertRow(HCT, 5);
 		editPage.assertRow(MCV, 6);
-		editPage.assertRow(MCH, 7);
+		//editPage.assertRow(MCH, 7);
 		editPage.assertRow(RDW, 8);
 		editPage.assertRow(RET, 9);
 		editPage.assertRow(WBC, 10);
@@ -158,7 +159,7 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(HB, 2);
 		newPage.setRow(HCT, 3);
 		newPage.setRow(MCV, 4);
-		newPage.setRow(MCH, 5);
+		//newPage.setRow(MCH, 5);
 		newPage.setRow(RDW, 6);
 		newPage.setRow(RET, 7);
 		newPage.setRow(WBC, 8);
@@ -174,5 +175,18 @@ public class ITJournal extends WebDriverBase {
 	@Test
 	public void fieldsAreValidated() {
 		// TODO
+	}
+	
+	@Test
+	public void canDeleteTrackerRows() {
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		int rowCount = indexPage.getDataTable().getRowCount();
+		
+		indexPage.getDataTable().selectRow("October 23, 2013");
+		indexPage.getDataTable().clickDelete();
+		
+		indexPage = journalPage.getTrackerIndexPage();
+		int nextRowCount = indexPage.getDataTable().getRowCount();
+		Assert.assertEquals(nextRowCount+1, rowCount);
 	}
 }

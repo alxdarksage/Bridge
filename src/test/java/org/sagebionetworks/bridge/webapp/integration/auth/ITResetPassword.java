@@ -103,7 +103,7 @@ public class ITResetPassword extends WebDriverBase {
 			ErrorPage error = driver.waitForErrorPage();
 			error.assertErrorTitle("Unauthorized");
 			
-			driver.waitForPortalPage();
+			driver.waitForSignedOutPage();
 			driver.assertNotice("Your password has been changed.");
 		}
 	}

@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.controllers;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
-import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
@@ -23,6 +23,7 @@ import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
+import org.sagebionetworks.repo.model.IdList;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,11 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
-import au.com.bytecode.opencsv.CSVWriter;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 @Controller
 public class JournalController extends JournalControllerBase {
@@ -57,15 +53,16 @@ public class JournalController extends JournalControllerBase {
 	@ModelAttribute("descriptors")
 	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
-		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
+		List<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L)
+				.getResults();
+		Collections.sort(allDescriptors, new Comparator<ParticipantDataDescriptor>() {
 			@Override
 			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
 				return pdd0.getName().compareTo(pdd1.getName());
 			}
 			
 		});
-		return allDescriptors.getResults();
+		return allDescriptors;
 	}
 
 	@ModelAttribute
@@ -95,19 +92,6 @@ public class JournalController extends JournalControllerBase {
 		return model;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")
-	public String batchTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("trackerId") String trackerId, @RequestParam("rowSelect") Set<String> rowSelects)
-			throws SynapseException {
-		
-		if (rowSelects != null) {
-			BridgeClient client = request.getBridgeUser().getBridgeClient();
-			request.setNotification( rowSelects.size() > 1 ? "TrackersDeleted" : "TrackerDeleted" );
-		}
-		request.setNotification("Not implemented");
-		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";
-	}
-	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/export", method = RequestMethod.GET)
 	@ResponseBody
 	public void exportTrackers(BridgeRequest request, HttpServletResponse response,
@@ -117,26 +101,7 @@ public class JournalController extends JournalControllerBase {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, null, trackerId);
-		
-		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
-		response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
-        Set<String> headers = Sets.newTreeSet();
-        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			headers.addAll(row.getData().keySet());
-		}
-        CSVWriter writer = new CSVWriter(response.getWriter());
-		writer.writeNext(headers.toArray(new String[] {}));
-        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			List<String> values = Lists.newArrayListWithCapacity(headers.size());
-			for (String header : headers) {
-				values.add(ValueTranslator.toString(row.getData().get(header)));
-			}
-			writer.writeNext( values.toArray(new String[] {}));
-		}
-		writer.flush();
-		writer.close();
-		response.flushBuffer();
+		ClientUtils.exportParticipantData(response, spec, paginatedRowSet);
 	}
 	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.GET)
@@ -146,7 +111,7 @@ public class JournalController extends JournalControllerBase {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
-		Set<String> defaultedFields = ClientUtils.defaultValuesFromPriorTracker(client, spec, dynamicForm, trackerId);
+		Set<String> defaultedFields = FormUtils.defaultsToDynamicForm(dynamicForm, client, spec, trackerId);
 		model.addObject("defaultedFields", defaultedFields);
 		
 		model.setViewName("journal/trackers/new");
@@ -176,11 +141,14 @@ public class JournalController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
-		FormUtils.valuesToDynamicForm(dynamicForm, row);
+		
+		ClientUtils.logSensitive(logger, row.getData());
+		
+		FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/show");
 		return model;
@@ -192,11 +160,11 @@ public class JournalController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
-		FormUtils.valuesToDynamicForm(dynamicForm, row);
+		FormUtils.valuesToDynamicForm(spec, dynamicForm, row);
 		
 		model.setViewName("journal/trackers/edit");
 		return model;
@@ -217,6 +185,29 @@ public class JournalController extends JournalControllerBase {
 		request.setNotification("Tracker updated.");
 		model.setViewName("redirect:/journal/" + participantId + "/trackers/" + trackerId + ".html");
 		return model;
+	}
+	
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")
+	public String batchTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @RequestParam("rowSelect") List<String> rowSelects)
+			throws SynapseException {
+		
+		if (rowSelects != null) {
+			// Spring silently accepts List<Long> as a rowSelect parameter type, but it does no conversion
+			// without registering a lot of crazy conversion stuff.
+			List<Long> newList = new ArrayList<Long>();
+			for (String value : rowSelects) {
+				newList.add(Long.parseLong(value));
+			}
+			IdList idList = new IdList();
+			idList.setList(newList);
+			
+			BridgeClient client = request.getBridgeUser().getBridgeClient();
+			client.deleteParticipantDataRows(trackerId, idList);
+			request.setNotification( rowSelects.size() > 1 ? "RowsDeleted" : "RowDeleted" );
+		}
+		return "redirect:/journal/"+participantId+"/trackers/"+trackerId+".html";
 	}
 
 }

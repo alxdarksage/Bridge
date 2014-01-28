@@ -39,6 +39,7 @@ public interface Specification {
 	 * @return
 	 */
 	public List<FormElement> getAllFormElements();
+
 	/**
 	 * Get a map of the column names and their form element descriptions, in the order they 
 	 * should be shown left-to-right in a table view for this form.

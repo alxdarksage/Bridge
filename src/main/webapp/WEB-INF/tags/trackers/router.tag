@@ -24,9 +24,13 @@
         <sage:tabular element="${element}"/>
     </c:when>
     <c:when test="${element.type == 'VALUE'}">
-        <sage:value valuesMapHolder="${dynamicForm}" field="${element}"/>
+        <%-- dyamicForm or participantDataRow is an either/or thing at the moment. Would like
+            to harmonize these. --%>
+        <sage:value valuesMapHolder="${dynamicForm}" participantDataRow="${participantDataRow}" 
+            field="${element}"/>
     </c:when>
     <c:otherwise>
-        <sage:field valuesMapHolder="${dynamicForm}" field="${element}" defaultedFields="${defaultedFields}"/>
+        <sage:field valuesMapHolder="${dynamicForm}" participantDataRow="${participantDataRow}" 
+            field="${element}" defaultedFields="${defaultedFields}"/>
     </c:otherwise>
 </c:choose>

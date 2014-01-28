@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
 import com.google.common.collect.Lists;
@@ -11,8 +12,8 @@ public class FormGroup implements FormElement {
 	private final String label;
 	private final List<FormElement> children = Lists.newArrayList();
 	private final UIType type;
-	protected Converter<String, Object> objectConverter;
-	protected Converter<Object, String> stringConverter;
+	protected Converter<List<String>, ParticipantDataValue> objectConverter;
+	protected Converter<ParticipantDataValue, List<String>> stringConverter;
 	
 	public FormGroup(final String label) {
 		this(UIType.GROUP, label);
@@ -81,12 +82,12 @@ public class FormGroup implements FormElement {
 	}
 
 	@Override
-	public Converter<String, Object> getObjectConverter() {
+	public Converter<List<String>, ParticipantDataValue> getParticipantDataValueConverter() {
 		return objectConverter;
 	}
 
 	@Override
-	public Converter<Object, String> getStringConverter() {
+	public Converter<ParticipantDataValue, List<String>> getStringConverter() {
 		return stringConverter;
 	}
 	

@@ -10,8 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
-import org.sagebionetworks.bridge.webapp.converters.DateStringToDateTimeConverter;
-import org.sagebionetworks.bridge.webapp.converters.DateToDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
+import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.FormGrid;
@@ -51,7 +52,7 @@ public class CompleteBloodCount implements Specification {
 	private static final String WBC_FIELD = "wbc";
 	private static final String RET_FIELD = "ret";
 	private static final String RDW_FIELD = "rdw";
-	private static final String MCH_FIELD = "mch";
+	// private static final String MCH_FIELD = "mch";
 	private static final String MCV_FIELD = "mcv";
 	private static final String HCT_FIELD = "hct";
 	private static final String HB_FIELD = "hb";
@@ -77,7 +78,7 @@ public class CompleteBloodCount implements Specification {
 	private static final String WBC_LABEL = "White cells (Leukocytes / WBC)";
 	private static final String RET_LABEL = "Reticulocyte count (Ret)";
 	private static final String RDW_LABEL = "RBC distribution width (RDW)";
-	private static final String MCH_LABEL = "Mean corpuscular hemoglobin (MCH)";
+	//private static final String MCH_LABEL = "Mean corpuscular hemoglobin (MCH)";
 	private static final String MCV_LABEL = "Mean corpuscular volume (MCV)";
 	private static final String HCT_LABEL = "Hematocrit (HCT)";
 	private static final String HB_LABEL = "Hemoglobin (Hb)";
@@ -97,9 +98,10 @@ public class CompleteBloodCount implements Specification {
 	private final List<String> THOUSANDS = SpecificationUtils.getSymbolsForUnits(Units.THOUSANDS_PER_MICROLITER, Units.BILLIONS_PER_LITER);
 	private final List<String> MILLIONS = SpecificationUtils.getSymbolsForUnits(Units.MILLIONS_PER_MICROLITER, Units.TRILLIONS_PER_LITER);
 	private final List<String> PERC = Units.PERCENTAGE.getSymbols();
-	private final List<String> DL = Units.DECILITER.getSymbols();
+	// TODO: This needs to be converted.
+	private final List<String> DL = SpecificationUtils.getSymbolsForUnits(Units.DECILITER, Units.GRAMS_PER_LITER);
 	private final List<String> FL = Units.FEMTOLITER.getSymbols();
-	private final List<String> PG = Units.PICOGRAM.getSymbols();
+	private final List<String> VARIATION = SpecificationUtils.getSymbolsForUnits(Units.CV_OR_SD);
 	
 	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Stick", "Central Line", "Peripheral Stick (arm or leg)");
 
@@ -107,6 +109,7 @@ public class CompleteBloodCount implements Specification {
 	List<FormElement> editRows = Lists.newArrayList();
 	List<FormElement> showRows = Lists.newArrayList();
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
+	List<FormElement> allFormElements;
 
 	public CompleteBloodCount() {
 		FormFieldBuilder builder = new FormFieldBuilder();
@@ -127,6 +130,8 @@ public class CompleteBloodCount implements Specification {
 		List<FormElement> rows = Lists.newArrayList();
 		
 		FormField collectedOn = builder.asDate().name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).required().create();
+		// Tests say this wasn't happening, revisit after refactor
+		// collectedOn.setStringConverter(DateToShortFormatDateStriungConverter.INSTANCE);
 		rows.add(collectedOn);
 		tableFields.put(COLLECTED_ON_FIELD, collectedOn);
 		
@@ -136,11 +141,11 @@ public class CompleteBloodCount implements Specification {
 		
 		rows = Lists.newArrayList();
 		rows.add( addEditRow(MILLIONS, RBC_FIELD, RBC_LABEL) );
-		rows.add( addEditRow(DL, HB_FIELD, HB_LABEL) ); // Canadian form was given in g/L, this will have to change
-		rows.add( addEditPercRow(PERC, HCT_FIELD, HCT_LABEL) ); // Canadian form: L/L
+		rows.add( addEditRow(DL, HB_FIELD, HB_LABEL) ); 
+		rows.add( addEditPercRow(PERC, HCT_FIELD, HCT_LABEL) );
 		rows.add( addEditRow(FL, MCV_FIELD, MCV_LABEL) );
-		rows.add( addEditRow(PG, MCH_FIELD, MCH_LABEL) );
-		rows.add( addEditPercRow(PERC, RDW_FIELD, RDW_LABEL) );
+		//rows.add( addEditRow(PG, MCH_FIELD, MCH_LABEL) );
+		rows.add( addEditPercRow(VARIATION, RDW_FIELD, RDW_LABEL) );
 		rows.add( addEditPercRow(PERC, RET_FIELD, RET_LABEL) ); // or 10e9/L
 		editRows.add( new FormGrid(RED_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
 		
@@ -166,7 +171,7 @@ public class CompleteBloodCount implements Specification {
 		
 		// Show-only view
 		rows = Lists.newArrayList();
-		rows.add(builder.asValue(new DateStringToDateTimeConverter(), new DateToDateStringConverter()).name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).create());
+		rows.add(builder.asValue(ISODateConverter.INSTANCE, DateToISODateStringConverter.INSTANCE).name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).create());
 		rows.add(builder.asValue().name(DRAW_TYPE_FIELD).label(DRAW_TYPE_LABEL).defaultable().create());
 		showRows.add( new FormGroup(GENERAL_INFORMATION_LABEL, rows) );
 
@@ -175,7 +180,7 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addShowRow(HB_FIELD, HB_LABEL) );
 		rows.add( addShowRow(HCT_FIELD, HCT_LABEL) );
 		rows.add( addShowRow(MCV_FIELD, MCV_LABEL) );
-		rows.add( addShowRow(MCH_FIELD, MCH_LABEL) );
+		//rows.add( addShowRow(MCH_FIELD, MCH_LABEL) );
 		rows.add( addShowRow(RDW_FIELD, RDW_LABEL) );
 		rows.add( addShowRow(RET_FIELD, RET_LABEL) );
 		showRows.add( new FormGroup(RED_BLOOD_CELLS_LABEL, rows) );
@@ -192,6 +197,8 @@ public class CompleteBloodCount implements Specification {
 		rows.add( addShowRow(PLT_FIELD, PLT_LABEL) );
 		rows.add( addShowRow(MPV_FIELD, MPV_LABEL) );
 		showRows.add( new FormGroup(PLATELETS_LABEL, rows) );
+		
+		allFormElements = SpecificationUtils.toList(editRows, metadata.values());
 	}
 
 	@Override
@@ -231,11 +238,7 @@ public class CompleteBloodCount implements Specification {
 	
 	@Override
 	public List<FormElement> getAllFormElements() {
-		List<FormElement> list = SpecificationUtils.toList(editRows);
-		for (FormElement field : metadata.values()) {
-			list.add(field);
-		}
-		return list;
+		return allFormElements;
 	}
 	
 	@Override

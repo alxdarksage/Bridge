@@ -10,11 +10,11 @@
         <tbody>
             <c:forEach var="child" items="${element.children}">
                 <tr>
-                    <td>
+                    <td class="group">
                         <sage:form-label field="${child}"/>
                         <sage:form-errors field="${child}"/>
                     </td>
-                    <td>
+                    <td class="group">
                         <sage:router element="${child}"/>
                     </td>
                 </tr>

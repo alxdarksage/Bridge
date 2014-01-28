@@ -15,24 +15,24 @@
         border: 1px solid #b94a48;
     }
 }
-.grid {
+table.grid {
     &.well {
         padding: .5rem;
         max-width: 60rem;
     }
     
-	th, td { padding: .5rem; }
+	th, td.grid { padding: .5rem; }
 	th { text-align: left; vertical-align: bottom; }
-	td:first-child { width: 100%; }
+	td.grid:first-child { width: 100%; }
 	input[type=text], input[type=number] { width: 6rem; display: inline-block; }
 	/* padding for this seemed unnecessary on Chrome, may be compensating on Safari */
 	.form-control-static { display: inline-block; width: 6rem; /*padding: 7px 10px;*/ }
 	select { width: 10rem ! important; }
 	h4 { font-family: 'Archivo Narrow'; }
 }
-.group {
+table.group {
     width: 100%;
-    td:first-child {
+    td.group:first-child {
         width: 100%;
     }
     tbody {
@@ -63,19 +63,19 @@
     border-radius: 3px;
 }
 @media (max-width: 600px) {
-	.group {
+	table.group {
         h4 {
             font-size: 1.7rem ! important;
         }
-        td {
+        td.group {
             display: block ! important;
         }
-        td:last-child {
+        td.group:last-child {
             padding-bottom: 1rem;
             border-bottom: 2px solid #aaa ! important;
         }
     }
-    .grid {
+    table.grid {
         width: 100% ! important;
                 
         thead {
@@ -86,23 +86,23 @@
                 display: none;
             }
         }
-        td {
+        td.grid {
             border: none ! important;
             padding: .5rem 0 ! important;
             display: block ! important;
             vertical-align: middle;
             
         }
-        td:before {
+        td.grid:before {
             display: inline-block;
 			content: attr(data-title);
 			width: 50% !important;
 			vertical-align: middle;
         }
-        td:not([data-title]) {
+        td.grid:not([data-title]) {
             display: none ! important;
         }
-        td:last-child {
+        td.grid:last-child {
             border-bottom: 1px solid #aaa ! important;
         }
     }

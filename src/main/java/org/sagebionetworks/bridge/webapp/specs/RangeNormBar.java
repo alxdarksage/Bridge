@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 import java.util.Collections;
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
 public class RangeNormBar implements FormElement {
@@ -57,12 +58,12 @@ public class RangeNormBar implements FormElement {
 	}
 
 	@Override
-	public Converter<String, Object> getObjectConverter() {
+	public Converter<List<String>, ParticipantDataValue> getParticipantDataValueConverter() {
 		return null;
 	}
 
 	@Override
-	public Converter<Object, String> getStringConverter() {
+	public Converter<ParticipantDataValue, List<String>> getStringConverter() {
 		return null;
 	}
 

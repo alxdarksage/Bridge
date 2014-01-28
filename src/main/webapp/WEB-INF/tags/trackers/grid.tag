@@ -13,12 +13,12 @@
         <tbody>
             <c:forEach var="row" items="${element.children}">
                 <tr>
-                    <td>
+                    <td class="grid">
                         <sage:form-label field="${row}"/>
                         <sage:form-errors fields="${row.children}"/>
                     </td>
                     <c:forEach var="col" items="${row.children}">
-                        <td data-title="${col.label}: ">
+                        <td class="grid" data-title="${col.label}: ">
                             <sage:router element="${col}"/>
                         </td>
                     </c:forEach>

@@ -16,19 +16,16 @@
             </c:when>
             <c:otherwise>
                 <h3>All ${spec.name}s</h3>
-		        <sage:table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
-		            itemId="id" items="${records}" caption="${form.description}s">
+		        <sage:spec-table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
+		            items="${records}" caption="${form.description}s" specification="${spec}">
 		            <sage:table-button id="newTrackerAct" type="primary" label="New Tracker" 
 		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
 		            <sage:table-button id="exportAct" type="default" label="Export (*.csv)"
 		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
-		
-	                <sage:spec-column specification="${spec}" 
+	                <sage:spec-column  
 	                   link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
-                    <%-- 
                     <sage:table-button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
-                    --%>
-		        </sage:table>
+		        </sage:spec-table>
             </c:otherwise>
         </c:choose>
     </jsp:attribute>

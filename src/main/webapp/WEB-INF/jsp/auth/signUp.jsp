@@ -5,10 +5,10 @@
     <sage:formErrors formName="signUpForm"/>
     <c:url var="signUpUrl" value="/signUp.html"/>
     <form:form role="form" modelAttribute="signUpForm" method="post" action="${signUpUrl}">
-        <sage:text field="userName">
+        <sage:text field="userName" required="true">
             <span class="help-block"><spring:message code="userName.help"/></span>
         </sage:text>
-        <sage:text field="email"/>
+        <sage:text field="email" required="true"/>
         <sage:submit code="SignUp"/>
         <sage:cancel url="${pageContext.request.origin}"/>
     </form:form>

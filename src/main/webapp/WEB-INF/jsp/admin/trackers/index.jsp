@@ -8,6 +8,8 @@
         <sage:table-button id="createAct" type="primary" label="Create Trackers" action="/admin/trackers/create.html"/> 
         <sage:column label="Name" field="name" className="nowrap"/>
         <sage:column label="Description" field="description"/>
+        <%-- 
         <sage:table-button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this tracker?"/>
+        --%>
     </sage:table>
 </sage:admin>

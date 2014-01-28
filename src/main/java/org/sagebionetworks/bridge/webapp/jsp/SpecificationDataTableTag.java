@@ -1,9 +1,6 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,37 +8,31 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
+import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Lists;
 
-public class DataTableTag extends SimpleTagSupport {
-
-	private static final Logger logger = LogManager.getLogger(DataTableTag.class.getName());
+public class SpecificationDataTableTag extends SimpleTagSupport {
 	
-	private static Map<String, String> conversionFormats = new HashMap<String,String>();
-	static {
-		conversionFormats.put("date", "MMMM dd, yyyy");
-		conversionFormats.put("datetime", "MMMM dd, yyyy (hh:mm a)");
-	}
-
+	private static final Logger logger = LogManager.getLogger(SpecificationDataTableTag.class.getName());
+	
 	private TagBuilder tb = new TagBuilder();
 
-	private PropertyUtilsBean pub = new PropertyUtilsBean();
-	
-
 	private String formId;
-	private String itemId;
 	private String action;
-	private List<Object> items;
+	private Specification specification;
+	private SpecificationDataTableColumnTag column;
+	private List<ParticipantDataRow> items;
 	private String caption;
 	private boolean selectable;
 
-	private List<DataTableColumnTag> columns = Lists.newArrayList();
 	private List<DataTableButtonTag> globalButtons = Lists.newArrayList();
 	private List<DataTableButtonTag> buttons = Lists.newArrayList();
 
@@ -49,28 +40,52 @@ public class DataTableTag extends SimpleTagSupport {
 		this.formId = formId;
 	}
 
-	public void setItemId(String itemId) {
-		this.itemId = itemId;
-	}
-
 	public void setAction(String action) {
 		this.action = action;
 	}
 
-	public void setItems(Collection<Object> items) {
-		this.items = Lists.newArrayList(items);
+	public void setItems(List<ParticipantDataRow> items) {
+		this.items = items;
 	}
 
 	public void setCaption(String caption) {
 		this.caption = caption;
 	}
 	
-	public void addColumn(DataTableColumnTag column) {
-		this.columns.add(column);
+	public void setSpecificationColumn(SpecificationDataTableColumnTag column) {
+		this.column = column;
+	}
+	/*
+	public void setSpecificationColumns(SpecificationDataTableColumnTag columns) {
+		boolean first = true;
+		if (columns.getSpecification() != null && columns.getSpecification().getTableFields() != null) {
+			SortedMap<String,FormElement> map = columns.getSpecification().getTableFields();
+			
+			for (String name : map.keySet()) {
+				FormElement field = map.get(name);
+				//DataTableTag.converters.put(field.getName(), field.getStringConverter());
+				DataTableColumnTag column = new DataTableColumnTag();
+				column.setField(field.getName());
+				column.setLabel(field.getLabel());
+				if (first) {
+					column.setClassName(columns.getClassName());
+					column.setIcon(columns.getIcon());
+					column.setLink(columns.getLink());
+					column.setStatic(columns.getStat());
+					column.setConverterName(field.getName());
+					first = false;
+				}
+				this.columns.add(column);
+			}
+		}
+	}*/
+	
+	public void setSpecification(Specification spec) {
+		this.specification = spec;
 	}
 
 	public void addButton(DataTableButtonTag button) {
-		if (this.columns.size() > 0) {
+		if (this.column != null) {
 			this.buttons.add(button);
 		} else {
 			this.globalButtons.add(button);
@@ -144,7 +159,7 @@ public class DataTableTag extends SimpleTagSupport {
 		tb.startTag("tbody");
 		tb.startTag("tr");
 		tb.startTag("td", "class", "empty");
-		tb.addAttribute("colspan", Integer.toString(this.columns.size()));
+		tb.addAttribute("colspan", Integer.toString(this.specification.getTableFields().size()));
 		tb.append("There are currently no " + this.caption.toLowerCase() + ".");
 		tb.endTag("td");
 		tb.endTag("tr");
@@ -159,31 +174,21 @@ public class DataTableTag extends SimpleTagSupport {
 		tb.endTag("tbody");
 	}
 
-	protected void createRow(Object object, int index) {
+	protected void createRow(ParticipantDataRow row, int index) {
 		try {
 			tb.startTag("tr", "id", "row" + Integer.toString(index));
-			String objectId = BeanUtils.getProperty(object, this.itemId);
-			addCheckboxIfSelectable(objectId);
-			for (DataTableColumnTag column : columns) {
+			addCheckboxIfSelectable(row.getRowId());
+			
+			for (Map.Entry<String,FormElement> specRow : specification.getTableFields().entrySet()) {
+				String fieldName = specRow.getKey();
+				FormElement element = specRow.getValue();
 				tb.startTag("td");
-				if (column.getStatic() == null) {
-					tb.addAttribute("data-title", column.getLabel() + ": ");
-				}
-				if (column.getClassName() != null) {
-					tb.addAttribute("class", column.getClassName());
-				}
-				if (column.getIcon() != null) {
-					tb.startTag("span", "class", "glyphicon glyphicon-" + column.getIcon());
-					tb.append(""); // force non-empty closing tag.
-					tb.endTag("span");
-					tb.append(" ");
-				}
-				Object value = getColumnValue(column, object);
+				
+				logger.info("row.getData().get(fieldName): " + row.getData().get(fieldName));
+				
+				String value = getColumnValue(element, row.getData().get(fieldName));
 				if (StringUtils.isNotBlank(column.getLink())) {
-					// TODO: Figure out how to do this correctly so there can be
-					// any expression here.
-					String output = column.getLink().replace("{id}", objectId);
-
+					String output = column.getLink().replace("{id}", row.getRowId().toString());
 					tb.startTag("a", "href", getContextPath() + output);
 					tb.append(value);
 					tb.endTag("a");
@@ -198,31 +203,18 @@ public class DataTableTag extends SimpleTagSupport {
 		}
 	}
 
-	protected Object getColumnValue(DataTableColumnTag column, Object object) {
-		Object value = "";
-		if (column.getStatic() != null) {
-			value = column.getStatic();
-		} else if (".".equals(column.getField())) {
-			value = column.getField();
-		} else {
-			try {
-				value = pub.getProperty(object, column.getField());
-			} catch (Exception e) {
-				logger.error(e);
-			}
-		}
-		if (column.getConverterName() != null) {
-			String format = conversionFormats.get(column.getConverterName());
-			SimpleDateFormat formatter = new SimpleDateFormat(format);
-			value = formatter.format(value);
+	protected String getColumnValue(FormElement element, ParticipantDataValue pdv) {
+		String value = ParticipantDataUtils.getOneValue(element.getStringConverter().convert(pdv));
+		if (value == null) {
+			value = "";
 		}
 		return value;
 	}
 
-	protected void addCheckboxIfSelectable(String objectId) {
+	protected void addCheckboxIfSelectable(Long rowId) {
 		if (this.selectable) {
 			tb.startTag("td");
-			tb.startTag("input", "type", "checkbox", "name", "rowSelect", "title", "Select Row", "value", objectId);
+			tb.startTag("input", "type", "checkbox", "name", "rowSelect", "title", "Select Row", "value", rowId.toString());
 			tb.endTag("input");
 			tb.endTag("td");
 		}
@@ -235,8 +227,8 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.startTag("th", "class", "checkrow");
 			tb.endTag("th");
 		}
-		for (DataTableColumnTag column : columns) {
-			tb.fullTag("th", column.getLabel());
+		for (FormElement element : specification.getTableFields().values()) {
+			tb.fullTag("th", element.getLabel());
 		}
 		tb.endTag("tr");
 		tb.endTag("thead");
@@ -251,7 +243,7 @@ public class DataTableTag extends SimpleTagSupport {
 			tb.endTag("input");
 			tb.endTag("td");
 			tb.startTag("td");
-			tb.addAttribute("colspan", Integer.toString(this.columns.size()));
+			tb.addAttribute("colspan", Integer.toString(specification.getTableFields().size()));
 
 			for (DataTableButtonTag button : buttons) {
 				tb.startTag("button", "type", "submit");
@@ -283,4 +275,5 @@ public class DataTableTag extends SimpleTagSupport {
 		PageContext pageContext = (PageContext) getJspContext();
 		return pageContext.getServletContext().getContextPath();
 	}
+	
 }

@@ -119,8 +119,6 @@ public class SageBootstrap {
 				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
 		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind", "mood-slider",
 				ParticipantDataColumnType.DOUBLE, "Body", "mood-slider", ParticipantDataColumnType.DOUBLE);
-		createData(bridge, "Medication Tracker", "Medications", ParticipantDataRepeatType.IF_CHANGED, null, "xx", "string",
-				ParticipantDataColumnType.STRING, "yy", "string", ParticipantDataColumnType.STRING);
 		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name", "string",
 				ParticipantDataColumnType.STRING, "Address", "string", ParticipantDataColumnType.STRING);
 		

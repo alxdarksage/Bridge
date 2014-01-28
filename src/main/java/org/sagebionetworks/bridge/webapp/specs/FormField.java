@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
 import com.google.common.collect.Lists;
@@ -15,8 +16,8 @@ public class FormField implements FormElement {
 	protected boolean readonly;
 	protected boolean required;
 	protected boolean defaultable;
-	protected Converter<String, Object> objectConverter;
-	protected Converter<Object, String> stringConverter;
+	protected Converter<List<String>, ParticipantDataValue> toParticipantDataValueConverter;
+	protected Converter<ParticipantDataValue, List<String>> toStringConverter;
 	
 	public FormField() {
 	}
@@ -83,21 +84,21 @@ public class FormField implements FormElement {
 	}
 
 	@Override
-	public Converter<String, Object> getObjectConverter() {
-		return objectConverter;
+	public Converter<List<String>, ParticipantDataValue> getParticipantDataValueConverter() {
+		return toParticipantDataValueConverter;
 	}
 	
-	public void setObjectConverter(Converter<String, Object> objectConverter) {
-		this.objectConverter = objectConverter ;
+	public void setParticipantDataValueConverter(Converter<List<String>, ParticipantDataValue> converter) {
+		this.toParticipantDataValueConverter = converter ;
 	}
 
 	@Override
-	public Converter<Object, String> getStringConverter() {
-		return stringConverter;
+	public Converter<ParticipantDataValue, List<String>> getStringConverter() {
+		return toStringConverter;
 	}
 	
-	public void setStringConverter(Converter<Object, String> stringConverter) {
-		this.stringConverter = stringConverter;
+	public void setStringConverter(Converter<ParticipantDataValue, List<String>> converter) {
+		this.toStringConverter = converter;
 	}
 	
 }

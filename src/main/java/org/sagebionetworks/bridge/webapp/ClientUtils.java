@@ -3,16 +3,13 @@ package org.sagebionetworks.bridge.webapp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,25 +22,22 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronExpression;
+import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
-import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
-import org.sagebionetworks.bridge.webapp.forms.RowObject;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
+import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -57,7 +51,6 @@ import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -65,10 +58,11 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
+import au.com.bytecode.opencsv.CSVWriter;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.ibm.icu.text.SimpleDateFormat;
 
 public class ClientUtils {
 	
@@ -235,32 +229,8 @@ public class ClientUtils {
 	}
 
 	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String trackerId) throws SynapseException {
-		List<RowObject> records = Lists.newArrayList();
-		
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		SortedMap<String,FormElement> tabs = spec.getTableFields();
-		
-		// TODO: Inefficient.
-		for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			List<String> values = Lists.newArrayList();
-			for (Map.Entry<String, FormElement> entry : tabs.entrySet()) {
-				String fieldName = entry.getKey();
-				FormElement field = entry.getValue();
-				String serValue = getValueAsString(row.getData().get(fieldName));
-				
-				Converter<String,Object> converter = field.getObjectConverter();
-				if (converter != null) {
-					Object object = converter.convert(serValue);
-					Converter<Object,String> converter2 = field.getStringConverter();
-					if (converter2 != null) {
-						serValue = converter2.convert(object);
-					}
-				}
-				values.add(serValue);
-			}
-			records.add( new RowObject(row.getRowId(), new ArrayList<String>(tabs.keySet()), values) );
-		}
-		model.addObject("records", records);
+		model.addObject("records", paginatedRowSet.getResults());
 	}
 	
 	public static Row getRowById(RowSet rowSet, long rowId) {
@@ -298,53 +268,6 @@ public class ClientUtils {
 		}
 		return headers;
 	}
-	
-	public static Set<String> defaultValuesFromPriorTracker(BridgeClient client, Specification spec,
-			DynamicForm dynamicForm, String trackerId) throws SynapseException {
-		Set<String> defaultedFields = Sets.newHashSet();
-		// Right now these are sorted first to last entered, so we'd default from the last in the list.
-		// I would like this to change to reverse the order, then this'll need to change as well.
-		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
-		Set<String> defaults = defaultTheseFields(spec);
-		for (Entry<String, ParticipantDataValue> entry : currentRow.getPreviousData().getData().entrySet()) {
-			if (defaults.contains(entry.getKey())) {
-				dynamicForm.getValuesMap().put(entry.getKey(), getValueAsString(entry.getValue()));
-				defaultedFields.add(entry.getKey());
-			}
-		}
-		return defaultedFields;
-	}
-	
-	public static String getValueAsString(ParticipantDataValue value) {
-		if (value instanceof ParticipantDataDoubleValue) {
-			// This intelligently trims the number, but if the user likes entering 2.0 or 0.2, then
-			// it's going to look different coming back. We're not preserving the value as entered.
-			// That'll require Lab or String.
-			Double d = ((ParticipantDataDoubleValue)value).getValue();
-			return new DecimalFormat("0.###").format(d);
-		} else if (value instanceof ParticipantDataDatetimeValue) {
-			return new SimpleDateFormat("yyyy-MM-dd").format(((ParticipantDataDatetimeValue) value).getValue());
-		} else {
-			return ValueTranslator.toString(value);
-		}
-	}
-
-	public static ParticipantDataValue getStringAsValue(String str) {
-		ParticipantDataStringValue value = new ParticipantDataStringValue();
-		value.setValue(str);
-		return value;
-	}
-
-	private static Set<String> defaultTheseFields(Specification spec) {
-		Set<String> matches = Sets.newHashSet();
-		for (FormElement element : spec.getAllFormElements()) {
-			if (element.isDefaultable()) {
-				matches.add(element.getName());
-			}
-		}
-		return matches;
-	}
-	
 
 	public static File createTempFile(BridgeRequest request, String fileName) throws ServletException {
 		File directory = (File)request.getServletContext().getAttribute(ServletContext.TEMPDIR);
@@ -501,6 +424,44 @@ public class ClientUtils {
 		cookie.setPath("/");
 		cookie.setMaxAge(expiry); // thirty minutes in seconds
 		response.addCookie(cookie);
-	}	
+	}
+	
+	public static void logSensitive(Logger logr, Map<String,ParticipantDataValue> values) {
+		if (StackConfiguration.isDevelopStack()) {
+			logr.info(" ---- value map ---- ");
+			for (Map.Entry<String, ParticipantDataValue> entry : values.entrySet()) {
+				ParticipantDataValue value = entry.getValue();
+				String truncated = value.toString().split(" value=")[1];
+				logr.info( String.format("key: %s, value: %s", entry.getKey(), truncated.substring(0, truncated.length()-2)) );
+			}
+		}
+	}
+	
+	public static void exportParticipantData(HttpServletResponse response, Specification spec,
+			PaginatedResults<ParticipantDataRow> paginatedRowSet) throws IOException {
+		
+		Map<String,FormElement> map = SpecificationUtils.toMapByName(spec.getAllFormElements());
+		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
+		response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
+        Set<String> headers = Sets.newTreeSet();
+        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			headers.addAll(row.getData().keySet());
+		}
+        CSVWriter writer = new CSVWriter(response.getWriter());
+		writer.writeNext(headers.toArray(new String[] {}));
+        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			List<String> values = Lists.newArrayListWithCapacity(headers.size());
+			for (String header : headers) {
+				List<String> fieldValues = map.get(header).getStringConverter().convert(row.getData().get(header));
+				String fieldValue = ParticipantDataUtils.getOneValue(fieldValues);
+				values.add(fieldValue);
+			}
+			writer.writeNext( values.toArray(new String[] {}));
+		}
+		writer.flush();
+		writer.close();
+		response.flushBuffer();
+	}
 
 }

@@ -51,6 +51,10 @@ public enum Units {
 	
 	PERCENTAGE("percentage", "%"),
 	
+	CV_OR_SD("standard or coefficient variation", "%", "% CV", "% SD"),
+	
+	GRAMS_PER_LITER("grams per liter", "g/L"),
+	
 	THOUSANDS_PER_MICROLITER("thousands per microliter", Units.MICROLITER, "K"),
 	BILLIONS_PER_LITER("billions per liter", Units.LITER, "10e9", "9"),
 

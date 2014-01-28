@@ -1,0 +1,8 @@
+/* Give people something minimally decent to print out, for lab reports and the like. */
+@media print {
+    .sage-crumbs, .btn { display: none; }
+	html, body { background: none; }
+    #nav-pane { display: none!important; }
+	#content-pane { width: 100%; }
+	#main-pane { box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none; } /* Doesn't seem to work */
+}

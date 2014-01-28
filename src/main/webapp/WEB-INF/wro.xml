@@ -21,9 +21,10 @@
         <css>/assets/bridge/css/data-table.css</css>
         <css>/assets/bridge/css/editor.less</css>
         <css>/assets/bridge/css/oauth.less</css>
-        <css>/assets/bridge/css/form.less</css>
+        <css>/assets/bridge/css/trackers.less</css>
         <css>/assets/bridge/css/range-norm-bar.less</css>
-	</group>
+        <css>/assets/bridge/css/print.less</css>
+    </group>
 
 	<group name="footer">
 	    <js>/assets/modernizr/modernizr-2.7.1.js</js>
