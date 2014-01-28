@@ -451,7 +451,7 @@ public class ClientUtils {
         CSVWriter writer = new CSVWriter(response.getWriter());
 		writer.writeNext(headers.toArray(new String[] {}));
         for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			List<String> values = Lists.newArrayListWithCapacity(headers.size());
+			List<String> values = Lists.newArrayListWithExpectedSize(headers.size());
 			for (String header : headers) {
 				List<String> fieldValues = map.get(header).getStringConverter().convert(row.getData().get(header));
 				String fieldValue = ParticipantDataUtils.getOneValue(fieldValues);

@@ -54,7 +54,7 @@ public class ProfileController {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
 		
-		List<CheckboxItem> items = Lists.newArrayList();
+		List<CheckboxItem> items = Lists.newArrayListWithExpectedSize(communities.size());
 		for (Community community : communities) {
 			CheckboxItem ci = new CheckboxItem(HtmlUtils.htmlEscape(community.getName()), community.getId());
 			if (memberships.getResults().contains(community)) {

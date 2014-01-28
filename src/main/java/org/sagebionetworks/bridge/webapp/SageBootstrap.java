@@ -197,7 +197,7 @@ public class SageBootstrap {
 	
 	private ParticipantDataStatusList finishThisEntry(String id) {
 		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
-		List<ParticipantDataStatus> updates = Lists.newArrayList();
+		List<ParticipantDataStatus> updates = Lists.newArrayListWithExpectedSize(1);
 		ParticipantDataStatus status = new ParticipantDataStatus();
 		status.setParticipantDataDescriptorId(id);
 		status.setLastEntryComplete(true);

@@ -369,7 +369,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 
 	@Override
 	public FileHandleResults createFileHandles(List<File> files) throws SynapseException {
-		List<FileHandle> handles = Lists.newArrayList();
+		List<FileHandle> handles = Lists.newArrayListWithExpectedSize(files.size());
 		for (File file : files) {
 			try {
 				String mimeType = SynapseClientImpl.guessContentTypeFromStream(file);
@@ -496,7 +496,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		V2WikiPage page = wikiPagesById.get(key.getWikiPageId());
 		
 		// I think we need to save and restore these...
-		List<FileHandle> handles = Lists.newArrayList();
+		List<FileHandle> handles = Lists.newArrayListWithExpectedSize(page.getAttachmentFileHandleIds().size());
 		if (page.getAttachmentFileHandleIds() != null) {
 			for (String id : page.getAttachmentFileHandleIds()) {
 				S3FileHandle handle = new S3FileHandle();
@@ -694,7 +694,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		Team team = teamsById.get(community.getTeamId());
 		Set<String> members = memberships.get(team);
 		
-		List<UserGroupHeader> headers = Lists.newArrayList();
+		List<UserGroupHeader> headers = Lists.newArrayListWithExpectedSize(members.size());
 		for (String memberId : members) {
 			UserProfile profile = usersById.get(memberId).getProfile();
 			

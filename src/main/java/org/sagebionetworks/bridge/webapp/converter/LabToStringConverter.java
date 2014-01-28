@@ -15,7 +15,7 @@ public class LabToStringConverter implements Converter<ParticipantDataValue, Lis
 	@Override
 	public List<String> convert(ParticipantDataValue source) {
 		ParticipantDataLabValue pdv = (ParticipantDataLabValue)source;
-		List<String> values = Lists.newArrayList();
+		List<String> values = Lists.newArrayListWithExpectedSize(5);
 		values.add(pdv.getEnteredValue());
 		values.add(pdv.getUnits());
 		values.add(pdv.getNormalizedMin().toString());

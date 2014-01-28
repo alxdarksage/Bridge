@@ -72,7 +72,7 @@ public enum Units {
 	
 	private Units(final String label, final Units consequent, final String... antecedents) {
 		this.label = label;
-		this.symbols = Lists.newArrayListWithCapacity(consequent.symbols.size());
+		this.symbols = Lists.newArrayListWithExpectedSize(consequent.symbols.size());
 		for (String symbol : consequent.symbols) {
 			for (String ant : antecedents) {
 				this.symbols.add(ant+"/"+symbol);	
