@@ -62,9 +62,13 @@ public class ITCommunity extends WebDriverBase {
 		page.assertEditButtonNotPreset();
 		page.assertJoinButtonNotPreset();
 		
+		driver.takeScreenshot("userCanJoinAndLeaveCommunity-65");
 		ProfilePage ppage = driver.getProfilePage();
+		driver.takeScreenshot("userCanJoinAndLeaveCommunity-66");
 		ppage.toggleCommunityCheckbox("Fanconi Anemia");
+		driver.takeScreenshot("userCanJoinAndLeaveCommunity-68");
 		ppage.submit();
+		driver.takeScreenshot("userCanJoinAndLeaveCommunity-70");
 		
 		page = driver.waitForCommunityPage();
 		page.assertEditButtonNotPreset();
