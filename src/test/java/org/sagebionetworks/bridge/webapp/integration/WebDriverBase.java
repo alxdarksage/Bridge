@@ -16,9 +16,9 @@ public class WebDriverBase {
 	protected WebDriverFacade _driver;
 
 	protected WebDriverFacade initDriver() {
+		// Does not work with version 26.0 of Firefox on my machine. 
+		// Downgraded Firefox to version 25.0 for the time being.
 		if (StackConfiguration.isDevelopStack()) {
-			// Does not work with version 26.0 of Firefox on my machine. 
-			// Downgraded Firefox to version 25.0 for the time being.
 			_driver = createFirefoxDriver();
 		} else {
 			_driver = createPhantomJSDriver();
@@ -42,9 +42,10 @@ public class WebDriverBase {
 	private WebDriverFacade createFirefoxDriver() {
 		return new WebDriverFacade(new FirefoxDriver());
 	}
-		
+	
 	@After
 	public void closeDriver() {
+		_driver.takeScreenshot();
 		_driver.close();
 		_driver.quit();
 	}

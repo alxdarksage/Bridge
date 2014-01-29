@@ -55,30 +55,6 @@ public class SpecificationDataTableTag extends SimpleTagSupport {
 	public void setSpecificationColumn(SpecificationDataTableColumnTag column) {
 		this.column = column;
 	}
-	/*
-	public void setSpecificationColumns(SpecificationDataTableColumnTag columns) {
-		boolean first = true;
-		if (columns.getSpecification() != null && columns.getSpecification().getTableFields() != null) {
-			SortedMap<String,FormElement> map = columns.getSpecification().getTableFields();
-			
-			for (String name : map.keySet()) {
-				FormElement field = map.get(name);
-				//DataTableTag.converters.put(field.getName(), field.getStringConverter());
-				DataTableColumnTag column = new DataTableColumnTag();
-				column.setField(field.getName());
-				column.setLabel(field.getLabel());
-				if (first) {
-					column.setClassName(columns.getClassName());
-					column.setIcon(columns.getIcon());
-					column.setLink(columns.getLink());
-					column.setStatic(columns.getStat());
-					column.setConverterName(field.getName());
-					first = false;
-				}
-				this.columns.add(column);
-			}
-		}
-	}*/
 	
 	public void setSpecification(Specification spec) {
 		this.specification = spec;
@@ -183,9 +159,6 @@ public class SpecificationDataTableTag extends SimpleTagSupport {
 				String fieldName = specRow.getKey();
 				FormElement element = specRow.getValue();
 				tb.startTag("td");
-				
-				logger.info("row.getData().get(fieldName): " + row.getData().get(fieldName));
-				
 				String value = getColumnValue(element, row.getData().get(fieldName));
 				if (StringUtils.isNotBlank(column.getLink())) {
 					String output = column.getLink().replace("{id}", row.getRowId().toString());

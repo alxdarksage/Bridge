@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.SortedMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.FormGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormLayout;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
@@ -88,8 +90,13 @@ public class MedicationTracker implements Specification {
 		FormGroup table = new FormGroup(UIType.TABULAR, name);
 		table.add(builder.asText().name("medication").label("Medication").readonly().create());
 		table.add(builder.asText().name("dosage").label("Dosage").readonly().create());
-		table.add(builder.asDate().name("start_date").label("Start Date").readonly().create());
-		table.add(builder.asDate().name("end_date").label("End Date").create());
+		
+		FormField field = builder.asValue().name("start_date").label("Start Date").create();
+		field.setStringConverter(DateToShortFormatDateStringConverter.INSTANCE);
+		table.add(field);
+		
+		field = builder.asDate().name("end_date").label("End Date").create();
+		table.add(field);
 		root.add(table);
 	}
 	

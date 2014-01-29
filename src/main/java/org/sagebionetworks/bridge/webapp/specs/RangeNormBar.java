@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 import java.util.Collections;
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
@@ -20,6 +21,11 @@ public class RangeNormBar implements FormElement {
 		this.unitKey = unitKey;
 		this.lowKey = lowKey;
 		this.highKey = highKey;
+	}
+	
+	@Override
+	public ParticipantDataColumnDescriptor getDataColumn() {
+		return null;
 	}
 	
 	@Override

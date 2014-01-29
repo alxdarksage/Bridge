@@ -42,18 +42,19 @@ public class WebDriverFacade implements WebDriver {
 		return (driver instanceof PhantomJSDriver);
 	}
 
-	void takeScreenshot() {
+	public void takeScreenshot() {
+		String date = Long.toString(new Date().getTime());
+		String name = ("./target/images/"+driver.getTitle()+" - "+date+ ".png").replace(" ","");
 		try {
-			String name = Long.toString(new Date().getTime());
 			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-			File destFile = new File(name + ".png");
+			File destFile = new File(name);
 			System.out.println(destFile.getAbsolutePath());
 			FileUtils.copyFile(srcFile, destFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
+	
 	// Assumes the input is surrounded by a div with some kind of selectable title.
 	WebElement findCheckbox(String name) {
 		String cssSelector = "div[title*=\""+name+"\"] input";

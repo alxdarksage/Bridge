@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp.jsp;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.jsp.JspException;
@@ -9,12 +8,9 @@ import javax.servlet.jsp.JspException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.forms.HasValuesMap;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
-import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 import com.google.common.base.Joiner;
@@ -30,7 +26,6 @@ public class FieldTag extends SpringAwareTag {
 
 	private TagBuilder tb = new TagBuilder();
 
-	private ParticipantDataRow row;
 	private String fieldName;
 	private HasValuesMap valuesMapHolder;
 	private Set<String> defaultedFields;
@@ -40,9 +35,6 @@ public class FieldTag extends SpringAwareTag {
 	}
 	public void setDefaultedFields(Set<String> defaultedFields) {
 		this.defaultedFields = defaultedFields;
-	}
-	public void setParticipantDataRow(ParticipantDataRow row) {
-		this.row = row;
 	}
 	
 	@Override
@@ -117,20 +109,11 @@ public class FieldTag extends SpringAwareTag {
 	}
 	
 	private String getValue() {
-		if (row != null) {
-			ParticipantDataValue pdv = row.getData().get(field.getName());
-			if (pdv == null && field.getInitialValue() != null) {
-				return field.getInitialValue();
-			}
-			return ParticipantDataUtils.getOneValue(field.getStringConverter().convert(pdv));
-		} else if (valuesMapHolder != null) {
-			String currentValue = valuesMapHolder.getValuesMap().get(field.getName());
-			if (currentValue == null && field.getInitialValue() != null) {
-				return field.getInitialValue();
-			}
-			return currentValue;
+		String currentValue = valuesMapHolder.getValuesMap().get(field.getName());
+		if (currentValue == null && field.getInitialValue() != null) {
+			return field.getInitialValue();
 		}
-		return "ERROR";
+		return currentValue;
 	}
 	
 	private void addDefaultAttributes(String currentValue) {

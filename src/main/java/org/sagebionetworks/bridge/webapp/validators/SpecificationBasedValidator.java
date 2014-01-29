@@ -64,7 +64,6 @@ public class SpecificationBasedValidator implements Validator {
 			}
 			return;
 		}
-		logger.info("Field: " + field.getName() + ", value: " + value);
 		ParticipantDataColumnType dataType = field.getType().getColumnType();
 		Converter<List<String>,ParticipantDataValue> converter = field.getParticipantDataValueConverter();
 		if (converter != null) {

@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
@@ -9,10 +10,9 @@ import com.google.common.collect.Lists;
 
 public class FormField implements FormElement {
 
-	protected String name;
+	private ParticipantDataColumnDescriptor dataColumn;
 	protected String label;
 	protected UIType type;
-	protected String initialValue;
 	protected boolean readonly;
 	protected boolean required;
 	protected boolean defaultable;
@@ -20,14 +20,24 @@ public class FormField implements FormElement {
 	protected Converter<ParticipantDataValue, List<String>> toStringConverter;
 	
 	public FormField() {
+		this.dataColumn = new ParticipantDataColumnDescriptor();
+	}
+	
+	@Override
+	public ParticipantDataColumnDescriptor getDataColumn() {
+		return dataColumn;
+	}
+	
+	public void setDataColumn(ParticipantDataColumnDescriptor column) {
+		this.dataColumn = column;
 	}
 	
 	@Override
 	public String getName() {
-		return name;
+		return dataColumn.getName();
 	}
 	public void setName(String name) {
-		this.name = name;
+		dataColumn.setName(name);
 	}
 
 	@Override
@@ -40,10 +50,10 @@ public class FormField implements FormElement {
 
 	@Override
 	public String getInitialValue() {
-		return initialValue;
+		return dataColumn.getDefaultValue();
 	}
 	public void setInitialValue(String initialValue) {
-		this.initialValue = initialValue;
+		dataColumn.setDefaultValue(initialValue);
 	}
 
 	@Override

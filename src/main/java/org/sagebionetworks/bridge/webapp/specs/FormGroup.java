@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
@@ -34,6 +35,11 @@ public class FormGroup implements FormElement {
 		this.children.addAll(children);
 	}
 	
+	@Override
+	public ParticipantDataColumnDescriptor getDataColumn() {
+		return null;
+	}
+
 	public void add(FormElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("Child element in a FormGroup cannot be null");
