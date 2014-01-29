@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.converter.BooleanConverter;
 import org.sagebionetworks.bridge.webapp.converter.BooleanToStringConverter;
@@ -71,6 +72,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.getDataColumn().setColumnType(ParticipantDataColumnType.STRING);
 		field.setType(UIType.TEXT_INPUT);
 		field.setParticipantDataValueConverter(StringConverter.INSTANCE);
 		field.setStringConverter(StringToStringConverter.INSTANCE);
@@ -82,6 +84,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.getDataColumn().setColumnType(ParticipantDataColumnType.STRING);
 		field.setType(UIType.TEXT_INPUT);
 		field.setInitialValue(initialValue);
 		field.setParticipantDataValueConverter(StringConverter.INSTANCE);
@@ -100,14 +103,16 @@ public class FormFieldBuilder {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, DoubleToStringConverter.INSTANCE, DoubleConverter.INSTANCE);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, ParticipantDataColumnType.DOUBLE,
+				DoubleToStringConverter.INSTANCE, DoubleConverter.INSTANCE);
 	}
 	
 	public FormFieldBuilder asLong() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, LongToStringConverter.INSTANCE, LongConverter.INSTANCE);
+		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, ParticipantDataColumnType.LONG,
+				LongToStringConverter.INSTANCE, LongConverter.INSTANCE);
 	}
 
 	public FormFieldBuilder asBoolean() {
@@ -115,6 +120,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.getDataColumn().setColumnType(ParticipantDataColumnType.BOOLEAN);
 		field.setType(UIType.CHECKBOX);
 		field.setStringConverter(BooleanToStringConverter.INSTANCE);
 		field.setParticipantDataValueConverter(BooleanConverter.INSTANCE);
@@ -126,6 +132,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.getDataColumn().setColumnType(ParticipantDataColumnType.DATETIME);
 		field.setType(UIType.DATE);
 		field.setStringConverter(DateToISODateStringConverter.INSTANCE);
 		field.setParticipantDataValueConverter(ISODateConverter.INSTANCE);
@@ -137,6 +144,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.getDataColumn().setColumnType(ParticipantDataColumnType.DATETIME);
 		field.setType(UIType.DATETIME);
 		field.setStringConverter(DateToLongFormatDateStringConverter.INSTANCE);
 		field.setParticipantDataValueConverter(ISODateTimeConverter.INSTANCE);

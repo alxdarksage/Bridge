@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import java.util.List;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
@@ -9,9 +10,10 @@ import org.springframework.core.convert.converter.Converter;
 
 public class NumericFormFieldBuilder extends FormFieldBuilder {
 
-	public NumericFormFieldBuilder(UIType type, Converter<ParticipantDataValue, List<String>> stringConverter,
+	public NumericFormFieldBuilder(UIType type, ParticipantDataColumnType columnType, Converter<ParticipantDataValue, List<String>> stringConverter,
 			Converter<List<String>, ParticipantDataValue> objectConverter) {
 		this.field = new NumericFormField();
+		this.field.getDataColumn().setColumnType(columnType);
 		this.field.setType(type);
 		this.field.setStringConverter(stringConverter);
 		this.field.setParticipantDataValueConverter(objectConverter);

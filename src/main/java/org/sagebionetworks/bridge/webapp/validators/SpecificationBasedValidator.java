@@ -43,7 +43,7 @@ public class SpecificationBasedValidator implements Validator {
 		Map<String,String> values = dynamicForm.getValuesMap();
 		
 		for(FormElement field : spec.getAllFormElements()) {
-			if (field.getType().getColumnType() != null) {
+			if (field.getDataColumn() != null) {
 				validateThisField(errors, values, field);
 			}
 		}
@@ -64,7 +64,7 @@ public class SpecificationBasedValidator implements Validator {
 			}
 			return;
 		}
-		ParticipantDataColumnType dataType = field.getType().getColumnType();
+		ParticipantDataColumnType dataType = field.getDataColumn().getColumnType();
 		Converter<List<String>,ParticipantDataValue> converter = field.getParticipantDataValueConverter();
 		if (converter != null) {
 			try {

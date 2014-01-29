@@ -18,7 +18,7 @@
                 <c:when test="${active == 'Trackers'}">
                     <li class="list-group-item"><a id="adminAct" href='<c:url value="/admin/index.html"/>'><spring:message code="AdminHome"/></a></li>
                     <li class="list-group-item"><a id="communitiesAct" href='<c:url value="/admin/communities/index.html"/>'><spring:message code="Communities"/></a></li>
-                    <li class="list-group-item"><spring:message code="Trackers"/></li>
+                    <li class="active list-group-item"><spring:message code="Trackers"/></li>
                 </c:when>
             </c:choose>
         </ul>

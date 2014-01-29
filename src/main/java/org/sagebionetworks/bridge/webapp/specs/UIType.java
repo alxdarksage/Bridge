@@ -1,7 +1,5 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
-
 public enum UIType {
 	
 	NULL,
@@ -13,6 +11,7 @@ public enum UIType {
 	ROW,
 	// Two fields grouped together as a range of values.
 	RANGE,
+	// A bar showing lab results with a range of expected values for the lab
 	RANGE_NORM_BAR,
 	// Just the key to the column and its type, so the value can be output as a formatted string.
 	VALUE,
@@ -21,27 +20,13 @@ public enum UIType {
 	// Component that looks like data tables elsewhere in the application, but it contains FormElement components, 
 	// and so can edit one or more ParticipantData records
 	TABULAR,
-	DATE(ParticipantDataColumnType.DATETIME),
-	DATETIME(ParticipantDataColumnType.DATETIME),
-	TEXT_INPUT(ParticipantDataColumnType.STRING),
-	INTEGER_INPUT(ParticipantDataColumnType.LONG),
-	DECIMAL_INPUT(ParticipantDataColumnType.DOUBLE),
-	SINGLE_SELECT(ParticipantDataColumnType.STRING),
-	CHECKBOX(ParticipantDataColumnType.BOOLEAN);
-	
-
-	private ParticipantDataColumnType columnType;
-	
-	private UIType() {
-	}
-	
-	private UIType(ParticipantDataColumnType columnType) {
-		this.columnType = columnType;
-	}
-	
-	public ParticipantDataColumnType getColumnType() {
-		return this.columnType;
-	}
+	DATE,
+	DATETIME,
+	TEXT_INPUT,
+	INTEGER_INPUT,
+	DECIMAL_INPUT,
+	SINGLE_SELECT,
+	CHECKBOX;
 	
 	public String getLowerName() {
 		return this.name().toLowerCase();

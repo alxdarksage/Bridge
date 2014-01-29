@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.CronExpression;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
@@ -62,6 +63,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class ClientUtils {
@@ -179,11 +181,31 @@ public class ClientUtils {
 		if (specification == null) {
 			throw new SynapseNotFoundException("Could not find Specification for a Descriptor with the name " + descriptor.getName());
 		}
+		ClientUtils.updateSpecificationWithColumns(client, descriptor, specification);
+		
 		if (model != null) {
 			model.addObject("descriptor", descriptor);
 			model.addObject("form", specification);
 		}
 		return specification;
+	}
+
+	private static void updateSpecificationWithColumns(BridgeClient client, ParticipantDataDescriptor descriptor,
+			Specification specification) throws SynapseException {
+
+		List<ParticipantDataColumnDescriptor> columns = client.getParticipantDataColumnDescriptors(descriptor.getId(),
+				ClientUtils.LIMIT, 0L).getResults();
+		
+		Map<String,ParticipantDataColumnDescriptor> mapping = Maps.newHashMap();
+		for (ParticipantDataColumnDescriptor column : columns) {
+			mapping.put(column.getName(), column);
+		}
+		for (FormElement element : specification.getAllFormElements()) {
+			if (mapping.containsKey(element.getName())) {
+				logger.debug("Updating element " + element.getName() + " with persisted column data");
+				element.setDataColumn(mapping.get(element.getName()));
+			}
+		}
 	}
 	
 	public static V2WikiPage getWikiPage(BridgeRequest request, Community community, String wikiId)
