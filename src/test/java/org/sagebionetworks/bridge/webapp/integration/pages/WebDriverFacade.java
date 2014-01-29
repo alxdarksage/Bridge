@@ -44,11 +44,13 @@ public class WebDriverFacade implements WebDriver {
 
 	public void takeScreenshot() {
 		String date = Long.toString(new Date().getTime());
-		String name = ("./target/images/"+driver.getTitle()+" - "+date+ ".png").replace(" ","");
+		takeScreenshot((driver.getTitle()+" - "+date).replace(" ",""));
+	}
+	
+	public void takeScreenshot(String name) {
 		try {
 			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-			File destFile = new File(name);
-			System.out.println(destFile.getAbsolutePath());
+			File destFile = new File("./target/images/"+name+".png");
 			FileUtils.copyFile(srcFile, destFile);
 		} catch (IOException e) {
 			e.printStackTrace();

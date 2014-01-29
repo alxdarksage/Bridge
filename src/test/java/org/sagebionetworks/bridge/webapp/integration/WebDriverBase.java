@@ -45,7 +45,6 @@ public class WebDriverBase {
 	
 	@After
 	public void closeDriver() {
-		_driver.takeScreenshot();
 		_driver.close();
 		_driver.quit();
 	}
