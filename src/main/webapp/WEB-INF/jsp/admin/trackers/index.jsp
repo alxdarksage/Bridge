@@ -1,5 +1,5 @@
 <%@ include file="../../directives.jsp" %>
-<sage:admin code="AdminCommunities" active="Trackers">
+<sage:admin code="AdminTrackers" active="Trackers">
     <div class="sage-crumbs">
         <a href="<c:url value="/admin/index.html"/>"><spring:message code="AdminDashboard"/></a> &#187; 
     </div>

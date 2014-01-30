@@ -181,7 +181,8 @@ public class ITJournal extends WebDriverBase {
 		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
 		int rowCount = indexPage.getDataTable().getRowCount();
 		
-		indexPage.getDataTable().selectRow("October 23, 2013");
+		indexPage.getDataTable().selectRow(0);
+		// indexPage.getDataTable().selectRow("October 23, 2013");
 		indexPage.getDataTable().clickDelete();
 		
 		indexPage = journalPage.getTrackerIndexPage();
