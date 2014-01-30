@@ -28,13 +28,9 @@ public class ParticipantDataUtils {
 	public static List<ParticipantDataColumnDescriptor> getColumnDescriptors(String descriptorId, Specification spec) {
 		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList();
 		for (FormElement field : spec.getAllFormElements()) {
-			if (field.getType().getColumnType() != null) {
-				ParticipantDataColumnDescriptor column = new ParticipantDataColumnDescriptor();
-				column.setName(field.getName());
-				column.setDescription(field.getLabel());
-				column.setColumnType(field.getType().getColumnType()); 
-				column.setParticipantDataDescriptorId(descriptorId);
-				list.add(column);
+			if (field.getDataType() != null) {
+				field.getDataColumn().setParticipantDataDescriptorId(descriptorId);
+				list.add(field.getDataColumn());
 			}
 		}
 		return list;

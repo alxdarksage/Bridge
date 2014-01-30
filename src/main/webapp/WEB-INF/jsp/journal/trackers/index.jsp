@@ -20,10 +20,15 @@
 		            items="${records}" caption="${form.description}s" specification="${spec}">
 		            <sage:table-button id="newTrackerAct" type="primary" label="New Tracker" 
 		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
+                    <c:if test="${not descriptor.status.lastEntryComplete}">
+                        Resume Last Tracker
+                    </c:if>
 		            <sage:table-button id="exportAct" type="default" label="Export (*.csv)"
 		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
+		                
 	                <sage:spec-column  
 	                   link="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/row/{id}.html"/>
+	                   
                     <sage:table-button id="deleteAct" type="danger" label="Delete" action="delete" confirm="Are you sure you wish to delete this data?"/>
 		        </sage:spec-table>
             </c:otherwise>

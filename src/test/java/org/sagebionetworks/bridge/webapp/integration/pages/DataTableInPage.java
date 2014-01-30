@@ -23,6 +23,12 @@ public class DataTableInPage {
 		return null;
 	}
 	
+	private WebElement getRowByIndex(int index) {
+		WebElement table = facade.findElement(By.className("table-selectable")); 
+		List<WebElement> list = table.findElements(By.cssSelector("tbody tr"));
+		return list.get(index);
+	}
+	
 	public int getRowCount() {
 		return facade.findElements(By.cssSelector(".table-selectable tbody tr")).size();
 	}
@@ -33,6 +39,11 @@ public class DataTableInPage {
 	
 	public void selectRow(String name) {
 		WebElement parent = getRowByName(name);
+		parent.findElement(By.cssSelector("input[type=checkbox]")).click();
+	}
+	
+	public void selectRow(int index) {
+		WebElement parent = getRowByIndex(index);
 		parent.findElement(By.cssSelector("input[type=checkbox]")).click();
 	}
 	

@@ -19,6 +19,7 @@ import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
 import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
+import org.sagebionetworks.bridge.webapp.specs.trackers.MoodTracker;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.BridgeClientImpl;
 import org.sagebionetworks.client.SynapseAdminClient;
@@ -117,12 +118,14 @@ public class SageBootstrap {
 				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
 		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", "Rest time",
 				"sleep-time-slider", ParticipantDataColumnType.DOUBLE);
-		createData(bridge, "Mood Tracker", "Mood check in", ParticipantDataRepeatType.ALWAYS, null, "Mind", "mood-slider",
-				ParticipantDataColumnType.DOUBLE, "Body", "mood-slider", ParticipantDataColumnType.DOUBLE);
 		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, "Name", "string",
 				ParticipantDataColumnType.STRING, "Address", "string", ParticipantDataColumnType.STRING);
 		
 		Specification spec = new MedicationTracker();
+		createData(bridge, spec);
+
+		// Need to create it this way or it says it's different (although only trivially) when we update trackers
+		spec = new MoodTracker(); 
 		createData(bridge, spec);
 		
 		spec = new CompleteBloodCount();
@@ -155,8 +158,8 @@ public class SageBootstrap {
 	private void createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
 			String repeatFrequency, Object... cols) throws SynapseException {
 		ParticipantDataDescriptor desc = new ParticipantDataDescriptor();
-		desc.setDescription(description);
 		desc.setName(name);
+		desc.setDescription(description);
 		desc.setRepeatType(repeatType);
 		desc.setRepeatFrequency(repeatFrequency);
 		desc = bridge.createParticipantDataDescriptor(desc);
@@ -167,6 +170,7 @@ public class SageBootstrap {
 			col.setName((String) cols[index++]);
 			col.setDescription("");
 			col.setType((String) cols[index++]);
+			col.setExportable(true);
 			col.setColumnType((ParticipantDataColumnType) cols[index++]);
 			bridge.createParticipantDataColumnDescriptor(col);
 		}

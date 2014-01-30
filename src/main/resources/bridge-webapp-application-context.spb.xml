@@ -47,7 +47,7 @@
                 factory-method="getFileServiceEndpoint"/>
         </property>
     </bean>
-    
+
     <bean id="bridgeClient" class="org.sagebionetworks.client.BridgeClientImpl" scope="prototype">
         <constructor-arg ref="synapseClient"/>
         <property name="bridgeEndpoint">
@@ -57,13 +57,13 @@
     </bean>
 
     <bean id="bridgeUser" class="org.sagebionetworks.bridge.webapp.forms.BridgeUser" scope="prototype"/>
-        
+
     <bean id="specificationResolver" class="org.sagebionetworks.bridge.webapp.specs.SpecificationResolver">
         <property name="specifications">
             <list>
-                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount"/>
-                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker"/>
-                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MoodTracker"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount" scope="prototype"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker" scope="prototype"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MoodTracker" scope="prototype"/>
             </list>
         </property>
     </bean>

@@ -127,8 +127,8 @@ public class FieldTag extends SpringAwareTag {
 		}
 		tb.addAttribute("id", field.getName());
 		tb.addAttribute("name", fieldName);
-		if (field.getType().getColumnType() != null) {
-			tb.addAttribute("data-type", field.getType().getColumnType().name().toLowerCase());	
+		if (field.getDataType() != null) {
+			tb.addAttribute("data-type", field.getDataType().name().toLowerCase());	
 		}
 		if (field.isReadonly()) {
 			tb.addAttribute("readonly", "readonly");

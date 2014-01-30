@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp.specs;
 import java.util.List;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
@@ -17,6 +18,10 @@ public interface FormElement {
 	 * @return
 	 */
 	public ParticipantDataColumnDescriptor getDataColumn();
+	
+	public void setDataColumn(ParticipantDataColumnDescriptor column);
+	
+	public ParticipantDataColumnType getDataType();
 	
 	/**
 	 * The form name, and the name of the field in the table where the information is saved.
@@ -52,6 +57,13 @@ public interface FormElement {
 	 * @return
 	 */
 	public boolean isRequired();
+	
+	/**
+	 * Can this information be shared with researchers, or is it intended to be private to the 
+	 * user?
+	 * @return
+	 */
+	public boolean isExportable();
 	
 	public UIType getType();
 	
