@@ -1,19 +1,21 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.bridge.webapp.SageBootstrap;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
@@ -21,8 +23,6 @@ import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.client.BridgeClient;
-import org.sagebionetworks.client.SynapseAdminClient;
-import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.springframework.stereotype.Controller;
@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/admin")
@@ -71,87 +71,129 @@ public class TrackersAdminController {
 		return "admin/trackers/index";
 	}
 
-	@RequestMapping(value = "/trackers/create", method = RequestMethod.GET)
-	public String createTestTrackers(final BridgeRequest request) throws Exception {
-
-		
-		request.setNotification("Created any missing trackers.");
-		return "redirect:/admin/trackers/index.html";
-	}
-	
 	@RequestMapping(value = "/trackers/update", method = RequestMethod.GET)
-	public ModelAndView updateTrackers(final BridgeRequest request, ModelAndView model) throws Exception {
-		List<ParticipantDataDescriptor> descriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L).getResults();
+	public ModelAndView updateTrackers(final BridgeRequest request,
+			@ModelAttribute("descriptors") List<ParticipantDataDescriptor> descriptors, ModelAndView model)
+			throws Exception {
+		Map<String, ParticipantDataDescriptor> descriptorMap = getDescriptorMap(descriptors);
 		
 		StringBuilder sb = new StringBuilder();
-
-		createTrackersIfMissing(sb, descriptors);
-		createColumnsIfMissing(sb, descriptors);
+		updateOrCreateTrackersIfMissing(sb, descriptorMap);
+		//createColumnsIfMissing(sb, descriptorMap);
+		
+		for (ParticipantDataDescriptor descriptor : descriptorMap.values()) {
+			Specification spec = specResolver.getSpecification(descriptor.getName());
+			if (spec == null || spec.getAllFormElements() == null) {
+				sb.append("<p>Skipped " + descriptor.getName() + ", it has no UI specified.</p>");
+			}
+		}
 		
 		model.addObject("messages", sb.toString());
+
 		model.setViewName("admin/trackers/index");
 		return model;
 	}
 
-	private void createColumnsIfMissing(StringBuilder sb, List<ParticipantDataDescriptor> descriptors)
-			throws SynapseException {
-		for (ParticipantDataDescriptor descriptor : descriptors) {
-			Specification spec = specResolver.getSpecification(descriptor.getName());
-			if (spec == null) {
-				sb.append("<p>Skipped " + descriptor.getName() + ", it has no UI specified.</p>");
-				continue;
-			}
-			sb.append("<p>Examined "+descriptor.getName()+" for changes. ");
-			
-			PaginatedResults<ParticipantDataColumnDescriptor> columns = client.getParticipantDataColumnDescriptors(
-					descriptor.getId(), ClientUtils.LIMIT, 0L);
-
-			Map<String,ParticipantDataColumnDescriptor> columnsByName = Maps.newHashMap();
-			for (ParticipantDataColumnDescriptor column : columns.getResults()) {
-				columnsByName.put(column.getName(), column);
-			}
-			if (spec.getAllFormElements() != null) {
-				for (FormElement element : spec.getAllFormElements()) {
-					if (element.getDataType() != null) {
-						if (columnsByName.get(element.getName()) == null) {
-							ParticipantDataColumnDescriptor column = element.getDataColumn();
-							column.setParticipantDataDescriptorId(descriptor.getId());
-							client.createParticipantDataColumnDescriptor(column);
-							sb.append("<br>&bull; created a column for '" + element.getName() + "'. ");
-						} else {
-							sb.append("<br>&bull; skipping column '" + element.getName() + "', it already exists. ");
-						}
-					}
-				}
-			}
-			sb.append("</p>");
-		}
-	}
-
-	private void createTrackersIfMissing(StringBuilder sb, List<ParticipantDataDescriptor> descriptors)
-			throws SynapseException {
-		// Create any trackers that aren't currently in the system.
+	private void updateOrCreateTrackersIfMissing(StringBuilder sb, Map<String, ParticipantDataDescriptor> descriptorMap)
+			throws SynapseException, IllegalAccessException, InvocationTargetException {
+		
 		for(Specification spec : specResolver.getAllSpecifications()) {
-			ParticipantDataDescriptor descriptor = null;
-			for (ParticipantDataDescriptor d : descriptors) {
-				if (d.getName().equals(spec.getName())) {
-					descriptor = d;
-				}
-			}
+			ParticipantDataDescriptor descriptor = descriptorMap.get(spec.getName());
 			if (descriptor == null) {
-				descriptor = ParticipantDataUtils.getDescriptor(spec);
-				descriptor = client.createParticipantDataDescriptor(descriptor);
+				sb.append("<p>Created tracker " + spec.getName() + ". </p>");
 				
+				descriptor = client.createParticipantDataDescriptor(ParticipantDataUtils.getDescriptor(spec));
 				List<ParticipantDataColumnDescriptor> columns = ParticipantDataUtils.getColumnDescriptors(
 						descriptor.getId(), spec);
-				
 				for (ParticipantDataColumnDescriptor column : columns) {
 					client.createParticipantDataColumnDescriptor(column);
 				}
-				sb.append("<p>Created tracker " + spec.getName() + ". </p>");
+			} else {
+				sb.append("<p>Tracker " + spec.getName() + " updated if there were changes.");
+				ParticipantDataDescriptor newDesc = ParticipantDataUtils.getDescriptor(spec);
+				descriptor.setName(newDesc.getName());
+				descriptor.setDescription(newDesc.getDescription());
+				descriptor.setRepeatFrequency(newDesc.getRepeatFrequency());
+				descriptor.setRepeatType(newDesc.getRepeatType());
+				client.updateParticipantDataDescriptor(descriptor);
+				updateColumns(client, sb, spec, descriptor);
 			}
 		}
 	}
+
+	private void updateColumns(BridgeClient client, StringBuilder sb, Specification spec,
+			ParticipantDataDescriptor descriptor) throws SynapseException {
+		Map<String,ParticipantDataColumnDescriptor> columnsByName = getColumnsMap(client, descriptor.getId()); 
+		
+		List<ParticipantDataColumnDescriptor> specColumns = ParticipantDataUtils.getColumnDescriptors(descriptor.getId(), spec);
+		for (ParticipantDataColumnDescriptor specColumn : specColumns) {
+			if (!columnsByName.containsKey(specColumn.getName())) {
+				sb.append("<br><b>&bull; created a column for '" + specColumn.getName() + "'.</b> ");
+				specColumn.setParticipantDataDescriptorId(descriptor.getId());
+				client.createParticipantDataColumnDescriptor(specColumn);
+			} else {
+				sb.append("<br>&bull; skipping column '" + specColumn.getName() + "', it already exists. ");
+				compareColumns(sb, columnsByName.get(specColumn.getName()), specColumn);
+			}
+		}
+		sb.append("</p>");
+	}
 	
+	private Map<String, ParticipantDataDescriptor> getDescriptorMap(List<ParticipantDataDescriptor> descriptors) {
+		Map<String,ParticipantDataDescriptor> map = Maps.newHashMap();
+		for (ParticipantDataDescriptor descriptor : descriptors) {
+			map.put(descriptor.getName(), descriptor);
+		}
+		return map;
+	}
+	
+	private Map<String, ParticipantDataColumnDescriptor> getColumnsMap(BridgeClient client, String descriptorId)
+			throws SynapseException {
+		PaginatedResults<ParticipantDataColumnDescriptor> columns = client.getParticipantDataColumnDescriptors(
+				descriptorId, ClientUtils.LIMIT, 0L);
+
+		Map<String,ParticipantDataColumnDescriptor> map = Maps.newHashMap();
+		for (ParticipantDataColumnDescriptor column : columns.getResults()) {
+			map.put(column.getName(), column);
+		}
+		return map;
+	}
+	
+	private void compareColumns(StringBuilder sb, ParticipantDataColumnDescriptor existingColumn,
+			ParticipantDataColumnDescriptor specColumn) {
+		String message = "<br>&bull; <b>But, the '%s' field changed and this column is immutable (create a new column by renaming this column)</b>";
+		
+		if (existingColumn.getExportable() != existingColumn.getExportable()) {
+			sb.append(String.format(message, "exportable"));
+		}
+		if (existingColumn.getReadonly() != existingColumn.getReadonly()) {
+			sb.append(String.format(message, "readonly"));
+		}
+		if (existingColumn.getRequired() != existingColumn.getRequired()) {
+			sb.append(String.format(message, "required"));
+		}
+		if (!areEqual(existingColumn.getColumnType(), specColumn.getColumnType())) {
+			sb.append(String.format(message, "columnType"));
+		}
+		if (!areEqual(existingColumn.getDefaultValue(), specColumn.getDefaultValue())) {
+			sb.append(String.format(message, "defaultValue"));
+		}
+		if (!areEqual(existingColumn.getDescription(), specColumn.getDescription())) {
+			sb.append(String.format(message, "description"));
+		}
+		if (!areEqual(existingColumn.getType(), specColumn.getType())) {
+			sb.append(String.format(message, "type"));
+		}
+	}
+	
+	private boolean areEqual(Object obj1, Object obj2) {
+		if (obj1 == null && obj2 == null) {
+			return true;
+		}
+		if (obj1 == null || obj2 == null) {
+			return false;
+		}
+		return obj1.equals(obj2);
+	}
 
 }

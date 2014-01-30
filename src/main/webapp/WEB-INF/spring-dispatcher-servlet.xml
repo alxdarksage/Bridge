@@ -53,7 +53,7 @@
     <!-- Uses the accept header by default, and that's just fine. A good test would be to compare all the keys
         in the English file to all the other files, just to verify that you've filled them all out.
      -->
-    <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource" id="messageSource">  
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
         <property name="basenames">  
             <list>  
                 <value>classpath:messages/messages</value>

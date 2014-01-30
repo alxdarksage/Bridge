@@ -61,6 +61,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.setExportable();
 		field.setType(UIType.VALUE);
 		field.setStringConverter(stringConverter);
 		field.setParticipantDataValueConverter(pdvConverter);
@@ -72,6 +73,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.setExportable();
 		field.getDataColumn().setColumnType(ParticipantDataColumnType.STRING);
 		field.setType(UIType.TEXT_INPUT);
 		field.setParticipantDataValueConverter(StringConverter.INSTANCE);
@@ -84,6 +86,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.setExportable();
 		field.getDataColumn().setColumnType(ParticipantDataColumnType.STRING);
 		field.setType(UIType.TEXT_INPUT);
 		field.setInitialValue(initialValue);
@@ -120,6 +123,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.setExportable();
 		field.getDataColumn().setColumnType(ParticipantDataColumnType.BOOLEAN);
 		field.setType(UIType.CHECKBOX);
 		field.setStringConverter(BooleanToStringConverter.INSTANCE);
@@ -132,6 +136,7 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.setExportable();
 		field.getDataColumn().setColumnType(ParticipantDataColumnType.DATETIME);
 		field.setType(UIType.DATE);
 		field.setStringConverter(DateToISODateStringConverter.INSTANCE);
@@ -144,10 +149,19 @@ public class FormFieldBuilder {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
 		field = new FormField();
+		field.setExportable();
 		field.getDataColumn().setColumnType(ParticipantDataColumnType.DATETIME);
 		field.setType(UIType.DATETIME);
 		field.setStringConverter(DateToLongFormatDateStringConverter.INSTANCE);
 		field.setParticipantDataValueConverter(ISODateTimeConverter.INSTANCE);
+		return this;
+	}
+	
+	public FormFieldBuilder type(String type) {
+		if (field == null) {
+			throw new IllegalArgumentException(NULL_MESSAGE);
+		}
+		field.getDataColumn().setType(type);
 		return this;
 	}
 	

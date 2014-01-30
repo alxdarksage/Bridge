@@ -13,6 +13,7 @@ public class NumericFormFieldBuilder extends FormFieldBuilder {
 	public NumericFormFieldBuilder(UIType type, ParticipantDataColumnType columnType, Converter<ParticipantDataValue, List<String>> stringConverter,
 			Converter<List<String>, ParticipantDataValue> objectConverter) {
 		this.field = new NumericFormField();
+		this.field.setExportable();
 		this.field.getDataColumn().setColumnType(columnType);
 		this.field.setType(type);
 		this.field.setStringConverter(stringConverter);

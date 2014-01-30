@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
@@ -23,10 +24,12 @@ public class MoodTracker implements Specification {
 
 	private final FormField mind;
 	private final FormField body;
+	//private final FormField foo;
 	
 	public MoodTracker() {
-		mind = new FormFieldBuilder().asDouble().name("Mind").label("Mind").create();
-		body = new FormFieldBuilder().asDouble().name("Body").label("Body").create();
+		mind = new FormFieldBuilder().asDouble().name("Mind").label("Mind").type("mood-slider").create();
+		body = new FormFieldBuilder().asDouble().name("Body").label("Body").type("mood-slider").create();
+		//foo = new FormFieldBuilder().asDouble().name("Foo").label("Body").type("mood-slider").create();
 	}
 	
 	@Override
@@ -36,7 +39,7 @@ public class MoodTracker implements Specification {
 
 	@Override
 	public String getDescription() {
-		return "Mood tracker";
+		return "Mood check in";
 	}
 
 	@Override

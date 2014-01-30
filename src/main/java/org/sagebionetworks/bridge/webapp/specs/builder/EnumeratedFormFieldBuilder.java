@@ -12,6 +12,7 @@ public class EnumeratedFormFieldBuilder extends FormFieldBuilder {
 
 	public EnumeratedFormFieldBuilder(List<String> enumeratedValues) {
 		this.field = new EnumeratedFormField();
+		this.field.setExportable();
 		((EnumeratedFormField)field).setEnumeratedValues(enumeratedValues);
 		this.field.getDataColumn().setColumnType(ParticipantDataColumnType.STRING);
 		this.field.setType(UIType.SINGLE_SELECT);

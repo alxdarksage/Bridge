@@ -13,8 +13,6 @@ abstract public class AbstractFormElement implements FormElement {
 
 	protected ParticipantDataColumnDescriptor column;
 	protected boolean defaultable;
-	protected boolean readonly;
-	protected boolean required;
 	protected UIType type;
 	protected Converter<List<String>, ParticipantDataValue> participantDataValueConverter;
 	protected Converter<ParticipantDataValue, List<String>> stringConverter;
@@ -61,12 +59,17 @@ abstract public class AbstractFormElement implements FormElement {
 
 	@Override
 	public boolean isReadonly() {
-		return readonly;
+		return nullSafeBoolean(column.getReadonly());
 	}
-
+	
 	@Override
 	public boolean isRequired() {
-		return required;
+		return nullSafeBoolean(column.getRequired());
+	}
+	
+	@Override
+	public boolean isExportable() {
+		return nullSafeBoolean(column.getExportable());
 	}
 
 	@Override
@@ -102,11 +105,19 @@ abstract public class AbstractFormElement implements FormElement {
 	}
 	
 	public void setRequired() {
-		this.required = true;
+		column.setRequired(true);
 	}
 	
 	public void setReadonly() {
-		this.readonly = true;
+		column.setReadonly(true);
+	}
+	
+	public void setExportable() {
+		column.setExportable(true);
+	}
+	
+	public void setPrivate() {
+		column.setExportable(false);
 	}
 	
 	public void setType(UIType type) {
@@ -124,4 +135,9 @@ abstract public class AbstractFormElement implements FormElement {
 	public void setStringConverter(Converter<ParticipantDataValue, List<String>> converter) {
 		this.stringConverter = converter;
 	}
+
+	private boolean nullSafeBoolean(Boolean value) {
+		return (value == null) ? false : value.booleanValue();
+	}
+	
 }

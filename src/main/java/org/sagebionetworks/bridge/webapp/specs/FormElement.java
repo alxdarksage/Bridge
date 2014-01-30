@@ -58,6 +58,13 @@ public interface FormElement {
 	 */
 	public boolean isRequired();
 	
+	/**
+	 * Can this information be shared with researchers, or is it intended to be private to the 
+	 * user?
+	 * @return
+	 */
+	public boolean isExportable();
+	
 	public UIType getType();
 	
 	/**
