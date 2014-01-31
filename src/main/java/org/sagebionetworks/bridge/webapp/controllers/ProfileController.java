@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,9 +42,10 @@ public class ProfileController {
 		return new SignInForm();
 	}
 	
+	@ModelAttribute("memberships")
 	public List<CheckboxItem> memberships(BridgeRequest request) throws SynapseException {
+		List<Community> communities = getAllCommunities(request);
 		
-		List<Community> communities = getCommunities(request);
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
 		
@@ -73,22 +75,22 @@ public class ProfileController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView post(BridgeRequest request, @ModelAttribute @Valid ProfileForm profileForm,
 			BindingResult result, @RequestParam(value = "memberships", required = false) List<String> memberships,
-			ModelAndView model, @ModelAttribute("memberships") List<CheckboxItem> existingMemberships)
+			ModelAndView model)
 			throws SynapseException {
 		
-		List<Community> communities = getCommunities(request);
+		List<Community> communities = getAllCommunities(request);
 		
 		SynapseClient client = request.getBridgeUser().getSynapseClient();
 		BridgeClient bridgeClient = request.getBridgeUser().getBridgeClient();
 		model.setViewName("profile");
-		
+
 		if (!result.hasErrors()) {
 			try {
 				// Doesn't want to be a member of any community, empty checkboxes.
 				if (memberships == null) {
-					memberships = Collections.emptyList();
+					memberships = new ArrayList<String>();
 				}
-				List<String> currentMemberships = getMembershipIds(existingMemberships);
+				List<String> currentMemberships = getMembershipIds(bridgeClient);
 				
 				for (Community community : communities) {
 					String id = community.getId();
@@ -115,17 +117,16 @@ public class ProfileController {
 		return model;
 	}
 	
-	private List<Community> getCommunities(BridgeRequest request) throws SynapseException {
+	private List<Community> getAllCommunities(BridgeRequest request) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		return client.getAllCommunities(ClientUtils.LIMIT, 0).getResults();
 	}
 	
-	private List<String> getMembershipIds(List<CheckboxItem> existingMemberships) throws SynapseException {
+	private List<String> getMembershipIds(BridgeClient client) throws SynapseException {
 		List<String> list = Lists.newArrayList();
-		for (CheckboxItem community : existingMemberships) {
-			if (community.isSelected()) {
-				list.add(community.getId());	
-			}
+		PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
+		for (Community community : memberships.getResults()) {
+			list.add(community.getId());	
 		}
 		return list;
 	}
