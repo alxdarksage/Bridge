@@ -1,10 +1,18 @@
 package org.sagebionetworks.bridge.webapp.integration;
 
+import java.io.File;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Rule;
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -14,7 +22,9 @@ import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 public class WebDriverBase {
 
 	protected WebDriverFacade _driver;
-
+	
+	@Rule public ScreenshotTestRule screenshotTestRule = new ScreenshotTestRule();
+	
 	protected WebDriverFacade initDriver() {
 		// Does not work with version 26.0 of Firefox on my machine. 
 		// Downgraded Firefox to version 25.0 for the time being.
@@ -42,12 +52,6 @@ public class WebDriverBase {
 	private WebDriverFacade createFirefoxDriver() {
 		return new WebDriverFacade(new FirefoxDriver());
 	}
-	
-	@After
-	public void closeDriver() {
-		_driver.close();
-		_driver.quit();
-	}
 
 	protected String getUniqueUserName() {
 		return "test" + Long.toString(new Date().getTime());
@@ -56,4 +60,34 @@ public class WebDriverBase {
 	protected String getUniqueEmail() {
 		return "test" + Long.toString(new Date().getTime()) + "@test.com";
 	}
+	
+	public class ScreenshotTestRule implements MethodRule {
+		public Statement apply(final Statement statement, final FrameworkMethod frameworkMethod, final Object o) {
+			return new Statement() {
+				@Override
+				public void evaluate() throws Throwable {
+					try {
+						statement.evaluate();
+					} catch (Throwable t) {
+						takeScreenshot(frameworkMethod.getName());
+						throw t;
+					} finally {
+						_driver.close();
+						_driver.quit();
+					}
+				}
+
+				public void takeScreenshot(String fileName) throws Throwable {
+					try {
+						File srcFile = ((TakesScreenshot)_driver.getDriver()).getScreenshotAs(OutputType.FILE);
+						File destFile = new File("./target/images/"+fileName+".png");
+						FileUtils.copyFile(srcFile, destFile);
+					} catch (Throwable t) {
+						throw t;
+					}
+				}
+			};
+		}
+	}
+	
 }

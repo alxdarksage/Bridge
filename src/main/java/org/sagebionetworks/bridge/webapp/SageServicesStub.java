@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -89,10 +90,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	Map<Team,Set<String>> memberships = Maps.newHashMap();
 	Map<String,String> markdownsByFileHandleId = Maps.newHashMap();
 	Map<String,String> emailByUserId = Maps.newHashMap();
+	Map<String,ParticipantDataStatus> statuses = Maps.newHashMap();
 
 	// Participant data
 	Map<String,ParticipantDataDescriptor> descriptorsById = Maps.newHashMap();
-	Multimap<String,ParticipantDataDescriptor> descriptorsByUserId = LinkedListMultimap.create();
 	Multimap<String,ParticipantDataColumnDescriptor> columnsByDescriptorById = LinkedListMultimap.create();
 	Map<String, List<ParticipantDataRow>> participantDataByDescriptorId = Maps.newHashMap();
 	int idCount = 2;
@@ -116,6 +117,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		enhancer.setCallback(new MethodInterceptor() {
 			@Override
 			public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+				logger.debug(method.getName());
 				return proxy.invokeSuper(obj, args);
 			}
 		});
@@ -779,6 +781,13 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			list.addAll(data);
 			participantDataByDescriptorId.put(participantDataDescriptorId, list);
 		} else {
+			// So, when you append data, the default is that it is finished.
+			String compoundKey = currentUserData.getProfile().getOwnerId() + ":" + participantDataDescriptorId;
+			ParticipantDataStatus status = new ParticipantDataStatus();
+			status.setLastEntryComplete(true);
+			status.setLastStarted(new Date());
+			status.setParticipantDataDescriptorId(participantDataDescriptorId);
+			statuses.put(compoundKey, status);
 			participantDataByDescriptorId.put(participantDataDescriptorId, data);
 		}
 		return data;
@@ -810,25 +819,23 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		if (data == null) {
 			data = Collections.emptyList();
 		}
-		return PaginatedResultsUtil.createPaginatedResults(data, limit, offset);
+		return PaginatedResultsUtil.createPaginatedResults(Lists.newArrayList(data), limit, offset);
 	}
 	
 	@Override
 	public ParticipantDataDescriptor createParticipantDataDescriptor(ParticipantDataDescriptor descriptor)
 			throws SynapseException {
 		descriptor.setId(newId());
-		ParticipantDataStatus status = new ParticipantDataStatus();
-		status.setLastEntryComplete(false);
-		status.setParticipantDataDescriptorId(descriptor.getId());
-		descriptor.setStatus(status);
 		descriptorsById.put(descriptor.getId(), descriptor);
-		descriptorsByUserId.put(currentUserData.getProfile().getOwnerId(), descriptor);
 		return descriptor;
 	}
 	
 	@Override
 	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
 			throws SynapseException {
+		for (ParticipantDataDescriptor descriptor : descriptorsById.values()) {
+			descriptor.setStatus(null);
+		}
 		return PaginatedResultsUtil.createPaginatedResults(Lists.newArrayList(descriptorsById.values()), limit, offset);
 	}
 
@@ -836,8 +843,21 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
 			throws SynapseException {
 		String ownerId = currentUserData.getProfile().getOwnerId();
-		return PaginatedResultsUtil.createPaginatedResults(Lists.newArrayList(descriptorsByUserId.get(ownerId)), limit,
-				offset);
+		Collection<ParticipantDataDescriptor> descriptors = descriptorsById.values();
+		for (ParticipantDataDescriptor descriptor : descriptors) {
+			String compoundKey = ownerId + ":" + descriptor.getId();
+			ParticipantDataStatus status = statuses.get(compoundKey);
+			// Basically it's assumed to be done if this call is made, however, in the 
+			// real API I believe it can be null.
+			if (status == null) {
+				status = new ParticipantDataStatus();
+				status.setLastEntryComplete(true);
+				status.setParticipantDataDescriptorId(descriptor.getId());
+				descriptor.setStatus(status);
+			}
+			descriptor.setStatus(status);
+		}
+		return PaginatedResultsUtil.createPaginatedResults(Lists.newArrayList(descriptors), limit, offset);
 	}
 	
 	@Override
@@ -859,34 +879,33 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public ParticipantDataCurrentRow getCurrentParticipantData(String participantDataDescriptorId)
 			throws SynapseException {
 		
-		ParticipantDataDescriptor found = descriptorsById.get(participantDataDescriptorId);
+		String compoundKey = currentUserData.getProfile().getOwnerId() + ":" + participantDataDescriptorId;
+		ParticipantDataStatus status = statuses.get(compoundKey);
+		ParticipantDataDescriptor descriptor = descriptorsById.get(participantDataDescriptorId);
+		
+		ParticipantDataRow emptyRow = new ParticipantDataRow();
+		emptyRow.setData(Maps.<String,ParticipantDataValue>newHashMap()); // Collections.<String, ParticipantDataValue>emptyMap()
+		
+		ParticipantDataCurrentRow currentRow = new ParticipantDataCurrentRow();
+		currentRow.setStatus(status);
+		currentRow.setDescriptor(descriptor);
+		currentRow.setPreviousData(emptyRow);
+		currentRow.setCurrentData(emptyRow);
+		
 		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (rows == null) {
 			rows = Collections.emptyList();
 		}
-		ParticipantDataCurrentRow currentRow = new ParticipantDataCurrentRow();
-		currentRow.setStatus(found.getStatus());
-		currentRow.setDescriptor(found);
-		
-		ParticipantDataRow emptyRow = new ParticipantDataRow();
-		emptyRow.setData(Collections.<String, ParticipantDataValue>emptyMap());
-		
-		ParticipantDataStatus status = found.getStatus();
-		if (status.getLastEntryComplete()) {
-			logger.info("Last entry is considered complete");
-			if (rows.size() >= 1) {
-				currentRow.setPreviousData(rows.get(rows.size()-1));
-				currentRow.setCurrentData(emptyRow);
+		if (Boolean.TRUE.equals(status.getLastEntryComplete())) {
+			if (rows.size() > 0) {
+				currentRow.setPreviousData(rows.get(rows.size()-1));	
 			}
 		} else {
-			logger.info("Last entry is NOT considered complete");
-			if (rows.size() >= 1) {
-				currentRow.setPreviousData(emptyRow);
-				currentRow.setCurrentData(rows.get(rows.size()-1));	
+			if (rows.size() > 0) {
+				currentRow.setCurrentData(rows.get(rows.size()-1));
 			}
-			if (rows.size() >= 2) {
+			if (rows.size() > 1) {
 				currentRow.setPreviousData(rows.get(rows.size()-2));
-				currentRow.setCurrentData(emptyRow);
 			}
 		}
 		return currentRow;
@@ -922,9 +941,12 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	
 	@Override
 	public void sendParticipantDataDescriptorUpdates(ParticipantDataStatusList dataStatusList) {
+		String ownerId = currentUserData.getProfile().getOwnerId();
 		for (ParticipantDataStatus status : dataStatusList.getUpdates()) {
-			ParticipantDataDescriptor descriptor = descriptorsById.get(status.getParticipantDataDescriptorId());
-			descriptor.setStatus(status);
+			String descriptorId = status.getParticipantDataDescriptorId();
+			String compoundKey = ownerId + ":" + descriptorId;
+			statuses.put(compoundKey, status);
+			logger.info("Updating status: " + compoundKey + " to status: " + status.getLastEntryComplete().toString());
 		}
 	}
 	

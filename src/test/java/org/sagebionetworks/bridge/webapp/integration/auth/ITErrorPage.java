@@ -16,13 +16,6 @@ public class ITErrorPage extends WebDriverBase {
 		driver = initDriver();
 	}
 	
-	@After
-	@Override
-	public void closeDriver() {
-		_driver.close();
-		_driver.quit();
-	}	
-	
 	@Test
 	public void errorPageFor404() {
 		driver.get("/foo.html");

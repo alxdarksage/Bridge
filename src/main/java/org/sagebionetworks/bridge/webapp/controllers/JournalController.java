@@ -20,6 +20,7 @@ import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -86,9 +87,10 @@ public class JournalController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
 		model.addObject("spec", spec);
-		ClientUtils.prepareParticipantData(client, model, spec, trackerId);
+		ClientUtils.prepareParticipantData(client, model, spec, descriptor);
 		model.setViewName("journal/trackers/index");
 		return model;
 	}
@@ -101,7 +103,8 @@ public class JournalController extends JournalControllerBase {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, null, trackerId);
+		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, null);
+		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, null);
 		ClientUtils.exportParticipantData(response, spec, paginatedRowSet);
 	}
 	
@@ -111,7 +114,8 @@ public class JournalController extends JournalControllerBase {
 			throws SynapseException {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
 		Set<String> defaultedFields = FormUtils.defaultsToDynamicForm(dynamicForm, client, spec, trackerId);
 		model.addObject("defaultedFields", defaultedFields);
 		
@@ -119,20 +123,25 @@ public class JournalController extends JournalControllerBase {
 		return model;
 	}
 
-	
+	// This is the finish action, which doesn't have to be marked as such in the HTML. In some forms there's just
+	// a submit button to save (where resuming a form makes no sense).
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.POST)
-	public ModelAndView createTracker(BridgeRequest request, @PathVariable("participantId") String participantId,
+	public ModelAndView finishNewTracker(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm, BindingResult result,
+			ModelAndView model) throws SynapseException {
+		
+		createRow(request, participantId, trackerId, dynamicForm, model, result,
+				ParticipantDataUtils.getFinishedStatus(trackerId));
+		return model;
+	}
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/new", method = RequestMethod.POST, params="save=save")
+	public ModelAndView saveNewTracker(BridgeRequest request, @PathVariable("participantId") String participantId,
 			@PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm, BindingResult result,
 			ModelAndView model) throws SynapseException {
 
-		createRow(request, trackerId, dynamicForm, result, model);
-		if (result.hasErrors()) {
-			model.setViewName("journal/trackers/new");
-			return model;
-		}
-		
-		request.setNotification("Tracker updated.");
-		model.setViewName("redirect:/journal/"+participantId+"/trackers/"+trackerId+".html");
+		createRow(request, participantId, trackerId, dynamicForm, model, result,
+				ParticipantDataUtils.getInProcessStatus(trackerId));
 		return model;
 	}
 	
@@ -142,7 +151,8 @@ public class JournalController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
@@ -159,7 +169,8 @@ public class JournalController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		Specification spec = ClientUtils.prepareSpecificationAndDescriptor(client, specResolver, model, trackerId);
+		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
@@ -169,23 +180,52 @@ public class JournalController extends JournalControllerBase {
 		return model;
 	}
 
-	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}", method = RequestMethod.POST)
-	public ModelAndView updateRow(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, @ModelAttribute DynamicForm dynamicForm,
-			BindingResult result, ModelAndView model) throws SynapseException {
-
-		updateRow(request, trackerId, dynamicForm, result, model, rowId);
-		model.addObject("rowId", rowId);
-		if (result.hasErrors()) {
-			model.setViewName("journal/trackers/edit");
-			return model;
-		}
-
-		request.setNotification("Tracker updated.");
-		model.setViewName("redirect:/journal/" + participantId + "/trackers/" + trackerId + ".html");
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/resume", method = RequestMethod.GET)
+	public ModelAndView resumeRow(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, ModelAndView model,
+			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
+		
+		BridgeClient client = request.getBridgeUser().getBridgeClient();
+		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		
+		ParticipantDataRow row = client.getCurrentParticipantData(trackerId).getCurrentData();
+		model.addObject("rowId", row.getRowId());
+		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getEditStructure(), row));
+		
+		model.setViewName("journal/trackers/resume");
 		return model;
 	}
 	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}/resume", method = RequestMethod.POST)
+	public ModelAndView finishRow(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, ModelAndView model,
+			BindingResult result, @ModelAttribute DynamicForm dynamicForm) throws SynapseException {
+		
+		updateRow(request, participantId, trackerId, rowId, dynamicForm, model, result,
+				ParticipantDataUtils.getFinishedStatus(trackerId));
+		return model;
+	}
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}/resume", method = RequestMethod.POST, params = "save=save")
+	public ModelAndView saveRow(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, ModelAndView model,
+			BindingResult result, @ModelAttribute DynamicForm dynamicForm) throws SynapseException {
+		
+		updateRow(request, participantId, trackerId, rowId, dynamicForm, model, result,
+				ParticipantDataUtils.getInProcessStatus(trackerId));
+		return model;
+	}
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/row/{rowId}", method = RequestMethod.POST)
+	public ModelAndView finishRow(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId, @ModelAttribute DynamicForm dynamicForm,
+			BindingResult result, ModelAndView model) throws SynapseException {
+
+		updateRow(request, participantId, trackerId, rowId, dynamicForm, model, result,
+				ParticipantDataUtils.getFinishedStatus(trackerId));
+		return model;
+	}
 	
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")
 	public String batchTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,

@@ -1,6 +1,7 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
+import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;
 
@@ -58,6 +61,25 @@ public class ParticipantDataUtils {
 		return values.get(0);
 	}
 
+	public static ParticipantDataStatusList getFinishedStatus(String id) {
+		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
+		ParticipantDataStatus status = new ParticipantDataStatus();
+		status.setParticipantDataDescriptorId(id);
+		status.setLastEntryComplete(true);
+		statuses.setUpdates(Collections.singletonList(status));
+		return statuses;
+	}
+	
+	public static ParticipantDataStatusList getInProcessStatus(String id) {
+		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
+		ParticipantDataStatus status = new ParticipantDataStatus();
+		status.setParticipantDataDescriptorId(id);
+		status.setLastEntryComplete(false);
+		status.setLastStarted(new Date());
+		statuses.setUpdates(Collections.singletonList(status));
+		return statuses;
+	}
+	
 	private static List<ParticipantDataRow> specToParticipantDataRow(Specification spec, Map<String, String> values, Long rowId) {
 		Map<String, ParticipantDataValue> data = Maps.newHashMap();
 		for (FormElement element : spec.getAllFormElements()) {

@@ -23,14 +23,27 @@ public class DataTableInPage {
 		return null;
 	}
 	
-	private WebElement getRowByIndex(int index) {
-		WebElement table = facade.findElement(By.className("table-selectable")); 
-		List<WebElement> list = table.findElements(By.cssSelector("tbody tr"));
-		return list.get(index);
+	private List<WebElement> getAllRows() {
+		facade.waitUntil(".table-selectable");
+		return facade.findElements(By.cssSelector(".table-selectable tbody.dataRows tr"));
+	}
+	
+	public WebElement getRowByIndex(int index) {
+		return getAllRows().get(index);
+	}
+	
+	public void clickFirstRow() {
+		List<WebElement> list = getAllRows();
+		list.get(0).findElement(By.cssSelector("a")).click();
+	}
+	
+	public void clickLastRow() {
+		List<WebElement> list = getAllRows();
+		list.get(list.size()-1).findElement(By.cssSelector("a")).click();
 	}
 	
 	public int getRowCount() {
-		return facade.findElements(By.cssSelector(".table-selectable tbody tr")).size();
+		return getAllRows().size();
 	}
 	
 	public boolean rowExists(String name) {
@@ -59,14 +72,14 @@ public class DataTableInPage {
 	}
 	
 	public void assertAllRowsSelected() {
-		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector("tbody tr input"));
+		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector("tbody.dataRows input"));
 		for (WebElement checkbox : allCheckboxes) {
 			Assert.assertTrue(checkbox.isSelected());
 		}
 	}
 	
 	public void assertAllRowsDeselected() {
-		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector("tbody tr input"));
+		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector("tbody.dataRows input"));
 		for (WebElement checkbox : allCheckboxes) {
 			Assert.assertFalse(checkbox.isSelected());
 		}

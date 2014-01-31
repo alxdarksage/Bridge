@@ -4,8 +4,10 @@ import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPag
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
+import org.sagebionetworks.bridge.webapp.integration.WebDriverBase.ScreenshotTestRule;
 import org.sagebionetworks.bridge.webapp.integration.pages.TrackerIndexPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.JournalPage;
@@ -14,7 +16,9 @@ import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
 public class ITJournal extends WebDriverBase {
 
-	private static final String TEST_DATE = "2013-11-03";
+	// This HAS to be the latest date in the system, with a date later 
+	// than the dummy records we create for testing.
+	private static final String TEST_DATE = "2013-12-25";
 	private WebDriverFacade driver;
 	private JournalPage journalPage;
 
@@ -24,6 +28,8 @@ public class ITJournal extends WebDriverBase {
 		SignInPage signInPage = driver.getSignInPage();
 		signInPage.signInAsJoeTest();
 		journalPage = driver.getJournalPage();
+		
+		deleteAllTrackers();
 	}
 	
 	@Test
@@ -87,7 +93,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(MONOCYTES_PERC, 15);
 		editPage.setRow(PLT, 16);
 		editPage.setRow(MPV, 17);
-		editPage.submit();
+		editPage.clickSaveButton();
 		
 		editPage = indexPage.getMostRecentEntry().clickEditTrackerButton();
 		editPage.assertDefaultedValuesExplanationNotPresent();
@@ -113,7 +119,7 @@ public class ITJournal extends WebDriverBase {
 		createTrackerSurvey();
 		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
 		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
-		
+
 		newPage.assertDefaultedValuesExplanationPresent();
 		newPage.assertRowShowsDefault(RBC, 1);
 		newPage.assertRowShowsDefault(WBC, 8);
@@ -131,25 +137,40 @@ public class ITJournal extends WebDriverBase {
 		newPage.assertFieldConstrained(RBC, "asdf-10.2", "10.2");
 	}
 	
-	/* Not anymore. They are all bound to the number field. May or may not be able to fix this.
-	public void arrowKeysWork() {
-		// TODO: This is a minimal test and I already know arrow keys don't work across the row
-		// when there's a select control, at least in firefox.
-		createNewSurvey();
-		TrackerIndexPage indexPage = journalPage.getFormIndexPage();
-		indexPage.getMostRecentEntry();
-
-		WebElement first = driver.findElement(By.id("rbc"));
-		first.sendKeys(Keys.ARROW_DOWN);
-		WebElement currentElement = driver.switchTo().activeElement();
-		Assert.assertEquals("Has moved down one row", "3", currentElement.getAttribute("value"));
+	@Test
+	public void saveAndResumeAForm() {
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		indexPage.assertControlsForAllTrackersComplete();
 		
-		currentElement.sendKeys(Keys.ARROW_UP);
-		currentElement = driver.switchTo().activeElement();
-		Assert.assertEquals("Has moved up one row", "2", currentElement.getAttribute("value"));
+		// Create a partially complete form
+		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
+		newPage.setTestDate(TEST_DATE);
+		newPage.setRow(RBC, 1);
+		newPage.setRow(HB, 2);
+		newPage.setRow(HCT, 3);
+		newPage.clickSaveForLaterButton();
+		
+		indexPage = journalPage.getTrackerIndexPage();
+		// Controls should exist to resume
+		indexPage.assertControlsForAnUnfinishedTracker();
+		// And it should not be in the table
+		Assert.assertEquals(0, indexPage.getDataTable().getRowCount());
+		
+		TrackerEditPage editPage = indexPage.clickResumeTrackerButton();
+		
 	}
-	*/
 
+	private void deleteAllTrackers() {
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		int count = indexPage.getDataTable().getRowCount();
+		if (count > 0) {
+			for (int i=0; i < count; i++) {
+				indexPage.getDataTable().selectRow(i);
+			}
+			indexPage.getDataTable().clickDelete();	
+		}
+	}
+	
 	private void createTrackerSurvey() {
 		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
 		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
@@ -169,20 +190,20 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(MONOCYTES_PERC, 13);
 		newPage.setRow(PLT, 14);
 		newPage.setRow(MPV, 15);
-		newPage.submit();
-	}
-	
-	public void fieldsAreValidated() {
-		// TODO
+		newPage.clickFinishButton();
 	}
 	
 	@Test
 	public void canDeleteTrackerRows() {
+		deleteAllTrackers();
+		createTrackerSurvey();
+		createTrackerSurvey();
+		createTrackerSurvey();
+
 		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
 		int rowCount = indexPage.getDataTable().getRowCount();
 		
 		indexPage.getDataTable().selectRow(0);
-		// indexPage.getDataTable().selectRow("October 23, 2013");
 		indexPage.getDataTable().clickDelete();
 		
 		indexPage = journalPage.getTrackerIndexPage();

@@ -38,10 +38,16 @@ public class WebDriverFacade implements WebDriver {
 		this.driver = driver;
 	}
 	
+	public WebDriver getDriver() {
+		return driver;
+	}
+	
 	public boolean isGhostdriver() {
 		return (driver instanceof PhantomJSDriver);
 	}
 
+	// But, tests take a screenshot when the tests fail, as well.
+	
 	public void takeScreenshot() {
 		String date = Long.toString(new Date().getTime());
 		takeScreenshot((driver.getTitle()+" - "+date).replace(" ",""));

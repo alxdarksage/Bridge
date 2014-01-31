@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.specs.trackers;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -10,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
 import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
@@ -242,6 +245,19 @@ public class CompleteBloodCount implements Specification {
 	@Override
 	public SortedMap<String,FormElement> getTableFields() {
 		return tableFields;
+	}
+	
+	@Override
+	public Comparator<ParticipantDataRow> getSortComparator() {
+		return new Comparator<ParticipantDataRow>() {
+			@Override
+			public int compare(ParticipantDataRow row0, ParticipantDataRow row1) {
+				Long cd0 = ((ParticipantDataDatetimeValue)row0.getData().get(COLLECTED_ON_FIELD)).getValue();
+				Long cd1 = ((ParticipantDataDatetimeValue)row1.getData().get(COLLECTED_ON_FIELD)).getValue();
+				return cd1.compareTo(cd0);
+			}
+			
+		};
 	}
 	
 	@Override

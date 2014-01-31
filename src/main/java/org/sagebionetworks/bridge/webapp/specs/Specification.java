@@ -1,10 +1,12 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 
 public interface Specification {
 
@@ -12,6 +14,15 @@ public interface Specification {
 	public String getDescription();
 	public ParticipantDataRepeatType getRepeatType();
 	public String getRepeatFrequency();
+	
+	/**
+	 * If there's an order to sort the records, for a table view or 
+	 * other view, provide a comparator (optional). This is temporary thing
+	 * until paging with sorting and/or filtering are working.
+	 * 
+	 * @return
+	 */
+	public Comparator<ParticipantDataRow> getSortComparator();
 	
 	/**
 	 * A strategy for displaying the tree of FormElements in the UI. There can be as many of 

@@ -1,12 +1,13 @@
 package org.sagebionetworks.bridge.webapp.specs.trackers;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.FormGroup;
@@ -83,5 +84,8 @@ public class MoodTracker implements Specification {
 		return null;
 	}
 
-
+	@Override
+	public Comparator<ParticipantDataRow> getSortComparator() {
+		return null;
+	}
 }
