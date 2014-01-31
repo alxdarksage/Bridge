@@ -41,7 +41,6 @@ public class ProfileController {
 		return new SignInForm();
 	}
 	
-	@ModelAttribute("memberships")
 	public List<CheckboxItem> memberships(BridgeRequest request) throws SynapseException {
 		
 		List<Community> communities = getCommunities(request);
