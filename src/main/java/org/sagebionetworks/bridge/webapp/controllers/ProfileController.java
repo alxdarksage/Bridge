@@ -41,16 +41,10 @@ public class ProfileController {
 		return new SignInForm();
 	}
 	
-	@ModelAttribute("communities")
-	public List<Community> allCommunities(BridgeRequest request) throws SynapseException {
-		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<Community> allResults = client.getAllCommunities(ClientUtils.LIMIT, 0);
-		return allResults.getResults();
-	}
-	
 	@ModelAttribute("memberships")
-	public List<CheckboxItem> memberships(BridgeRequest request,
-			@ModelAttribute("communities") List<Community> communities) throws SynapseException {
+	public List<CheckboxItem> memberships(BridgeRequest request) throws SynapseException {
+		
+		List<Community> communities = getCommunities(request);
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
 		
@@ -66,8 +60,8 @@ public class ProfileController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView get(BridgeRequest request, ModelAndView model, @ModelAttribute ProfileForm profileForm,
-			@ModelAttribute("communities") List<Community> communities) throws Exception {
+	public ModelAndView get(BridgeRequest request, ModelAndView model, @ModelAttribute ProfileForm profileForm)
+			throws Exception {
 		
 		SynapseClient synapseClient = request.getBridgeUser().getSynapseClient();
 		UserProfile profile = synapseClient.getUserProfile(request.getBridgeUser().getOwnerId());
@@ -80,8 +74,10 @@ public class ProfileController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView post(BridgeRequest request, @ModelAttribute @Valid ProfileForm profileForm,
 			BindingResult result, @RequestParam(value = "memberships", required = false) List<String> memberships,
-			ModelAndView model, @ModelAttribute("communities") List<Community> communities,
-			@ModelAttribute("memberships") List<CheckboxItem> existingMemberships) throws SynapseException {
+			ModelAndView model, @ModelAttribute("memberships") List<CheckboxItem> existingMemberships)
+			throws SynapseException {
+		
+		List<Community> communities = getCommunities(request);
 		
 		SynapseClient client = request.getBridgeUser().getSynapseClient();
 		BridgeClient bridgeClient = request.getBridgeUser().getBridgeClient();
@@ -118,6 +114,11 @@ public class ProfileController {
 			}
 		}
 		return model;
+	}
+	
+	private List<Community> getCommunities(BridgeRequest request) throws SynapseException {
+		BridgeClient client = request.getBridgeUser().getBridgeClient();
+		return client.getAllCommunities(ClientUtils.LIMIT, 0).getResults();
 	}
 	
 	private List<String> getMembershipIds(List<CheckboxItem> existingMemberships) throws SynapseException {
