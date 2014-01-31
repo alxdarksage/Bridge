@@ -152,7 +152,7 @@ public class DataTableTag extends SimpleTagSupport {
 	}
 
 	protected void createTableBody() {
-		tb.startTag("tbody");
+		tb.startTag("tbody", "class", "dataRows");
 		for (int i = 0; i < items.size(); i++) {
 			createRow(items.get(i), i);
 		}
@@ -161,7 +161,7 @@ public class DataTableTag extends SimpleTagSupport {
 
 	protected void createRow(Object object, int index) {
 		try {
-			tb.startTag("tr", "id", "row" + Integer.toString(index));
+			tb.startTag("tr");
 			String objectId = BeanUtils.getProperty(object, this.itemId);
 			addCheckboxIfSelectable(objectId);
 			for (DataTableColumnTag column : columns) {

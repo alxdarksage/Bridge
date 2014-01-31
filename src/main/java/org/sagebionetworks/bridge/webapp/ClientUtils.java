@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -163,31 +165,52 @@ public class ClientUtils {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
-	public static Specification prepareSpecificationAndDescriptor(BridgeClient client, SpecificationResolver resolver,
-			ModelAndView model, String descriptorId) throws SynapseException {
-		
-		ParticipantDataDescriptor descriptor = null;
-		PaginatedResults<ParticipantDataDescriptor> records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
-		for (ParticipantDataDescriptor d : records.getResults()) {
-			if (d.getId().equals(descriptorId)) {
-				descriptor = d;
-				break;
+	public static ParticipantDataDescriptor prepareDescriptor(BridgeClient client, String descriptorId,
+			ModelAndView model) throws SynapseException {
+		// These are the descriptors for a user, and they come with statuses. If the method returns no descriptor, 
+		// the user hasn't used this tracker before, resort to getAllParticipantDatas(). 
+		PaginatedResults<ParticipantDataDescriptor> records = client.getParticipantDatas(ClientUtils.LIMIT, 0);
+		ParticipantDataDescriptor descriptor = getDescriptorById(records, descriptorId);
+		if (descriptor == null) {
+			records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
+			descriptor = getDescriptorById(records, descriptorId);
+			// set a dummy "all is finished" status
+			if (descriptor != null) {
+				descriptor.setStatus(ParticipantDataUtils.getFinishedStatus(null).getUpdates().get(0));
 			}
 		}
+		// Still no descriptor? That's an error.
 		if (descriptor == null) {
 			throw new SynapseNotFoundException("Could not find ParticipantDataDescriptor with ID of " + descriptorId);
 		}
+		if (model != null) {
+			model.addObject("descriptor", descriptor);
+		}
+		return descriptor;
+	}
+	
+	public static Specification prepareSpecification(BridgeClient client, SpecificationResolver resolver,
+			ParticipantDataDescriptor descriptor, ModelAndView model) throws SynapseException {
+		
 		Specification specification = resolver.getSpecification(descriptor.getName());
 		if (specification == null) {
 			throw new SynapseNotFoundException("Could not find Specification for a Descriptor with the name " + descriptor.getName());
 		}
 		ClientUtils.updateSpecificationWithColumns(client, descriptor, specification);
-		
 		if (model != null) {
-			model.addObject("descriptor", descriptor);
 			model.addObject("form", specification);
 		}
 		return specification;
+	}
+
+	private static ParticipantDataDescriptor getDescriptorById(PaginatedResults<ParticipantDataDescriptor> records,
+			String descriptorId) {
+		for (ParticipantDataDescriptor descriptor : records.getResults()) {
+			if (descriptor.getId().equals(descriptorId)) {
+				return descriptor;
+			}
+		}
+		return null;
 	}
 
 	private static void updateSpecificationWithColumns(BridgeClient client, ParticipantDataDescriptor descriptor,
@@ -202,7 +225,6 @@ public class ClientUtils {
 		}
 		for (FormElement element : specification.getAllFormElements()) {
 			if (mapping.containsKey(element.getName())) {
-				logger.debug("Updating element " + element.getName() + " with persisted column data");
 				element.setDataColumn(mapping.get(element.getName()));
 			}
 		}
@@ -250,9 +272,31 @@ public class ClientUtils {
 		}
 	}
 
-	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, String trackerId) throws SynapseException {
-		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		model.addObject("records", paginatedRowSet.getResults());
+	private static boolean isUnfinished(ParticipantDataDescriptor descriptor) {
+		if (descriptor.getStatus() == null) {
+			return false;
+		}
+		return (!Boolean.TRUE.equals(descriptor.getStatus().getLastEntryComplete()));
+	}
+	
+	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, ParticipantDataDescriptor descriptor) throws SynapseException {
+		List<ParticipantDataRow> rows = client.getRawParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
+		// It seems clearest when listing out all the past records, to remove the in-process one,
+		// and either show it up front or provide a clear way to return to it. So, remove it
+		// from this list.
+		if ( isUnfinished(descriptor) ) {
+			ParticipantDataRow currentRow = client.getCurrentParticipantData(descriptor.getId()).getCurrentData();
+			for (Iterator<ParticipantDataRow> i = rows.iterator(); i.hasNext();) {
+				ParticipantDataRow row = i.next();
+				if (row.getRowId().equals(currentRow.getRowId())) {
+					i.remove();
+				}
+			}
+		}
+		if (spec.getSortComparator() != null) {
+			Collections.sort(rows, spec.getSortComparator());
+		}
+		model.addObject("records", rows);	
 	}
 	
 	public static Row getRowById(RowSet rowSet, long rowId) {

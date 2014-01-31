@@ -143,7 +143,7 @@ public class SpecificationDataTableTag extends SimpleTagSupport {
 	}
 
 	protected void createTableBody() {
-		tb.startTag("tbody");
+		tb.startTag("tbody", "class", "dataRows");
 		for (int i = 0; i < items.size(); i++) {
 			createRow(items.get(i), i);
 		}
@@ -152,7 +152,7 @@ public class SpecificationDataTableTag extends SimpleTagSupport {
 
 	protected void createRow(ParticipantDataRow row, int index) {
 		try {
-			tb.startTag("tr", "id", "row" + Integer.toString(index));
+			tb.startTag("tr");
 			addCheckboxIfSelectable(row.getRowId());
 			
 			for (Map.Entry<String,FormElement> specRow : specification.getTableFields().entrySet()) {

@@ -1,6 +1,10 @@
 package org.sagebionetworks.bridge.webapp.integration.pages;
 
+import java.util.List;
+
+import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 public class TrackerIndexPage {
 	
@@ -20,29 +24,36 @@ public class TrackerIndexPage {
 		return dataTable;
 	}
 	
-	public void assertCorrectHeader() {
-		facade.assertHeader("Complete Blood Count");
-	}
-	
-	public int getRowCount() {
-		return facade.findElements(By.cssSelector("#dynamicForm table tbody tr")).size();
-	}
-	
-	public void clickLastRow() {
-		int count = getRowCount();
-		facade.click("#row"+Integer.toString(count-1) + " a");
-	}
-	
 	public TrackerEditPage clickNewTrackerButton() {
 		facade.click("#newTrackerAct");
 		facade.waitForHeader(TrackerEditPage.NEW_HEADER);
 		return new TrackerEditPage(facade);
 	}
 	
+	public TrackerEditPage clickResumeTrackerButton() {
+		facade.click("#resumeAct");
+		facade.waitForHeader(TrackerEditPage.EDIT_HEADER);
+		return new TrackerEditPage(facade);
+	}
+	
 	public TrackerShowPage getMostRecentEntry() {
-		clickLastRow();
+		getDataTable().clickFirstRow();
 		facade.waitForHeader(TrackerShowPage.HEADER);
 		return new TrackerShowPage(facade);
 	}
 	
+	public void assertCorrectHeader() {
+		facade.assertHeader("Complete Blood Count");
+	}
+	
+	public void assertControlsForAllTrackersComplete() {
+		facade.waitUntil("#newTrackerAct");
+		List<WebElement> elements = facade.findElements(By.cssSelector("#resumeAct"));
+		Assert.assertEquals(0, elements.size());
+	}
+	
+	public void assertControlsForAnUnfinishedTracker() {
+		facade.waitUntil("#resumeAct");
+		facade.waitUntil("#newTrackerAct");
+	}
 }

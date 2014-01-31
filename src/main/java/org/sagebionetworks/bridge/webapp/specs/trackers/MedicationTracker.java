@@ -2,11 +2,13 @@ package org.sagebionetworks.bridge.webapp.specs.trackers;
 
 import static org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType.IF_CHANGED;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
+import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
@@ -73,6 +75,11 @@ public class MedicationTracker implements Specification {
 		// A table, filtered to completed/past medications
 		createMedicationsTable(root, "Past Medications");
 		return root;
+	}
+	
+	@Override
+	public Comparator<ParticipantDataRow> getSortComparator() {
+		return null;
 	}
 	
 	private void createInlineEditor(FormGroup root) {

@@ -13,7 +13,6 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
-import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
@@ -31,7 +30,6 @@ import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -195,19 +193,8 @@ public class SageBootstrap {
 		}
 		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForCreate(spec, map);
 		client.appendParticipantData(trackerId, data);
-		ParticipantDataStatusList statuses = finishThisEntry(trackerId);
+		ParticipantDataStatusList statuses = ParticipantDataUtils.getFinishedStatus(trackerId);
 		client.sendParticipantDataDescriptorUpdates(statuses);
-	}
-	
-	private ParticipantDataStatusList finishThisEntry(String id) {
-		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
-		List<ParticipantDataStatus> updates = Lists.newArrayListWithCapacity(1);
-		ParticipantDataStatus status = new ParticipantDataStatus();
-		status.setParticipantDataDescriptorId(id);
-		status.setLastEntryComplete(true);
-		updates.add(status);
-		statuses.setUpdates(updates);
-		return statuses;
 	}
 	
 	private void createCommunity(BridgeClient client, String name, String description) throws SynapseException {

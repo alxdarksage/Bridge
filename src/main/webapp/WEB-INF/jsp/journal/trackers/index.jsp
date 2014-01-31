@@ -18,11 +18,18 @@
                 <h3>All ${spec.name}s</h3>
 		        <sage:spec-table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
 		            items="${records}" caption="${form.description}s" specification="${spec}">
-		            <sage:table-button id="newTrackerAct" type="primary" label="New Tracker" 
-		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
-                    <c:if test="${not descriptor.status.lastEntryComplete}">
-                        Resume Last Tracker
-                    </c:if>
+		            <c:choose>
+                        <c:when test="${not descriptor.status.lastEntryComplete}">
+		                    <sage:table-button id="resumeAct" type="primary" label="Finish Last Tracker"
+		                        action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/resume.html"/>
+		                    <sage:table-button id="newTrackerAct" type="default" label="New Tracker" 
+		                        action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
+                        </c:when>
+                        <c:otherwise>
+		                    <sage:table-button id="newTrackerAct" type="primary" label="New Tracker" 
+		                        action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/new.html"/>
+                        </c:otherwise>
+		            </c:choose>
 		            <sage:table-button id="exportAct" type="default" label="Export (*.csv)"
 		                action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/export.html"/>
 		                

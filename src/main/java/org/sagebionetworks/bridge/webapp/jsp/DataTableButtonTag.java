@@ -13,11 +13,14 @@ public class DataTableButtonTag extends SimpleTagSupport {
 	
 	@Override
 	public void doTag() {
-		Object table = getParent();
-		if (table instanceof DataTableTag) {
-			((DataTableTag)table).addButton(this);	
-		} else if (table instanceof SpecificationDataTableTag) {
-			((SpecificationDataTableTag)table).addButton(this);
+		DataTableTag table = (DataTableTag) findAncestorWithClass(this, DataTableTag.class);
+		if (table != null) {
+			table.addButton(this);
+		}
+		SpecificationDataTableTag stable = (SpecificationDataTableTag) findAncestorWithClass(this,
+				SpecificationDataTableTag.class);
+		if (stable != null) {
+			stable.addButton(this);
 		}
 	}
 

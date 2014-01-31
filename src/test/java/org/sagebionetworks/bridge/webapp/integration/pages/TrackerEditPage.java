@@ -49,8 +49,16 @@ public class TrackerEditPage {
 		this.facade = facade;
 	}
 	
-	public void submit() {
-		facade.submit("#dynamicForm");
+	public void clickSaveButton() {
+		facade.click("#saveAct");
+	}
+	
+	public void clickFinishButton() {
+		facade.click("#finishAct");
+	}
+	
+	public void clickSaveForLaterButton() {
+		facade.click("#saveAct");
 	}
 	
 	public void clickCancelButton() {
