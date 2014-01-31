@@ -42,7 +42,7 @@ public class AjaxJournalController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId,
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 
-		ParticipantDataRow data = updateRow(request, trackerId, participantId, rowId, dynamicForm, model, null, null);
+		ParticipantDataRow data = updateRow(request, participantId, trackerId, rowId, dynamicForm, model, null, null);
 		model.setViewName(null);
 		
 		Map<String, Object> result = Maps.newHashMap();
