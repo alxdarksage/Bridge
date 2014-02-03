@@ -172,7 +172,8 @@ public class ConvertersTest {
 	
 	@Test
 	public void isoDateTimeConverter() {
-		List<String> values = Lists.newArrayList("2014-02-03T09:19:00-06:00");
+		// This needs to be marked as changed
+		List<String> values = Lists.newArrayList("2014-02-03T09:19:00.000-06:00");
 		
 		ISODateTimeConverter converter = new ISODateTimeConverter();
 		ParticipantDataValue pdv = converter.convert(values);
