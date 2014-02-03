@@ -18,7 +18,8 @@ public class ISODateTimeConverter implements Converter<List<String>, Participant
 		if (values == null || values.isEmpty() || values.get(0) == null) {
 			return null;
 		}
-		// This changed, but hasn't updated, not sure what happened.
+		// This changed, but hasn't updated, not sure what happened. This 
+		// still isn't marked as changed.
         Date date = DateTime.parse(values.get(0), ISODateTimeFormat.dateTime()).toDate(); 
         ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
         pdv.setValue(date.getTime());
