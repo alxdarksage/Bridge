@@ -65,7 +65,7 @@ public interface FormElement {
 	 */
 	public boolean isExportable();
 	
-	public UIType getType();
+	public UIType getUIType();
 	
 	/**
 	 * Converters to convert back and forth between a string and native representation.

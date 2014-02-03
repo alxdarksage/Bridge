@@ -12,7 +12,7 @@ public class DoubleConverter implements Converter<List<String>, ParticipantDataV
 
 	@Override
 	public ParticipantDataValue convert(List<String> values) {
-		if (values == null || values.isEmpty()) {
+		if (values == null || values.isEmpty() || values.get(0) == null) {
 			return null;
 		}
 		ParticipantDataDoubleValue pdv = new ParticipantDataDoubleValue();

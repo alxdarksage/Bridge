@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.HasValuesMap;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
-import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
+import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 import com.google.common.base.Joiner;
@@ -44,8 +44,8 @@ public class FieldTag extends SpringAwareTag {
 		
 		if (field.isReadonly()) {
 			renderReadonly();
-		} else if (field.getType() == UIType.DATE || field.getType() == UIType.DATETIME) {
-			renderDate(field.getType().name().toLowerCase());
+		} else if (field.getUIType() == UIType.DATE || field.getUIType() == UIType.DATETIME) {
+			renderDate(field.getUIType().name().toLowerCase());
 		} else if (field instanceof EnumeratedFormField) {
 			renderEnumeration();
 		} else {
@@ -81,8 +81,8 @@ public class FieldTag extends SpringAwareTag {
 		String value = getValue();
 		tb.startTag("input");
 		addDefaultAttributes(value);
-		if (field instanceof NumericFormField) {
-			addNumericAttributes((NumericFormField)field);
+		if (field instanceof DoubleFormField) {
+			addNumericAttributes((DoubleFormField)field);
 		} else {
 			tb.addAttribute("type", "text");
 		}
@@ -139,7 +139,7 @@ public class FieldTag extends SpringAwareTag {
 		tb.addAttribute("class", Joiner.on(" ").join(classes));
 	}
 	
-	private void addNumericAttributes(NumericFormField numeric) {
+	private void addNumericAttributes(DoubleFormField numeric) {
 		tb.addAttribute("type", "number");  
 		if (numeric.getMinValue() != null) {
 			tb.addAttribute("min", numeric.getMinValue().toString());
@@ -148,7 +148,7 @@ public class FieldTag extends SpringAwareTag {
 			tb.addAttribute("max", numeric.getMaxValue().toString());
 		}
 		// It's weird but if you don't do this, you can't enter decimal values.
-		if (numeric.getType() == UIType.DECIMAL_INPUT) {
+		if (numeric.getUIType() == UIType.DECIMAL_INPUT) {
 			tb.addAttribute("step", "any");
 		}
 	}

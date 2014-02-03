@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.integration.auth;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;

@@ -22,7 +22,10 @@ public class DateToISODateStringConverter implements Converter<ParticipantDataVa
 		if (pdv == null) {
 			return null;
 		}
-		long time = ((ParticipantDataDatetimeValue)pdv).getValue();
+		Long time = ((ParticipantDataDatetimeValue)pdv).getValue();
+		if (time == null || time.longValue() == 0L) {
+			return null;
+		}
 		return Lists.newArrayList(ISODateTimeFormat.date().print(time));
 	}
 

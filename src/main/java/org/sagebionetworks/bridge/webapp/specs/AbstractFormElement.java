@@ -73,7 +73,7 @@ abstract public class AbstractFormElement implements FormElement {
 	}
 
 	@Override
-	public UIType getType() {
+	public UIType getUIType() {
 		return type;
 	}
 

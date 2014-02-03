@@ -12,6 +12,9 @@ public class StringConverter implements Converter<List<String>, ParticipantDataV
 	
 	@Override
 	public ParticipantDataValue convert(List<String> values) {
+		if (values == null || values.isEmpty() || values.get(0) == null) {
+			return null;
+		}
 		ParticipantDataStringValue pdv = new ParticipantDataStringValue();
 		pdv.setValue(values.get(0));
 		return pdv;

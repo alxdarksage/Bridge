@@ -12,7 +12,7 @@ public class LongConverter implements Converter<List<String>, ParticipantDataVal
 	
 	@Override
 	public ParticipantDataValue convert(List<String> values) {
-		if (values == null || values.isEmpty()) {
+		if (values == null || values.isEmpty() || values.get(0) == null) {
 			return null;
 		}
 		ParticipantDataLongValue pdv = new ParticipantDataLongValue();
