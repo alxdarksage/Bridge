@@ -1,11 +1,11 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
-public class NumericFormField extends FormField {
+public class DoubleFormField extends FormField {
 	
 	protected Double minValue;
 	protected Double maxValue;
 	
-	public NumericFormField() {
+	public DoubleFormField() {
 		super();
 	}
 

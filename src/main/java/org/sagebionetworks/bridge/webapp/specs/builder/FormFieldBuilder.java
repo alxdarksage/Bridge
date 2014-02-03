@@ -31,7 +31,7 @@ public class FormFieldBuilder {
 		if (field == null) {
 			throw new IllegalArgumentException(NULL_MESSAGE);
 		}
-		if (field.getType() == null) {
+		if (field.getUIType() == null) {
 			throw new IllegalArgumentException("Must set a field type before calling create()");
 		}
 		if (field.getName() == null) {
@@ -102,19 +102,19 @@ public class FormFieldBuilder {
 		return new EnumeratedFormFieldBuilder(enumeratedValues);
 	}
 	
-	public NumericFormFieldBuilder asDouble() {
+	public DoubleFormFieldBuilder asDouble() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, ParticipantDataColumnType.DOUBLE,
+		return new DoubleFormFieldBuilder(UIType.DECIMAL_INPUT, ParticipantDataColumnType.DOUBLE,
 				DoubleToStringConverter.INSTANCE, DoubleConverter.INSTANCE);
 	}
 	
-	public FormFieldBuilder asLong() {
+	public LongFormFieldBuilder asLong() {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
-		return new NumericFormFieldBuilder(UIType.DECIMAL_INPUT, ParticipantDataColumnType.LONG,
+		return new LongFormFieldBuilder(UIType.INTEGER_INPUT, ParticipantDataColumnType.LONG,
 				LongToStringConverter.INSTANCE, LongConverter.INSTANCE);
 	}
 

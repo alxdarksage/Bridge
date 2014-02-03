@@ -36,6 +36,10 @@ public class TrackerIndexPage {
 		return new TrackerEditPage(facade);
 	}
 	
+	public void clickExportButton() {
+		facade.click("#exportAct");
+	}
+	
 	public TrackerShowPage getMostRecentEntry() {
 		getDataTable().clickFirstRow();
 		facade.waitForHeader(TrackerShowPage.HEADER);

@@ -14,7 +14,13 @@ public class BooleanToStringConverter implements Converter<ParticipantDataValue,
 	
 	@Override
 	public List<String> convert(ParticipantDataValue source) {
+		if (source == null) {
+			return null;
+		}
 		Boolean b = ((ParticipantDataBooleanValue)source).getValue();
+		if (b == null) {
+			return null;
+		}
 		return Lists.newArrayList(Boolean.toString(b));
 	}
 

@@ -2,30 +2,28 @@
 <%@ attribute name="element" required="true" type="org.sagebionetworks.bridge.webapp.specs.FormElement" %>
 <%--If anyone knows of a way to dynamically reference a tag... --%>
 <c:choose>
-    <c:when test="${element.type == 'LIST'}">
+    <c:when test="${element.UIType == 'LIST'}">
         <sage:list element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'RANGE_NORM_BAR'}">
+    <c:when test="${element.UIType == 'RANGE_NORM_BAR'}">
         <sage:range-norm-bar element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'GROUP'}">
+    <c:when test="${element.UIType == 'GROUP'}">
         <sage:group element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'RANGE'}">
+    <c:when test="${element.UIType == 'RANGE'}">
         <sage:range element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'GRID'}">
+    <c:when test="${element.UIType == 'GRID'}">
         <sage:grid element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'INLINE_EDITOR'}">
+    <c:when test="${element.UIType == 'INLINE_EDITOR'}">
         <sage:inline-editor element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'TABULAR'}">
+    <c:when test="${element.UIType == 'TABULAR'}">
         <sage:tabular element="${element}"/>
     </c:when>
-    <c:when test="${element.type == 'VALUE'}">
-        <%-- dyamicForm or participantDataRow is an either/or thing at the moment. Would like
-            to harmonize these. --%>
+    <c:when test="${element.UIType == 'VALUE'}">
         <sage:value valuesMapHolder="${dynamicForm}" field="${element}"/>
     </c:when>
     <c:otherwise>

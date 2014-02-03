@@ -12,12 +12,10 @@ import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.NumericFormField;
+import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
 import com.google.common.collect.Lists;
@@ -47,13 +45,12 @@ public class SpecificationBasedValidator implements Validator {
 				validateThisField(errors, values, field);
 			}
 		}
-		
-		for (FieldError error : errors.getFieldErrors()) {
+		/*for (FieldError error : errors.getFieldErrors()) {
 			logger.info(error.getCode());
 		}
 		for (ObjectError error : errors.getGlobalErrors()) {
 			logger.info(error.getCode());
-		}
+		}*/
 	}
 
 	private void validateThisField(Errors errors, Map<String, String> values, FormElement field) {
@@ -86,7 +83,7 @@ public class SpecificationBasedValidator implements Validator {
 	}
 
 	private void validateBoundaryRanges(FormElement field, Errors errors, Double converted) {
-		NumericFormField numeric = (NumericFormField)field;
+		DoubleFormField numeric = (DoubleFormField)field;
 		if (numeric.getMinValue() != null && converted < numeric.getMinValue()) {
 			errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".too_small", field.getLabel() + " is less than "+numeric.getMinValue().toString()+".");
 		}
