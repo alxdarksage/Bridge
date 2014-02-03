@@ -4,10 +4,8 @@ import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPag
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
-import org.sagebionetworks.bridge.webapp.integration.WebDriverBase.ScreenshotTestRule;
 import org.sagebionetworks.bridge.webapp.integration.pages.TrackerIndexPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.JournalPage;
@@ -156,8 +154,29 @@ public class ITJournal extends WebDriverBase {
 		// And it should not be in the table
 		Assert.assertEquals(0, indexPage.getDataTable().getRowCount());
 		
+		// Edit and save for later.
 		TrackerEditPage editPage = indexPage.clickResumeTrackerButton();
+		editPage.setRow(HB, 4);
+		editPage.clickSaveForLaterButton();
 		
+		// Now resume again, edit and finish
+		indexPage = journalPage.getTrackerIndexPage();
+		// Still not in table
+		Assert.assertEquals(0, indexPage.getDataTable().getRowCount());
+		
+		editPage = indexPage.clickResumeTrackerButton();
+		editPage.setRow(HCT, 5);
+		editPage.clickFinishButton();
+		
+		// It's no longer in process, it's in the table
+		indexPage = journalPage.getTrackerIndexPage();
+		indexPage.assertControlsForAllTrackersComplete();
+		Assert.assertEquals(1, indexPage.getDataTable().getRowCount());
+		
+		editPage = indexPage.getMostRecentEntry().clickEditTrackerButton();
+		editPage.setRow(RBC, 1);
+		editPage.setRow(HB, 4);
+		editPage.setRow(HCT, 5);
 	}
 
 	private void deleteAllTrackers() {
@@ -209,5 +228,15 @@ public class ITJournal extends WebDriverBase {
 		indexPage = journalPage.getTrackerIndexPage();
 		int nextRowCount = indexPage.getDataTable().getRowCount();
 		Assert.assertEquals(nextRowCount+1, rowCount);
+	}
+	
+	@Test
+	public void canExportTrackers() throws Exception {
+		deleteAllTrackers();
+		createTrackerSurvey();
+		
+		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		indexPage.clickExportButton();
+		// and then I don't know what.
 	}
 }

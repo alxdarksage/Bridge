@@ -17,7 +17,11 @@ public class StringToStringConverter implements Converter<ParticipantDataValue, 
 		if (pdv == null) {
 			return null;
 		}
-		return Lists.newArrayList(((ParticipantDataStringValue)pdv).getValue());
+		String value = ((ParticipantDataStringValue)pdv).getValue();
+		if (value == null) {
+			return null;
+		}
+		return Lists.newArrayList(value);
 	}
 
 }

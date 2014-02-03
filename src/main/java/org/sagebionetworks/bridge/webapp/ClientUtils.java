@@ -49,8 +49,6 @@ import org.sagebionetworks.repo.model.ObjectType;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
-import org.sagebionetworks.repo.model.table.Row;
-import org.sagebionetworks.repo.model.table.RowSet;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
@@ -299,24 +297,6 @@ public class ClientUtils {
 		model.addObject("records", rows);	
 	}
 	
-	public static Row getRowById(RowSet rowSet, long rowId) {
-		for (Row row : rowSet.getRows()) {
-			if (row.getRowId().equals(rowId)) {
-				return row;
-			}
-		}
-		throw new IllegalArgumentException(Long.toString(rowId) + " is not a valid row");
-	}	
-	
-	public static String getValueInRow(Row row, List<String> headers, String header) {
-		for (int i=0; i < headers.size(); i++) {
-			if (header.equals(headers.get(i))) {
-				return row.getValues().get(i);
-			}
-		}
-		throw new IllegalArgumentException(header + " is not a valid header");
-	}	
-
 	private static List<WikiHeader> getWikiHeaders(SynapseClient client, Community community)
 			throws JSONObjectAdapterException, SynapseException {
 		// Get headers for all wiki pages

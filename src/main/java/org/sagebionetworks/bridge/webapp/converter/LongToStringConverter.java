@@ -15,7 +15,13 @@ public class LongToStringConverter implements Converter<ParticipantDataValue, Li
 	
 	@Override
 	public List<String> convert(ParticipantDataValue source) {
+		if (source == null) {
+			return null;
+		}
 		Long l = ((ParticipantDataLongValue)source).getValue();
+		if (l == null) {
+			return null;
+		}
 		return Lists.newArrayList(l.toString());
 	}
 

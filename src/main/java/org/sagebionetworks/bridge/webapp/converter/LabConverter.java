@@ -12,7 +12,7 @@ public class LabConverter implements Converter<List<String>, ParticipantDataValu
 	
 	@Override
 	public ParticipantDataValue convert(List<String> values) {
-		if (values == null || values.size() != 4) {
+		if (values == null || values.size() != 5) {
 			return null;
 		}
 		ParticipantDataLabValue pdv = new ParticipantDataLabValue();
@@ -20,10 +20,7 @@ public class LabConverter implements Converter<List<String>, ParticipantDataValu
 		pdv.setUnits(values.get(1));
 		pdv.setNormalizedMin(Double.parseDouble(values.get(2)));
 		pdv.setNormalizedMax(Double.parseDouble(values.get(3)));
-		// This has to be the value for now, conversions will be built into 
-		// this converter, it's a converter, after all. Will get any information 
-		// on this from the column data.
-		pdv.setNormalizedValue(Double.parseDouble(values.get(0)));
+		pdv.setNormalizedValue(Double.parseDouble(values.get(4)));
 		return pdv;
 	}
 	

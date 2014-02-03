@@ -19,7 +19,14 @@ public class DoubleToStringConverter implements Converter<ParticipantDataValue, 
 			return null;
 		}
 		Double d = ((ParticipantDataDoubleValue)source).getValue();
-		return Lists.newArrayList(new DecimalFormat("0.###").format(d));
+		if (d == null) {
+			return null;
+		}
+		return Lists.newArrayList(format(d));
 	}
 
+	public String format(Double d) {
+		return new DecimalFormat("0.###").format(d);
+	}
+	
 }

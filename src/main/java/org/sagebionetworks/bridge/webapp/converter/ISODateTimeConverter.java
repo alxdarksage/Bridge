@@ -15,10 +15,10 @@ public class ISODateTimeConverter implements Converter<List<String>, Participant
 	
 	@Override
 	public ParticipantDataValue convert(List<String> values) {
-		if (values == null || values.isEmpty()) {
+		if (values == null || values.isEmpty() || values.get(0) == null) {
 			return null;
 		}
-        Date date = DateTime.parse(values.get(0), ISODateTimeFormat.dateTime()).toDate();
+        Date date = DateTime.parse(values.get(0), ISODateTimeFormat.dateTimeNoMillis()).toDate();
         ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
         pdv.setValue(date.getTime());
         return pdv;

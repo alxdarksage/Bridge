@@ -16,9 +16,15 @@ public class DateToShortFormatDateStringConverter implements Converter<Participa
 	
 	@Override
 	public List<String> convert(ParticipantDataValue pdv) {
+		if (pdv == null) {
+			return null;
+		}
 		// These are not thread-safe.
 		SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
-		long time = ((ParticipantDataDatetimeValue)pdv).getValue();
+		Long time = ((ParticipantDataDatetimeValue)pdv).getValue();
+		if (time == null || time.longValue() == 0L) {
+			return null;
+		}
 		return Lists.newArrayList(formatter.format(new Date(time)));
 	}
 }

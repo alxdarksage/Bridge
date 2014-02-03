@@ -15,7 +15,7 @@ public class ISODateConverter implements Converter<List<String>, ParticipantData
 	
 	@Override
 	public ParticipantDataValue convert(List<String> values) {
-		if (values == null || values.isEmpty()) {
+		if (values == null || values.isEmpty() || values.get(0) == null) {
 			return null;
 		}
 		Date date = DateTime.parse(values.get(0), ISODateTimeFormat.date()).toDate();
