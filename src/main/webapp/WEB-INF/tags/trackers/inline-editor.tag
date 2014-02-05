@@ -6,6 +6,7 @@
 <form:form role="form" modelAttribute="dynamicForm" method="post" action="${trackerUrl}">
     <table width="100%" class="smBottomSpaced">
         <tr>
+            <td></td>
             <c:forEach var="el" items="${element.children}">
                 <td>
                     <sage:form-label field="${el}"/>
@@ -14,6 +15,7 @@
             </c:forEach>
         </tr>
         <tr>
+            <td>${inprogress.rowId}</td>
             <c:forEach var="el" items="${element.children}">
                 <td><sage:router element="${el}"/></td>
             </c:forEach>

@@ -6,6 +6,7 @@
     <c:when test="${not empty requestScope[element.modelName]}">
 	    <table id="${element.modelName}Table" width="100%" class="smBottomSpaced">
 	        <tr>
+	           <th>ID</th>
 	            <c:forEach var="el" items="${element.children}">
 	                <th>
 	                    <sage:form-label field="${el}"/>
@@ -14,6 +15,7 @@
 	        </tr>
             <c:forEach var="row" items="${requestScope[element.modelName]}">
 	            <tr data-id="${row.rowId}">
+	                <td>${row.rowId}</td>
 	                <c:forEach var="el" items="${element.children}">
                         <td style="width:${100 / fn:length(element.children)}%">
                             <c:set var="dynamicForm" value="${sage:valuesMapHolder(form.showStructure, row)}" scope="request" />
@@ -30,7 +32,7 @@
 </c:choose>
 <script>
 window.addEventListener("load", function() {
-    var template = "<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/ajax/row/@/finish.html"/>";
+    var template = "<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/ajax/row/@/nostatuschange.html"/>";
 
     var finished = throttle(function(e) {
     	this.readonly = true;

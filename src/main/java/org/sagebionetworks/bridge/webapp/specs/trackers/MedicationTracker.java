@@ -14,7 +14,6 @@ import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
-import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
@@ -114,6 +113,10 @@ public class MedicationTracker implements Specification {
 				finished.add(row);
 			}
 		}
+		
+		Collections.sort(active, new ParticipantDataDatetimeComparator(START_DATE_FIELD));
+		Collections.sort(finished, new ParticipantDataDatetimeComparator(END_DATE_FIELD));
+		
 		// Create a dynamic form with the unfinished record's contents
 		ParticipantDataRow inprogress = (ParticipantDataRow)map.get("inprogress");
 		if (inprogress != null) {

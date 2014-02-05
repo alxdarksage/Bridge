@@ -99,16 +99,6 @@ public class CompleteBloodCount implements Specification {
 	private static long BILLION =  1000000000L;
 	private static long TRILLION = 1000000000000L;
 	
-	private static final Comparator<ParticipantDataRow> COMPARATOR = new Comparator<ParticipantDataRow>() {
-		@Override
-		public int compare(ParticipantDataRow row0, ParticipantDataRow row1) {
-			Long cd0 = ((ParticipantDataDatetimeValue)row0.getData().get(COLLECTED_ON_FIELD)).getValue();
-			Long cd1 = ((ParticipantDataDatetimeValue)row1.getData().get(COLLECTED_ON_FIELD)).getValue();
-			return cd1.compareTo(cd0);
-		}
-		
-	}; 
-	
 	private final List<String> THOUSANDS = SpecificationUtils.getSymbolsForUnits(Units.THOUSANDS_PER_MICROLITER, Units.BILLIONS_PER_LITER);
 	private final List<String> MILLIONS = SpecificationUtils.getSymbolsForUnits(Units.MILLIONS_PER_MICROLITER, Units.TRILLIONS_PER_LITER);
 	private final List<String> PERC = Units.PERCENTAGE.getSymbols();
@@ -261,7 +251,7 @@ public class CompleteBloodCount implements Specification {
 	
 	@Override
 	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
-		Collections.sort(rows, COMPARATOR);
+		Collections.sort(rows, new ParticipantDataDatetimeComparator(COLLECTED_ON_FIELD));
 	}
 	
 	@Override

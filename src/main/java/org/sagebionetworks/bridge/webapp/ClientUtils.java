@@ -287,29 +287,34 @@ public class ClientUtils {
 		}
 	}
 	
+	/**
+	 *	if user has never completed a record:
+	 *		- currentRow will have empty current/previous
+	 *	elseif user has completed the last record:
+	 *	    - current = that last record
+	 *	    - previous = the immediately prior record
+	 *	else
+	 *	    - current is null
+	 *	    - previous is the last, unfinished record
+	 * @param client
+	 * @param model
+	 * @param spec
+	 * @param descriptor
+	 * @throws SynapseException
+	 */
 	public static void prepareParticipantDataSummary(BridgeClient client, ModelAndView model, Specification spec,
 			ParticipantDataDescriptor descriptor) throws SynapseException {
-
-		//		if user has never completed a record:
-		//			- currentRow will have empty current/previous
-		//		elsif user has completed the last record:
-		//		    - current = that last record
-		//		    - previous = the immediately prior record
-		//		else
-		//		    - current is null
-		//		    - previous is the last, unfinished record
 		
 		boolean mustHaveStarterRecord = (spec.getFormLayout() == FormLayout.ALL_RECORDS_ONE_PAGE_INLINE);
 		
-		// Get all the records
 		List<ParticipantDataRow> rows = client.getRawParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
-		
 		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(descriptor.getId());
-		if (currentRow.getCurrentData() == null || currentRow.getPreviousData() == null) {
+		
+		if (currentRow.getCurrentData() == null || currentRow.getPreviousData() == null) { // it's or, not and...
 			if (mustHaveStarterRecord) {
 				logger.info("User has never completed a record, creating one based on the layout");
 				currentRow = createAnInProgressRecord(client, descriptor);
-				model.addObject("inprogress", currentRow.getPreviousData());
+				model.addObject("inprogress", currentRow.getCurrentData());
 			}
 		} else if (isInProgress(descriptor)) {
 			logger.info("User has not completed the last record, saving as inprogress record");
@@ -324,7 +329,7 @@ public class ClientUtils {
 			if (mustHaveStarterRecord) {
 				logger.info("User completed the last record, creating a new one based on the layout");
 				currentRow = createAnInProgressRecord(client, descriptor);
-				model.addObject("inprogress", currentRow.getPreviousData());
+				model.addObject("inprogress", currentRow.getCurrentData());
 			}
 		}
 

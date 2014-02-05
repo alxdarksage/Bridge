@@ -144,7 +144,9 @@ public class JournalControllerBase {
 
 		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForUpdate(spec, dynamicForm.getValuesMap(), rowId);
 		data = client.updateParticipantData(trackerId, data);
-		client.sendParticipantDataDescriptorUpdates(statuses);	
+		if (statuses != null) {
+			client.sendParticipantDataDescriptorUpdates(statuses);	
+		}
 		return data.get(0);
 	}
 	

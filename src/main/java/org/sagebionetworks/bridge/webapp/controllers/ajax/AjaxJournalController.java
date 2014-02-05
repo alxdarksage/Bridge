@@ -54,14 +54,13 @@ public class AjaxJournalController extends JournalControllerBase {
 		return result;
 	}
 	
-	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/ajax/row/{rowId}/finish", method = RequestMethod.POST)
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/ajax/row/{rowId}/nostatuschange", method = RequestMethod.POST)
 	@ResponseBody
 	public Object finishValuesAjax(BridgeRequest request, @PathVariable("participantId") String participantId,
 			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") Long rowId,
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 
-		ParticipantDataRow data = ajaxUpdateRow(request, participantId, trackerId, rowId, dynamicForm,
-				ParticipantDataUtils.getFinishedStatus(trackerId));
+		ParticipantDataRow data = ajaxUpdateRow(request, participantId, trackerId, rowId, dynamicForm, null);
 
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("rowId", data.getRowId());
