@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +37,7 @@ import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
+import org.sagebionetworks.bridge.webapp.specs.FormLayout;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
@@ -159,6 +160,19 @@ public class ClientUtils {
 		result.addError(new FieldError(formName, fieldName, null, false, new String[] { message }, null, message));
 	}
 	
+	public static void log(Logger loggr, Object... objects) {
+		if (StackConfiguration.isDevelopStack()) {
+			for (int i=0; i < objects.length; i++) {
+				if (objects[i] instanceof String) {
+					loggr.info(objects[i]);
+				} else {
+					loggr.info(i + ": -------------------------------------------------------");
+					loggr.info(ToStringBuilder.reflectionToString(objects[i]));	
+				}
+			}
+		}
+	}
+	
 	public static UserEntityPermissions getPermits(BridgeRequest request, String id) throws SynapseException {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
@@ -169,13 +183,16 @@ public class ClientUtils {
 		// the user hasn't used this tracker before, resort to getAllParticipantDatas(). 
 		PaginatedResults<ParticipantDataDescriptor> records = client.getParticipantDatas(ClientUtils.LIMIT, 0);
 		ParticipantDataDescriptor descriptor = getDescriptorById(records, descriptorId);
+		
 		if (descriptor == null) {
 			records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
 			descriptor = getDescriptorById(records, descriptorId);
 			// set a dummy "all is finished" status
+			logger.info("Had to get a generic descriptor, so there shouldn't be a status...");
+			/*
 			if (descriptor != null) {
 				descriptor.setStatus(ParticipantDataUtils.getFinishedStatus(null).getUpdates().get(0));
-			}
+			}*/
 		}
 		// Still no descriptor? That's an error.
 		if (descriptor == null) {
@@ -269,32 +286,78 @@ public class ClientUtils {
 			model.addObject("indexContent", markdown);
 		}
 	}
+	
+	public static void prepareParticipantDataSummary(BridgeClient client, ModelAndView model, Specification spec,
+			ParticipantDataDescriptor descriptor) throws SynapseException {
 
-	private static boolean isUnfinished(ParticipantDataDescriptor descriptor) {
+		//		if user has never completed a record:
+		//			- currentRow will have empty current/previous
+		//		elsif user has completed the last record:
+		//		    - current = that last record
+		//		    - previous = the immediately prior record
+		//		else
+		//		    - current is null
+		//		    - previous is the last, unfinished record
+		
+		boolean mustHaveStarterRecord = (spec.getFormLayout() == FormLayout.ALL_RECORDS_ONE_PAGE_INLINE);
+		
+		// Get all the records
+		List<ParticipantDataRow> rows = client.getRawParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
+		
+		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(descriptor.getId());
+		if (currentRow.getCurrentData() == null || currentRow.getPreviousData() == null) {
+			if (mustHaveStarterRecord) {
+				logger.info("User has never completed a record, creating one based on the layout");
+				currentRow = createAnInProgressRecord(client, descriptor);
+				model.addObject("inprogress", currentRow.getPreviousData());
+			}
+		} else if (isInProgress(descriptor)) {
+			logger.info("User has not completed the last record, saving as inprogress record");
+			// This works against real back end, but not against UI profile, and I did switch it to 
+			// previous data, so they may still differ.
+			// ParticipantDataRow inProgressRow = removeInProgressRow(currentRow.getPreviousData(), rows);
+			
+			// This works for the CBCs, it removes the record.
+			ParticipantDataRow inProgressRow = removeInProgressRow(currentRow.getCurrentData(), rows);
+			model.addObject("inprogress", inProgressRow);
+		} else {
+			if (mustHaveStarterRecord) {
+				logger.info("User completed the last record, creating a new one based on the layout");
+				currentRow = createAnInProgressRecord(client, descriptor);
+				model.addObject("inprogress", currentRow.getPreviousData());
+			}
+		}
+
+		model.addObject("records", rows);
+		spec.postProcessParticipantDataRows(model.getModelMap(), rows);
+	}
+	
+	private static ParticipantDataCurrentRow createAnInProgressRecord(BridgeClient client, ParticipantDataDescriptor descriptor) throws SynapseException {
+		ParticipantDataRow row = new ParticipantDataRow();
+		row.setData(Maps.<String, ParticipantDataValue> newHashMap());
+		client.appendParticipantData(descriptor.getId(), Lists.newArrayList(row));
+		client.sendParticipantDataDescriptorUpdates(ParticipantDataUtils.getInProcessStatus(descriptor.getId()));
+
+		return client.getCurrentParticipantData(descriptor.getId());
+	}
+	
+	private static ParticipantDataRow removeInProgressRow(ParticipantDataRow rowToRemove, List<ParticipantDataRow> allRows) {
+		ParticipantDataRow found = null;
+		for (Iterator<ParticipantDataRow> i = allRows.iterator(); i.hasNext();) {
+			ParticipantDataRow row = i.next();
+			if (row.getRowId().equals(rowToRemove.getRowId())) {
+				found = row;
+				i.remove();
+			}
+		}
+		return found;
+	}
+
+	private static boolean isInProgress(ParticipantDataDescriptor descriptor) {
 		if (descriptor.getStatus() == null) {
 			return false;
 		}
-		return (!Boolean.TRUE.equals(descriptor.getStatus().getLastEntryComplete()));
-	}
-	
-	public static void prepareParticipantData(BridgeClient client, ModelAndView model, Specification spec, ParticipantDataDescriptor descriptor) throws SynapseException {
-		List<ParticipantDataRow> rows = client.getRawParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
-		// It seems clearest when listing out all the past records, to remove the in-process one,
-		// and either show it up front or provide a clear way to return to it. So, remove it
-		// from this list.
-		if ( isUnfinished(descriptor) ) {
-			ParticipantDataRow currentRow = client.getCurrentParticipantData(descriptor.getId()).getCurrentData();
-			for (Iterator<ParticipantDataRow> i = rows.iterator(); i.hasNext();) {
-				ParticipantDataRow row = i.next();
-				if (row.getRowId().equals(currentRow.getRowId())) {
-					i.remove();
-				}
-			}
-		}
-		if (spec.getSortComparator() != null) {
-			Collections.sort(rows, spec.getSortComparator());
-		}
-		model.addObject("records", rows);	
+		return (Boolean.FALSE.equals(descriptor.getStatus().getLastEntryComplete()));
 	}
 	
 	private static List<WikiHeader> getWikiHeaders(SynapseClient client, Community community)

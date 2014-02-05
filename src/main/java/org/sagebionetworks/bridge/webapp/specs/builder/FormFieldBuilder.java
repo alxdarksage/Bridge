@@ -181,6 +181,14 @@ public class FormFieldBuilder {
 		return this;
 	}
 
+	public FormFieldBuilder placeholder(String placeholderText) {
+		if (field == null) {
+			throw new IllegalArgumentException(NULL_MESSAGE);
+		}
+		field.setPlaceholderText(placeholderText);
+		return this;
+	}
+	
 	public FormFieldBuilder readonly() {
 		if (field == null) {
 			throw new IllegalArgumentException(NULL_MESSAGE);
@@ -204,5 +212,21 @@ public class FormFieldBuilder {
 		field.setDefaultable();
 		return this;
 	}	
+	
+	public FormFieldBuilder stringConverter(Converter<ParticipantDataValue, List<String>> converter) {
+		if (field == null) {
+			throw new IllegalArgumentException(NULL_MESSAGE);
+		}
+		field.setStringConverter(converter);
+		return this;
+	}
+	
+	public FormFieldBuilder dataConverter(Converter<List<String>, ParticipantDataValue> converter) {
+		if (field == null) {
+			throw new IllegalArgumentException(NULL_MESSAGE);
+		}
+		field.setParticipantDataValueConverter(converter);
+		return this;
+	}
 	
 }

@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.specs.trackers;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringCo
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
-import org.sagebionetworks.bridge.webapp.specs.FormGrid;
+import org.sagebionetworks.bridge.webapp.specs.GridGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormLayout;
 import org.sagebionetworks.bridge.webapp.specs.RangeNormBar;
@@ -26,6 +27,7 @@ import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 import org.sagebionetworks.bridge.webapp.specs.Units;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
+import org.springframework.ui.ModelMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -97,6 +99,16 @@ public class CompleteBloodCount implements Specification {
 	private static long BILLION =  1000000000L;
 	private static long TRILLION = 1000000000000L;
 	
+	private static final Comparator<ParticipantDataRow> COMPARATOR = new Comparator<ParticipantDataRow>() {
+		@Override
+		public int compare(ParticipantDataRow row0, ParticipantDataRow row1) {
+			Long cd0 = ((ParticipantDataDatetimeValue)row0.getData().get(COLLECTED_ON_FIELD)).getValue();
+			Long cd1 = ((ParticipantDataDatetimeValue)row1.getData().get(COLLECTED_ON_FIELD)).getValue();
+			return cd1.compareTo(cd0);
+		}
+		
+	}; 
+	
 	private final List<String> THOUSANDS = SpecificationUtils.getSymbolsForUnits(Units.THOUSANDS_PER_MICROLITER, Units.BILLIONS_PER_LITER);
 	private final List<String> MILLIONS = SpecificationUtils.getSymbolsForUnits(Units.MILLIONS_PER_MICROLITER, Units.TRILLIONS_PER_LITER);
 	private final List<String> PERC = Units.PERCENTAGE.getSymbols();
@@ -144,7 +156,7 @@ public class CompleteBloodCount implements Specification {
 		//rows.add( addEditRow(PG, MCH_FIELD, MCH_LABEL) );
 		rows.add( addEditPercRow(VARIATION, RDW_FIELD, RDW_LABEL) );
 		rows.add( addEditPercRow(PERC, RET_FIELD, RET_LABEL) ); // or 10e9/L
-		editRows.add( new FormGrid(RED_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
+		editRows.add( new GridGroup(RED_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
 		rows.add( addEditRow(THOUSANDS, WBC_FIELD, WBC_LABEL) );
@@ -159,12 +171,12 @@ public class CompleteBloodCount implements Specification {
         rows.add( addEditPercRow(PERC, LYMPHOCYTES_PERC_FIELD, LYMPHOCYTES_PERC_LABEL) );
         rows.add( addEditPercRow(PERC, MONOCYTES_PERC_FIELD, MONOCYTES_PERC_LABEL) );		
 		
-		editRows.add( new FormGrid(WHITE_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
+		editRows.add( new GridGroup(WHITE_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
 		rows.add( addEditRow(THOUSANDS, PLT_FIELD, PLT_LABEL) );
 		rows.add( addEditRow(FL, MPV_FIELD, MPV_LABEL) );
-		editRows.add( new FormGrid(PLATELETS_LABEL, rows, GRID_HEADERS) );
+		editRows.add( new GridGroup(PLATELETS_LABEL, rows, GRID_HEADERS) );
 		
 		// Show-only view
 		rows = Lists.newArrayList();
@@ -248,16 +260,8 @@ public class CompleteBloodCount implements Specification {
 	}
 	
 	@Override
-	public Comparator<ParticipantDataRow> getSortComparator() {
-		return new Comparator<ParticipantDataRow>() {
-			@Override
-			public int compare(ParticipantDataRow row0, ParticipantDataRow row1) {
-				Long cd0 = ((ParticipantDataDatetimeValue)row0.getData().get(COLLECTED_ON_FIELD)).getValue();
-				Long cd1 = ((ParticipantDataDatetimeValue)row1.getData().get(COLLECTED_ON_FIELD)).getValue();
-				return cd1.compareTo(cd0);
-			}
-			
-		};
+	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
+		Collections.sort(rows, COMPARATOR);
 	}
 	
 	@Override
@@ -267,6 +271,8 @@ public class CompleteBloodCount implements Specification {
 			values.put(CREATED_ON_FIELD, datetime);
 		}
 		values.put(MODIFIED_ON_FIELD, datetime);
+		
+		// TODO: This all has to be pulled out when conversion is implemented
 		
 		// Convert values for fields that need standard values, only the researcher sees these columns
 		// (there are three)

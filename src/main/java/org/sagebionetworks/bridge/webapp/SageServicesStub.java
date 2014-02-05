@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import net.sf.cglib.proxy.MethodProxy;
 import net.sf.cglib.transform.impl.UndeclaredThrowableStrategy;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -894,20 +896,22 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		
 		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (rows == null) {
-			rows = Collections.emptyList();
+			return currentRow; // this is what happens in mid-tier (nothing);
+			// rows = Collections.emptyList();
 		}
-		if (Boolean.TRUE.equals(status.getLastEntryComplete())) {
-			if (rows.size() > 0) {
-				currentRow.setPreviousData(rows.get(rows.size()-1));	
+		// Taken directly from the server tier, same logic.
+		ListIterator<ParticipantDataRow> iter = rows.listIterator(rows.size());
+		if (iter.hasPrevious()) {
+			ParticipantDataRow lastRow = iter.previous();
+			if (BooleanUtils.isFalse(status.getLastEntryComplete())) {
+				currentRow.setCurrentData(lastRow);
+				if (iter.hasPrevious()) {
+					currentRow.setPreviousData(iter.previous());
+				}
+			} else {
+				currentRow.setPreviousData(lastRow);
 			}
-		} else {
-			if (rows.size() > 0) {
-				currentRow.setCurrentData(rows.get(rows.size()-1));
-			}
-			if (rows.size() > 1) {
-				currentRow.setPreviousData(rows.get(rows.size()-2));
-			}
-		}
+		}		
 		return currentRow;
 	}
 

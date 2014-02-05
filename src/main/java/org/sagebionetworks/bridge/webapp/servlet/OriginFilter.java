@@ -27,7 +27,7 @@ public class OriginFilter implements Filter {
 			"/signOut.html", "/signedOut.html", "/signUp.html", 
 			"/requestResetPassword.html", "/resetPassword.html", "/termsOfUse.html", 
 			"/termsOfUse/cancel.html", "/openId.html", "/openIdCallback.html", 
-			"/profile.html", "/export.html", "/portal/index.html");
+			"/profile.html", "/export.html", "/portal/index.html", "/ajax/");
 	}
 
 	@Override

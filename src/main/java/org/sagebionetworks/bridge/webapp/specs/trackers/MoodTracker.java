@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.specs.trackers;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -14,6 +13,7 @@ import org.sagebionetworks.bridge.webapp.specs.FormGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormLayout;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
+import org.springframework.ui.ModelMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -85,7 +85,7 @@ public class MoodTracker implements Specification {
 	}
 
 	@Override
-	public Comparator<ParticipantDataRow> getSortComparator() {
-		return null;
+	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
+		// noop
 	}
 }
