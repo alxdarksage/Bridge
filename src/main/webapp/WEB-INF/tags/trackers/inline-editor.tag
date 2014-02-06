@@ -31,13 +31,5 @@ window.addEventListener("DOMContentLoaded", function() {
 			}
 		});
 	}, 300);
-	/*
-	var append = throttle(function(e) {
-		var query = $(this).attr('name') + "=" + encodeURIComponent($(this).val());
-		console.log(query);
-		$.ajax(url, { method: "post", data: query });
-	},500);
-	$('#dynamicForm #medication,#dynamicForm #dose,#dynamicForm #dose_instructions,#dynamicForm #start_date,#dynamicForm #end_date').on('input', append);
-	*/
 });
 </script>

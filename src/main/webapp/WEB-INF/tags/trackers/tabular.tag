@@ -65,14 +65,7 @@
         </table>          
     </c:otherwise>
 </c:choose>
-<a href="javascript:runMe()">Run Me</a>
 <script>
-
-function runMe() {
-    document.querySelector('#activeTable tbody tr:first-child #end_date + input').value = '2010-10-03';
-    document.querySelector('#activeTable tbody tr:first-child #end_date').value = '2010-10-03';
-}
-
 window.addEventListener("DOMContentLoaded", function() {
     var template = "<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/ajax/row/@/nostatuschange.html"/>";
     var fields =  $('#activeTable input[type=date]');
@@ -97,23 +90,5 @@ window.addEventListener("DOMContentLoaded", function() {
             }
         });
     }, 300);
-    /* This also ends up using a timeout due to throttling, so it's not much better.
-    var finished = throttle(function(e) {
-    	this.readonly = true;
-    	var row = $(this).closest("tr"),
-    	    rowId = row.data("id"),
-    	    url = template.split("@").join(rowId),
-    	    query = $(this).attr('name') + "=" + encodeURIComponent($(this).val());
-        
-    	humane.log("Updating...");
-        $.ajax(url, {
-            method: "post",
-            data: query
-        }).success(function(params) {
-        	document.location.reload();
-        });
-    }, 500);
-    $('#activeTable input').on('input', finished);
-    */
 });
 </script>
