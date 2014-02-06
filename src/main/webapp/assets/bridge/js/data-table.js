@@ -57,7 +57,7 @@
     };
     
     $(function() {
-    	$(document.documentElement).on('click', '.table-selectable tbody td', function(e) {
+    	$(document.documentElement).on('click', '.table-selectable tbody.dataRows td', function(e) {
     		if (e.target.nodeName !== "INPUT" && e.target.nodeName !== "A") {
         		var dt = new DataTable(e.target);
         		dt.toggle();

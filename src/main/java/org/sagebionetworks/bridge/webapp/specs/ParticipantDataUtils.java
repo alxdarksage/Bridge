@@ -66,6 +66,7 @@ public class ParticipantDataUtils {
 		ParticipantDataStatus status = new ParticipantDataStatus();
 		status.setParticipantDataDescriptorId(id);
 		status.setLastEntryComplete(true);
+		status.setLastStarted(new Date());
 		statuses.setUpdates(Collections.singletonList(status));
 		return statuses;
 	}
@@ -95,4 +96,5 @@ public class ParticipantDataUtils {
 		row.setData(data);
 		return Collections.singletonList(row);
 	}
+	
 }

@@ -140,6 +140,12 @@ public class FormFieldBuilderTest {
 	}
 
 	@Test
+	public void canSetPlaceholder() {
+		FormField field = setDefaults(builder.asText()).type("Foo").placeholder("Bar").create();
+		assertEquals("Bar", field.getPlaceholderText());
+	}
+	
+	@Test
 	public void canSetReadonly() {
 		FormField field = setDefaults(builder.asText()).create();
 		assertFalse(field.isReadonly());

@@ -135,6 +135,11 @@ public class WebDriverFacade implements WebDriver {
 		Set<String> tokens = Sets.newHashSet(classTokens.split("\\s+"));
 		Assert.assertTrue("Contain CSS class: " + cssClass, tokens.contains(cssClass));
 	}
+	void waitFor(long milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch(InterruptedException ie) {}
+	}
 	void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
@@ -294,10 +299,6 @@ public class WebDriverFacade implements WebDriver {
 		String content = (String)((JavascriptExecutor)driver).executeScript("return document.querySelector('#notice').textContent");
 		Assert.assertTrue("User notified with message '"+message+"' was: " + content, content.contains(message));
 	}
-	
-	// Pass-throughs to the driver object. Arguably, these should be removed and replaced
-	// with methods that *always* wait first, because this has been an issue in getting 
-	// to reliable tests.
 	
 	@Override
 	public void close() {

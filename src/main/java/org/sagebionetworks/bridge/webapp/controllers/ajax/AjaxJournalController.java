@@ -2,6 +2,8 @@ package org.sagebionetworks.bridge.webapp.controllers.ajax;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.controllers.JournalControllerBase;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
@@ -20,6 +22,8 @@ import com.google.common.collect.Maps;
 
 @Controller
 public class AjaxJournalController extends JournalControllerBase {
+
+	private static final Logger logger = LogManager.getLogger(AjaxJournalController.class.getName());
 
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/ajax/new", method = RequestMethod.POST)
 	@ResponseBody
@@ -42,12 +46,24 @@ public class AjaxJournalController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") long rowId,
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 
-		ParticipantDataRow data = updateRow(request, participantId, trackerId, rowId, dynamicForm, model, null, null);
-		model.setViewName(null);
+		ParticipantDataRow data = ajaxUpdateRow(request, participantId, trackerId, rowId, dynamicForm,
+				ParticipantDataUtils.getInProcessStatus(trackerId));
 		
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("rowId", data.getRowId());
 		return result;
 	}
+	
+	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/ajax/row/{rowId}/nostatuschange", method = RequestMethod.POST)
+	@ResponseBody
+	public Object finishValuesAjax(BridgeRequest request, @PathVariable("participantId") String participantId,
+			@PathVariable("trackerId") String trackerId, @PathVariable("rowId") Long rowId,
+			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 
+		ParticipantDataRow data = ajaxUpdateRow(request, participantId, trackerId, rowId, dynamicForm, null);
+
+		Map<String, Object> result = Maps.newHashMap();
+		result.put("rowId", data.getRowId());
+		return result;
+	}
 }

@@ -33,6 +33,12 @@ public interface FormElement {
 	 * @return
 	 */
 	public String getLabel();
+	
+	/**
+	 * Placeholder text (for form controls).
+	 */
+	public String getPlaceholderText();
+	
 	/**
 	 * Can this value be pre-set from the value of a prior form already saved by the user?
 	 * @return

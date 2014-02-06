@@ -1,24 +1,35 @@
-.table, .inline {
+/* Lots of scoping here because these rules will conflict with the 
+    shim HTML5 form controls, like the datepicker. */ 
+.table {
     border: 1px solid #ccc;
     
     caption {
         display:none;
     }
-	th {
-	    border-bottom-color: #aaa ! important;
+    tbody.dataRows {
+        & > tr {
+	        & > th {
+	            border-bottom-color: #aaa ! important;
+	        }
+	        & > th:last-child, & > td:last-child {
+	            border-right: 1px solid #ccc;
+	        }
+	        & > td {
+	           vertical-align: middle ! important;
+	        }
+	        & > td.nowrap {
+	            white-space: nowrap;
+	        }
+        }
+        & > tr:last-child {
+            & > td {
+                border-bottom: 2px solid #aaa;
+            }
+        }
 	}
-	th:last-child, td:last-child {
-	    border-right: 1px solid #ccc;
-	}
-	tbody tr:last-child td {
-	    border-bottom: 2px solid #aaa;
-	}
-	td.empty {
+    td.empty {
        padding: 4rem 0rem;
        text-align: center;
-    }
-    td.nowrap {
-        white-space: nowrap;
     }
 	thead {
 	    th {
@@ -57,6 +68,13 @@
     width: 100% ! important;
     margin-bottom: .75rem;
     
+    > * {
+	    display: table-cell;
+	    line-height: 30px;
+	    height: 30px;
+	    vertical-align: middle;
+	    padding: 0;
+    }
     .pagination {
         display: block;
         float: right;
@@ -66,13 +84,6 @@
         margin-right: 1rem;
     }
 }
-.table-buttons > * {
-    display: table-cell;
-    line-height: 30px;
-    height: 30px;
-    vertical-align: middle;
-    padding: 0;
-}
 
 /* Better responsive table layout. */
 @media (max-width: 600px) {
@@ -80,20 +91,22 @@
 	    thead {
 	        display: none;
 	    }
-	    td {
-	        border: none ! important;
-	        padding: .5rem 0 .5rem 1rem ! important;
-	        display: block ! important;
-	        width: 100% ! important;
-	    }
-	    tbody {
-	        td:before {
-	           content: attr(data-title);
-	           font-variant: small-caps;
-	        }
-	        td:last-child {
-	            border-bottom: 2px solid #aaa ! important;
-	        }
+	    tbody.dataRows {
+            > tr {
+	            > td {
+	                border: none ! important;
+	                padding: .5rem 0 .5rem 1rem ! important;
+	                display: block ! important;
+	                width: 100% ! important;
+	            }
+	            > td:before {
+	               content: attr(data-title);
+	               font-variant: small-caps;
+	            }
+	            > td:last-child {
+	                border-bottom: 2px solid #aaa ! important;
+	            }
+            }
         }
 	    .pagination {
 	        width: 7.8rem;
@@ -104,17 +117,19 @@
 	    }
     }
     .table-selectable {
-	    td {
-	        padding: .5rem 0 .5rem 3rem ! important;
-	    }
-        tbody {
-            td:first-child {
-                position: absolute ! important;
-                margin-left: -2rem;
-                z-index: 1;
-            }
-            td:first-child:before {
-                content: none;
+        tbody.dataRows {
+            > tr {
+	            > td {
+	                padding: .5rem 0 .5rem 3rem ! important;
+	            }
+	            > td:first-child {
+	                position: absolute ! important;
+	                margin-left: -2rem;
+	                z-index: 1;
+	            }
+	            > td:first-child:before {
+	                content: none;
+	            }
             }
         }
         tfoot {

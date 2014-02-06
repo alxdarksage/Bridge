@@ -1,18 +1,30 @@
 package org.sagebionetworks.bridge.webapp.integration.journal;
 
-import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.*;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.HB;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.HCT;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.LYMPHOCYTES_PERC;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.MCV;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.MONOCYTES_PERC;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.MPV;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.NEUTROPHIL_IMMATURE_PERC;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.NEUTROPHIL_PERC;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.PLT;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.RBC;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.RDW;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.RET;
+import static org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage.FieldNames.WBC;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
-import org.sagebionetworks.bridge.webapp.integration.pages.TrackerIndexPage;
-import org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.JournalPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.SignInPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.TrackerEditPage;
+import org.sagebionetworks.bridge.webapp.integration.pages.TrackerIndexPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
-public class ITJournal extends WebDriverBase {
+public class ITCompleteBloodCount extends WebDriverBase {
 
 	// This HAS to be the latest date in the system, with a date later 
 	// than the dummy records we create for testing.
@@ -30,14 +42,47 @@ public class ITJournal extends WebDriverBase {
 		deleteAllTrackers();
 	}
 	
+	private void deleteAllTrackers() {
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
+		int count = indexPage.getDataTable().getRowCount();
+		if (count > 0) {
+			for (int i=0; i < count; i++) {
+				indexPage.getDataTable().selectRow(i);
+			}
+			indexPage.getDataTable().clickDelete();	
+		}
+	}
+	
+	private void createTrackerSurvey() {
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
+		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
+		
+		newPage.setTestDate(TEST_DATE);
+		newPage.setRow(RBC, 1);
+		newPage.setRow(HB, 2);
+		newPage.setRow(HCT, 3);
+		newPage.setRow(MCV, 4);
+		//newPage.setRow(MCH, 5);
+		newPage.setRow(RDW, 6);
+		newPage.setRow(RET, 7);
+		newPage.setRow(WBC, 8);
+		newPage.setRow(NEUTROPHIL_PERC, 10);
+		newPage.setRow(NEUTROPHIL_IMMATURE_PERC, 11);
+		newPage.setRow(LYMPHOCYTES_PERC, 12);
+		newPage.setRow(MONOCYTES_PERC, 13);
+		newPage.setRow(PLT, 14);
+		newPage.setRow(MPV, 15);
+		newPage.clickFinishButton();
+	}
+
 	@Test
 	public void canCancel() {
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		
 		TrackerEditPage page = indexPage.clickNewTrackerButton();
 		page.clickCancelButton();
 		
-		journalPage.waitForTrackerIndexPage();
+		journalPage.waitForCBCIndexPage();
 	}
 	
 	@Test
@@ -51,14 +96,14 @@ public class ITJournal extends WebDriverBase {
 	
 	@Test
 	public void hasCorrectContentTitle() {
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		indexPage.assertCorrectHeader();
 	}
 	
 	@Test
 	public void trackerCanBeCreatedAndUpdated() {
 		createTrackerSurvey();
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		TrackerEditPage editPage = indexPage.getMostRecentEntry().clickEditTrackerButton();
 		editPage.assertTestDate(TEST_DATE);
 		editPage.assertDefaultedValuesExplanationNotPresent();
@@ -115,7 +160,7 @@ public class ITJournal extends WebDriverBase {
 	@Test
 	public void verifyValuesAreDefaultedFromPriorTracker() {
 		createTrackerSurvey();
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
 
 		newPage.assertDefaultedValuesExplanationPresent();
@@ -129,7 +174,7 @@ public class ITJournal extends WebDriverBase {
 		// Might be better to allow strings to simulate typing different kinds of stuff in.
 		// verify that values are constrained to valid values (doubles, longs, percentages)
 
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
 		
 		newPage.assertFieldConstrained(RBC, "asdf-10.2", "10.2");
@@ -137,7 +182,7 @@ public class ITJournal extends WebDriverBase {
 	
 	@Test
 	public void saveAndResumeAForm() {
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		indexPage.assertControlsForAllTrackersComplete();
 		
 		// Create a partially complete form
@@ -148,7 +193,7 @@ public class ITJournal extends WebDriverBase {
 		newPage.setRow(HCT, 3);
 		newPage.clickSaveForLaterButton();
 		
-		indexPage = journalPage.getTrackerIndexPage();
+		indexPage = journalPage.getCBCIndexPage();
 		// Controls should exist to resume
 		indexPage.assertControlsForAnUnfinishedTracker();
 		// And it should not be in the table
@@ -160,7 +205,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.clickSaveForLaterButton();
 		
 		// Now resume again, edit and finish
-		indexPage = journalPage.getTrackerIndexPage();
+		indexPage = journalPage.getCBCIndexPage();
 		// Still not in table
 		Assert.assertEquals(0, indexPage.getDataTable().getRowCount());
 		
@@ -169,7 +214,7 @@ public class ITJournal extends WebDriverBase {
 		editPage.clickFinishButton();
 		
 		// It's no longer in process, it's in the table
-		indexPage = journalPage.getTrackerIndexPage();
+		indexPage = journalPage.getCBCIndexPage();
 		indexPage.assertControlsForAllTrackersComplete();
 		Assert.assertEquals(1, indexPage.getDataTable().getRowCount());
 		
@@ -177,39 +222,6 @@ public class ITJournal extends WebDriverBase {
 		editPage.setRow(RBC, 1);
 		editPage.setRow(HB, 4);
 		editPage.setRow(HCT, 5);
-	}
-
-	private void deleteAllTrackers() {
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
-		int count = indexPage.getDataTable().getRowCount();
-		if (count > 0) {
-			for (int i=0; i < count; i++) {
-				indexPage.getDataTable().selectRow(i);
-			}
-			indexPage.getDataTable().clickDelete();	
-		}
-	}
-	
-	private void createTrackerSurvey() {
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
-		TrackerEditPage newPage = indexPage.clickNewTrackerButton();
-		
-		newPage.setTestDate(TEST_DATE);
-		newPage.setRow(RBC, 1);
-		newPage.setRow(HB, 2);
-		newPage.setRow(HCT, 3);
-		newPage.setRow(MCV, 4);
-		//newPage.setRow(MCH, 5);
-		newPage.setRow(RDW, 6);
-		newPage.setRow(RET, 7);
-		newPage.setRow(WBC, 8);
-		newPage.setRow(NEUTROPHIL_PERC, 10);
-		newPage.setRow(NEUTROPHIL_IMMATURE_PERC, 11);
-		newPage.setRow(LYMPHOCYTES_PERC, 12);
-		newPage.setRow(MONOCYTES_PERC, 13);
-		newPage.setRow(PLT, 14);
-		newPage.setRow(MPV, 15);
-		newPage.clickFinishButton();
 	}
 	
 	@Test
@@ -219,13 +231,13 @@ public class ITJournal extends WebDriverBase {
 		createTrackerSurvey();
 		createTrackerSurvey();
 
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		int rowCount = indexPage.getDataTable().getRowCount();
 		
 		indexPage.getDataTable().selectRow(0);
 		indexPage.getDataTable().clickDelete();
 		
-		indexPage = journalPage.getTrackerIndexPage();
+		indexPage = journalPage.getCBCIndexPage();
 		int nextRowCount = indexPage.getDataTable().getRowCount();
 		Assert.assertEquals(nextRowCount+1, rowCount);
 	}
@@ -235,8 +247,10 @@ public class ITJournal extends WebDriverBase {
 		deleteAllTrackers();
 		createTrackerSurvey();
 		
-		TrackerIndexPage indexPage = journalPage.getTrackerIndexPage();
+		TrackerIndexPage indexPage = journalPage.getCBCIndexPage();
 		indexPage.clickExportButton();
 		// and then I don't know what.
 	}
+	
+	
 }

@@ -19,7 +19,7 @@ public class TrackerIndexPage {
 	
 	public DataTableInPage getDataTable() {
 		if (dataTable == null) {
-			dataTable = new DataTableInPage(facade);
+			dataTable = new DataTableInPage(facade, "#dynamicForm");
 		}
 		return dataTable;
 	}

@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 abstract public class AbstractFormElement implements FormElement {
 
 	protected ParticipantDataColumnDescriptor column;
+	protected String placeholderText;
 	protected boolean defaultable;
 	protected UIType type;
 	protected Converter<List<String>, ParticipantDataValue> participantDataValueConverter;
@@ -45,6 +46,11 @@ abstract public class AbstractFormElement implements FormElement {
 	@Override
 	public String getLabel() {
 		return column.getDescription();
+	}
+	
+	@Override
+	public String getPlaceholderText() {
+		return placeholderText;
 	}
 
 	@Override
@@ -98,6 +104,10 @@ abstract public class AbstractFormElement implements FormElement {
 	
 	public void setLabel(String label) {
 		column.setDescription(label);
+	}
+	
+	public void setPlaceholderText(String placeholderText) {
+		this.placeholderText = placeholderText;
 	}
 	
 	public void setInitialValue(String initialValue) {

@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp.integration.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
+import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
 
 public class JournalPage {
 
@@ -20,13 +21,29 @@ public class JournalPage {
 		element.click();
 	}
 	
-	public TrackerIndexPage getTrackerIndexPage() {
-		clickCompleteBloodCount();
-		return waitForTrackerIndexPage();
+	public void clickMedication() {
+		WebElement element = facade.findElement(By.partialLinkText(new MedicationTracker().getName()));
+		element.click();
 	}
 	
-	public TrackerIndexPage waitForTrackerIndexPage() {
+	public TrackerIndexPage getCBCIndexPage() {
+		clickCompleteBloodCount();
+		return waitForCBCIndexPage();
+	}
+	
+	public TrackerIndexPage waitForCBCIndexPage() {
 		facade.waitForHeader(TrackerIndexPage.HEADER);
 		return new TrackerIndexPage(facade);
 	}
+	
+	public OnePageTrackerEditPage getMedicationPage() {
+		clickMedication();
+		return waitForMedicationIndexPage();
+	}
+	
+	public OnePageTrackerEditPage waitForMedicationIndexPage() {
+		facade.waitForHeader(OnePageTrackerEditPage.HEADER);
+		return new OnePageTrackerEditPage(facade);
+	}
+	
 }
