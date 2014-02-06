@@ -9,13 +9,15 @@ import org.openqa.selenium.WebElement;
 public class DataTableInPage {
 
 	private WebDriverFacade facade;
+	private String tableCssSelector;
 	
-	public DataTableInPage(WebDriverFacade facade) {
+	public DataTableInPage(WebDriverFacade facade, String tableCssSelector) {
 		this.facade = facade;
+		this.tableCssSelector = tableCssSelector;
 	}
 	
 	public WebElement getRowByName(String name) {
-		WebElement table = facade.findElement(By.className("table-selectable")); 
+		WebElement table = facade.findElement(By.cssSelector(tableCssSelector));
 		List<WebElement> list = table.findElements(By.partialLinkText(name));
 		if (!list.isEmpty()) {
 			return list.get(0).findElement(By.xpath("./ancestor::tr"));
@@ -24,8 +26,8 @@ public class DataTableInPage {
 	}
 	
 	private List<WebElement> getAllRows() {
-		facade.waitUntil(".table-selectable");
-		return facade.findElements(By.cssSelector(".table-selectable tbody.dataRows tr"));
+		facade.waitUntil(tableCssSelector);
+		return facade.findElements(By.cssSelector(tableCssSelector + " tbody.dataRows tr"));
 	}
 	
 	public WebElement getRowByIndex(int index) {
@@ -72,34 +74,34 @@ public class DataTableInPage {
 	}
 	
 	public void assertAllRowsSelected() {
-		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector("tbody.dataRows input"));
+		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector(tableCssSelector + " tbody.dataRows input"));
 		for (WebElement checkbox : allCheckboxes) {
 			Assert.assertTrue(checkbox.isSelected());
 		}
 	}
 	
 	public void assertAllRowsDeselected() {
-		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector("tbody.dataRows input"));
+		List<WebElement> allCheckboxes = facade.findElements(By.cssSelector(tableCssSelector + " tbody.dataRows input"));
 		for (WebElement checkbox : allCheckboxes) {
 			Assert.assertFalse(checkbox.isSelected());
 		}
 	}
 	
 	public void assertDeleteEnabled() {
-		String classes = facade.findElement(By.id("deleteAct")).getAttribute("class");
+		String classes = facade.findElement(By.cssSelector(tableCssSelector + " #deleteAct")).getAttribute("class");
 		Assert.assertFalse(classes.contains("disabled"));
 	}
 	
 	public void assertDeleteDisabled() {
-		String classes = facade.findElement(By.id("deleteAct")).getAttribute("class");
+		String classes = facade.findElement(By.cssSelector(tableCssSelector + " #deleteAct")).getAttribute("class");
 		Assert.assertTrue(classes.contains("disabled"));
 	}
 	
 	public void clickMasterCheckbox() {
-		facade.click("*[name=masterSelect]");
+		facade.click(tableCssSelector + " *[name=masterSelect]");
 	}
 	
 	public void clickDelete() {
-		facade.clickAndDismissConfirmation("#deleteAct");
+		facade.clickAndDismissConfirmation(tableCssSelector + " #deleteAct");
 	}
 }

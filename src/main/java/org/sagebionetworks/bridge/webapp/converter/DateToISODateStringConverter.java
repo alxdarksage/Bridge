@@ -2,6 +2,8 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
@@ -14,6 +16,8 @@ import com.google.common.collect.Lists;
  * display.
  */
 public class DateToISODateStringConverter implements Converter<ParticipantDataValue, List<String>> {
+	
+	private static final Logger logger = LogManager.getLogger(DateToISODateStringConverter.class.getName());
 
 	public static final DateToISODateStringConverter INSTANCE = new DateToISODateStringConverter();
 

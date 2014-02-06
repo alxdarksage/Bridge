@@ -2,8 +2,6 @@ package org.sagebionetworks.bridge.webapp.controllers;
 
 import java.util.Set;
 
-import javax.ws.rs.PathParam;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
@@ -148,22 +146,5 @@ public class TrackerRowController extends JournalControllerBase {
 				ParticipantDataUtils.getInProcessStatus(trackerId));
 		return model;
 	}
-	
-	// TODO: DELETE ME
-	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}/finish", method = RequestMethod.POST)
-	public ModelAndView finishExistingRow(BridgeRequest request, @PathVariable("participantId") String participantId,
-			@PathVariable("trackerId") String trackerId, @PathParam("rowId") Long rowId,
-			@ModelAttribute DynamicForm dynamicForm, BindingResult result, ModelAndView model) throws SynapseException {
-
-		if (rowId != null) {	
-			updateRow(request, participantId, trackerId, rowId, dynamicForm, model, result,
-					ParticipantDataUtils.getFinishedStatus(trackerId));
-		} else {
-			createRow(request, participantId, trackerId, dynamicForm, model, result,
-					ParticipantDataUtils.getFinishedStatus(trackerId));
-		}
-		return model;
-	}
-
 
 }

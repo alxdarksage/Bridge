@@ -4,36 +4,100 @@
 <h3>${element.label}</h3>
 <c:choose>
     <c:when test="${not empty requestScope[element.modelName]}">
-	    <table id="${element.modelName}Table" width="100%" class="smBottomSpaced">
-	        <tr>
-	           <th>ID</th>
-	            <c:forEach var="el" items="${element.children}">
-	                <th>
-	                    <sage:form-label field="${el}"/>
-	                </th>
-	            </c:forEach>
-	        </tr>
-            <c:forEach var="row" items="${requestScope[element.modelName]}">
-	            <tr data-id="${row.rowId}">
-	                <td>${row.rowId}</td>
-	                <c:forEach var="el" items="${element.children}">
-                        <td style="width:${100 / fn:length(element.children)}%">
-                            <c:set var="dynamicForm" value="${sage:valuesMapHolder(form.showStructure, row)}" scope="request" />
-                            <sage:router element="${el}"/>
-                        </td>
+        <c:url var="tabUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html"/>
+        <form role="role" method="post" action="${tabUrl}" id="tabularForm">
+	        <table id="${element.modelName}Table" width="100%" class="table table-selectable smBottomSpaced">
+	            <thead>
+	                <tr>
+	                    <th class="checkRow"></th>
+	                    <c:forEach var="el" items="${element.children}">
+	                        <th>
+	                            <sage:form-label field="${el}"/>
+	                        </th>
+	                    </c:forEach>
+	                </tr>
+	            </thead>
+	            <tbody class="dataRows">
+	                <c:forEach var="row" items="${requestScope[element.modelName]}">
+	                    <tr data-id="${row.rowId}">
+	                        <td>
+	                            <input type="checkbox" name="rowSelect" title="Select Row" value="${row.rowId}" class="user-success">
+	                        </td>
+	                        <c:forEach var="el" items="${element.children}">
+	                            <td data-title="${el.label}: " style="width:${100 / fn:length(element.children)+1}%">
+	                                <c:set var="dynamicForm" value="${sage:valuesMapHolder(form.showStructure, row)}" scope="request" />
+	                                <sage:router element="${el}"/>
+	                            </td>
+	                        </c:forEach>
+	                    </tr>
 	                </c:forEach>
-	            </tr>
-            </c:forEach>
-	    </table>
+	            </tbody>
+	            <tfoot>
+	                <tr>
+	                    <td><input type="checkbox" name="masterSelect" title="Select All Rows"></td>
+	                    <td colspan="${fn:length(element.children)}">
+	                        <button type="submit" id="deleteAct" name="delete" value="delete" 
+	                            class="btn btn-xs disabled btn-danger" 
+	                            data-confirm="Are you sure you wish to delete this data?">Delete</button>
+	                    </td>
+	                </tr>
+	            </tfoot>            
+	        </table>
+        </form>
     </c:when>
     <c:otherwise>
-        <p>There are no ${fn:toLowerCase(element.label)}.</p>    
+        <table id="${element.modelName}Table" width="100%" class="table table-selectable smBottomSpaced">
+            <thead>
+                <tr>
+                    <th class="checkRow"></th>
+                    <c:forEach var="el" items="${element.children}">
+                        <th><sage:form-label field="${el}"/></th>
+                    </c:forEach>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="empty" colspan="${fn:length(element.children)+1}">
+                        There are no ${fn:toLowerCase(element.label)}.
+                    </td>
+                </tr>
+            </tbody>
+        </table>          
     </c:otherwise>
 </c:choose>
+<a href="javascript:runMe()">Run Me</a>
 <script>
-window.addEventListener("load", function() {
-    var template = "<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/ajax/row/@/nostatuschange.html"/>";
 
+function runMe() {
+    document.querySelector('#activeTable tbody tr:first-child #end_date + input').value = '2010-10-03';
+    document.querySelector('#activeTable tbody tr:first-child #end_date').value = '2010-10-03';
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+    var template = "<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/ajax/row/@/nostatuschange.html"/>";
+    var fields =  $('#activeTable input[type=date]');
+
+    setInterval(function() {
+        fields.each(function() {
+        	console.log(this.value);
+        	if (this.value) {
+                this.readonly = true;
+                var row = $(this).closest("tr"),
+                    rowId = row.data("id"),
+                    url = template.split("@").join(rowId),
+                    query = $(this).attr('name') + "=" + encodeURIComponent($(this).val());
+                
+                humane.log("Updating...");
+                $.ajax(url, {
+                    method: "post",
+                    data: query
+                }).success(function(params) {
+                    document.location.reload();
+                });
+            }
+        });
+    }, 300);
+    /* This also ends up using a timeout due to throttling, so it's not much better.
     var finished = throttle(function(e) {
     	this.readonly = true;
     	var row = $(this).closest("tr"),
@@ -41,7 +105,7 @@ window.addEventListener("load", function() {
     	    url = template.split("@").join(rowId),
     	    query = $(this).attr('name') + "=" + encodeURIComponent($(this).val());
         
-    	humane.log("Updating your medications");
+    	humane.log("Updating...");
         $.ajax(url, {
             method: "post",
             data: query
@@ -50,5 +114,6 @@ window.addEventListener("load", function() {
         });
     }, 500);
     $('#activeTable input').on('input', finished);
+    */
 });
 </script>

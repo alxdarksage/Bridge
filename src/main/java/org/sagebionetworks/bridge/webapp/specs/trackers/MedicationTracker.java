@@ -12,6 +12,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
 import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
@@ -19,7 +20,6 @@ import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.FormGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormLayout;
-import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.TabularGroup;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
@@ -50,6 +50,8 @@ public class MedicationTracker implements Specification {
 	
 	List<FormElement> fields = Lists.newArrayList();
 	SortedMap<String,FormElement> tableFields = Maps.newTreeMap();
+	FormGroup inlineEditor;
+	FormGroup root; 
 	
 	public MedicationTracker() {
 		FormFieldBuilder builder = new FormFieldBuilder();
@@ -58,6 +60,14 @@ public class MedicationTracker implements Specification {
 		add( builder.asText().name(DOSE_INSTRUCTIONS_FIELD).label(DOSE_INSTRUCTIONS_LABEL).create() );
 		add( builder.asDate().name(START_DATE_FIELD).label(START_DATE_LABEL).create() );
 		add( builder.asDate().name(END_DATE_FIELD).label(END_DATE_LABEL).create() );
+		
+		root = new FormGroup(UIType.LIST, getName());
+		// Inline editor for a new record
+		createInlineEditor(root);
+		// A table, filtered to active medications
+		createMedicationsTable(root, "Current Medications", "active");
+		// A table, filtered to completed/past medications
+		createMedicationsTable(root, "Past Medications", "finished");
 	}
 	
 	private void add(FormElement element) {
@@ -65,76 +75,14 @@ public class MedicationTracker implements Specification {
 		tableFields.put(element.getName(), element);
 	}
 	
-	@Override
-	public String getName() {
-		return "Medication Tracker";
-	}
-
-	@Override
-	public String getDescription() {
-		return "Medication Tracker";
-	}
-
-	@Override
-	public ParticipantDataRepeatType getRepeatType() {
-		return IF_CHANGED;
-	}
-
-	@Override
-	public String getRepeatFrequency() {
-		return null;
-	}
-
-	@Override
-	public FormLayout getFormLayout() {
-		return FormLayout.ALL_RECORDS_ONE_PAGE_INLINE;
-	}
-
-	@Override
-	public FormElement getEditStructure() {
-		FormGroup root = new FormGroup(UIType.LIST, getName());
-		// Inline editor for a new record
-		createInlineEditor(root);
-		// A table, filtered to active medications
-		createMedicationsTable(root, "Current Medications", "active");
-		// A table, filtered to completed/past medications
-		createMedicationsTable(root, "Past Medications", "finished");
-		return root;
-	}
-	
-	@Override
-	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
-		List<ParticipantDataRow> active = Lists.newArrayList();
-		List<ParticipantDataRow> finished = Lists.newArrayList();
-		for (ParticipantDataRow row : rows) {
-			if (row.getData().get(END_DATE_FIELD) == null) {
-				active.add(row);
-			} else {
-				finished.add(row);
-			}
-		}
-		
-		Collections.sort(active, new ParticipantDataDatetimeComparator(START_DATE_FIELD));
-		Collections.sort(finished, new ParticipantDataDatetimeComparator(END_DATE_FIELD));
-		
-		// Create a dynamic form with the unfinished record's contents
-		ParticipantDataRow inprogress = (ParticipantDataRow)map.get("inprogress");
-		if (inprogress != null) {
-			map.addAttribute("dynamicForm", new ParticipantDataRowAdapter(getEditStructure(), inprogress));
-		}
-		map.addAttribute("records", null);
-		map.addAttribute("active", active);
-		map.addAttribute("finished", finished);
-	}
-	
 	private void createInlineEditor(FormGroup root) {
 		FormFieldBuilder builder = new FormFieldBuilder();
-		FormGroup inlineEditor = new FormGroup(UIType.INLINE_EDITOR, INLINE_EDITOR_LABEL);
+		inlineEditor = new FormGroup(UIType.INLINE_EDITOR, INLINE_EDITOR_LABEL);
 		inlineEditor.add(builder.asText().name(MEDICATION_FIELD).placeholder(MEDICATION_PLACEHOLDER).label(MEDICATION_LABEL).required().create());
 		inlineEditor.add(builder.asText().name(DOSE_FIELD).placeholder(DOSE_PLACEHOLDER).label(DOSE_LABEL).required().create());
 		inlineEditor.add(builder.asText().name(DOSE_INSTRUCTIONS_FIELD).placeholder(DOSE_INSTRUCTIONS_PLACEHOLDER).label(DOSE_INSTRUCTIONS_LABEL).required().create());
-		inlineEditor.add(builder.asDate().name(START_DATE_FIELD).label(START_DATE_LABEL).required().create());
-		inlineEditor.add(builder.asDate().name(END_DATE_FIELD).label(END_DATE_LABEL).create());
+		inlineEditor.add(builder.asDate().name(START_DATE_FIELD).stringConverter(new DateToISODateStringConverter()).label(START_DATE_LABEL).required().create());
+		inlineEditor.add(builder.asDate().name(END_DATE_FIELD).stringConverter(new DateToISODateStringConverter()).label(END_DATE_LABEL).create());
 		root.add(inlineEditor);
 	}
 
@@ -162,8 +110,63 @@ public class MedicationTracker implements Specification {
 	}
 	
 	@Override
+	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
+		List<ParticipantDataRow> active = Lists.newArrayList();
+		List<ParticipantDataRow> finished = Lists.newArrayList();
+		for (ParticipantDataRow row : rows) {
+			if (row.getData().get(END_DATE_FIELD) == null) {
+				active.add(row);
+			} else {
+				finished.add(row);
+			}
+		}
+		
+		Collections.sort(active, new ParticipantDataDatetimeComparator(START_DATE_FIELD));
+		Collections.sort(finished, new ParticipantDataDatetimeComparator(END_DATE_FIELD));
+		
+		// Create a dynamic form with the unfinished record's contents
+		ParticipantDataRow inprogress = (ParticipantDataRow)map.get("inprogress");
+		if (inprogress != null) {
+			map.addAttribute("dynamicForm", new ParticipantDataRowAdapter(inlineEditor, inprogress));
+		}
+		map.addAttribute("records", null);
+		map.addAttribute("active", active);
+		map.addAttribute("finished", finished);
+	}
+	
+	@Override
+	public String getName() {
+		return "Medication Tracker";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Medication Tracker";
+	}
+
+	@Override
+	public ParticipantDataRepeatType getRepeatType() {
+		return IF_CHANGED;
+	}
+
+	@Override
+	public String getRepeatFrequency() {
+		return null;
+	}
+
+	@Override
+	public FormLayout getFormLayout() {
+		return FormLayout.ALL_RECORDS_ONE_PAGE_INLINE;
+	}
+	
+	@Override
 	public FormElement getShowStructure() {
-		return getEditStructure(); // No different in this presentation
+		return root;
+	}
+	
+	@Override
+	public FormElement getEditStructure() {
+		return root;
 	}
 
 	@Override
@@ -178,10 +181,6 @@ public class MedicationTracker implements Specification {
 
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
-		// If end date has been filled out, but no start date, create a start date.
-		if (StringUtils.isNotBlank(values.get(END_DATE_FIELD)) && StringUtils.isBlank(values.get(START_DATE_FIELD))) {
-			values.put(START_DATE_FIELD, values.get(END_DATE_FIELD));
-		}
 		// It should also be the case that start date is never after end date...
 		if (StringUtils.isNotBlank(values.get(END_DATE_FIELD)) && StringUtils.isNotBlank(values.get(START_DATE_FIELD))) {
 			ParticipantDataValue pdv = ISODateConverter.INSTANCE.convert(Collections.singletonList(values.get(START_DATE_FIELD)));

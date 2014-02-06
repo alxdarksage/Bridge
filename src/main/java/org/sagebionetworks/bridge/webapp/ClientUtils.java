@@ -187,12 +187,9 @@ public class ClientUtils {
 		if (descriptor == null) {
 			records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
 			descriptor = getDescriptorById(records, descriptorId);
-			// set a dummy "all is finished" status
-			logger.info("Had to get a generic descriptor, so there shouldn't be a status...");
-			/*
-			if (descriptor != null) {
+			if (descriptor != null) { // a dummy "all is finished" status
 				descriptor.setStatus(ParticipantDataUtils.getFinishedStatus(null).getUpdates().get(0));
-			}*/
+			}
 		}
 		// Still no descriptor? That's an error.
 		if (descriptor == null) {
@@ -318,11 +315,6 @@ public class ClientUtils {
 			}
 		} else if (isInProgress(descriptor)) {
 			logger.info("User has not completed the last record, saving as inprogress record");
-			// This works against real back end, but not against UI profile, and I did switch it to 
-			// previous data, so they may still differ.
-			// ParticipantDataRow inProgressRow = removeInProgressRow(currentRow.getPreviousData(), rows);
-			
-			// This works for the CBCs, it removes the record.
 			ParticipantDataRow inProgressRow = removeInProgressRow(currentRow.getCurrentData(), rows);
 			model.addObject("inprogress", inProgressRow);
 		} else {
