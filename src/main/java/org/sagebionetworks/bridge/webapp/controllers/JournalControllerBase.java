@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
 import java.text.ParseException;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
@@ -26,7 +26,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,22 +49,22 @@ public class JournalControllerBase {
 	@ModelAttribute("descriptors")
 	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		List<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L)
+		List<ParticipantDataDescriptor> descriptors = client.getAllParticipantDataDescriptors(ClientUtils.LIMIT, 0L)
 				.getResults();
-		Collections.sort(allDescriptors, new Comparator<ParticipantDataDescriptor>() {
+		Collections.sort(descriptors, new Comparator<ParticipantDataDescriptor>() {
 			@Override
 			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
 				return pdd0.getName().compareTo(pdd1.getName());
 			}
 			
 		});
-		return allDescriptors;
+		return descriptors;
 	}
 
 	@ModelAttribute
 	public void descriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<ParticipantDataDescriptor> descriptors = client.getParticipantDatas(ClientUtils.LIMIT, 0L);
+		PaginatedResults<ParticipantDataDescriptor> descriptors = client.getUserParticipantDataDescriptors(ClientUtils.LIMIT, 0L);
 		ClientUtils.prepareDescriptorsByStatus(model, client, descriptors);
 	}
 
@@ -73,8 +72,8 @@ public class JournalControllerBase {
 			ModelAndView model, BindingResult result, ParticipantDataStatusList statuses) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		spec.setSystemSpecifiedValues(dynamicForm.getValuesMap());
 
 		if (result != null) {
@@ -107,8 +106,8 @@ public class JournalControllerBase {
 		// UI on the request, it's an Ajax request and the client will take care of the results.
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		spec.setSystemSpecifiedValues(dynamicForm.getValuesMap());
 		model.addObject("rowId", rowId);
 
@@ -127,26 +126,6 @@ public class JournalControllerBase {
 		}
 		request.setNotification("Tracker saved.");
 		model.setViewName("redirect:/journal/" + participantId + "/trackers/" + trackerId + ".html");
-		return data.get(0);
-	}
-	
-	protected ParticipantDataRow ajaxUpdateRow(BridgeRequest request, String participantId, String trackerId,
-			long rowId, DynamicForm dynamicForm, ParticipantDataStatusList statuses)
-			throws SynapseException {
-		
-		// Not passing the result object into the method is the equivalent of saying there's no 
-		// UI on the request, it's an Ajax request and the client will take care of the results.
-		
-		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, null);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, null);
-		spec.setSystemSpecifiedValues(dynamicForm.getValuesMap());
-
-		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForUpdate(spec, dynamicForm.getValuesMap(), rowId);
-		data = client.updateParticipantData(trackerId, data);
-		if (statuses != null) {
-			client.sendParticipantDataDescriptorUpdates(statuses);	
-		}
 		return data.get(0);
 	}
 	

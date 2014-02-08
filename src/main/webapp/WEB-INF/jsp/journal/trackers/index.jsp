@@ -19,7 +19,7 @@
 		        <sage:spec-table formId="dynamicForm" action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html" 
 		            items="${records}" caption="${form.description}s" specification="${spec}">
 		            <c:choose>
-                        <c:when test="${not descriptor.status.lastEntryComplete}">
+                        <c:when test="${descriptor.status.lastEntryComplete == false}">
 		                    <sage:table-button id="resumeAct" type="primary" label="Finish Last Tracker"
 		                        action="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}/resume.html"/>
 		                    <sage:table-button id="newTrackerAct" type="default" label="New Tracker" 

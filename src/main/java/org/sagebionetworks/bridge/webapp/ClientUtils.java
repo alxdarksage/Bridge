@@ -29,6 +29,7 @@ import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
@@ -177,69 +178,43 @@ public class ClientUtils {
 		return request.getBridgeUser().getSynapseClient().getUsersEntityPermissions(id);
 	}
 	
-	public static ParticipantDataDescriptor prepareDescriptor(BridgeClient client, String descriptorId,
+	public static ParticipantDataDescriptorWithColumns prepareDescriptor(BridgeClient client, String descriptorId,
 			ModelAndView model) throws SynapseException {
-		// These are the descriptors for a user, and they come with statuses. If the method returns no descriptor, 
-		// the user hasn't used this tracker before, resort to getAllParticipantDatas(). 
-		PaginatedResults<ParticipantDataDescriptor> records = client.getParticipantDatas(ClientUtils.LIMIT, 0);
-		ParticipantDataDescriptor descriptor = getDescriptorById(records, descriptorId);
 		
-		if (descriptor == null) {
-			records = client.getAllParticipantDatas(ClientUtils.LIMIT, 0);
-			descriptor = getDescriptorById(records, descriptorId);
-			if (descriptor != null) { // a dummy "all is finished" status
-				descriptor.setStatus(ParticipantDataUtils.getFinishedStatus(null).getUpdates().get(0));
-			}
-		}
-		// Still no descriptor? That's an error.
-		if (descriptor == null) {
-			throw new SynapseNotFoundException("Could not find ParticipantDataDescriptor with ID of " + descriptorId);
+		ParticipantDataDescriptorWithColumns dwc = client.getParticipantDataDescriptorWithColumns(descriptorId);
+		if (dwc.getDescriptor().getStatus() == null) {
+			// a dummy "all is finished" status
+			dwc.getDescriptor().setStatus(ParticipantDataUtils.getFinishedStatus(null).getUpdates().get(0));
 		}
 		if (model != null) {
-			model.addObject("descriptor", descriptor);
+			model.addObject("descriptor", dwc.getDescriptor());
 		}
-		return descriptor;
+		return dwc;
 	}
 	
-	public static Specification prepareSpecification(BridgeClient client, SpecificationResolver resolver,
-			ParticipantDataDescriptor descriptor, ModelAndView model) throws SynapseException {
+	public static Specification prepareSpecification(SpecificationResolver resolver,
+			ParticipantDataDescriptorWithColumns dwc, ModelAndView model) throws SynapseException {
 		
+		ParticipantDataDescriptor descriptor = dwc.getDescriptor();
 		Specification specification = resolver.getSpecification(descriptor.getName());
 		if (specification == null) {
-			throw new SynapseNotFoundException("Could not find Specification for a Descriptor with the name " + descriptor.getName());
+			throw new SynapseNotFoundException("Could not find Specification for a Descriptor with the name "
+					+ descriptor.getName());
 		}
-		ClientUtils.updateSpecificationWithColumns(client, descriptor, specification);
-		if (model != null) {
-			model.addObject("form", specification);
-		}
-		return specification;
-	}
-
-	private static ParticipantDataDescriptor getDescriptorById(PaginatedResults<ParticipantDataDescriptor> records,
-			String descriptorId) {
-		for (ParticipantDataDescriptor descriptor : records.getResults()) {
-			if (descriptor.getId().equals(descriptorId)) {
-				return descriptor;
-			}
-		}
-		return null;
-	}
-
-	private static void updateSpecificationWithColumns(BridgeClient client, ParticipantDataDescriptor descriptor,
-			Specification specification) throws SynapseException {
-
-		List<ParticipantDataColumnDescriptor> columns = client.getParticipantDataColumnDescriptors(descriptor.getId(),
-				ClientUtils.LIMIT, 0L).getResults();
-		
+		// update specification with columns
 		Map<String,ParticipantDataColumnDescriptor> mapping = Maps.newHashMap();
-		for (ParticipantDataColumnDescriptor column : columns) {
+		for (ParticipantDataColumnDescriptor column : dwc.getColumns()) {
 			mapping.put(column.getName(), column);
 		}
 		for (FormElement element : specification.getAllFormElements()) {
 			if (mapping.containsKey(element.getName())) {
 				element.setDataColumn(mapping.get(element.getName()));
 			}
+		}		
+		if (model != null) {
+			model.addObject("form", specification);
 		}
+		return specification;
 	}
 	
 	public static V2WikiPage getWikiPage(BridgeRequest request, Community community, String wikiId)
@@ -299,7 +274,7 @@ public class ClientUtils {
 	 * @param descriptor
 	 * @throws SynapseException
 	 */
-	public static void prepareParticipantDataSummary(BridgeClient client, ModelAndView model, Specification spec,
+	public static List<ParticipantDataRow> prepareParticipantDataSummary(BridgeClient client, ModelAndView model, Specification spec,
 			ParticipantDataDescriptor descriptor) throws SynapseException {
 		
 		boolean mustHaveStarterRecord = (spec.getFormLayout() == FormLayout.ALL_RECORDS_ONE_PAGE_INLINE);
@@ -309,12 +284,12 @@ public class ClientUtils {
 		
 		if (currentRow.getCurrentData() == null || currentRow.getPreviousData() == null) { // it's or, not and...
 			if (mustHaveStarterRecord) {
-				logger.info("User has never completed a record, creating one based on the layout");
+				logger.info("User has never completed a record, creating inprogress record based on the layout");
 				currentRow = createAnInProgressRecord(client, descriptor);
 				model.addObject("inprogress", currentRow.getCurrentData());
 			}
 		} else if (isInProgress(descriptor)) {
-			logger.info("User has not completed the last record, saving as inprogress record");
+			logger.info("User has not completed the last record, removing and exposing as inprogress record");
 			ParticipantDataRow inProgressRow = removeInProgressRow(currentRow.getCurrentData(), rows);
 			model.addObject("inprogress", inProgressRow);
 		} else {
@@ -324,9 +299,8 @@ public class ClientUtils {
 				model.addObject("inprogress", currentRow.getCurrentData());
 			}
 		}
-
 		model.addObject("records", rows);
-		spec.postProcessParticipantDataRows(model.getModelMap(), rows);
+		return rows;
 	}
 	
 	private static ParticipantDataCurrentRow createAnInProgressRecord(BridgeClient client, ParticipantDataDescriptor descriptor) throws SynapseException {

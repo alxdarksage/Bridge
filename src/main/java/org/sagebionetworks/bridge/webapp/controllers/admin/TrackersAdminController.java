@@ -45,7 +45,7 @@ public class TrackersAdminController {
 	
 	@ModelAttribute("descriptors")
 	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
-		PaginatedResults<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDatas(ClientUtils.LIMIT, 0L);
+		PaginatedResults<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDataDescriptors(ClientUtils.LIMIT, 0L);
 		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
 			@Override
 			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {

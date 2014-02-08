@@ -72,7 +72,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
     setInterval(function() {
         fields.each(function() {
-        	console.log(this.value);
         	if (this.value) {
                 this.readonly = true;
                 var row = $(this).closest("tr"),

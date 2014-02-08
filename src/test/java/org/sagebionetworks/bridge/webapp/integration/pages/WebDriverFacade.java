@@ -121,7 +121,6 @@ public class WebDriverFacade implements WebDriver {
 		Assert.assertTrue("Correct header ('"+header+"')", h3.getText().contains(header));
 	}
 	void assertFieldValue(String cssSelector, String expectedValue) {
-		waitUntil(cssSelector);
 		String valueInForm = getFieldValue(cssSelector);
 		Assert.assertEquals("Correct value", expectedValue, valueInForm);
 	}
