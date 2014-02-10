@@ -24,6 +24,7 @@ ${columnDescriptor.name}<span id="${id}-slider"></span>
     	var rowId = rowIdInput.val();
     	var url = form.attr("action") + "/ajax" + (rowId == '' ? '/new' : '/row/' + rowId) + ".html";
         var serialized = $("#${trackerId}").serialize();
+        serialized += '&' + $.param({"valuesMap['date']":new Date().toISOString().replace(/T.*/,"")});
          $.ajax({
              success: function(data) {
                  rowIdInput.val(data.rowId);

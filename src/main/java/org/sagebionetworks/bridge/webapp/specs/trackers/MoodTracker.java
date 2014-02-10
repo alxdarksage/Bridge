@@ -93,7 +93,7 @@ public class MoodTracker implements Specification {
 
 	@Override
 	public String getDatetimeStartColumnName() {
-		return null;
+		return "date";
 	}
 
 	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
