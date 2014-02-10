@@ -364,6 +364,7 @@ public class ClientUtils {
 		List<ParticipantDataDescriptor> descriptorsIfNew = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsIfChanged = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsNoPrompt = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsTimelines = Lists.newArrayListWithExpectedSize(20);
 		
 		Date now = new Date();
 		Calendar lastMonth = Calendar.getInstance();
@@ -455,6 +456,10 @@ public class ClientUtils {
 				}
 				statusUpdateList.add(status);
 			}
+
+			if (descriptor.getDatetimeStartColumnName() != null) {
+				descriptorsTimelines.add(descriptor);
+			}
 		}
 
 		if (statusUpdateList.size() > 0) {
@@ -480,6 +485,7 @@ public class ClientUtils {
 		model.addAttribute("descriptorsIfNew", descriptorsIfNew);
 		model.addAttribute("descriptorsIfChanged", descriptorsIfChanged);
 		model.addAttribute("descriptorsNoPrompt", descriptorsNoPrompt);
+		model.addAttribute("descriptorsTimelines", descriptorsTimelines);
 	}
 
 	public static String getSynapseSessionCookie(BridgeRequest request) {

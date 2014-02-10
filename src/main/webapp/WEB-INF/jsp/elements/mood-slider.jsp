@@ -11,7 +11,7 @@ ${columnDescriptor.name}<span id="${id}-slider"></span>
 <input type="hidden" id="${id}-value" name="valuesMap['${columnDescriptor.name}']" value="<%= value %>"/>
 <div id="${id}-out"></div>
 <script type="text/javascript">
-    var slider = new SmileySlider(document.getElementById("${id}-slider"));
+	var slider = new SmileySlider(document.getElementById("${id}-slider"));
 	slider.setQuestion(<%= !isCurrent %>);
 	slider.position(<%= value %>);
     slider.position(function (p) {

@@ -1,5 +1,8 @@
 package org.sagebionetworks.bridge.webapp.specs.trackers;
 
+import java.text.DateFormat;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -17,6 +20,7 @@ import org.springframework.ui.ModelMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.ibm.icu.text.SimpleDateFormat;
 
 /**
  * This is just a test that we can have different forms.
@@ -25,8 +29,10 @@ public class MoodTracker implements Specification {
 
 	private final FormField mind;
 	private final FormField body;
+	private final FormField date;
 	
 	public MoodTracker() {
+		date = new FormFieldBuilder().asDate().name("date").label("date").create();
 		mind = new FormFieldBuilder().asDouble().name("Mind").label("Mind").type("mood-slider").create();
 		body = new FormFieldBuilder().asDouble().name("Body").label("Body").type("mood-slider").create();
 	}
@@ -58,12 +64,13 @@ public class MoodTracker implements Specification {
 	
 	@Override
 	public List<FormElement> getAllFormElements() {
-		return Lists.<FormElement> newArrayList(mind, body);
+		return Lists.<FormElement> newArrayList(mind, body, date);
 	}
 
 	@Override
 	public SortedMap<String, FormElement> getTableFields() {
 		TreeMap<String,FormElement> map = Maps.newTreeMap();
+		map.put("date", date);
 		map.put("Mind", mind);
 		map.put("Body", body);
 		return map;
@@ -71,7 +78,7 @@ public class MoodTracker implements Specification {
 
 	@Override
 	public void setSystemSpecifiedValues(Map<String, String> values) {
-		// noop
+		values.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 	}
 
 	@Override
@@ -85,6 +92,10 @@ public class MoodTracker implements Specification {
 	}
 
 	@Override
+	public String getDatetimeStartColumnName() {
+		return null;
+	}
+
 	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
 		// noop
 	}

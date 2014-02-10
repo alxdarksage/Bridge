@@ -155,6 +155,11 @@ public class MedicationTracker implements Specification {
 	}
 
 	@Override
+	public String getDatetimeStartColumnName() {
+		return null;
+	}
+
+	@Override
 	public FormLayout getFormLayout() {
 		return FormLayout.ALL_RECORDS_ONE_PAGE_INLINE;
 	}
@@ -194,5 +199,4 @@ public class MedicationTracker implements Specification {
 			}
 		}
 	}
-
 }

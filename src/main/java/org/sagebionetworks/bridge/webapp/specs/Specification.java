@@ -14,6 +14,8 @@ public interface Specification {
 	public String getDescription();
 	public ParticipantDataRepeatType getRepeatType();
 	public String getRepeatFrequency();
+
+	public String getDatetimeStartColumnName();
 	
 	/**
 	 * Sort, filter, pull out the in-progress record, whatever the view requires. Just keep
