@@ -221,6 +221,11 @@ public class CompleteBloodCount implements Specification {
 	public String getRepeatFrequency() {
 		return null;
 	}
+
+	@Override
+	public String getDatetimeStartColumnName() {
+		return COLLECTED_ON_FIELD;
+	}
 	
 	@Override
 	public FormLayout getFormLayout() {
