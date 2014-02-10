@@ -52,7 +52,6 @@ public class ITMedicationsTracker extends WebDriverBase {
 	public void canPartiallyFillOutAndResumeInlineForm() throws Exception {
 		medPage.enterMedication("Prinivil", null, null, START_DATE, null);
 		driver.getPortalPage();
-
 		medPage = driver.getJournalPage().getMedicationPage();
 		medPage.assertMedication("Prinivil", null, null, START_DATE, null);
 	}
@@ -103,7 +102,7 @@ public class ITMedicationsTracker extends WebDriverBase {
 
 		medPage = driver.getJournalPage().getMedicationPage();
 		
-		medPage.setDate("#activeTable tbody tr:first-child #end_date", END_DATE);
+		medPage.setDate("#activeTable tbody.dataRows tr:first-child td:nth-child(6) input", END_DATE);
 		
 		medPage.waitUntilRecordIsClosed();
 		Assert.assertEquals(0, medPage.getActiveMedications().getRowCount());

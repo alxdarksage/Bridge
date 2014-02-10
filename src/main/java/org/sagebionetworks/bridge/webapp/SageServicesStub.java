@@ -30,6 +30,7 @@ import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
@@ -833,7 +834,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDatas(long limit, long offset)
+	public PaginatedResults<ParticipantDataDescriptor> getAllParticipantDataDescriptors(long limit, long offset)
 			throws SynapseException {
 		for (ParticipantDataDescriptor descriptor : descriptorsById.values()) {
 			descriptor.setStatus(null);
@@ -842,7 +843,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public PaginatedResults<ParticipantDataDescriptor> getParticipantDatas(long limit, long offset)
+	public PaginatedResults<ParticipantDataDescriptor> getUserParticipantDataDescriptors(long limit, long offset)
 			throws SynapseException {
 		String ownerId = currentUserData.getProfile().getOwnerId();
 		Collection<ParticipantDataDescriptor> descriptors = descriptorsById.values();
@@ -932,6 +933,28 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList(columnsByDescriptorById.get(descriptorId));
 		return PaginatedResultsUtil.createPaginatedResults(list, limit, offset);
 	}
+
+	@Override
+	public ParticipantDataDescriptorWithColumns getParticipantDataDescriptorWithColumns(String descriptorId)
+			throws SynapseException {
+		ParticipantDataDescriptor descriptor = descriptorsById.get(descriptorId);
+		if (descriptor == null) {
+			throw new SynapseNotFoundException("Could not find descriptor #" + descriptorId);
+		}
+		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList(columnsByDescriptorById.get(descriptorId));
+		if (list.isEmpty()) {
+			throw new SynapseNotFoundException("Could not find columns for descriptor #" + descriptorId);
+		}
+		String ownerId = currentUserData.getProfile().getOwnerId();
+		String compoundKey = ownerId + ":" + descriptorId;
+		ParticipantDataStatus status = statuses.get(compoundKey);
+		descriptor.setStatus(status);
+		ParticipantDataDescriptorWithColumns descriptorWithColumns = new ParticipantDataDescriptorWithColumns();
+		descriptorWithColumns.setDescriptor(descriptor);
+		descriptorWithColumns.setColumns(list);
+		return descriptorWithColumns;
+	}
+
 
 	@Override
 	public void sendPasswordResetEmail(String email, DomainType originClient) throws SynapseException {

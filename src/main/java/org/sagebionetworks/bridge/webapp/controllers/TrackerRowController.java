@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
@@ -34,8 +34,8 @@ public class TrackerRowController extends JournalControllerBase {
 			throws SynapseException {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		Set<String> defaultedFields = FormUtils.defaultsToDynamicForm(dynamicForm, client, spec, trackerId);
 		model.addObject("defaultedFields", defaultedFields);
 		
@@ -71,8 +71,8 @@ public class TrackerRowController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
@@ -89,8 +89,8 @@ public class TrackerRowController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("rowId", rowId);
 		
 		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
@@ -116,8 +116,8 @@ public class TrackerRowController extends JournalControllerBase {
 			@ModelAttribute DynamicForm dynamicForm) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		
 		ParticipantDataRow row = client.getCurrentParticipantData(trackerId).getCurrentData();
 		model.addObject("rowId", row.getRowId());

@@ -21,12 +21,15 @@ window.addEventListener("DOMContentLoaded", function() {
     var url = "${trackerAjaxUrl}";
 	var fields = $('#dynamicForm #medication,#dynamicForm #dose,#dynamicForm #dose_instructions,#dynamicForm #start_date,#dynamicForm #end_date');
 	var values = {};
-	
 	setInterval(function() {
 		fields.each(function() {
-			if (values[this.id] != this.value) {
+			if (typeof values[this.id] === "undefined") {
 				values[this.id] = this.value;
-		        var query = $(this).attr('name') + "=" + encodeURIComponent($(this).val());
+				return;
+			}
+			if (values[this.id] !== this.value) {
+				values[this.id] = this.value;
+				var query = $(this).closest('form').serialize();
 		        $.ajax(url, { method: "post", data: query });
 			}
 		});

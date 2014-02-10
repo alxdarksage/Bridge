@@ -21,7 +21,8 @@ public class OnePageTrackerEditPage {
 	private static final Logger logger = LogManager.getLogger(OnePageTrackerEditPage.class.getName());
 	
 	public static final String HEADER = "Medication Tracker";
-	
+	private static final long WAIT_PERIOD = 600L;
+
 	protected WebDriverFacade facade;
 	protected DataTableInPage activeTable;
 	protected DataTableInPage finishedTable;
@@ -33,16 +34,20 @@ public class OnePageTrackerEditPage {
 	}
 	
 	public void enterMedication(String medication, String dose, String doseInfo, Date startDate, Date endDate) {
-		facade.enterField("#medication", (medication != null) ? medication : "");	
+		facade.enterField("#medication", (medication != null) ? medication : "");
 		facade.enterField("#dose", (dose != null) ? dose : "");	
 		facade.enterField("#dose_instructions", (doseInfo != null) ? doseInfo : "");	
 		if (startDate != null) {
 			setDate("#start_date", startDate);
+		} else {
+			setDate("#start_date", null);
 		}
 		if (endDate != null) {
 			setDate("#end_date", endDate);
+		} else {
+			setDate("#end_date", null);
 		}
-		facade.waitFor(1000L);
+		facade.waitFor(WAIT_PERIOD);
 	}
 	
 	public void assertMedication(String medication, String dose, String doseInfo, Date startDate, Date endDate) {
@@ -50,7 +55,7 @@ public class OnePageTrackerEditPage {
 		ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
 		
 		if (medication != null) {
-			facade.assertFieldValue("#medication", medication);	
+			facade.assertFieldValue("#medication", medication);
 		}
 		if (dose != null) {
 			facade.assertFieldValue("#dose", dose);	
@@ -69,13 +74,14 @@ public class OnePageTrackerEditPage {
 	}
 	
 	public void setDate(String cssSelector, Date date) {
-		DateToISODateStringConverter converter = new DateToISODateStringConverter();
-		ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
-		pdv.setValue(date.getTime());
-		String value = converter.convert(pdv).get(0);
-		
+		String value = "";
+		if (date != null) {
+			DateToISODateStringConverter converter = new DateToISODateStringConverter();
+			ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
+			pdv.setValue(date.getTime());
+			value = converter.convert(pdv).get(0);
+		}
 		String hiddenDateFormSelector = cssSelector + " + input";
-		
 		facade.executeJavaScript("document.querySelector('"+hiddenDateFormSelector+"').value = '"+value+"';");
 		facade.executeJavaScript("document.querySelector('"+cssSelector+"').value = '"+value+"';");
 	}

@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
+import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -31,10 +31,11 @@ public class TrackerController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId, ModelAndView model) throws SynapseException {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, model);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, model);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("spec", spec);
-		ClientUtils.prepareParticipantDataSummary(client, model, spec, descriptor);
+		List<ParticipantDataRow> rows = ClientUtils.prepareParticipantDataSummary(client, model, spec, dwc.getDescriptor());
+		spec.postProcessParticipantDataRows(model.getModelMap(), rows);
 		model.setViewName("journal/trackers/index");
 		return model;
 	}
@@ -47,8 +48,8 @@ public class TrackerController extends JournalControllerBase {
 		
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
-		ParticipantDataDescriptor descriptor = ClientUtils.prepareDescriptor(client, trackerId, null);
-		Specification spec = ClientUtils.prepareSpecification(client, specResolver, descriptor, null);
+		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, null);
+		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, null);
 		ClientUtils.exportParticipantData(response, spec, paginatedRowSet);
 	}
 	
