@@ -1,6 +1,10 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="series" required="true" type="java.lang.String" %>
-<div id="timeseries-${series}"></div>
+<%@ attribute name="columns" required="false" type="String" %>
+<%
+	String id = "timeseries-" + series + "-" + columns;
+%>
+<div id="<%= id %>"></div>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 	google.load("visualization", "1", {packages:["corechart"]});
@@ -24,15 +28,16 @@
 			      title: ''
 			    };
 
-			    var chart = new google.visualization.LineChart(document.getElementById("timeseries-${series}"));
+			    var chart = new google.visualization.LineChart(document.getElementById("<%= id %>"));
 			    chart.draw(dataTable, options);
 			},
 			error: function(req,error,status) {
-				$("#timeseries-${series}").text(status +": " + error);
+				$("#<%= id %>").text(status +": " + error);
 			},
 			type: "GET",
 			url: url,
-			dataType: "json"
+			dataType: "json",
+			data: {columns: "${columns}"}
 		});
 	});
 </script>
