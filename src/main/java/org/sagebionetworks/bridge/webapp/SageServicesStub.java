@@ -3,6 +3,7 @@ package org.sagebionetworks.bridge.webapp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.model.timeseries.TimeSeriesRow;
+import org.sagebionetworks.bridge.model.timeseries.TimeSeriesTable;
 import org.sagebionetworks.bridge.model.versionInfo.BridgeVersionInfo;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseAdminClient;
@@ -986,5 +989,17 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 				i.remove();
 			}
 		}
+	}
+
+	@Override
+	public TimeSeriesTable getTimeSeries(String participantDataDescriptorId, List<String> columnNames) throws SynapseException,
+			UnsupportedEncodingException {
+		TimeSeriesTable timeSeriesTable = new TimeSeriesTable();
+		timeSeriesTable.setDateIndex(0L);
+		timeSeriesTable.setColumns(Lists.newArrayList("date", "nothing"));
+		TimeSeriesRow row = new TimeSeriesRow();
+		row.setValues(Lists.newArrayList("1233242343", "3.3"));
+		timeSeriesTable.setRows(Lists.newArrayList(row));
+		return timeSeriesTable;
 	}
 }
