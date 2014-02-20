@@ -44,8 +44,9 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 			ClientUtils.setSynapseSessionCookie(request, response, 0);
 		}
 		
-		// This is pretty silly as a form of security, but Spring Security is overkill
+		// Spring Security is overkill
 		if (request.getServletPath().startsWith("/admin/") && !request.isUserInRole("admin")) {
+			request.setOrigin(null);
 			response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/signIn.html"));
 		}
 		

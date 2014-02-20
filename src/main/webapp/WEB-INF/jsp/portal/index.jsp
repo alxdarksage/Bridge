@@ -27,25 +27,7 @@
     </div>
     <p style="border-top: 1px solid #aaa; margin-top: 2rem">
         <c:if test="${pageContext.request.isUserInRole('admin')}">
-            <a id="adminAct" href='<c:url value="/admin/"/>'>Admin</a> &bull;
+            <a id="adminAct" href='<c:url value="/admin/"/>'>Administration</a>
         </c:if>
-        <c:choose>
-            <c:when test="${sessionScope.BridgeUser.isAuthenticated()}">
-                <c:url var="signOutUrl" value="/signOut.html"/>
-		        <a id="signOutAct" href="${signOutUrl}">
-		            <spring:message code="SignOut"/>
-		        </a> 
-            </c:when>
-            <c:otherwise>
-                <c:url var="signInUrl" value="/signIn.html"/>
-                <a id="signInAct" href="${signInUrl}">
-                    <spring:message code="SignIn"/>
-                </a> &bull; 
-                <c:url var="signUpUrl" value="/signUp.html"/>
-                <a id="signUpAct" href="${signUpUrl}">
-                    <spring:message code="SignUp"/>
-                </a>
-            </c:otherwise>
-        </c:choose>
     </p>
 </sage:portal>

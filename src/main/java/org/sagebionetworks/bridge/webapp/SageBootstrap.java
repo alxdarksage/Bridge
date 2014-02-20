@@ -14,6 +14,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
@@ -26,10 +27,14 @@ import org.sagebionetworks.client.SynapseAdminClientImpl;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.PaginatedResults;
+import org.sagebionetworks.repo.model.Team;
+import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -89,20 +94,24 @@ public class SageBootstrap {
 	}
 	
 	public void create() throws Exception {
-		createUser(provider.getAdminClient(), provider.getSynapseClient(), "octaviabutler", "octaviabutler@octaviabutler.com", false);
-		createUser(provider.getAdminClient(), provider.getSynapseClient(), "timpowers", "timpowers@timpowers.com", true);
-		createUser(provider.getAdminClient(), provider.getSynapseClient(), "test", "test@test.com", true);
+		List<String> adminIds = Lists.newArrayList();
+		createUser(null, provider.getAdminClient(), provider.getSynapseClient(), "octaviabutler", "octaviabutler@octaviabutler.com", false);
+		createUser(adminIds, provider.getAdminClient(), provider.getSynapseClient(), "timpowers", "timpowers@timpowers.com", true);
+		createUser(adminIds, provider.getAdminClient(), provider.getSynapseClient(), "test", "test@test.com", true);
+		createUser(null, provider.getAdminClient(), provider.getSynapseClient(), "notanadmin", "notanadmin@test.com", true);
+		createAdminTeam(adminIds, provider);
+		createTrackers();
 		
+		BridgeClient bridge = provider.getBridgeClient();
+		createCommunity(bridge, "Fanconi Anemia", "This is a very rare but very serious disease, affecting about 1,000 people worldwide.");
+	}
+
+	private void signInAsTimPowers() throws SynapseException {
 		SynapseClient client = provider.getSynapseClient();
 		Session session = client.login("timpowers", "password");
 		session.setAcceptsTermsOfUse(true);
 		client.signTermsOfUse(session.getSessionToken(), true);
 		client.setSessionToken(session.getSessionToken());
-		
-		createTrackers();
-		
-		BridgeClient bridge = provider.getBridgeClient();
-		createCommunity(bridge, "Fanconi Anemia", "This is a very rare but very serious disease, affecting about 1,000 people worldwide.");
 	}
 
 	private static class Column {
@@ -123,6 +132,8 @@ public class SageBootstrap {
 	 * @throws Exception
 	 */
 	public void createTrackers() throws SynapseException, Exception {
+		signInAsTimPowers();
+
 		BridgeClient bridge = provider.getBridgeClient();
 		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, new Column(
 				"Sleep time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
@@ -149,7 +160,7 @@ public class SageBootstrap {
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-12-11",  "rbc", "4.42",  "rbc_units", "M/uL",  "rbc_range_low", "3.8",  "rbc_range_high", "5.1",  "hb", "13.4",  "hb_units", "dL",  "hb_range_low", "12",  "hb_range_high", "16",  "hct", "40.1",  "hct_units", "%",  "hct_range_low", "37",  "hct_range_high", "47",  "mcv", "90.8",  "mcv_units", "fL",  "mcv_range_low", "81",  "mcv_range_high", "99",  "mch", "30.3",  "mch_units", "pg",  "mch_range_low", "26",  "mch_range_high", "34",  "rdw", "12.7",  "rdw_units", "%",  "rdw_range_low", "11.5",  "rdw_range_high", "15",  "ret_units", "%",  "wbc", "5.1",  "wbc_units", "K/uL",  "wbc_range_low", "3.8",  "wbc_range_high", "10.8",  "wbc_diff_units", "%",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes", "32.2",  "lymphocytes_units", "%",  "lymphocytes_range_low", "15",  "lymphocytes_range_high", "40",  "monocytes", "8.4",  "monocytes_units", "%",  "monocytes_range_low", "0",  "monocytes_range_high", "10",  "plt", "375",  "plt_units", "K/uL",  "plt_range_low", "140",  "plt_range_high", "400",  "mpv", "8.4",  "mpv_units", "fL",  "mpv_range_low", "7.4",  "mpv_range_high", "10.4",  "pdw_units", "%",  "created_on", "2014-01-20T16:14:52.767-08:00",  "modified_on", "2014-01-20T16:14:52.767-08:00",  "wbc (K/mcL)", "5.1",  "rbc (M/mcL)", "4.42",  "plt (K/mcL)", "375");
 	}
 	
-	private void createUser(SynapseAdminClient admin, SynapseClient synapse, String userName, String email, boolean acceptsTermsOfUse)
+	private void createUser(List<String> adminIds, SynapseAdminClient admin, SynapseClient synapse, String userName, String email, boolean acceptsTermsOfUse)
 			throws SynapseException, JSONObjectAdapterException {
 		try {
 			NewIntegrationTestUser newUser = new NewIntegrationTestUser();
@@ -157,9 +168,14 @@ public class SageBootstrap {
 			newUser.setEmail(email);
 			newUser.setPassword("password");
 			admin.createUser(newUser);
+			
+			Session session = synapse.login(userName, "password");
 			if (acceptsTermsOfUse) {
-				Session session = synapse.login(userName, "password");
 				synapse.signTermsOfUse(session.getSessionToken(), true);
+			}
+			if (adminIds != null) {
+				UserSessionData data = synapse.getUserSessionData();
+				adminIds.add(data.getProfile().getOwnerId());	
 			}
 		} catch(Exception e) {
 			System.out.println("User '" + userName + "' already exists");
@@ -214,5 +230,26 @@ public class SageBootstrap {
 		community.setName(name);
 		community.setDescription(description);
 		client.createCommunity(community);
+	}
+	
+	private void createAdminTeam(List<String> ids, SageBootstrap.ClientProvider provider) throws Exception {
+		signInAsTimPowers();
+
+		PaginatedResults<Team> results = provider.getSynapseClient().getTeams(
+				BridgeRequest.BRIDGE_ADMINISTRATORS_INTERNAL, ClientUtils.LIMIT, 0);
+		
+		if (results.getResults().isEmpty()) {
+			SynapseClient synapseClient = provider.getSynapseClient();
+			Team team = new Team();
+			team.setCanPublicJoin(Boolean.FALSE);
+			team.setName(BridgeRequest.BRIDGE_ADMINISTRATORS_INTERNAL);
+			team = synapseClient.createTeam(team);
+			for (String id : ids) {
+				provider.getAdminClient().addTeamMember(team.getId(), id);
+			}
+		} else {
+			System.out.println("Bridge admin team already created");
+		}
+		
 	}
 }
