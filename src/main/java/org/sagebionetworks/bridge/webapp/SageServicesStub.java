@@ -315,7 +315,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public Session login(String userName, String password) throws SynapseException {
+	public Session login(String userName, String password, DomainType domain) throws SynapseException {
 		UserSessionData data = usersById.get(userName);
 		if (data == null) {
 			throw new SynapseException();
@@ -336,7 +336,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public UserSessionData getUserSessionData() throws SynapseException {
+	public UserSessionData getUserSessionData(DomainType domain) throws SynapseException {
 		if (currentUserData == null) {
 			throw new SynapseException();
 		}
@@ -541,7 +541,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public String getSynapseTermsOfUse() throws SynapseException {
+	public String getTermsOfUse(DomainType domain) throws SynapseException {
+		if (domain != DomainType.BRIDGE) {
+			throw new IllegalArgumentException("Should not call getTermsOfUse() with the Synapse domain");
+		}
 		return "<p>These are the Stub terms of use.</p>";
 	}
 
@@ -630,7 +633,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public void signTermsOfUse(String sessionToken, boolean acceptTerms) throws SynapseException {
+	public void signTermsOfUse(String sessionToken, DomainType domain, boolean acceptTerms) throws SynapseException {
+		if (domain != DomainType.BRIDGE) {
+			throw new IllegalArgumentException("Don't call this method with any other domain than Bridge");
+		}
 		if (acceptTerms) {
 			agreedTOUs.add(currentUserData.getProfile().getOwnerId());	
 		}		

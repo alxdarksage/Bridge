@@ -27,6 +27,7 @@ import org.sagebionetworks.client.SynapseAdminClientImpl;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.Team;
 import org.sagebionetworks.repo.model.UserSessionData;
@@ -108,9 +109,9 @@ public class SageBootstrap {
 
 	private void signInAsTimPowers() throws SynapseException {
 		SynapseClient client = provider.getSynapseClient();
-		Session session = client.login("timpowers", "password");
+		Session session = client.login("timpowers", "password", DomainType.BRIDGE);
 		session.setAcceptsTermsOfUse(true);
-		client.signTermsOfUse(session.getSessionToken(), true);
+		client.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, true);
 		client.setSessionToken(session.getSessionToken());
 	}
 
@@ -169,12 +170,12 @@ public class SageBootstrap {
 			newUser.setPassword("password");
 			admin.createUser(newUser);
 			
-			Session session = synapse.login(userName, "password");
+			Session session = synapse.login(userName, "password", DomainType.BRIDGE);
 			if (acceptsTermsOfUse) {
-				synapse.signTermsOfUse(session.getSessionToken(), true);
+				synapse.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, true);
 			}
 			if (adminIds != null) {
-				UserSessionData data = synapse.getUserSessionData();
+				UserSessionData data = synapse.getUserSessionData(DomainType.BRIDGE);
 				adminIds.add(data.getProfile().getOwnerId());	
 			}
 		} catch(Exception e) {
