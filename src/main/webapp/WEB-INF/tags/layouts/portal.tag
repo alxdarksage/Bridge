@@ -8,7 +8,6 @@
         <h2>Bridge</h2>
 	    <jsp:doBody/>
     </div>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="<c:url value='/assets/footer.js'/>"></script>
     <sage:footer/>
 </body>

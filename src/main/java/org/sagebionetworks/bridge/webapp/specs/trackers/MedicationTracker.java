@@ -31,11 +31,13 @@ import com.google.common.collect.Maps;
 
 public class MedicationTracker implements Specification {
 
-	private static final String MEDICATION_FIELD = "medication";
-	private static final String DOSE_FIELD = "dose";
-	private static final String DOSE_INSTRUCTIONS_FIELD = "dose_instructions";
-	private static final String START_DATE_FIELD = "start_date";
-	private static final String END_DATE_FIELD = "end_date";
+	public static final String MEDICATIONS_NAME = "Medications";
+
+	public static final String DOSE_FIELD = "dose";
+	public static final String MEDICATION_FIELD = "medication";
+	public static final String DOSE_INSTRUCTIONS_FIELD = "dose_instructions";
+	public static final String START_DATE_FIELD = "start_date";
+	public static final String END_DATE_FIELD = "end_date";
 	
 	private static final String MEDICATION_LABEL = "Medication";
 	private static final String INLINE_EDITOR_LABEL = "New Medication";
@@ -136,7 +138,7 @@ public class MedicationTracker implements Specification {
 	
 	@Override
 	public String getName() {
-		return "Medication Tracker";
+		return MedicationTracker.MEDICATIONS_NAME;
 	}
 
 	@Override
@@ -163,7 +165,12 @@ public class MedicationTracker implements Specification {
 	public FormLayout getFormLayout() {
 		return FormLayout.ALL_RECORDS_ONE_PAGE_INLINE;
 	}
-	
+
+	@Override
+	public String getForm() {
+		return "journal/trackers/medication.jsp";
+	}
+
 	@Override
 	public FormElement getShowStructure() {
 		return root;

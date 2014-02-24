@@ -32,6 +32,8 @@ public interface Specification {
 	 * @return
 	 */
 	public FormLayout getFormLayout();
+
+	public String getForm();
 	/**
 	 * A tree-like structure describing the form. 
 	 * 

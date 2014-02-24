@@ -18,6 +18,8 @@ public class SageStubApplicationListener implements ApplicationListener<ContextR
 
 	private static final Logger logger = LogManager.getLogger(SageStubApplicationListener.class.getName());
 	
+	private static boolean initialized = false;
+
 	public class StubClientProvider implements SageBootstrap.ClientProvider {
 		private SageServicesStub stub;
 		public StubClientProvider(SageServicesStub stub) {
@@ -31,15 +33,17 @@ public class SageStubApplicationListener implements ApplicationListener<ContextR
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		ApplicationContext context = event.getApplicationContext();
-		Object object = context.getBean("bridgeClient");
-		if (object instanceof SageServicesStub) {
-			try {
-				SageBootstrap bootstrap = new SageBootstrap(new StubClientProvider((SageServicesStub)object));
-				bootstrap.create();
-			} catch(Throwable throwable) {
-				throwable.printStackTrace();
-				logger.error(throwable);
+		if (!initialized) {
+			ApplicationContext context = event.getApplicationContext();
+			Object object = context.getBean("bridgeClient");
+			if (object instanceof SageServicesStub) {
+				try {
+					SageBootstrap bootstrap = new SageBootstrap(new StubClientProvider((SageServicesStub) object));
+					bootstrap.create();
+					initialized = true;
+				} catch (Throwable throwable) {
+					logger.error(throwable.getMessage(), throwable);
+				}
 			}
 		}
 	}	
