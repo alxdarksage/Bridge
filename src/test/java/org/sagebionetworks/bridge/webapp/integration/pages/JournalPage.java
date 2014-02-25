@@ -36,14 +36,14 @@ public class JournalPage {
 		return new TrackerIndexPage(facade);
 	}
 	
-	public OnePageTrackerEditPage getMedicationPage() {
+	public MedicationPage getMedicationPage() {
 		clickMedication();
 		return waitForMedicationIndexPage();
 	}
 	
-	public OnePageTrackerEditPage waitForMedicationIndexPage() {
-		facade.waitForHeader(OnePageTrackerEditPage.HEADER);
-		return new OnePageTrackerEditPage(facade);
+	public MedicationPage waitForMedicationIndexPage() {
+		facade.waitForHeader(OnePageTrackerEditPage.MEDICATION_HEADER);
+		return new MedicationPage(facade);
 	}
 	
 }

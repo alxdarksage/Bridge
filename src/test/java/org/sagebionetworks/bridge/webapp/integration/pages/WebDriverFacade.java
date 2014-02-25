@@ -139,6 +139,11 @@ public class WebDriverFacade implements WebDriver {
 			Thread.sleep(milliseconds);
 		} catch(InterruptedException ie) {}
 	}
+
+	void waitUntil(final ExpectedCondition<?> condition) {
+		new WebDriverWait(driver, TIMEOUT).until(condition);
+	}
+
 	void waitUntil(final String cssSelector) {
 		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {

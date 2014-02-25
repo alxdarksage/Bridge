@@ -583,4 +583,30 @@ public class ClientUtils {
 		row.setData(data);
 		return row;
 	}
+
+	public static void exportRows(List<ParticipantDataRow> rows, HttpServletResponse response, ParticipantDataDescriptorWithColumns dwc)
+			throws IOException {
+		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it
+		response.setContentType("text/csv");
+		response.setHeader("Content-Disposition", "attachment; filename=" + dwc.getDescriptor().getName() + ".csv");
+
+		CSVWriter writer = new CSVWriter(response.getWriter());
+		List<String> headers = Lists.newArrayListWithCapacity(dwc.getColumns().size());
+		for (ParticipantDataColumnDescriptor column : dwc.getColumns()) {
+			headers.add(column.getName());
+		}
+		writer.writeNext(headers.toArray(new String[dwc.getColumns().size()]));
+
+		for (ParticipantDataRow row : rows) {
+			List<String> values = Lists.newArrayListWithCapacity(headers.size());
+			for (ParticipantDataColumnDescriptor column : dwc.getColumns()) {
+				String value = ValueTranslator.toString(row.getData().get(column.getName()));
+				values.add(value);
+			}
+			writer.writeNext(values.toArray(new String[dwc.getColumns().size()]));
+		}
+		writer.flush();
+		writer.close();
+		response.flushBuffer();
+	}
 }

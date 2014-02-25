@@ -171,29 +171,34 @@ $(function(){
 			<c:forEach var="row" items="${rowOfRows}" varStatus="loop2">
 				<c:choose>
 					<c:when test="${loop2.first && loop2.last}">
-						<tr>
+						<tr id="hist-med-${row.rowId}">
 					</c:when>
 					<c:when test="${loop2.last}">
-						<tr class="group-last">
+						<tr id="hist-med-${row.rowId}" class="group-last">
 					</c:when>
 					<c:when test="${loop2.first}">
-						<tr class="group-first">
+						<tr id="hist-med-${row.rowId}" class="group-first">
 					</c:when>
 					<c:otherwise>
-						<tr class="group-middle">
+						<tr id="hist-med-${row.rowId}" class="group-middle">
 					</c:otherwise>
 				</c:choose>
-					<td>
+					<td class="medication">
 						<c:if test="${loop2.first}">
 							${row.data.medication.value}
 						</c:if>
+						<c:if test="${not loop2.first}">
+							<span class="hidden">${row.data.medication.value}</span>
+						</c:if>
 					</td>
-					<td>${row.data.dose.value}</td>
-					<td><sage:formatDate value="${row.data.start_date.value}"/></td>
-					<td><sage:formatDate value="${row.data.end_date.value}"/></td>
+					<td class="dose">${row.data.dose.value}</td>
+					<td class="start"><sage:formatDate value="${row.data.start_date.value}"/></td>
+					<td class="end"><sage:formatDate value="${row.data.end_date.value}"/></td>
 					<td><!-- <div><a class="btn btn-sm" href="#">edit</a><a class="btn btn-sm" href="#">delete</a></div> --></td>
 				</tr>
 			</c:forEach>
 		</c:forEach>
 	</tbody>
 </table>
+
+<a href="/bridge/medication/${descriptor.id}/export.html" class="btn btn-sm btn-default">Export (*.csv)</a>
