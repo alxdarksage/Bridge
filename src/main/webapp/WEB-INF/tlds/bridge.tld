@@ -460,7 +460,7 @@
     </tag>    
 	<tag>
 		<name>formatDate</name>
-		<tag-class>org.sagebionetworks.bridge.webapp.jsp.FormatDateTag</tag-class>
+		<tag-class>org.sagebionetworks.bridge.webapp.jsp.FormatDateLongTag</tag-class>
 	    <body-content>empty</body-content>
 		<description>
 		    Same as fmt:formatDate but takes a long as a value
