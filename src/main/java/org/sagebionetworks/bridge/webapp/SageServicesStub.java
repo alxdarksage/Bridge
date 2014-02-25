@@ -71,6 +71,7 @@ import org.sagebionetworks.repo.model.principal.AliasCheckResponse;
 import org.sagebionetworks.repo.model.principal.AliasType;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
+import org.sagebionetworks.repo.model.versionInfo.SynapseVersionInfo;
 import org.sagebionetworks.repo.web.NotFoundException;
 import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
@@ -133,6 +134,13 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		Object proxy = enhancer.create();
 
 		return (SageServicesStub) proxy;
+	}
+	
+	@Override
+	public SynapseVersionInfo getVersionInfo() {
+		SynapseVersionInfo info = new SynapseVersionInfo();
+		info.setVersion("UI stub");
+		return info;
 	}
 	
 	@Override
