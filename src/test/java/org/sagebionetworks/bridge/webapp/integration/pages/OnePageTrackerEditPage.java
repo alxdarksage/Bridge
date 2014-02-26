@@ -20,7 +20,7 @@ public class OnePageTrackerEditPage {
 
 	private static final Logger logger = LogManager.getLogger(OnePageTrackerEditPage.class.getName());
 	
-	public static final String HEADER = "Medication Tracker";
+	public static final String MEDICATION_HEADER = "Current medications and supplements";
 	private static final long WAIT_PERIOD = 600L;
 
 	protected WebDriverFacade facade;

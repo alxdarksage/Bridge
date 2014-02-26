@@ -1,6 +1,8 @@
 package org.sagebionetworks.bridge.webapp;
 
+import java.text.DateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,11 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
@@ -137,18 +144,35 @@ public class SageBootstrap {
 		signInAsTimPowers();
 
 		BridgeClient bridge = provider.getBridgeClient();
-		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, new Column(
-				"Sleep time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
-		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, new Column(
-				"Rest time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
-		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, null, new Column("Name",
-				"string", ParticipantDataColumnType.STRING), new Column("Address", "string", ParticipantDataColumnType.STRING));
-		
-		Specification spec = new MedicationTracker();
-		createData(bridge, spec);
+
+		// @formatter:off
+		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
+				new Column("Sleep time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
+		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
+				new Column("Rest time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
+		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, null, null,
+				new Column("Name", "string", ParticipantDataColumnType.STRING),
+				new Column("Address", "string", ParticipantDataColumnType.STRING));
+		String medsId = createData(bridge, MedicationTracker.MEDICATIONS_NAME, "Medication and supplement tracker",
+				ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *",
+				MedicationTracker.START_DATE_FIELD, MedicationTracker.END_DATE_FIELD,
+				new Column( MedicationTracker.START_DATE_FIELD, "When did the medication or supplement start", ParticipantDataColumnType.DATETIME),
+				new Column( MedicationTracker.END_DATE_FIELD, "When did the medication or supplement end", ParticipantDataColumnType.DATETIME),
+				new Column( MedicationTracker.MEDICATION_FIELD, "The name of the medication or supplement", ParticipantDataColumnType.STRING),
+				new Column( MedicationTracker.DOSE_FIELD, "The dosage", ParticipantDataColumnType.STRING),
+				new Column( MedicationTracker.DOSE_INSTRUCTIONS_FIELD, "The dosage instructions", ParticipantDataColumnType.STRING));
+		createDataEntry(bridge, medsId, new String[] {
+				MedicationTracker.START_DATE_FIELD, MedicationTracker.END_DATE_FIELD, MedicationTracker.MEDICATION_FIELD, MedicationTracker.DOSE_FIELD
+			}, new Object[] {
+				DateFormat.getDateInstance().parse("Dec 15, 2002"), DateFormat.getDateInstance().parse("Jan 3, 2003"), "Anadrol", "10mg",
+				DateFormat.getDateInstance().parse("Jan 3, 2003"), DateFormat.getDateInstance().parse("Feb 21, 2005"), "Anadrol", "25mg",
+				DateFormat.getDateInstance().parse("Feb 21, 2005"), null, "Anadrol", "50mg",
+				DateFormat.getDateInstance().parse("Feb 21, 2005"), null, "Vitamin D", "occasionally",
+				DateFormat.getDateInstance().parse("Mar 17, 2003"), DateFormat.getDateInstance().parse("Mar 18, 2007"), "Amicar", "10mg 2xday",
+		});
 
 		// Need to create it this way or it says it's different (although only trivially) when we update trackers
-		spec = new MoodTracker(); 
+		Specification spec = new MoodTracker();
 		String trackerId = createData(bridge, spec);
 		createDataEntry(bridge, trackerId, spec);
 
@@ -160,6 +184,7 @@ public class SageBootstrap {
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-09-26",  "rbc", "4.96",  "rbc_units", "M/uL",  "rbc_range_low", "4.2",  "rbc_range_high", "5.8",  "hb", "15.6",  "hb_units", "dL",  "hb_range_low", "13.2",  "hb_range_high", "17.1",  "hct", "48.3",  "hct_units", "%",  "hct_range_low", "38.5",  "hct_range_high", "50",  "mcv", "97.4",  "mcv_units", "fL",  "mcv_range_low", "80",  "mcv_range_high", "100",  "mch", "31.5",  "mch_units", "pg",  "mch_range_low", "27",  "mch_range_high", "33",  "rdw", "15.7",  "rdw_units", "%",  "rdw_range_low", "11",  "rdw_range_high", "15",  "ret", "0",  "ret_units", "%",  "wbc", "5.6",  "wbc_units", "K/uL",  "wbc_range_low", "3.8",  "wbc_range_high", "10.8",  "wbc_diff_units", "%",  "neutrophil", "42.1",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes", "40.2",  "lymphocytes_units", "%",  "monocytes", "8.7",  "monocytes_units", "%",  "plt", "203",  "plt_units", "K/uL",  "plt_range_low", "140",  "plt_range_high", "400",  "mpv_units", "fL",  "pdw_units", "%",  "created_on", "2014-01-14T11:00:00.501-08:00",  "modified_on", "2014-01-14T11:00:00.501-08:00",  "wbc (K/mcL)", "5.6",  "rbc (M/mcL)", "4.96",  "plt (K/mcL)", "203");
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2014-01-13",  "rbc", "3.83",  "rbc_units", "M/uL",  "rbc_range_low", "4",  "rbc_range_high", "5.3",  "hb", "13.1",  "hb_units", "dL",  "hb_range_low", "12",  "hb_range_high", "16",  "hct", "38.3",  "hct_units", "%",  "hct_range_low", "35",  "hct_range_high", "47",  "mcv", "99.9",  "mcv_units", "fL",  "mcv_range_low", "76",  "mcv_range_high", "90",  "mch", "34.3",  "mch_units", "pg",  "mch_range_low", "25",  "mch_range_high", "31",  "rdw", "11.8",  "rdw_units", "%",  "rdw_range_low", "11.5",  "rdw_range_high", "14.5",  "ret_units", "%",  "wbc", "3.8",  "wbc_units", "K/uL",  "wbc_range_low", "4",  "wbc_range_high", "12",  "wbc_diff_units", "%",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes_units", "%",  "monocytes_units", "%",  "plt", "205",  "plt_units", "K/uL",  "plt_range_low", "150",  "plt_range_high", "450",  "mpv_units", "fL",  "pdw_units", "%",  "created_on", "2014-01-20T16:08:57.294-08:00",  "modified_on", "2014-01-20T16:08:57.294-08:00",  "wbc (K/mcL)", "3.8",  "rbc (M/mcL)", "3.83",  "plt (K/mcL)", "205");
 		createDataEntry(bridge, trackerId, spec, "collected_on", "2013-12-11",  "rbc", "4.42",  "rbc_units", "M/uL",  "rbc_range_low", "3.8",  "rbc_range_high", "5.1",  "hb", "13.4",  "hb_units", "dL",  "hb_range_low", "12",  "hb_range_high", "16",  "hct", "40.1",  "hct_units", "%",  "hct_range_low", "37",  "hct_range_high", "47",  "mcv", "90.8",  "mcv_units", "fL",  "mcv_range_low", "81",  "mcv_range_high", "99",  "mch", "30.3",  "mch_units", "pg",  "mch_range_low", "26",  "mch_range_high", "34",  "rdw", "12.7",  "rdw_units", "%",  "rdw_range_low", "11.5",  "rdw_range_high", "15",  "ret_units", "%",  "wbc", "5.1",  "wbc_units", "K/uL",  "wbc_range_low", "3.8",  "wbc_range_high", "10.8",  "wbc_diff_units", "%",  "neutrophil_units", "%",  "neutrophil_immature_units", "%",  "lymphocytes", "32.2",  "lymphocytes_units", "%",  "lymphocytes_range_low", "15",  "lymphocytes_range_high", "40",  "monocytes", "8.4",  "monocytes_units", "%",  "monocytes_range_low", "0",  "monocytes_range_high", "10",  "plt", "375",  "plt_units", "K/uL",  "plt_range_low", "140",  "plt_range_high", "400",  "mpv", "8.4",  "mpv_units", "fL",  "mpv_range_low", "7.4",  "mpv_range_high", "10.4",  "pdw_units", "%",  "created_on", "2014-01-20T16:14:52.767-08:00",  "modified_on", "2014-01-20T16:14:52.767-08:00",  "wbc (K/mcL)", "5.1",  "rbc (M/mcL)", "4.42",  "plt (K/mcL)", "375");
+		// @formatter:on
 	}
 	
 	private void createBootstrapTeams(SynapseAdminClient admin) throws SynapseException {
@@ -194,14 +219,15 @@ public class SageBootstrap {
 		}
 	}
 	
-	private void createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
-			String repeatFrequency, String datetimeStartColumnName, Column... cols) throws SynapseException {
+	private String createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
+			String repeatFrequency, String datetimeStartColumnName, String datetimeEndColumnName, Column... cols) throws SynapseException {
 		ParticipantDataDescriptor desc = new ParticipantDataDescriptor();
 		desc.setDescription(description);
 		desc.setName(name);
 		desc.setRepeatType(repeatType);
 		desc.setRepeatFrequency(repeatFrequency);
-		// desc.setDatetimeStartColumnName(datetimeStartColumnName);
+		desc.setDatetimeStartColumnName(datetimeStartColumnName);
+		desc.setDatetimeEndColumnName(datetimeEndColumnName);
 		desc = bridge.createParticipantDataDescriptor(desc);
 		for (Column column : cols) {
 			ParticipantDataColumnDescriptor col = new ParticipantDataColumnDescriptor();
@@ -213,6 +239,7 @@ public class SageBootstrap {
 			bridge.createParticipantDataColumnDescriptor(col);
 		}
 		bridge.appendParticipantData(desc.getId(), Collections.<ParticipantDataRow> emptyList());
+		return desc.getId();
 	}
 
 	private String createData(BridgeClient bridge, Specification spec) throws Exception {
@@ -236,7 +263,42 @@ public class SageBootstrap {
 		ParticipantDataStatusList statuses = ParticipantDataUtils.getFinishedStatus(trackerId);
 		client.sendParticipantDataDescriptorUpdates(statuses);
 	}
-	
+
+	private void createDataEntry(BridgeClient bridge, String medsId, String[] strings, Object[] objects) throws Exception {
+		for (int i = 0; i < objects.length; i += strings.length) {
+			Map<String, ParticipantDataValue> values = Maps.newHashMap();
+			for (int j = 0; j < strings.length; j++) {
+				Object val = objects[i + j];
+				if (val != null) {
+					ParticipantDataValue dataVal;
+					if (val instanceof String) {
+						ParticipantDataStringValue dataStringVal = new ParticipantDataStringValue();
+						dataStringVal.setValue((String) val);
+						dataVal = dataStringVal;
+					} else if (val instanceof Double) {
+						ParticipantDataDoubleValue dataDoubleVal = new ParticipantDataDoubleValue();
+						dataDoubleVal.setValue((Double) val);
+						dataVal = dataDoubleVal;
+					} else if (val instanceof Long) {
+						ParticipantDataLongValue dataLongVal = new ParticipantDataLongValue();
+						dataLongVal.setValue((Long) val);
+						dataVal = dataLongVal;
+					} else if (val instanceof Date) {
+						ParticipantDataDatetimeValue dataDatetimeVal = new ParticipantDataDatetimeValue();
+						dataDatetimeVal.setValue(((Date) val).getTime());
+						dataVal = dataDatetimeVal;
+					} else {
+						throw new RuntimeException("Type " + val.getClass() + " not handled");
+					}
+					values.put(strings[j], dataVal);
+				}
+			}
+			ParticipantDataRow row = new ParticipantDataRow();
+			row.setData(values);
+			bridge.appendParticipantData(medsId, Collections.<ParticipantDataRow> singletonList(row));
+		}
+	}
+
 	private void createCommunity(BridgeClient client, String name, String description) throws SynapseException {
 		Community community = new Community();
 		community.setName(name);

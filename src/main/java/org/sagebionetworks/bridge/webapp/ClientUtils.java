@@ -34,6 +34,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -43,6 +44,7 @@ import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
+import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -365,6 +367,8 @@ public class ClientUtils {
 		List<ParticipantDataDescriptor> descriptorsIfChanged = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsNoPrompt = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsTimelines = Lists.newArrayListWithExpectedSize(20);
+		ParticipantDataDescriptor medicationsIfChanged = null;
+		List<ParticipantDataRow> medications = null;
 		
 		Date now = new Date();
 		Calendar lastMonth = Calendar.getInstance();
@@ -377,6 +381,7 @@ public class ClientUtils {
 			boolean needsUpdate = false;
 			Date lastStarted = descriptor.getStatus().getLastStarted();
 			Date lastPrompted = descriptor.getStatus().getLastPrompted();
+			Date lastAnswered = descriptor.getStatus().getLastAnswered();
 			boolean lastEntryComplete = BooleanUtils.isTrue(descriptor.getStatus().getLastEntryComplete());
 
 			// we want to prompt when:
@@ -392,7 +397,10 @@ public class ClientUtils {
 			// is it a month ago, or less than 10 minutes ago (we want to make sure the user sees)
 			boolean repeatPromptWasRecent = lastPrompted != null && lastPrompted.after(tenMinutesAgo.getTime());
 
-			boolean shouldPrompt = firstPrompt || repeatPrompt || repeatPromptWasRecent;
+			// unless we explicitely set it as seen/answered
+			boolean wasUpdatedRecently = lastAnswered != null && lastAnswered.after(lastMonth.getTime());
+
+			boolean shouldPrompt = !wasUpdatedRecently && (firstPrompt || repeatPrompt || repeatPromptWasRecent);
 
 			boolean repeatDue = false;
 			if (!StringUtils.isEmpty(descriptor.getRepeatFrequency())) {
@@ -402,6 +410,17 @@ public class ClientUtils {
 						repeatDue = true;
 					}
 				}
+			}
+
+			// Medications will show as long as yes or no is not clicked
+			if (descriptor.getName().equals(MedicationTracker.MEDICATIONS_NAME)) {
+				if (shouldPrompt || repeatDue) {
+					medicationsIfChanged = descriptor;
+					medications = client.getCurrentRows(descriptor.getId());
+				} else {
+					descriptorsNoPrompt.add(descriptor);
+				}
+				continue;
 			}
 
 			List<ParticipantDataDescriptor> promptList = null;
@@ -486,6 +505,8 @@ public class ClientUtils {
 		model.addAttribute("descriptorsIfChanged", descriptorsIfChanged);
 		model.addAttribute("descriptorsNoPrompt", descriptorsNoPrompt);
 		model.addAttribute("descriptorsTimelines", descriptorsTimelines);
+		model.addAttribute("medicationsIfChanged", medicationsIfChanged);
+		model.addAttribute("medications", medications);
 	}
 
 	public static String getSynapseSessionCookie(BridgeRequest request) {
@@ -549,5 +570,43 @@ public class ClientUtils {
 		writer.close();
 		response.flushBuffer();
 	}
-	
+
+	public static ParticipantDataRow createRowFromForm(ParticipantDataDescriptorWithColumns dwc, Map<String, String> valuesMap) {
+		Map<String, ParticipantDataValue> data = Maps.newHashMap();
+		for (ParticipantDataColumnDescriptor column : dwc.getColumns()) {
+			ParticipantDataValue value = ValueTranslator.transformToValue(valuesMap, column);
+			if (value != null) {
+				data.put(column.getName(), value);
+			}
+		}
+		ParticipantDataRow row = new ParticipantDataRow();
+		row.setData(data);
+		return row;
+	}
+
+	public static void exportRows(List<ParticipantDataRow> rows, HttpServletResponse response, ParticipantDataDescriptorWithColumns dwc)
+			throws IOException {
+		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it
+		response.setContentType("text/csv");
+		response.setHeader("Content-Disposition", "attachment; filename=" + dwc.getDescriptor().getName() + ".csv");
+
+		CSVWriter writer = new CSVWriter(response.getWriter());
+		List<String> headers = Lists.newArrayListWithCapacity(dwc.getColumns().size());
+		for (ParticipantDataColumnDescriptor column : dwc.getColumns()) {
+			headers.add(column.getName());
+		}
+		writer.writeNext(headers.toArray(new String[dwc.getColumns().size()]));
+
+		for (ParticipantDataRow row : rows) {
+			List<String> values = Lists.newArrayListWithCapacity(headers.size());
+			for (ParticipantDataColumnDescriptor column : dwc.getColumns()) {
+				String value = ValueTranslator.toString(row.getData().get(column.getName()));
+				values.add(value);
+			}
+			writer.writeNext(values.toArray(new String[dwc.getColumns().size()]));
+		}
+		writer.flush();
+		writer.close();
+		response.flushBuffer();
+	}
 }

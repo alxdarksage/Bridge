@@ -233,6 +233,11 @@ public class CompleteBloodCount implements Specification {
 	}
 
 	@Override
+	public String getForm() {
+		return null;
+	}
+
+	@Override
 	public FormElement getEditStructure() {
 		return new FormGroup(UIType.LIST, "CBC", editRows);
 	}

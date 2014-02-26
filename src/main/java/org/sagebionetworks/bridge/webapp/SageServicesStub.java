@@ -109,32 +109,35 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		logger.info("---------------------------- SageServicesStub CREATED");
 	}
 
+	private static SageServicesStub singleStub = null;
 	/**
 	 * bean factory method
 	 * 
 	 * @return
 	 */
 	public static SageServicesStub createInstance() {
-		// Configure CGLIB Enhancer...
-		Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(SageServicesStub.class);
-		enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
-		enhancer.setInterfaces(new Class[] { SynapseClient.class, BridgeClient.class, SynapseAdminClient.class });
-		enhancer.setInterceptDuringConstruction(false);
-		enhancer.setCallback(new MethodInterceptor() {
-			@Override
-			public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-				logger.debug(method.getName());
-				return proxy.invokeSuper(obj, args);
-			}
-		});
+		if (singleStub == null) {
+			// Configure CGLIB Enhancer...
+			Enhancer enhancer = new Enhancer();
+			enhancer.setSuperclass(SageServicesStub.class);
+			enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
+			enhancer.setInterfaces(new Class[] { SynapseClient.class, BridgeClient.class, SynapseAdminClient.class });
+			enhancer.setInterceptDuringConstruction(false);
+			enhancer.setCallback(new MethodInterceptor() {
+				@Override
+				public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+					logger.debug(method.getName());
+					return proxy.invokeSuper(obj, args);
+				}
+			});
 
-		// Generate the proxy class and create a proxy instance.
-		Object proxy = enhancer.create();
-
-		return (SageServicesStub) proxy;
+			// Generate the proxy class and create a proxy instance.
+			Object proxy = enhancer.create();
+			singleStub = (SageServicesStub) proxy;
+		}
+		return singleStub;
 	}
-	
+
 	@Override
 	public long createUser(NewIntegrationTestUser user) throws SynapseException, JSONObjectAdapterException {
 		String id = newId();
@@ -914,8 +917,28 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			} else {
 				currentRow.setPreviousData(lastRow);
 			}
-		}		
+		}
+		currentRow.setColumns(Lists.newArrayList(columnsByDescriptorById.get(participantDataDescriptorId)));
 		return currentRow;
+	}
+
+	@Override
+	public List<ParticipantDataRow> getCurrentRows(String participantDataDescriptorId) throws SynapseException {
+		List<ParticipantDataRow> result = Lists.newArrayList(getHistoryRows(participantDataDescriptorId, null, null));
+		ParticipantDataDescriptor descriptor = descriptorsById.get(participantDataDescriptorId);
+		for (Iterator<ParticipantDataRow> iterator = result.iterator(); iterator.hasNext();) {
+			ParticipantDataRow row = iterator.next();
+			if (row.getData().get(descriptor.getDatetimeEndColumnName()) != null) {
+				iterator.remove();
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<ParticipantDataRow> getHistoryRows(String participantDataDescriptorId, Date begin, Date end) throws SynapseException {
+		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
+		return rows;
 	}
 
 	@Override
@@ -975,7 +998,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			String descriptorId = status.getParticipantDataDescriptorId();
 			String compoundKey = ownerId + ":" + descriptorId;
 			statuses.put(compoundKey, status);
-			logger.info("Updating status: " + compoundKey + " to status: " + status.getLastEntryComplete().toString());
+			logger.info("Updating status: " + compoundKey + " to status: " + status.getLastEntryComplete());
 		}
 	}
 	
@@ -996,9 +1019,11 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		TimeSeriesTable timeSeriesTable = new TimeSeriesTable();
 		timeSeriesTable.setDateIndex(0L);
 		timeSeriesTable.setColumns(Lists.newArrayList("date", "nothing"));
-		TimeSeriesRow row = new TimeSeriesRow();
-		row.setValues(Lists.newArrayList("1233242343", "3.3"));
-		timeSeriesTable.setRows(Lists.newArrayList(row));
+		TimeSeriesRow row1 = new TimeSeriesRow();
+		row1.setValues(Lists.newArrayList("1233242343", "3.3"));
+		TimeSeriesRow row2 = new TimeSeriesRow();
+		row2.setValues(Lists.newArrayList("1233252343", "1.2"));
+		timeSeriesTable.setRows(Lists.newArrayList(row1, row2));
 		return timeSeriesTable;
 	}
 	

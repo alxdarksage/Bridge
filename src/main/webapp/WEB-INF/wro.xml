@@ -35,6 +35,7 @@
 		<!-- <js>/assets/bridge/js/compare.js</js> -->
         <js>/assets/bridge/js/metrics.js</js>
         <js>/assets/bridge/js/range-norm-bar.js</js>
+        <js>/assets/bootstrap/js/bootstrap.js</js>
 	</group>
 	
     <group name="trackers">

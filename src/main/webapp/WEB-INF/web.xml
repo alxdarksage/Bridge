@@ -73,6 +73,7 @@
         <url-pattern>*.html</url-pattern>
         <url-pattern>/communities/*</url-pattern>
         <url-pattern>/journal/*</url-pattern>
+        <url-pattern>/medication/*</url-pattern>
     </filter-mapping>
     
     <filter>

@@ -51,6 +51,11 @@ public class MoodTracker implements Specification {
 	}
 
 	@Override
+	public String getForm() {
+		return null;
+	}
+
+	@Override
 	public FormElement getEditStructure() {
 		return new FormGroup("Mood Tracker", getAllFormElements());
 	}
