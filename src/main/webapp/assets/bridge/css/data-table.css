@@ -15,7 +15,7 @@
 	            border-right: 1px solid #ccc;
 	        }
 	        & > td {
-	           vertical-align: middle ! important;
+	           vertical-align: top ! important;
 	        }
 	        & > td.nowrap {
 	            white-space: nowrap;
@@ -25,6 +25,20 @@
             & > td {
                 border-bottom: 2px solid #aaa;
             }
+        }
+        & > tr.group-first > td {
+        	border-bottom: none;
+        	padding-bottom: 2px;
+        }
+        & > tr.group-middle > td {
+        	border-top: none;
+        	border-bottom: none;
+        	padding-top: 2px;
+        	padding-bottom: 2px;
+        }
+        & > tr.group-last > td {
+        	border-top: none;
+        	padding-top: 2px;
         }
 	}
     td.empty {
@@ -107,6 +121,20 @@
 	                border-bottom: 2px solid #aaa ! important;
 	            }
             }
+	        & > tr.group-first > td {
+	        	border-bottom: none;
+	        	padding-bottom: 2px;
+	        }
+	        & > tr.group-middle > td {
+	        	border-top: none;
+	        	border-bottom: none;
+	        	padding-top: 2px;
+	        	padding-bottom: 2px;
+	        }
+	        & > tr.group-last > td {
+	        	border-top: none;
+	        	padding-top: 2px;
+	        }
         }
 	    .pagination {
 	        width: 7.8rem;

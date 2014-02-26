@@ -6,6 +6,9 @@
 	        <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187; 
 	    </div>
         <c:choose>
+            <c:when test="${not empty spec.form}">
+            	<jsp:include page="/WEB-INF/jsp/${spec.form}"/>
+            </c:when>
             <c:when test="${spec.formLayout == 'ALL_RECORDS_ONE_PAGE_INLINE'}">
                 <h3>${spec.name}</h3>
                 <div class="bottomSpaced">

@@ -14,6 +14,7 @@ import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.Team;
 import org.sagebionetworks.repo.model.TeamMembershipStatus;
@@ -31,7 +32,6 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	
 	private static final Logger logger = LogManager.getLogger(BridgeRequest.class.getName());
 
-	public static final String BRIDGE_ADMINISTRATORS_INTERNAL = "BridgeAdministrators";
 	public static final String DEFAULT_ORIGIN_URL = "/portal/index.html";
 	public static final String BRIDGE_USER_KEY = "BridgeUser";
 	public static final String NOTICE_KEY = "notice";
@@ -66,27 +66,12 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 			return getBridgeUser().isBridgeAdmin();
 		}
 		try {
-			// TODO: This can be much improved by knowing the ID of the team, that's even hard-coded in AuthorizationConstants,
-			// but we need that ID to be bootstrapped in dev/integration and production, talk to John about this.
-			
 			SynapseClient client = getBridgeUser().getSynapseClient();
-			PaginatedResults<Team> results = client.getTeams(BRIDGE_ADMINISTRATORS_INTERNAL, ClientUtils.LIMIT, 0);
-			for (Iterator<Team> i = results.getResults().iterator(); i.hasNext();) {
-				Team team = i.next();
-				if (!BRIDGE_ADMINISTRATORS_INTERNAL.equals(team.getName())) {
-					i.remove();
-				}
-			}
-			if (results.getResults().size() != 1) {
-				throw new SynapseException("Should be one and only one team");
-			}
-			String teamId = results.getResults().get(0).getId();
 			String userId = getBridgeUser().getOwnerId();
-			
-			TeamMembershipStatus status = client.getTeamMembershipStatus(teamId, userId);
+			TeamMembershipStatus status = client.getTeamMembershipStatus(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(),
+					userId);
 			getBridgeUser().setBridgeAdmin(status.getIsMember());
 			return status.getIsMember();
-			
 		} catch(SynapseException e) {
 			logger.error(e);
 		}

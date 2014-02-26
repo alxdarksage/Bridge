@@ -8,6 +8,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +33,7 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException,
 			IOException {
 
-		BridgeRequest request = (BridgeRequest) req;
+		BridgeRequest request = new  BridgeRequest((HttpServletRequest)req);
 		HttpServletResponse response = (HttpServletResponse) res;
 		
 		if (!request.isUserAuthenticated()) {
@@ -46,13 +47,11 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 		}
 		
 		// Spring Security is overkill
-		if (request.getServletPath().startsWith("/admin/") && !request.isUserInRole("admin")) {
-			request.setOrigin(null);
+        if (request.getServletPath().startsWith("/admin/") && !request.isUserInRole("admin")) {
 			response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/signIn.html"));
+		} else {
+			chain.doFilter(request, res);
 		}
-		
-		chain.doFilter(request, res);
-
 		BridgeUser user = request.getBridgeUser();
 		if (user != null) {
 			user.cleanup();
