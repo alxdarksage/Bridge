@@ -25,9 +25,4 @@
             </ul>
         </div>
     </div>
-    <p style="border-top: 1px solid #aaa; margin-top: 2rem">
-        <c:if test="${pageContext.request.isUserInRole('admin')}">
-            <a id="adminAct" href='<c:url value="/admin/"/>'>Administration</a>
-        </c:if>
-    </p>
 </sage:portal>

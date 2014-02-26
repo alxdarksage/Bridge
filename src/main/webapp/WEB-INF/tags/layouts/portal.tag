@@ -7,8 +7,8 @@
     <div class="container">
         <h2>Bridge</h2>
 	    <jsp:doBody/>
+        <sage:footer/>
     </div>
     <script src="<c:url value='/assets/footer.js'/>"></script>
-    <sage:footer/>
 </body>
 </html>
