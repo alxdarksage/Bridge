@@ -33,6 +33,15 @@ public class BridgeUser {
 	private String ownerId;
 	private String communityId;
 	private String avatarUrl;
+	private Boolean isBridgeAdmin;
+
+	public Boolean isBridgeAdmin() {
+		return isBridgeAdmin;
+	}
+
+	public void setBridgeAdmin(Boolean isBridgeAdmin) {
+		this.isBridgeAdmin = isBridgeAdmin;
+	}
 
 	public String getSessionToken() {
 		return sessionToken;

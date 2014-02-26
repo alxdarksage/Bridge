@@ -8,6 +8,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +18,7 @@ import org.sagebionetworks.bridge.webapp.controllers.AuthenticateBaseController;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserSessionData;
 
 public class AuthenticationFilter extends AuthenticateBaseController implements Filter {
@@ -31,7 +33,7 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException,
 			IOException {
 
-		BridgeRequest request = (BridgeRequest) req;
+		BridgeRequest request = new  BridgeRequest((HttpServletRequest)req);
 		HttpServletResponse response = (HttpServletResponse) res;
 		
 		if (!request.isUserAuthenticated()) {
@@ -44,13 +46,12 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 			ClientUtils.setSynapseSessionCookie(request, response, 0);
 		}
 		
-		// This is pretty silly as a form of security, but Spring Security is overkill
-		if (request.getServletPath().startsWith("/admin/") && !request.isUserInRole("admin")) {
+		// Spring Security is overkill
+        if (request.getServletPath().startsWith("/admin/") && !request.isUserInRole("admin")) {
 			response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/signIn.html"));
+		} else {
+			chain.doFilter(request, res);
 		}
-		
-		chain.doFilter(request, res);
-
 		BridgeUser user = request.getBridgeUser();
 		if (user != null) {
 			user.cleanup();
@@ -65,7 +66,7 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 				// the filter will be reused.
 				SynapseClient client = (SynapseClient) beanFactory.getBean("synapseClient");
 				client.setSessionToken(sessionToken);
-				UserSessionData data = client.getUserSessionData();
+				UserSessionData data = client.getUserSessionData(DomainType.BRIDGE);
 				BridgeUser user = createBridgeUserFromUserSessionData(data);
 				request.setBridgeUser(user);
 				logger.info("User re-established Synapse session");				

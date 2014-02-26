@@ -10,6 +10,7 @@ import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.forms.TermsOfUseForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
+import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class TermsOfUseController extends AuthenticateBaseController {
 	public String get(BridgeRequest request, @ModelAttribute TermsOfUseForm termsOfUseForm) throws Exception {
 		// Throws exception because I can't imagine what we'd do that was better 
 		// than the error page if this failed
-		termsOfUseForm.setTermsOfUse(synapseClient.getSynapseTermsOfUse());	
+		termsOfUseForm.setTermsOfUse(synapseClient.getTermsOfUse(DomainType.BRIDGE));	
 		return "auth/termsOfUse";
 	}
 
@@ -47,9 +48,9 @@ public class TermsOfUseController extends AuthenticateBaseController {
 				
 			} else if (signInForm != null) {
 				
-				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword());
-				synapseClient.signTermsOfUse(session.getSessionToken(), true);
-				UserSessionData userSessionData = synapseClient.getUserSessionData();
+				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword(), DomainType.BRIDGE);
+				synapseClient.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, true);
+				UserSessionData userSessionData = synapseClient.getUserSessionData(DomainType.BRIDGE);
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
 				logger.info("User #{} signed in.", user.getOwnerId());

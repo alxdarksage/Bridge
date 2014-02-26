@@ -1,7 +1,5 @@
 package org.sagebionetworks.bridge.webapp.specs.trackers;
 
-import java.text.DateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
