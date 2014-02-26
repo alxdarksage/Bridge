@@ -1020,7 +1020,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	
 	@Override
 	public Team createTeam(Team team) throws SynapseException {
-		team.setId(newId());
+		if (team.getId() == null) {
+			team.setId(newId());	
+		}
 		teamsById.put(team.getId(), team);
 		return team;
 	}

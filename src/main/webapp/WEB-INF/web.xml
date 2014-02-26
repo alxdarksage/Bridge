@@ -56,19 +56,6 @@
         <filter-name>sslFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    <filter>
-        <filter-name>OriginFilter</filter-name>
-        <filter-class>org.sagebionetworks.bridge.webapp.servlet.OriginFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>OriginFilter</filter-name>  
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
-        <dispatcher>ERROR</dispatcher>        
-    </filter-mapping>
 
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
@@ -86,6 +73,20 @@
         <url-pattern>*.html</url-pattern>
         <url-pattern>/communities/*</url-pattern>
         <url-pattern>/journal/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>OriginFilter</filter-name>
+        <filter-class>org.sagebionetworks.bridge.webapp.servlet.OriginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>OriginFilter</filter-name>  
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>*.jsp</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>        
     </filter-mapping>
     
     <filter>

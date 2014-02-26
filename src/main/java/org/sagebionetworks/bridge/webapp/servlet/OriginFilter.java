@@ -41,9 +41,8 @@ public class OriginFilter implements Filter {
 		// Store the origin URL so after authentication, we can direct the user
 		// to where they came from. This isn't excellent but it'll do until we
 		// know the user's home community.
-		HttpServletRequest request = (HttpServletRequest) req;
+		BridgeRequest request = new  BridgeRequest((HttpServletRequest)req);
 		HttpServletResponse response = (HttpServletResponse) res;
-		BridgeRequest bridgeRequest = new BridgeRequest(request);
 		
 		String servletPath = request.getServletPath();
 		if (!excludedURLs.contains(servletPath) && 
@@ -51,14 +50,14 @@ public class OriginFilter implements Filter {
 			!servletPath.contains("/ajax/") && 
 			servletPath.endsWith(".html")) {
 			logger.debug("Setting the origin URL as: " + servletPath);
-			bridgeRequest.setOrigin(servletPath);
+			request.setOrigin(servletPath);
 		}
 		// This can be read by XHR requests to determine the final URL of redirects within the application.
 		// That can be shown in the history, so the user can bookmark and reload the page they're looking at.
 		if (servletPath.endsWith(".html")) {
 			response.setHeader("X-Bridge-Origin", request.getContextPath() + servletPath);
 		}
-		chain.doFilter(bridgeRequest, res);
+		chain.doFilter(request, res);
 	}
 
 	@Override
