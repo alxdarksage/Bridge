@@ -67,9 +67,9 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		}
 		try {
 			SynapseClient client = getBridgeUser().getSynapseClient();
-			Team team = client.getTeam(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId());
 			String userId = getBridgeUser().getOwnerId();
-			TeamMembershipStatus status = client.getTeamMembershipStatus(team.getId(), userId);
+			TeamMembershipStatus status = client.getTeamMembershipStatus(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(),
+					userId);
 			getBridgeUser().setBridgeAdmin(status.getIsMember());
 			return status.getIsMember();
 		} catch(SynapseException e) {
