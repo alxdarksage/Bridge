@@ -1,13 +1,23 @@
 package org.sagebionetworks.bridge.webapp.servlet;
 
 import java.security.Principal;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.http.auth.BasicUserPrincipal;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
+import org.sagebionetworks.client.SynapseClient;
+import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
+import org.sagebionetworks.repo.model.PaginatedResults;
+import org.sagebionetworks.repo.model.Team;
+import org.sagebionetworks.repo.model.TeamMembershipStatus;
 
 import com.google.common.base.Throwables;
 
@@ -19,6 +29,8 @@ import com.google.common.base.Throwables;
  * 
  */
 public class BridgeRequest extends HttpServletRequestWrapper {
+	
+	private static final Logger logger = LogManager.getLogger(BridgeRequest.class.getName());
 
 	public static final String DEFAULT_ORIGIN_URL = "/portal/index.html";
 	public static final String BRIDGE_USER_KEY = "BridgeUser";
@@ -40,11 +52,32 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 	
 	@Override
 	public boolean isUserInRole(String role) {
-		if (getBridgeUser().isAuthenticated()) {
-			return true;
+		if ("admin".equals(role)) {
+			return isBridgeAdmin();
 		}
 		return false;
 	}
+
+	private boolean isBridgeAdmin() {
+		if (!isUserAuthenticated()) {
+			return false;
+		}
+		if (getBridgeUser().isBridgeAdmin() != null) {
+			return getBridgeUser().isBridgeAdmin();
+		}
+		try {
+			SynapseClient client = getBridgeUser().getSynapseClient();
+			String userId = getBridgeUser().getOwnerId();
+			TeamMembershipStatus status = client.getTeamMembershipStatus(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(),
+					userId);
+			getBridgeUser().setBridgeAdmin(status.getIsMember());
+			return status.getIsMember();
+		} catch(SynapseException e) {
+			logger.error(e);
+		}
+		return false;
+	}
+	
 	
 	@Override
 	public Principal getUserPrincipal() {

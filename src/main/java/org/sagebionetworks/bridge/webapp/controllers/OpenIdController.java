@@ -132,10 +132,10 @@ public class OpenIdController extends AuthenticateBaseController {
 		
 		String location = createRedirectForAuth(request, response, returnToURL, session.getSessionToken(), acceptsTermsOfUse);
 		
-		privateSynapseClient.signTermsOfUse(session.getSessionToken(), acceptsTermsOfUse);
+		privateSynapseClient.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, acceptsTermsOfUse);
 		if (acceptsTermsOfUse) {
 			// Here we'd like to get the information necessary to create the user...
-			UserSessionData userSessionData = privateSynapseClient.getUserSessionData();
+			UserSessionData userSessionData = privateSynapseClient.getUserSessionData(DomainType.BRIDGE);
 			BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 			request.setBridgeUser(user);
 		} else {

@@ -24,6 +24,10 @@ public class SignInPage {
 		signIn("test", "password");
 	}
 	
+	public void signInAsNotAnAdminUser() {
+		signIn("notanadmin", "password");
+	}
+	
 	public void signIn(String userName, String password) {
 		if (userName != null) {
 			facade.waitUntil("#userName");

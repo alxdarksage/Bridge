@@ -15,6 +15,7 @@ import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
+import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.Session;
@@ -77,8 +78,8 @@ public class SignInControllerTest {
 
 	@Test
 	public void testSuccessfulLogin() throws Exception {
-		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenReturn(session);
-		when(synapseClient.getUserSessionData()).thenReturn(userSessionData);
+		when(synapseClient.login("tim.powers@sagebase.org", "password", DomainType.BRIDGE)).thenReturn(session);
+		when(synapseClient.getUserSessionData(DomainType.BRIDGE)).thenReturn(userSessionData);
 
 		String result = controller.post(request, form, binding);
 		
@@ -91,7 +92,7 @@ public class SignInControllerTest {
 
 	@Test
 	public void testFailedLogin() throws Exception {
-		when(synapseClient.login("tim.powers@sagebase.org", "password")).thenThrow(new SynapseException());
+		when(synapseClient.login("tim.powers@sagebase.org", "password", DomainType.BRIDGE)).thenThrow(new SynapseException());
 
 		controller.post(request, form, binding);
 		

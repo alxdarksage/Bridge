@@ -93,7 +93,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	Map<String,AccessControlList> aclsByEntityId = Maps.newHashMap(); // treating community as an entity
 	Map<String,V2WikiPage> wikiPagesById = Maps.newHashMap();
 	Map<String,Team> teamsById = Maps.newHashMap();
-	Map<Team,Set<String>> memberships = Maps.newHashMap();
+	Multimap<Team,String> teamMemberships = LinkedListMultimap.create();
+	
 	Map<String,String> markdownsByFileHandleId = Maps.newHashMap();
 	Map<String,String> emailByUserId = Maps.newHashMap();
 	Map<String,ParticipantDataStatus> statuses = Maps.newHashMap();
@@ -306,23 +307,15 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	private void joinUserToThisCommunityTeam(Team team, String userId) {
-		Set<String> memberSet = memberships.get(team);
-		if (memberSet == null) {
-			memberSet = new HashSet<String>();
-			memberships.put(team, memberSet);
-		}
-		memberSet.add(userId);
+		teamMemberships.put(team, userId);
 	}
 
 	private void removeUserFromCommunityTeam(Team team, String communityId, String userId) throws SynapseException {
-		// We want to simulate the error where the user is the last *admin* associated to 
-		// the community.
-		Set<String> memberSet = memberships.get(team);
-		memberSet.remove(userId);
+		teamMemberships.remove(team, userId);
 	}
 
 	@Override
-	public Session login(String userName, String password) throws SynapseException {
+	public Session login(String userName, String password, DomainType domain) throws SynapseException {
 		UserSessionData data = usersById.get(userName);
 		if (data == null) {
 			throw new SynapseException();
@@ -343,7 +336,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public UserSessionData getUserSessionData() throws SynapseException {
+	public UserSessionData getUserSessionData(DomainType domain) throws SynapseException {
 		if (currentUserData == null) {
 			throw new SynapseException();
 		}
@@ -420,7 +413,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public AccessControlList createACL(AccessControlList acl) throws SynapseException {
 		aclsByEntityId.put(acl.getId(), acl);
-		return acl;		
+		return acl;
 	}
 
 	@Override
@@ -548,7 +541,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public String getSynapseTermsOfUse() throws SynapseException {
+	public String getTermsOfUse(DomainType domain) throws SynapseException {
+		if (domain != DomainType.BRIDGE) {
+			throw new IllegalArgumentException("Should not call getTermsOfUse() with the Synapse domain");
+		}
 		return "<p>These are the Stub terms of use.</p>";
 	}
 
@@ -567,7 +563,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		status.setUserId(userId);
 		Team team = teamsById.get(teamId);
 		if (team != null) {
-			Set<String> members = memberships.get(team);
+			Collection<String> members = teamMemberships.get(team);
 			status.setIsMember( (members != null && members.contains(userId)) );
 		}
 		return status;
@@ -637,7 +633,10 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public void signTermsOfUse(String sessionToken, boolean acceptTerms) throws SynapseException {
+	public void signTermsOfUse(String sessionToken, DomainType domain, boolean acceptTerms) throws SynapseException {
+		if (domain != DomainType.BRIDGE) {
+			throw new IllegalArgumentException("Don't call this method with any other domain than Bridge");
+		}
 		if (acceptTerms) {
 			agreedTOUs.add(currentUserData.getProfile().getOwnerId());	
 		}		
@@ -681,7 +680,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		if (currentUserData != null && currentUserData.getProfile() != null) {
 			for (Community community : communitiesById.values()) {
 				Team team = teamsById.get(community.getTeamId());
-				Set<String> members = memberships.get(team);
+				Collection<String> members = teamMemberships.get(team);
 				if (members != null && members.contains(currentUserData.getProfile().getOwnerId())) {
 					memberCommunities.add(community);
 				}
@@ -700,7 +699,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			throws SynapseException {
 		Community community = communitiesById.get(communityId);
 		Team team = teamsById.get(community.getTeamId());
-		Set<String> members = memberships.get(team);
+		Collection<String> members = teamMemberships.get(team);
 		
 		List<UserGroupHeader> headers = Lists.newArrayListWithCapacity(members.size());
 		for (String memberId : members) {
@@ -1001,5 +1000,43 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		row.setValues(Lists.newArrayList("1233242343", "3.3"));
 		timeSeriesTable.setRows(Lists.newArrayList(row));
 		return timeSeriesTable;
+	}
+	
+	@Override
+	public PaginatedResults<Team> getTeams(String fragment, long limit, long offset) throws SynapseException {
+		if (fragment == null) {
+			throw new IllegalArgumentException("Must have a search fragment string");
+		}
+		List<Team> teams = Lists.newArrayList();
+		for (Team team : teamsById.values()) {
+			if (team.getName() != null) {
+				if (team.getName().indexOf(fragment) > -1) {
+					teams.add(team);
+				}
+			}
+		}
+		return PaginatedResultsUtil.createPaginatedResults(teams, limit, offset);
+	}
+	
+	@Override
+	public Team createTeam(Team team) throws SynapseException {
+		if (team.getId() == null) {
+			team.setId(newId());	
+		}
+		teamsById.put(team.getId(), team);
+		return team;
+	}
+	
+	@Override
+	public void addTeamMember(String teamId, String memberId) throws SynapseException {
+		Team team = teamsById.get(teamId);
+		if (team == null) {
+			throw new SynapseNotFoundException("Could not find team #"+teamId);
+		}
+		UserSessionData member = usersById.get(memberId);
+		if (member == null) {
+			throw new SynapseNotFoundException("Could not find member #"+memberId);
+		}
+		teamMemberships.put(team, memberId);
 	}
 }
