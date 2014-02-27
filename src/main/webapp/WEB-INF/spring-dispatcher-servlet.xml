@@ -64,4 +64,8 @@
         <property name="useCodeAsDefaultMessage" value="true"/>
     </bean>
     
+    <bean id="versionListener" class="org.sagebionetworks.bridge.webapp.servlet.VersionListener">
+        <property name="bridgeBuildVersion" value="${bridgeVersion}"/>
+    </bean>
+    
 </beans>
