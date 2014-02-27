@@ -48,9 +48,9 @@ public class TermsOfUseController extends AuthenticateBaseController {
 				
 			} else if (signInForm != null) {
 				
-				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword(), DomainType.BRIDGE);
+				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword());
 				synapseClient.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, true);
-				UserSessionData userSessionData = synapseClient.getUserSessionData(DomainType.BRIDGE);
+				UserSessionData userSessionData = synapseClient.getUserSessionData();
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
 				logger.info("User #{} signed in.", user.getOwnerId());

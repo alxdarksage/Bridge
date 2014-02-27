@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.HasValuesMap;
-import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
 import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
+import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 import com.google.common.base.Joiner;

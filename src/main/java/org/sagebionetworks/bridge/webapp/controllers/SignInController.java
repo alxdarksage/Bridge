@@ -9,7 +9,6 @@ import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.Session;
 import org.springframework.stereotype.Controller;
@@ -42,12 +41,12 @@ public class SignInController extends AuthenticateBaseController {
 		// Shouldn't happen that user is authenticated, but.
 		if (!request.isUserAuthenticated()) {
 			try {
-				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword(), DomainType.BRIDGE);
+				Session session = synapseClient.login(signInForm.getUserName(), signInForm.getPassword());
 				if (!session.getAcceptsTermsOfUse()) {
 					request.saveSignInForm(signInForm);
 					return "redirect:/termsOfUse.html";
 				}
-				UserSessionData userSessionData = synapseClient.getUserSessionData(DomainType.BRIDGE);
+				UserSessionData userSessionData = synapseClient.getUserSessionData();
 				BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 				request.setBridgeUser(user);
 				logger.info("User signed in.");

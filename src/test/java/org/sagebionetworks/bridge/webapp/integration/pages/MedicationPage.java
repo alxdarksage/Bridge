@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -19,13 +18,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
-import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
-import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
-import org.sagebionetworks.bridge.webapp.converter.ISODateTimeConverter;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class MedicationPage {

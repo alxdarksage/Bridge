@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
@@ -18,7 +16,6 @@ import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.converter.ISODateTimeConverter;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
-import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
 import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;

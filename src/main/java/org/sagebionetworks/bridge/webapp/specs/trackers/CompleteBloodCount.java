@@ -16,9 +16,9 @@ import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringCo
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
-import org.sagebionetworks.bridge.webapp.specs.GridGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormGroup;
 import org.sagebionetworks.bridge.webapp.specs.FormLayout;
+import org.sagebionetworks.bridge.webapp.specs.GridGroup;
 import org.sagebionetworks.bridge.webapp.specs.RangeNormBar;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;

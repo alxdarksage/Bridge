@@ -21,7 +21,6 @@ import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
@@ -36,15 +35,11 @@ import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
 import org.sagebionetworks.repo.model.DomainType;
-import org.sagebionetworks.repo.model.PaginatedResults;
-import org.sagebionetworks.repo.model.Team;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
 import org.sagebionetworks.repo.model.auth.Session;
-import org.sagebionetworks.repo.model.principal.BootstrapTeam;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -68,7 +63,7 @@ public class SageBootstrap {
 		private BridgeClient bridge;
 		
 		public IntegrationClientProvider() {
-			this.synapse = new SynapseClientImpl();
+			this.synapse = new SynapseClientImpl(DomainType.BRIDGE);
 			setEndpoints(this.synapse);
 			this.admin = new SynapseAdminClientImpl();
 			setEndpoints(this.admin);
@@ -104,7 +99,6 @@ public class SageBootstrap {
 	}
 	
 	public void create() throws Exception {
-		createBootstrapTeams(provider.getAdminClient());
 		createUser(false, provider.getAdminClient(), provider.getSynapseClient(), "octaviabutler", "octaviabutler@octaviabutler.com", false);
 		createUser(true, provider.getAdminClient(), provider.getSynapseClient(), "timpowers", "timpowers@timpowers.com", true);
 		createUser(true, provider.getAdminClient(), provider.getSynapseClient(), "test", "test@test.com", true);
@@ -117,10 +111,10 @@ public class SageBootstrap {
 
 	private void signInAsTimPowers() throws SynapseException {
 		SynapseClient client = provider.getSynapseClient();
-		Session session = client.login("timpowers", "password", DomainType.BRIDGE);
-		session.setAcceptsTermsOfUse(true);
+		Session session = client.login("timpowers", "password");
 		client.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, true);
 		client.setSessionToken(session.getSessionToken());
+		provider.getBridgeClient().setSessionToken(session.getSessionToken());
 	}
 
 	private static class Column {
@@ -187,15 +181,6 @@ public class SageBootstrap {
 		// @formatter:on
 	}
 	
-	private void createBootstrapTeams(SynapseAdminClient admin) throws SynapseException {
-		for (int i=0; i < BOOTSTRAP_TEAM.values().length; i++) {
-			String id = BOOTSTRAP_TEAM.values()[i].getId();
-			Team team = new Team();
-			team.setId(id);
-			admin.createTeam(team);
-		}
-	}
-	
 	private void createUser(boolean isAdmin, SynapseAdminClient admin, SynapseClient synapse, String userName, String email, boolean acceptsTermsOfUse)
 			throws SynapseException, JSONObjectAdapterException {
 		try {
@@ -205,12 +190,12 @@ public class SageBootstrap {
 			newUser.setPassword("password");
 			admin.createUser(newUser);
 			
-			Session session = synapse.login(userName, "password", DomainType.BRIDGE);
+			Session session = synapse.login(userName, "password");
 			if (acceptsTermsOfUse) {
 				synapse.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, true);
 			}
 			if (isAdmin) {
-				UserSessionData data = synapse.getUserSessionData(DomainType.BRIDGE);
+				UserSessionData data = synapse.getUserSessionData();
 				admin.addTeamMember(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(), data.getProfile().getOwnerId());
 			}
 		} catch(Exception e) {

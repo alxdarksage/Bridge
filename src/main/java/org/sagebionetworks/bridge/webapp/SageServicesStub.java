@@ -47,6 +47,7 @@ import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
+import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
 import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.IdList;
 import org.sagebionetworks.repo.model.ObjectType;
@@ -107,6 +108,9 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 
 	public SageServicesStub() {
 		logger.info("---------------------------- SageServicesStub CREATED");
+		Team team = new Team();
+		team.setId(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId());
+		teamsById.put(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(), team);
 	}
 
 	private static SageServicesStub singleStub = null;
@@ -318,7 +322,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public Session login(String userName, String password, DomainType domain) throws SynapseException {
+	public Session login(String userName, String password) throws SynapseException {
 		UserSessionData data = usersById.get(userName);
 		if (data == null) {
 			throw new SynapseException();
@@ -339,7 +343,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public UserSessionData getUserSessionData(DomainType domain) throws SynapseException {
+	public UserSessionData getUserSessionData() throws SynapseException {
 		if (currentUserData == null) {
 			throw new SynapseException();
 		}
@@ -571,12 +575,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		}
 		return status;
 	}
-	
-
-	@Override
-	public void createUser(NewUser user) throws SynapseException {
-		throw new IllegalArgumentException("Do not use this method from bridge");
-	}
 
 	/**
 	 * This returns false if either the userName or the email are a duplicate.
@@ -600,7 +598,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public void createUser(NewUser user, DomainType originClient) throws SynapseException {
+	public void createUser(NewUser user) throws SynapseException {
 		if (usersById.get(user.getUserName()) != null) {
 			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User '"+user.getUserName()+"' already exists\n\"}");
 		}
@@ -645,11 +643,6 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		}		
 	}
 
-	@Override
-	public void sendPasswordResetEmail(String email) throws SynapseException {
-		throw new IllegalArgumentException("Don't use this API method in Bridge");
-	}
-	
 	@Override
 	public Session passThroughOpenIDParameters(String queryString, Boolean createUserIfNecessary)
 			throws SynapseException {
@@ -982,7 +975,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 
 
 	@Override
-	public void sendPasswordResetEmail(String email, DomainType originClient) throws SynapseException {
+	public void sendPasswordResetEmail(String email) throws SynapseException {
 		// noop
 	}
 

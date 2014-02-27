@@ -135,7 +135,7 @@ public class OpenIdController extends AuthenticateBaseController {
 		privateSynapseClient.signTermsOfUse(session.getSessionToken(), DomainType.BRIDGE, acceptsTermsOfUse);
 		if (acceptsTermsOfUse) {
 			// Here we'd like to get the information necessary to create the user...
-			UserSessionData userSessionData = privateSynapseClient.getUserSessionData(DomainType.BRIDGE);
+			UserSessionData userSessionData = privateSynapseClient.getUserSessionData();
 			BridgeUser user = createBridgeUserFromUserSessionData(userSessionData);
 			request.setBridgeUser(user);
 		} else {

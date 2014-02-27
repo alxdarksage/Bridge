@@ -2,7 +2,6 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.List;
 
-
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.springframework.core.convert.converter.Converter;

@@ -1,6 +1,7 @@
 package org.sagebionetworks.bridge.webapp.specs.builder;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ import org.sagebionetworks.bridge.webapp.converter.LongConverter;
 import org.sagebionetworks.bridge.webapp.converter.LongToStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.StringConverter;
 import org.sagebionetworks.bridge.webapp.converter.StringToStringConverter;
+import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
-import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.LongFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 
