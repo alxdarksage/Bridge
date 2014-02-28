@@ -23,6 +23,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.quartz.CronExpression;
 import org.sagebionetworks.StackConfiguration;
 import org.sagebionetworks.bridge.model.Community;
@@ -33,8 +34,11 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumn
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataEventValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
+import org.sagebionetworks.bridge.model.timeseries.TimeSeriesRow;
+import org.sagebionetworks.bridge.model.timeseries.TimeSeriesTable;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.WikiHeader;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -55,7 +59,10 @@ import org.sagebionetworks.repo.model.auth.UserEntityPermissions;
 import org.sagebionetworks.repo.model.dao.WikiPageKey;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiHeader;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
+import org.sagebionetworks.repo.util.JSONEntityUtil;
+import org.sagebionetworks.schema.adapter.JSONEntity;
 import org.sagebionetworks.schema.adapter.JSONObjectAdapterException;
+import org.sagebionetworks.schema.adapter.org.json.EntityFactory;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -420,6 +427,7 @@ public class ClientUtils {
 				} else {
 					descriptorsNoPrompt.add(descriptor);
 				}
+				descriptorsTimelines.add(descriptor);
 				continue;
 			}
 
@@ -479,6 +487,9 @@ public class ClientUtils {
 			if (descriptor.getDatetimeStartColumnName() != null) {
 				descriptorsTimelines.add(descriptor);
 			}
+			if (descriptor.getEventColumnName() != null) {
+				descriptorsTimelines.add(descriptor);
+			}
 		}
 
 		if (statusUpdateList.size() > 0) {
@@ -499,12 +510,19 @@ public class ClientUtils {
 					}
 				});
 
+		long timelineStart = new Date().getTime();
+		for (ParticipantDataDescriptor descriptor : descriptorsTimelines) {
+			TimeSeriesTable timeSeries = client.getTimeSeries(descriptor.getId(), null);
+			timelineStart = Math.min(timelineStart, timeSeries.getFirstDate());
+		}
+
 		model.addAttribute("descriptorsAlways", descriptorsWithDataAlways);
 		model.addAttribute("descriptorsDue", descriptorsDue);
 		model.addAttribute("descriptorsIfNew", descriptorsIfNew);
 		model.addAttribute("descriptorsIfChanged", descriptorsIfChanged);
 		model.addAttribute("descriptorsNoPrompt", descriptorsNoPrompt);
 		model.addAttribute("descriptorsTimelines", descriptorsTimelines);
+		model.addAttribute("timelineStart", timelineStart);
 		model.addAttribute("medicationsIfChanged", medicationsIfChanged);
 		model.addAttribute("medications", medications);
 	}
@@ -608,5 +626,114 @@ public class ClientUtils {
 		writer.flush();
 		writer.close();
 		response.flushBuffer();
+	}
+
+	public static class Column {
+		private final String name;
+		private final String type;
+
+		public Column(String name, String type) {
+			this.name = name;
+			this.type = type;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getType() {
+			return type;
+		}
+	}
+
+	public static class Event {
+		private final String name;
+		private final Long start;
+		private final Long end;
+
+		public Event(String name, Long start, Long end) {
+			this.name = name;
+			this.start = start;
+			this.end = end;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Long getStart() {
+			return start;
+		}
+
+		public Long getEnd() {
+			return end;
+		}
+	}
+
+	public static class Data {
+		private final Column[] cols;
+		private final Object[][] rows;
+		private final ParticipantDataEventValue[] events;
+
+		public Data(Column[] cols, Object[][] rows, ParticipantDataEventValue[] events) {
+			this.cols = cols;
+			this.rows = rows;
+			this.events = events;
+		}
+
+		public Column[] getCols() {
+			return cols;
+		}
+
+		public Object[][] getRows() {
+			return rows;
+		}
+
+		public ParticipantDataEventValue[] getEvents() {
+			return events;
+		}
+	}
+
+	public static Data getTimeSeries(BridgeClient client, String series, List<String> columns) throws SynapseException {
+		TimeSeriesTable timeSeriesList = client.getTimeSeries(series, columns);
+
+		int columnCount = timeSeriesList.getColumns().size();
+		int rowCount = timeSeriesList.getRows().size();
+		int dateIndex = timeSeriesList.getDateIndex().intValue();
+		if (dateIndex != 0) {
+			// optimized for dateIndex being the first column
+			swap(timeSeriesList.getColumns(), 0, dateIndex);
+			for (TimeSeriesRow row : timeSeriesList.getRows()) {
+				swap(row.getValues(), 0, dateIndex);
+			}
+		}
+
+		// turn the timeSeries into a row column, where column 0 is date and other columns values
+		Column[] cols = new Column[columnCount];
+		cols[0] = new Column(timeSeriesList.getColumns().get(dateIndex), "datetime");
+		for (int colIndex = 1; colIndex < columnCount; colIndex++) {
+			cols[colIndex] = new Column(timeSeriesList.getColumns().get(colIndex), "number");
+		}
+
+		Object[][] rows = new Object[rowCount][];
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			TimeSeriesRow row = timeSeriesList.getRows().get(rowIndex);
+			rows[rowIndex] = new Object[columnCount];
+			for (int colIndex = 0; colIndex < columnCount; colIndex++) {
+				rows[rowIndex][colIndex] = row.getValues().get(colIndex);
+			}
+		}
+
+		ParticipantDataEventValue[] events = timeSeriesList.getEvents().toArray(
+				new ParticipantDataEventValue[timeSeriesList.getEvents().size()]);
+
+		Data result = new Data(cols, rows, events);
+		return result;
+	}
+
+	private static void swap(List<String> list, int index1, int index2) {
+		String value1 = list.get(index1);
+		list.set(index1, list.get(index2));
+		list.set(0, value1);
 	}
 }

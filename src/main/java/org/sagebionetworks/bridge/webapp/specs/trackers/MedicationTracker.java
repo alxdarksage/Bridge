@@ -167,11 +167,6 @@ public class MedicationTracker implements Specification {
 	}
 
 	@Override
-	public String getForm() {
-		return "journal/trackers/medication.jsp";
-	}
-
-	@Override
 	public FormElement getShowStructure() {
 		return root;
 	}
