@@ -18,7 +18,6 @@ import org.sagebionetworks.bridge.webapp.controllers.AuthenticateBaseController;
 import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserSessionData;
 
 public class AuthenticationFilter extends AuthenticateBaseController implements Filter {
@@ -66,7 +65,7 @@ public class AuthenticationFilter extends AuthenticateBaseController implements 
 				// the filter will be reused.
 				SynapseClient client = (SynapseClient) beanFactory.getBean("synapseClient");
 				client.setSessionToken(sessionToken);
-				UserSessionData data = client.getUserSessionData(DomainType.BRIDGE);
+				UserSessionData data = client.getUserSessionData();
 				BridgeUser user = createBridgeUserFromUserSessionData(data);
 				request.setBridgeUser(user);
 				logger.info("User re-established Synapse session");				

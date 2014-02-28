@@ -9,7 +9,6 @@ import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.principal.AliasCheckRequest;
 import org.sagebionetworks.repo.model.principal.AliasCheckResponse;
@@ -49,7 +48,7 @@ public class SignUpController {
 				ClientUtils.fieldError(result, "signUpForm", "email", "NotUnique.signUpForm.email");
 			}
 			if (!result.hasErrors()) {
-				synapseClient.createUser(newUser, DomainType.BRIDGE);
+				synapseClient.createUser(newUser);
 				request.setNotification("RegistrationEmailSent");
 				return "redirect:"+request.getOrigin();
 			}
