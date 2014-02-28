@@ -67,7 +67,7 @@ public class TrackerController extends JournalControllerBase {
 		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("spec", spec);
 
-		if (dwc.getDescriptor().getType().equals("medication")) {
+		if ("medication".equals(dwc.getDescriptor().getType())) {
 			final String eventColumn = dwc.getDescriptor().getEventColumnName();
 
 			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId);
@@ -94,7 +94,7 @@ public class TrackerController extends JournalControllerBase {
 			return model;
 		}
 
-		if (dwc.getDescriptor().getType().equals("event")) {
+		if ("event".equals(dwc.getDescriptor().getType())) {
 			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId);
 
 			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null);
