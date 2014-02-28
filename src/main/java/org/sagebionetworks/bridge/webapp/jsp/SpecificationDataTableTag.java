@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 
 import com.google.common.collect.Lists;
@@ -177,7 +176,9 @@ public class SpecificationDataTableTag extends SimpleTagSupport {
 	}
 
 	protected String getColumnValue(FormElement element, ParticipantDataValue pdv) {
-		String value = ParticipantDataUtils.getOneValue(element.getStringConverter().convert(pdv));
+		// As written, you can't put a lab into the table of tracker instances. This could 
+		// be changed by determining how to represent a lab.
+		String value = element.getStringConverter().convert(element.getName(), pdv).values().iterator().next();
 		if (value == null) {
 			value = "";
 		}

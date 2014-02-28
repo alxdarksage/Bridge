@@ -1,6 +1,6 @@
 package org.sagebionetworks.bridge.webapp;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.sagebionetworks.bridge.model.Community;
@@ -12,7 +12,6 @@ import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -20,6 +19,7 @@ import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
 /**
@@ -70,8 +70,6 @@ public class FormUtils {
 		return profile;
 	}
 	
-	// TODO: These two methods have a lot in common but one is for new forms, the other for editing.
-	
 	public static Set<String> defaultsToDynamicForm(DynamicForm dynamicForm, BridgeClient client,
 			Specification spec, String trackerId) throws SynapseException {
 		Set<String> defaultedFields = Sets.newHashSet();
@@ -80,12 +78,14 @@ public class FormUtils {
 			for (FormElement element : spec.getAllFormElements()) {
 				if (element.isDefaultable()) {
 					String fieldName = element.getName();
+					System.out.println("fieldName: " + fieldName);
+					System.out.println("And the previous data has: " + Joiner.on(", ").join(currentRow.getPreviousData().getData().keySet()));
 					ParticipantDataValue pdv = currentRow.getPreviousData().getData().get(fieldName);
-					List<String> values = element.getStringConverter().convert(pdv);
-					String value = ParticipantDataUtils.getOneValue(values);
+					Map<String,String> values = element.getStringConverter().convert(fieldName, pdv);
 					if (values != null) {
-						dynamicForm.getValuesMap().put(fieldName, value);
-						defaultedFields.add(fieldName);
+						System.out.println("Keys in previous data " + Joiner.on(", ").join(values.keySet()));
+						dynamicForm.getValuesMap().putAll(values);
+						defaultedFields.addAll(values.keySet());
 					}
 				}
 			}

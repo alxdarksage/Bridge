@@ -86,16 +86,16 @@ public class TrackerEditPage {
 		Assert.assertEquals("Correct value", expectedValue, valueInForm);
 	}
 	private void setValue(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-entered').value = '"+value+"'");
 	}
 	private void setUnits(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"_units').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-units').value = '"+value+"'");
 	}
 	private void setLowRange(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"_range_low').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-normalizedMin').value = '"+value+"'");
 	}
 	private void setHighRange(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"_range_high').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-normalizedMax').value = '"+value+"'");
 	}
 	
 	public void assertFieldConstrained(FieldNames field, String value, String expected) {
@@ -127,25 +127,25 @@ public class TrackerEditPage {
 	public void assertRowShowsDefault(FieldNames field, int base) {
 		String cssSelector = "#"+field.name().toLowerCase();
 		if (field.getUnit() != null) {
-			facade.assertCssClass(cssSelector+"_units", "defaulted");
+			facade.assertCssClass(cssSelector+"-units", "defaulted");
 			assertUnits(field, field.getUnit());
-			facade.assertCssClass(cssSelector+"_range_low", "defaulted");
+			facade.assertCssClass(cssSelector+"-normalizedMin", "defaulted");
 			assertLowRange(field, Integer.toString(base+2));
-			facade.assertCssClass(cssSelector+"_range_high", "defaulted");
+			facade.assertCssClass(cssSelector+"-normalizedMax", "defaulted");
 			assertHighRange(field, Integer.toString(base+3));
 		}
 	}
 	
 	private void assertValue(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase(), value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-entered", value);
 	}
 	private void assertUnits(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase()+"_units", value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-units", value);
 	}
 	private void assertLowRange(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase()+"_range_low", value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-normalizedMin", value);
 	}
 	private void assertHighRange(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase()+"_range_high", value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-normalizedMax", value);
 	}
 }

@@ -1,11 +1,12 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 
 import com.google.common.collect.Lists;
 
@@ -14,9 +15,10 @@ abstract public class AbstractFormElement implements FormElement {
 	protected ParticipantDataColumnDescriptor column;
 	protected String placeholderText;
 	protected boolean defaultable;
+	protected boolean isCompoundField;
 	protected UIType type;
-	protected Converter<List<String>, ParticipantDataValue> participantDataValueConverter;
-	protected Converter<ParticipantDataValue, List<String>> stringConverter;
+	protected FieldConverter<Map<String,String>, ParticipantDataValue> participantDataValueConverter;
+	protected FieldConverter<ParticipantDataValue, Map<String,String>> stringConverter;
 	protected List<FormElement> children = Lists.newArrayList();
 	
 	protected AbstractFormElement() {
@@ -36,6 +38,16 @@ abstract public class AbstractFormElement implements FormElement {
 	@Override
 	public ParticipantDataColumnType getDataType() {
 		return column.getColumnType();
+	}
+	
+	@Override
+	public boolean isCompoundField() {
+		return isCompoundField;
+	}
+
+	@Override
+	public void setIsCompoundField(boolean isCompoundField) {
+		this.isCompoundField = isCompoundField;
 	}
 	
 	@Override
@@ -84,12 +96,12 @@ abstract public class AbstractFormElement implements FormElement {
 	}
 
 	@Override
-	public Converter<List<String>, ParticipantDataValue> getParticipantDataValueConverter() {
+	public FieldConverter<Map<String,String>, ParticipantDataValue> getParticipantDataValueConverter() {
 		return participantDataValueConverter;
 	}
 
 	@Override
-	public Converter<ParticipantDataValue, List<String>> getStringConverter() {
+	public FieldConverter<ParticipantDataValue, Map<String,String>> getStringConverter() {
 		return stringConverter;
 	}
 
@@ -138,11 +150,11 @@ abstract public class AbstractFormElement implements FormElement {
 		this.defaultable = true;
 	}
 	
-	public void setParticipantDataValueConverter(Converter<List<String>, ParticipantDataValue> converter) {
+	public void setParticipantDataValueConverter(FieldConverter<Map<String,String>, ParticipantDataValue> converter) {
 		this.participantDataValueConverter = converter;
 	}
 	
-	public void setStringConverter(Converter<ParticipantDataValue, List<String>> converter) {
+	public void setStringConverter(FieldConverter<ParticipantDataValue, Map<String,String>> converter) {
 		this.stringConverter = converter;
 	}
 

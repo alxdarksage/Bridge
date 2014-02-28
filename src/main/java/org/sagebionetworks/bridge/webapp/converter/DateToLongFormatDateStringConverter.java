@@ -2,20 +2,18 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 
-import com.google.common.collect.Lists;
-
-public class DateToLongFormatDateStringConverter implements Converter<ParticipantDataValue, List<String>> {
+public class DateToLongFormatDateStringConverter implements FieldConverter<ParticipantDataValue, Map<String,String>> {
 	
 	public static final DateToLongFormatDateStringConverter INSTANCE = new DateToLongFormatDateStringConverter();
 	
 	@Override
-	public List<String> convert(ParticipantDataValue pdv) {
+	public Map<String,String> convert(String fieldName, ParticipantDataValue pdv) {
 		if (pdv == null) {
 			return null;
 		}
@@ -25,7 +23,7 @@ public class DateToLongFormatDateStringConverter implements Converter<Participan
 		if (time == null || time.longValue() == 0L) {
 			return null;
 		}
-		return Lists.newArrayList(formatter.format(new Date(time)));
+		return ParticipantDataUtils.getMapForValue(fieldName, formatter.format(new Date(time)));
 	}
 	
 }

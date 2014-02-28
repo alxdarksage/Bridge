@@ -1006,12 +1006,14 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public void deleteParticipantDataRows(String participantDataDescriptorId, IdList rowsIds) throws SynapseException {
 		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
+		List<ParticipantDataRow> newRows = Lists.newArrayList();
 		for (Iterator<ParticipantDataRow> i = rows.iterator(); i.hasNext(); ) {
 			ParticipantDataRow row = i.next();
-			if (rowsIds.getList().contains(row.getRowId())) {
-				i.remove();
+			if (!rowsIds.getList().contains(row.getRowId())) {
+				newRows.add(row);
 			}
 		}
+		participantDataByDescriptorId.put(participantDataDescriptorId, newRows);
 	}
 
 	@Override

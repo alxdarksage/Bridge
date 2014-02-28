@@ -1,43 +1,42 @@
 package org.sagebionetworks.bridge.webapp.converter;
 
-import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLabValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-public class LabToStringConverter implements Converter<ParticipantDataValue, List<String>> {
+public class LabToStringConverter implements FieldConverter<ParticipantDataValue, Map<String,String>> {
 	
 	public static final LabToStringConverter INSTANCE = new LabToStringConverter();
 
 	public DoubleToStringConverter doubleConverter = new DoubleToStringConverter();
 	
 	@Override
-	public List<String> convert(ParticipantDataValue source) {
+	public Map<String,String> convert(String fieldName, ParticipantDataValue source) {
 		if (source == null) {
 			return null;
 		}
 		ParticipantDataLabValue pdv = (ParticipantDataLabValue)source;
-		List<String> values = Lists.newArrayListWithCapacity(5);
-		values.add(pdv.getEnteredValue());
-		values.add(pdv.getUnits());
+		
+		Map<String,String> map = Maps.newHashMap();
+		if (pdv.getEnteredValue() != null) {
+			map.put(fieldName+ValueTranslator.LABRESULT_ENTERED, pdv.getEnteredValue());	
+		}
+		if (pdv.getUnits() != null) {
+			map.put(fieldName+ValueTranslator.LABRESULT_UNITS, pdv.getUnits());	
+		}
 		if (pdv.getNormalizedMin() != null) {
-			values.add( doubleConverter.format(pdv.getNormalizedMin()) );	
-		} else {
-			values.add(null);
+			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MIN, doubleConverter.format(pdv.getNormalizedMin()));	
 		}
 		if (pdv.getNormalizedMax() != null) {
-			values.add( doubleConverter.format(pdv.getNormalizedMax()) );
-		} else {
-			values.add(null);
+			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MAX, doubleConverter.format(pdv.getNormalizedMax()));
 		}
 		if (pdv.getNormalizedValue() != null) {
-			values.add( doubleConverter.format(pdv.getNormalizedValue()) );	
-		} else {
-			values.add(null);
+			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_VALUE, doubleConverter.format(pdv.getNormalizedValue()));	
 		}
-		return values;
+		return map;
 	}
 }

@@ -20,5 +20,6 @@
         <sage:footer/>
     </div>
     <script src="<c:url value='/assets/footer.js'/>"></script>
+    <sage:notice/>
 </body>
 </html>

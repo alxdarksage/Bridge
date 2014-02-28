@@ -5,19 +5,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ParticipantDataUtils {
+	
+	private static final Logger logger = LogManager.getLogger(ParticipantDataUtils.class.getName());
 	
 	public static ParticipantDataDescriptor getDescriptor(Specification spec) {
 		ParticipantDataDescriptor descriptor = new ParticipantDataDescriptor();
@@ -32,7 +35,7 @@ public class ParticipantDataUtils {
 	public static List<ParticipantDataColumnDescriptor> getColumnDescriptors(String descriptorId, Specification spec) {
 		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList();
 		for (FormElement field : spec.getAllFormElements()) {
-			if (field.getDataType() != null) {
+			if (field.getDataColumn().getColumnType() != null) {
 				field.getDataColumn().setParticipantDataDescriptorId(descriptorId);
 				list.add(field.getDataColumn());
 			}
@@ -55,11 +58,11 @@ public class ParticipantDataUtils {
 	}
 	
 	// Due to labs and other compound fields, we have to check for this in many cases.
-	public static String getOneValue(List<String> values) {
-		if (values == null || values.isEmpty()) {
-			return null;
-		}
-		return values.get(0);
+	
+	public static Map<String,String> getMapForValue(String fieldName, String value) {
+		Map<String,String> map = Maps.newHashMap();
+		map.put(fieldName, value);
+		return map;
 	}
 
 	public static ParticipantDataStatusList getFinishedStatus(String id) {
@@ -85,11 +88,12 @@ public class ParticipantDataUtils {
 	private static List<ParticipantDataRow> specToParticipantDataRow(Specification spec, Map<String, String> values, Long rowId) {
 		Map<String, ParticipantDataValue> data = Maps.newHashMap();
 		for (FormElement element : spec.getAllFormElements()) {
-			Converter<List<String>,ParticipantDataValue> converter = element.getParticipantDataValueConverter();
-			String value = values.get(element.getName());
-			if (converter != null && StringUtils.isNotBlank(value)) {
-				ParticipantDataValue pdv = converter.convert(Lists.newArrayList(value));
-				data.put(element.getName(), pdv);
+			FieldConverter<Map<String,String>, ParticipantDataValue> converter = element.getParticipantDataValueConverter();
+			if (converter != null && !element.isCompoundField()) {
+				ParticipantDataValue pdv = converter.convert(element.getName(), values);
+				if (pdv != null) {
+					data.put(element.getName(), pdv);	
+				}
 			}
 		}
 		ParticipantDataRow row = new ParticipantDataRow();

@@ -65,11 +65,11 @@ public class OnePageTrackerEditPage {
 		}
 		if (startDate != null) {
 			pdv.setValue(startDate.getTime());
-			facade.assertFieldValue("#start_date", converter.convert(pdv).get(0));
+			facade.assertFieldValue("#start_date", converter.convert("", pdv).get(0));
 		}
 		if (endDate != null) {
 			pdv.setValue(endDate.getTime());
-			facade.assertFieldValue("#end_date", converter.convert(pdv).get(0));
+			facade.assertFieldValue("#end_date", converter.convert("", pdv).get(0));
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class OnePageTrackerEditPage {
 			DateToISODateStringConverter converter = new DateToISODateStringConverter();
 			ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
 			pdv.setValue(date.getTime());
-			value = converter.convert(pdv).get(0);
+			value = converter.convert("", pdv).get(0);
 		}
 		String hiddenDateFormSelector = cssSelector + " + input";
 		facade.executeJavaScript("document.querySelector('"+hiddenDateFormSelector+"').value = '"+value+"';");
@@ -106,7 +106,7 @@ public class OnePageTrackerEditPage {
 		DateToShortFormatDateStringConverter converter = new DateToShortFormatDateStringConverter();
 		ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
 		pdv.setValue(date.getTime());
-		String value = converter.convert(pdv).get(0);
+		String value = converter.convert("", pdv).get(0);
 		
 		WebElement element = facade.findElement(By.cssSelector(cssSelector));
 		Assert.assertEquals(value, element.getText());

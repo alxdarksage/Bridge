@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.validators;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,15 +9,13 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import com.google.common.collect.Lists;
 
 public class SpecificationBasedValidator implements Validator {
 
@@ -41,8 +38,13 @@ public class SpecificationBasedValidator implements Validator {
 		Map<String,String> values = dynamicForm.getValuesMap();
 		
 		for(FormElement field : spec.getAllFormElements()) {
-			if (field.getDataColumn() != null) {
-				validateThisField(errors, values, field);
+			if (field.getDataType() != null) {
+				if (field.isCompoundField()) {
+					validateCompoundField(errors, values, field);
+				} else {
+					validateThisField(errors, values, field);	
+				}
+				
 			}
 		}
 		/*for (FieldError error : errors.getFieldErrors()) {
@@ -53,19 +55,29 @@ public class SpecificationBasedValidator implements Validator {
 		}*/
 	}
 
+	private void validateCompoundField(Errors errors, Map<String, String> values, FormElement field) {
+		if (field.getDataType() != null) {
+			validateThisField(errors, values, field);
+		}
+		for (FormElement childField : field.getChildren()) {
+			validateCompoundField(errors, values, childField);
+		}
+	}
+	
 	private void validateThisField(Errors errors, Map<String, String> values, FormElement field) {
 		String value = values.get(field.getName());
 		if (StringUtils.isBlank(value)) {
 			if (field.isRequired()) {
-				errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".required", field.getLabel() + " is required.");
+				errors.rejectValue("valuesMap['" + field.getName() + "']", field.getName() + ".required",
+						field.getLabel() + " is required.");
 			}
 			return;
 		}
-		ParticipantDataColumnType dataType = field.getDataColumn().getColumnType();
-		Converter<List<String>,ParticipantDataValue> converter = field.getParticipantDataValueConverter();
+		ParticipantDataColumnType dataType = field.getDataType();
+		FieldConverter<Map<String,String>,ParticipantDataValue> converter = field.getParticipantDataValueConverter();
 		if (converter != null) {
 			try {
-				ParticipantDataValue captured = converter.convert(Lists.newArrayList(value));
+				ParticipantDataValue captured = converter.convert(field.getName(), values);
 				
 				if (dataType == ParticipantDataColumnType.DOUBLE) {
 					Double converted = ((ParticipantDataDoubleValue)captured).getValue();
@@ -85,10 +97,12 @@ public class SpecificationBasedValidator implements Validator {
 	private void validateBoundaryRanges(FormElement field, Errors errors, Double converted) {
 		DoubleFormField numeric = (DoubleFormField)field;
 		if (numeric.getMinValue() != null && converted < numeric.getMinValue()) {
-			errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".too_small", field.getLabel() + " is less than "+numeric.getMinValue().toString()+".");
+			errors.rejectValue("valuesMap['" + field.getName() + "']", field.getName() + ".too_small", field.getLabel()
+					+ " is less than " + numeric.getMinValue().toString() + ".");
 		}
 		if (numeric.getMaxValue() != null && converted > numeric.getMaxValue()) {
-			errors.rejectValue("valuesMap['"+field.getName()+"']", field.getName()+".too_large", field.getLabel() + " is greater than "+numeric.getMaxValue().toString()+".");
+			errors.rejectValue("valuesMap['" + field.getName() + "']", field.getName() + ".too_large", field.getLabel()
+					+ " is greater than " + numeric.getMaxValue().toString() + ".");
 		}
 	}
 

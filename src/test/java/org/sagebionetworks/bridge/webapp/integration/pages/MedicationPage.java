@@ -61,7 +61,7 @@ public class MedicationPage {
 			DateToISODateStringConverter converter = new DateToISODateStringConverter();
 			ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
 			pdv.setValue(date.getTime());
-			value = converter.convert(pdv).get(0);
+			value = converter.convert("", pdv).get(0);
 		}
 		String hiddenDateFormSelector = cssSelector + " + input";
 		facade.executeJavaScript("document.querySelector('" + hiddenDateFormSelector + "').value = '" + value + "';");

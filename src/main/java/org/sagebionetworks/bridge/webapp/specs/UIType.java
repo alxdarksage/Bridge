@@ -20,6 +20,7 @@ public enum UIType {
 	// Component that looks like data tables elsewhere in the application, but it contains FormElement components, 
 	// and so can edit one or more ParticipantData records
 	TABULAR,
+	LAB_ROW,
 	DATE,
 	DATETIME,
 	TEXT_INPUT,

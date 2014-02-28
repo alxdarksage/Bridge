@@ -1,5 +1,7 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
+import org.sagebionetworks.bridge.webapp.converter.LabToStringConverter;
+
 public class RangeNormBar extends AbstractFormElement {
 
 	private String valueKey;
@@ -7,14 +9,16 @@ public class RangeNormBar extends AbstractFormElement {
 	private String lowKey;
 	private String highKey;
 	
-	public RangeNormBar(String label, String valueKey, String unitKey, String lowKey, String highKey) {
+	public RangeNormBar(String label, String baseKey, String valueKey, String unitKey, String lowKey, String highKey) {
 		super();
+		setName(baseKey);
+		setStringConverter(LabToStringConverter.INSTANCE);
 		setType(UIType.RANGE_NORM_BAR);
 		setLabel(label);
-		this.valueKey = valueKey;
-		this.unitKey = unitKey;
-		this.lowKey = lowKey;
-		this.highKey = highKey;
+		this.valueKey = baseKey + valueKey;
+		this.unitKey = baseKey + unitKey;
+		this.lowKey = baseKey + lowKey;
+		this.highKey = baseKey + highKey;
 	}
 
 	public String getValueKey() {

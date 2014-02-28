@@ -1,17 +1,18 @@
 package org.sagebionetworks.bridge.webapp.specs.builder;
 
-import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
-import org.springframework.core.convert.converter.Converter;
 
 public class DoubleFormFieldBuilder extends FormFieldBuilder {
 
-	public DoubleFormFieldBuilder(UIType type, ParticipantDataColumnType columnType, Converter<ParticipantDataValue, List<String>> stringConverter,
-			Converter<List<String>, ParticipantDataValue> objectConverter) {
+	public DoubleFormFieldBuilder(UIType type, ParticipantDataColumnType columnType,
+			FieldConverter<ParticipantDataValue, Map<String,String>> stringConverter,
+			FieldConverter<Map<String,String>, ParticipantDataValue> objectConverter) {
 		this.field = new DoubleFormField();
 		this.field.setExportable();
 		this.field.getDataColumn().setColumnType(columnType);

@@ -101,8 +101,7 @@ public class AjaxMedicationController {
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 
-		ParticipantDataValue end = ISODateTimeConverter.INSTANCE.convert(Collections.<String> singletonList(dynamicForm.getValuesMap().get(
-				MedicationTracker.END_DATE_FIELD)));
+		ParticipantDataValue end = ISODateTimeConverter.INSTANCE.convert(MedicationTracker.END_DATE_FIELD, dynamicForm.getValuesMap());
 
 		// first close old row and then create new one
 		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId);
