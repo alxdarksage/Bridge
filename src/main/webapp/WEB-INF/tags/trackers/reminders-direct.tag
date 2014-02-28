@@ -8,15 +8,20 @@
 			<c:url var="formUrl" value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.descriptor.id}"/>
 			<form:form id="${id}-form" role="form" modelAttribute="dynamicForm" method="post" action="${formUrl}">
 				<input type="hidden" id="${id}-form-rowId" name="rowId" value="${descriptor.currentData.rowId}"/>
-				<c:forEach var="column" items="${descriptor.columns}" varStatus="loop">
-					<c:if test="${(not empty column.type)}">
-						<div>
-							<sage:formtag trackerId="${id}-form" columnDescriptor="${column}"
-								currentValue="${descriptor.currentData.data[column.name]}"
-								previousValue="${descriptor.previousData.data[column.name]}"/>
-						</div>
-					</c:if>
-				</c:forEach>
+				<table>
+					<tr>
+						<c:forEach var="column" items="${descriptor.columns}" varStatus="loop">
+							<c:if test="${(not empty column.type)}">
+								<td>
+									<sage:formtag trackerId="${id}-form" columnDescriptor="${column}"
+										currentValue="${descriptor.currentData.data[column.name]}"
+										previousValue="${descriptor.previousData.data[column.name]}"/>
+										</div>
+								</td>
+							</c:if>
+						</c:forEach>
+					</tr>
+				</table>
 			</form:form>
 		</c:forEach>
 	</div>

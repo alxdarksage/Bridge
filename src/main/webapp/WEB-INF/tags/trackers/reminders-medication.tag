@@ -8,7 +8,7 @@
 			Are there any changes to your current medications or supplements?
 			<ul>
 				<c:forEach var="medication" items="${medications}" varStatus="loop">
-					<li>${medication.data['dose'].value} ${medication.data['medication'].value}</li>
+					<li>${medication.data.dose.value} ${medication.data.medication.name}</li>
 				</c:forEach>
 			</ul>
 		</c:if>

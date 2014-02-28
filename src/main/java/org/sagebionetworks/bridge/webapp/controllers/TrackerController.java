@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataEventValue;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
@@ -28,10 +31,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 @Controller
 public class TrackerController extends JournalControllerBase {
+
+	private static abstract class EventComparator implements Comparator<ParticipantDataRow> {
+		private final String eventColumnName;
+
+		public EventComparator(String eventColumnName) {
+			this.eventColumnName = eventColumnName;
+		}
+
+		@Override
+		public int compare(ParticipantDataRow o1, ParticipantDataRow o2) {
+			ParticipantDataEventValue eventValue1 = (ParticipantDataEventValue) o1.getData().get(eventColumnName);
+			ParticipantDataEventValue eventValue2 = (ParticipantDataEventValue) o2.getData().get(eventColumnName);
+			return compare(eventValue1, eventValue2);
+		}
+
+		abstract public int compare(ParticipantDataEventValue e1, ParticipantDataEventValue e2);
+	}
 
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.GET)
 	public ModelAndView viewTrackers(BridgeRequest request, @PathVariable("participantId") String participantId,
@@ -43,61 +67,40 @@ public class TrackerController extends JournalControllerBase {
 		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("spec", spec);
 
-		if (dwc.getDescriptor().getName().equals(MedicationTracker.MEDICATIONS_NAME)) {
+		if (dwc.getDescriptor().getType().equals("medication")) {
+			final String eventColumn = dwc.getDescriptor().getEventColumnName();
+
 			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId);
-			final String start = dwc.getDescriptor().getDatetimeStartColumnName();
-			Collections.sort(currentRows, new Comparator<ParticipantDataRow>() {
+			// sort by name?
+			Collections.sort(currentRows, new EventComparator(eventColumn) {
 				@Override
-				public int compare(ParticipantDataRow o1, ParticipantDataRow o2) {
-					return ((ParticipantDataDatetimeValue) o1.getData().get(start)).getValue().compareTo(
-							((ParticipantDataDatetimeValue) o2.getData().get(start)).getValue());
+				public int compare(ParticipantDataEventValue e1, ParticipantDataEventValue e2) {
+					return e1.getName().compareTo(e2.getName());
 				}
 			});
+
 			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null);
-			// first sort by name
-			Collections.sort(historyRows, new Comparator<ParticipantDataRow>() {
+			Multimap<String, ParticipantDataRow> indexedHistoryRows = Multimaps.index(historyRows,
+					new Function<ParticipantDataRow, String>() {
 				@Override
-				public int compare(ParticipantDataRow o1, ParticipantDataRow o2) {
-					String value1 = ValueTranslator.toString(o1.getData().get(MedicationTracker.MEDICATION_FIELD));
-					String value2 = ValueTranslator.toString(o2.getData().get(MedicationTracker.MEDICATION_FIELD));
-					if (value1 == null) {
-						return value2 == null ? 0 : -1;
-					} else if (value2 == null) {
-						return 1;
-					}
-					return (value1.compareTo(value2));
+				public String apply(ParticipantDataRow input) {
+					return ((ParticipantDataEventValue)input.getData().get(eventColumn)).getGrouping();
 				}
 			});
-			List<List<ParticipantDataRow>> historyRowsGrouped = Lists.newArrayList();
-			String lastName = null;
-			for (ParticipantDataRow row : historyRows) {
-				String name = ValueTranslator.toString(row.getData().get(MedicationTracker.MEDICATION_FIELD));
-				if (name == null || !name.equals(lastName)) {
-					historyRowsGrouped.add(Lists.<ParticipantDataRow> newArrayList());
-					lastName = name;
-				}
-				historyRowsGrouped.get(historyRowsGrouped.size() - 1).add(row);
-			}
-			// now sort each group by date first taken
-			for (List<ParticipantDataRow> group : historyRowsGrouped) {
-				Collections.sort(group, new Comparator<ParticipantDataRow>() {
-					@Override
-					public int compare(ParticipantDataRow o1, ParticipantDataRow o2) {
-						return (((ParticipantDataDatetimeValue) o1.getData().get(start)).getValue()
-								.compareTo(((ParticipantDataDatetimeValue) o2.getData().get(start)).getValue()));
-					}
-				});
-			}
-			// and sort all by date first taken
-			Collections.sort(historyRowsGrouped, new Comparator<List<ParticipantDataRow>>() {
-				@Override
-				public int compare(List<ParticipantDataRow> o1, List<ParticipantDataRow> o2) {
-					return (((ParticipantDataDatetimeValue) o1.get(0).getData().get(start)).getValue()
-							.compareTo(((ParticipantDataDatetimeValue) o2.get(0).getData().get(start)).getValue()));
-				}
-			});
+
 			model.addObject("current", currentRows);
-			model.addObject("past", historyRowsGrouped);
+			model.addObject("past", indexedHistoryRows.asMap().values());
+			model.setViewName("journal/trackers/index");
+			return model;
+		}
+
+		if (dwc.getDescriptor().getType().equals("event")) {
+			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId);
+
+			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null);
+
+			model.addObject("current", currentRows);
+			model.addObject("past", historyRows);
 			model.setViewName("journal/trackers/index");
 			return model;
 		}

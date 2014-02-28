@@ -21,6 +21,9 @@ import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.model.data.value.ValueFactory;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
+import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount;
@@ -140,29 +143,48 @@ public class SageBootstrap {
 		BridgeClient bridge = provider.getBridgeClient();
 
 		// @formatter:off
-		createData(bridge, "Sleep Tracker", "Daily sleep check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
+		createData(bridge, "Sleep Tracker", "Daily sleep check in", null, ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
 				new Column("Sleep time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
-		createData(bridge, "Rest Tracker", "Daily rest check in", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
+		createData(bridge, "Rest Tracker", "Daily rest check in", null, ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
 				new Column("Rest time", "sleep-time-slider", ParticipantDataColumnType.DOUBLE));
-		createData(bridge, "Personal Info Tracker", "Personal information", ParticipantDataRepeatType.ONCE, null, null, null,
+		createData(bridge, "Personal Info Tracker", "Personal information", null, ParticipantDataRepeatType.ONCE, null, null, null,
 				new Column("Name", "string", ParticipantDataColumnType.STRING),
 				new Column("Address", "string", ParticipantDataColumnType.STRING));
-		String medsId = createData(bridge, MedicationTracker.MEDICATIONS_NAME, "Medication and supplement tracker",
+		String medsId = createData(bridge, "Medications", "Medication and supplement tracker", "medication",
 				ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *",
-				MedicationTracker.START_DATE_FIELD, MedicationTracker.END_DATE_FIELD,
-				new Column( MedicationTracker.START_DATE_FIELD, "When did the medication or supplement start", ParticipantDataColumnType.DATETIME),
-				new Column( MedicationTracker.END_DATE_FIELD, "When did the medication or supplement end", ParticipantDataColumnType.DATETIME),
-				new Column( MedicationTracker.MEDICATION_FIELD, "The name of the medication or supplement", ParticipantDataColumnType.STRING),
-				new Column( MedicationTracker.DOSE_FIELD, "The dosage", ParticipantDataColumnType.STRING),
-				new Column( MedicationTracker.DOSE_INSTRUCTIONS_FIELD, "The dosage instructions", ParticipantDataColumnType.STRING));
+				null, "medication",
+				new Column( "medication", "The medication or supplement event", ParticipantDataColumnType.EVENT),
+				new Column( "dose", "The dosage", ParticipantDataColumnType.STRING),
+				new Column( "dose_instructions", "The dosage instructions", ParticipantDataColumnType.STRING));
 		createDataEntry(bridge, medsId, new String[] {
-				MedicationTracker.START_DATE_FIELD, MedicationTracker.END_DATE_FIELD, MedicationTracker.MEDICATION_FIELD, MedicationTracker.DOSE_FIELD
+				"medication", "dose"
 			}, new Object[] {
-				DateFormat.getDateInstance().parse("Dec 15, 2002"), DateFormat.getDateInstance().parse("Jan 3, 2003"), "Anadrol", "10mg",
-				DateFormat.getDateInstance().parse("Jan 3, 2003"), DateFormat.getDateInstance().parse("Feb 21, 2005"), "Anadrol", "25mg",
-				DateFormat.getDateInstance().parse("Feb 21, 2005"), null, "Anadrol", "50mg",
-				DateFormat.getDateInstance().parse("Feb 21, 2005"), null, "Vitamin D", "occasionally",
-				DateFormat.getDateInstance().parse("Mar 17, 2003"), DateFormat.getDateInstance().parse("Mar 18, 2007"), "Amicar", "10mg 2xday",
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Dec 15, 2012"), DateFormat.getDateInstance().parse("Jan 3, 2013"),
+						"Anadrol", "Anadrol"), "10mg",
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Jan 3, 2013"), DateFormat.getDateInstance().parse("Feb 21, 2013"),
+						"Anadrol", "Anadrol"), "25mg",
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Feb 21, 2013"), null,
+						"Anadrol", "Anadrol"), "50mg",
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Feb 21, 2012"), null,
+						"Vitamin D", "Vitamin D"), "occasionally",
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Mar 17, 2013"), DateFormat.getDateInstance().parse("Apr 18, 2013"),
+						"Amicar", "Amicar"), "10mg 2xday",
+		});
+
+		String eventsId = createData(bridge, "Events", "Events tracker", "event",
+				ParticipantDataRepeatType.REPEATED, "0 0 3 * * ? *",
+				null, "event",
+				new Column( "event", "The event", ParticipantDataColumnType.EVENT),
+				new Column( "details", "The optional event details", ParticipantDataColumnType.STRING));
+		createDataEntry(bridge, eventsId, new String[] {
+				"event", "details"
+			}, new Object[] {
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Jan 1, 2013"), DateFormat.getDateInstance().parse("May 20, 2013"),
+						"marathon", null), "training for the marathon",
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Jun 1, 2013"), null,
+						"waiting for transfusion", null), null,
+				ValueFactory.createEventValue(DateFormat.getDateInstance().parse("Mar 17, 2013"), DateFormat.getDateInstance().parse("Apr 18, 2013"),
+						"Hospitalization", null), "acute",
 		});
 
 		// Need to create it this way or it says it's different (although only trivially) when we update trackers
@@ -188,7 +210,13 @@ public class SageBootstrap {
 			newUser.setUsername(userName);
 			newUser.setEmail(email);
 			newUser.setPassword("password");
-			admin.createUser(newUser);
+			try {
+				admin.createUser(newUser);
+			} catch (SynapseException e) {
+				if (!e.getMessage().contains("already exists")) {
+					throw e;
+				}
+			}
 			
 			Session session = synapse.login(userName, "password");
 			if (acceptsTermsOfUse) {
@@ -203,16 +231,18 @@ public class SageBootstrap {
 			System.out.println("User '" + userName + "' already exists");
 		}
 	}
-	
-	private String createData(BridgeClient bridge, String name, String description, ParticipantDataRepeatType repeatType,
-			String repeatFrequency, String datetimeStartColumnName, String datetimeEndColumnName, Column... cols) throws SynapseException {
+
+	private String createData(BridgeClient bridge, String name, String description, String type, ParticipantDataRepeatType repeatType,
+			String repeatFrequency, String datetimeStartColumnName, String eventColumnName, Column... cols)
+			throws SynapseException {
 		ParticipantDataDescriptor desc = new ParticipantDataDescriptor();
 		desc.setDescription(description);
 		desc.setName(name);
+		desc.setType(type);
 		desc.setRepeatType(repeatType);
 		desc.setRepeatFrequency(repeatFrequency);
 		desc.setDatetimeStartColumnName(datetimeStartColumnName);
-		desc.setDatetimeEndColumnName(datetimeEndColumnName);
+		desc.setEventColumnName(eventColumnName);
 		desc = bridge.createParticipantDataDescriptor(desc);
 		for (Column column : cols) {
 			ParticipantDataColumnDescriptor col = new ParticipantDataColumnDescriptor();
@@ -249,7 +279,7 @@ public class SageBootstrap {
 		client.sendParticipantDataDescriptorUpdates(statuses);
 	}
 
-	private void createDataEntry(BridgeClient bridge, String medsId, String[] strings, Object[] objects) throws Exception {
+	private void createDataEntry(BridgeClient bridge, String id, String[] strings, Object[] objects) throws Exception {
 		for (int i = 0; i < objects.length; i += strings.length) {
 			Map<String, ParticipantDataValue> values = Maps.newHashMap();
 			for (int j = 0; j < strings.length; j++) {
@@ -257,21 +287,15 @@ public class SageBootstrap {
 				if (val != null) {
 					ParticipantDataValue dataVal;
 					if (val instanceof String) {
-						ParticipantDataStringValue dataStringVal = new ParticipantDataStringValue();
-						dataStringVal.setValue((String) val);
-						dataVal = dataStringVal;
+						dataVal = ValueFactory.createStringValue((String) val);
 					} else if (val instanceof Double) {
-						ParticipantDataDoubleValue dataDoubleVal = new ParticipantDataDoubleValue();
-						dataDoubleVal.setValue((Double) val);
-						dataVal = dataDoubleVal;
+						dataVal = ValueFactory.createDoubleValue((Double) val);
 					} else if (val instanceof Long) {
-						ParticipantDataLongValue dataLongVal = new ParticipantDataLongValue();
-						dataLongVal.setValue((Long) val);
-						dataVal = dataLongVal;
+						dataVal = ValueFactory.createLongValue((Long) val);
 					} else if (val instanceof Date) {
-						ParticipantDataDatetimeValue dataDatetimeVal = new ParticipantDataDatetimeValue();
-						dataDatetimeVal.setValue(((Date) val).getTime());
-						dataVal = dataDatetimeVal;
+						dataVal = ValueFactory.createDatetimeValue((Date) val);
+					} else if (val instanceof ParticipantDataValue) {
+						dataVal = (ParticipantDataValue) val;
 					} else {
 						throw new RuntimeException("Type " + val.getClass() + " not handled");
 					}
@@ -280,7 +304,7 @@ public class SageBootstrap {
 			}
 			ParticipantDataRow row = new ParticipantDataRow();
 			row.setData(values);
-			bridge.appendParticipantData(medsId, Collections.<ParticipantDataRow> singletonList(row));
+			bridge.appendParticipantData(id, Collections.<ParticipantDataRow> singletonList(row));
 		}
 	}
 
