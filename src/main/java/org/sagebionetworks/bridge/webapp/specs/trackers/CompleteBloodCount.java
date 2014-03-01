@@ -36,9 +36,6 @@ public class CompleteBloodCount implements Specification {
 	private static final Logger logger = LogManager.getLogger(CompleteBloodCount.class.getName());
 
 	private static final String DRAW_TYPE_FIELD = "draw_type";
-	private static final String PLT_CONVERTED_FIELD = "plt (K/mcL)";
-	private static final String WBC_CONVERTED_FIELD = "wbc (K/mcL)";
-	private static final String RBC_CONVERTED_FIELD = "rbc (M/mcL)";
 	private static final String CREATED_ON_FIELD = "created_on";
 	private static final String MODIFIED_ON_FIELD = "modified_on";
 	private static final String COLLECTED_ON_FIELD = "collected_on";
@@ -119,13 +116,6 @@ public class CompleteBloodCount implements Specification {
 		metadata.put( field1.getName(), field1 );
 		metadata.put( field2.getName(), field2 );
 
-		FormField convertible1 = builder.asText().name(RBC_CONVERTED_FIELD).label(RBC_CONVERTED_FIELD).readonly().create();
-		FormField convertible2 = builder.asText().name(WBC_CONVERTED_FIELD).label(WBC_CONVERTED_FIELD).readonly().create();
-		FormField convertible3 = builder.asText().name(PLT_CONVERTED_FIELD).label(PLT_CONVERTED_FIELD).readonly().create();
-		metadata.put(convertible1.getName(), convertible1);
-		metadata.put(convertible2.getName(), convertible2);
-		metadata.put(convertible3.getName(), convertible3);
-		
 		List<FormElement> rows = Lists.newArrayList();
 		rows.add(builder.asDate().name(COLLECTED_ON_FIELD).label(COLLECTED_ON_LABEL).required().create());
 		
@@ -270,29 +260,28 @@ public class CompleteBloodCount implements Specification {
 		// 1. multiply the number by the units per (e.g. billions per *)
 		// 2. divide my a million (liters to microliters) - it's a millionth of a liter
 		// 3. divide again by the new units per (e.g. K/* is a number in the thousands)
-
 		Units unit = Units.unitFromString( values.get(RBC_FIELD + ValueTranslator.LABRESULT_UNITS) );
 		if (unit == Units.TRILLIONS_PER_LITER) {
 			double value = (Double.parseDouble(values.get(RBC_FIELD)) * TRILLION) / MILLION / MILLION;
-			values.put(RBC_CONVERTED_FIELD, Double.toString(value));
+			values.put(RBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, Double.toString(value));
 		} else {
-			values.put(RBC_CONVERTED_FIELD, values.get(RBC_FIELD));
+			values.put(RBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, values.get(RBC_FIELD));
 		}
 		
 		unit = Units.unitFromString( values.get(WBC_FIELD + ValueTranslator.LABRESULT_UNITS) );
 		if (unit == Units.BILLIONS_PER_LITER) {
 			double value = (Double.parseDouble(values.get(WBC_FIELD)) * BILLION) / MILLION / THOUSAND;
-			values.put(WBC_CONVERTED_FIELD, Double.toString(value));
+			values.put(WBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, Double.toString(value));
 		} else {
-			values.put(WBC_CONVERTED_FIELD, values.get(WBC_FIELD));
+			values.put(WBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, values.get(WBC_FIELD));
 		}
 
 		unit = Units.unitFromString( values.get(PLT_FIELD + ValueTranslator.LABRESULT_UNITS) );
 		if (unit == Units.BILLIONS_PER_LITER) {
 			double value = (Double.parseDouble(values.get(PLT_FIELD)) * BILLION) / MILLION / THOUSAND;
-			values.put(PLT_CONVERTED_FIELD, Double.toString(value));
+			values.put(PLT_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, Double.toString(value));
 		} else {
-			values.put(PLT_CONVERTED_FIELD, values.get(PLT_FIELD));
+			values.put(PLT_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, values.get(PLT_FIELD));
 		}
 	}
 	

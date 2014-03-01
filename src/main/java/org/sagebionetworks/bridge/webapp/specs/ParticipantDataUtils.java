@@ -35,7 +35,7 @@ public class ParticipantDataUtils {
 	public static List<ParticipantDataColumnDescriptor> getColumnDescriptors(String descriptorId, Specification spec) {
 		List<ParticipantDataColumnDescriptor> list = Lists.newArrayList();
 		for (FormElement field : spec.getAllFormElements()) {
-			if (field.getDataColumn().getColumnType() != null) {
+			if (field.getDataColumn().getColumnType() != null && !field.isCompoundField()) {
 				field.getDataColumn().setParticipantDataDescriptorId(descriptorId);
 				list.add(field.getDataColumn());
 			}
