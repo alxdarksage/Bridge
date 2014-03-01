@@ -67,6 +67,7 @@
             <list>
                 <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.CompleteBloodCount" scope="prototype"/>
                 <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker" scope="prototype"/>
+                <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.EventTracker" scope="prototype"/>
                 <bean class="org.sagebionetworks.bridge.webapp.specs.trackers.MoodTracker" scope="prototype"/>
             </list>
         </property>

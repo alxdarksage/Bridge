@@ -35,6 +35,7 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumn
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataEventValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.timeseries.TimeSeriesRow;
 import org.sagebionetworks.bridge.model.timeseries.TimeSeriesTable;
@@ -580,6 +581,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		if (team != null) {
 			Collection<String> members = teamMemberships.get(team);
 			status.setIsMember( (members != null && members.contains(userId)) );
+		} else {
+			status.setIsMember(false);
 		}
 		return status;
 	}
@@ -929,7 +932,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		ParticipantDataDescriptor descriptor = descriptorsById.get(participantDataDescriptorId);
 		for (Iterator<ParticipantDataRow> iterator = result.iterator(); iterator.hasNext();) {
 			ParticipantDataRow row = iterator.next();
-			if (row.getData().get(descriptor.getDatetimeEndColumnName()) != null) {
+			if (((ParticipantDataEventValue) row.getData().get(descriptor.getEventColumnName())).getEnd() != null) {
 				iterator.remove();
 			}
 		}
@@ -1017,8 +1020,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public TimeSeriesTable getTimeSeries(String participantDataDescriptorId, List<String> columnNames) throws SynapseException,
-			UnsupportedEncodingException {
+	public TimeSeriesTable getTimeSeries(String participantDataDescriptorId, List<String> columnNames) throws SynapseException {
 		TimeSeriesTable timeSeriesTable = new TimeSeriesTable();
 		timeSeriesTable.setDateIndex(0L);
 		timeSeriesTable.setColumns(Lists.newArrayList("date", "nothing"));
@@ -1027,6 +1029,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		TimeSeriesRow row2 = new TimeSeriesRow();
 		row2.setValues(Lists.newArrayList("1233252343", "1.2"));
 		timeSeriesTable.setRows(Lists.newArrayList(row1, row2));
+		timeSeriesTable.setEvents(Lists.<ParticipantDataEventValue> newArrayList());
 		return timeSeriesTable;
 	}
 	

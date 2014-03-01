@@ -21,7 +21,6 @@ import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,12 +31,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.collect.Maps;
 
 @Controller
-public class AjaxMedicationController {
-	private static final Logger logger = LogManager.getLogger(AjaxMedicationController.class.getName());
+public class AjaxEventController {
+	private static final Logger logger = LogManager.getLogger(AjaxEventController.class.getName());
 
-	@RequestMapping(value = "/medication/{trackerId}/ajax/new", method = RequestMethod.POST)
+	@RequestMapping(value = "/event/{trackerId}/ajax/new", method = RequestMethod.POST)
 	@ResponseBody
-	public Object newMedication(BridgeRequest request, @PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm,
+	public Object newEvent(BridgeRequest request, @PathVariable("trackerId") String trackerId, @ModelAttribute DynamicForm dynamicForm,
 			ModelAndView model)
 			throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
@@ -45,7 +44,6 @@ public class AjaxMedicationController {
 		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
 		ParticipantDataRow row = ClientUtils.createRowFromForm(dwc, dynamicForm.getValuesMap());
 		ParticipantDataEventValue event = (ParticipantDataEventValue) row.getData().get(dwc.getDescriptor().getEventColumnName());
-		event.setGrouping(event.getName());
 
 		List<ParticipantDataRow> rows = client.appendParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(row));
 
@@ -65,50 +63,13 @@ public class AjaxMedicationController {
 		return result;
 	}
 
-	@RequestMapping(value = "/medication/{trackerId}/row/{rowId}/ajax/changeDosage", method = RequestMethod.POST)
+	@RequestMapping(value = "/event/{trackerId}/row/{rowId}/ajax/close", method = RequestMethod.POST)
 	@ResponseBody
-	public Object changeDosageMedication(BridgeRequest request, @PathVariable("trackerId") String trackerId,
-			@PathVariable("rowId") Long rowId, @ModelAttribute DynamicForm dynamicForm, ModelAndView model, BindingResult result)
-			throws SynapseException {
-		BridgeClient client = request.getBridgeUser().getBridgeClient();
-
-		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
-		ParticipantDataRow newRow = ClientUtils.createRowFromForm(dwc, dynamicForm.getValuesMap());
-		ParticipantDataEventValue newEvent = (ParticipantDataEventValue) newRow.getData().get(dwc.getDescriptor().getEventColumnName());
-		newEvent.setGrouping(newEvent.getName());
-
-		// first close old row and then create new one
-		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId);
-		ParticipantDataEventValue oldEvent = (ParticipantDataEventValue) oldRow.getData().get(dwc.getDescriptor().getEventColumnName());
-		oldEvent.setEnd(newEvent.getStart());
-		client.updateParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(oldRow));
-
-		List<ParticipantDataRow> rows = client.appendParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(newRow));
-
-		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
-		ParticipantDataStatus status = new ParticipantDataStatus();
-		status.setParticipantDataDescriptorId(trackerId);
-		Date now = new Date();
-		status.setLastAnswered(now);
-		status.setLastStarted(now);
-		status.setLastPrompted(now);
-		statuses.setUpdates(Collections.singletonList(status));
-
-		client.sendParticipantDataDescriptorUpdates(statuses);
-
-		model.setViewName(null);
-
-		return Collections.<String, Object> singletonMap("rowId", rows.get(0).getRowId());
-	}
-
-	@RequestMapping(value = "/medication/{trackerId}/row/{rowId}/ajax/close", method = RequestMethod.POST)
-	@ResponseBody
-	public Object closeMedication(BridgeRequest request, @PathVariable("trackerId") String trackerId, @PathVariable("rowId") Long rowId,
+	public Object closeEvent(BridgeRequest request, @PathVariable("trackerId") String trackerId, @PathVariable("rowId") Long rowId,
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 
-		// ParticipantDataValue end = ISODateTimeConverter.INSTANCE.convert(MedicationTracker.END_DATE_FIELD, dynamicForm.getValuesMap());
-		String value = dynamicForm.getValuesMap().get("medication-end");
+		String value = dynamicForm.getValuesMap().get("event-end");
 		DateTimeFormatter formatter;
 		if (value.indexOf('T') >= 0) {
 			formatter = ISODateTimeFormat.dateTime();
@@ -119,7 +80,7 @@ public class AjaxMedicationController {
 
 		// close old row
 		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId);
-		ParticipantDataEventValue oldEvent = (ParticipantDataEventValue) oldRow.getData().get("medication");
+		ParticipantDataEventValue oldEvent = (ParticipantDataEventValue) oldRow.getData().get("event");
 		oldEvent.setEnd(endDate.getTime());
 		client.updateParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(oldRow));
 
@@ -128,9 +89,9 @@ public class AjaxMedicationController {
 		return result;
 	}
 
-	@RequestMapping(value = "/medication/{trackerId}/ajax/nochange", method = RequestMethod.GET)
+	@RequestMapping(value = "/event/{trackerId}/ajax/nochange", method = RequestMethod.GET)
 	@ResponseBody
-	public void nochangeToMedications(BridgeRequest request, @PathVariable("trackerId") String trackerId) throws SynapseException {
+	public void nochangeToEvents(BridgeRequest request, @PathVariable("trackerId") String trackerId) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		ParticipantDataStatusList statuses = new ParticipantDataStatusList();
 		ParticipantDataStatus status = new ParticipantDataStatus();

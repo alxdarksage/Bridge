@@ -20,7 +20,6 @@ public class LabToStringConverter implements FieldConverter<ParticipantDataValue
 			return null;
 		}
 		ParticipantDataLabValue pdv = (ParticipantDataLabValue)source;
-		
 		Map<String,String> map = Maps.newHashMap();
 		if (pdv.getEnteredValue() != null) {
 			map.put(fieldName+ValueTranslator.LABRESULT_ENTERED, pdv.getEnteredValue());	

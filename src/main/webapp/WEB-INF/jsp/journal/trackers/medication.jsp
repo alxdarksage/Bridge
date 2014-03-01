@@ -1,19 +1,20 @@
+<%@page import="org.sagebionetworks.bridge.model.data.value.ParticipantDataEventValue"%>
 <%@ include file="../../directives.jsp" %>
 <sage:modal id="change-dose" title="Change dosage" action="/bridge/medication/${descriptor.id}/row/#rowid#/ajax/changeDosage">
-	<input type="hidden" class="medication-value" name="valuesMap['medication']" value=""/>
+	<input type="hidden" class="medication-value" name="valuesMap['medication-name']" value=""/>
 	<div class="row">
 		<div class="col-md-4">New dosage</div>
 		<div class="col-md-8"><input type="text" required class="dose-value" name="valuesMap['dose']" value=""/> <i>(was <span class="old-dosage"></span>)</i></div>
 	</div>
 	<div class="row">					
 		<div class="col-md-4">Since:</div>
-		<div class="col-md-8"><sage:date name="valuesMap['start_date']" clazz="date-picker" lastweek="true" lastmonth="true" defaultToday="true"/></div>
+		<div class="col-md-8"><sage:date name="valuesMap['medication-start']" clazz="date-picker" lastweek="true" lastmonth="true" defaultToday="true"/></div>
 	</div>
 </sage:modal>
 <sage:modal id="end-med" title="No longer taking" action="/bridge/medication/${descriptor.id}/row/#rowid#/ajax/close">
 	<div class="row">					
 		<div class="col-md-4">Since:</div>
-		<div class="col-md-8"><sage:date name="valuesMap['end_date']" clazz="date-picker" lastweek="true" lastmonth="true" defaultToday="true"/></div>
+		<div class="col-md-8"><sage:date name="valuesMap['medication-end']" clazz="date-picker" lastweek="true" lastmonth="true" defaultToday="true"/></div>
 	</div>
 	<div class="row">
 		<div class="error"></div>
@@ -126,10 +127,10 @@ $(function(){
 		</thead>
 		<tbody class="dataRows">
 			<tr>
-				<td><input type="text" autofocus required class="medication-value" name="valuesMap['medication']" value=""/></td>
+				<td><input type="text" autofocus required class="medication-value" name="valuesMap['medication-name']" value=""/></td>
 				<td class="dose"><input type="text" required class="dose-value" name="valuesMap['dose']" value=""/></td>
 				<td class="start">
-					<sage:date name="valuesMap['start_date']" clazz="date-picker" lastweek="true" lastmonth="true" defaultToday="true"/>
+					<sage:date name="valuesMap['medication-start']" clazz="date-picker" lastweek="true" lastmonth="true" defaultToday="true"/>
 				</td>
 				<td>
 					<button type="submit" class="btn btn-sm new-med-ok">Save new medication or supplement</button>
@@ -138,13 +139,13 @@ $(function(){
 			</tr>
 			<c:forEach var="row" items="${current}" varStatus="loop">
 				<tr id="cur-med-${row.rowId}" data-rowid="${row.rowId}">
-					<td class="medication">${row.data.medication.value}</td>
+					<td class="medication">${row.data.medication.name}</td>
 					<td class="dose">${row.data.dose.value}</td>
-					<td class="start"><sage:formatDate value="${row.data.start_date.value}"/></td>
+					<td class="start"><sage:formatDate value="${row.data.medication.start}"/></td>
 					<td>
 						<div>
-							<button type="button" class="btn btn-sm med-change-dose" data-toggle="modal" href="#change-dose">dosage changed</button>
-							<button type="button" class="btn btn-sm med-end-med" data-toggle="modal" href="#end-med">no longer taking</button>
+							<button type="button" class="btn btn-sm med-change-dose" data-toggle="modal" href="#change-dose">Dosage changed</button>
+							<button type="button" class="btn btn-sm med-end-med" data-toggle="modal" href="#end-med">No longer taking</button>
 						</div>
 					</td>
 				</tr>
@@ -167,6 +168,9 @@ $(function(){
 		</tr>
 	</thead>
 	<tbody class="dataRows">
+		<%
+			String lastGrouping = null;
+		%>
 		<c:forEach var="rowOfRows" items="${past}" varStatus="loop">
 			<c:forEach var="row" items="${rowOfRows}" varStatus="loop2">
 				<c:choose>
@@ -185,15 +189,15 @@ $(function(){
 				</c:choose>
 					<td class="medication">
 						<c:if test="${loop2.first}">
-							${row.data.medication.value}
+							${row.data.medication.name}
 						</c:if>
 						<c:if test="${not loop2.first}">
-							<span class="hidden">${row.data.medication.value}</span>
+							<span class="hidden">${row.data.medication.name}</span>
 						</c:if>
 					</td>
 					<td class="dose">${row.data.dose.value}</td>
-					<td class="start"><sage:formatDate value="${row.data.start_date.value}"/></td>
-					<td class="end"><sage:formatDate value="${row.data.end_date.value}"/></td>
+					<td class="start"><sage:formatDate value="${row.data.medication.start}"/></td>
+					<td class="end"><sage:formatDate value="${row.data.medication.end}"/></td>
 					<td><!-- <div><a class="btn btn-sm" href="#">edit</a><a class="btn btn-sm" href="#">delete</a></div> --></td>
 				</tr>
 			</c:forEach>

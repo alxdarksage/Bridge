@@ -6,8 +6,10 @@ import java.util.Set;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
+import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
 import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
@@ -70,27 +72,24 @@ public class FormUtils {
 		return profile;
 	}
 	
-	public static Set<String> defaultsToDynamicForm(DynamicForm dynamicForm, BridgeClient client,
-			Specification spec, String trackerId) throws SynapseException {
+	public static Set<String> defaultsToDynamicForm(DynamicForm dynamicForm, BridgeClient client, Specification spec,
+			String trackerId) throws SynapseException {
+		
 		Set<String> defaultedFields = Sets.newHashSet();
 		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
 		if (currentRow.getPreviousData() != null) {
+			ParticipantDataRowAdapter adapter = new ParticipantDataRowAdapter(spec.getEditStructure(), currentRow.getPreviousData());
 			for (FormElement element : spec.getAllFormElements()) {
 				if (element.isDefaultable()) {
 					String fieldName = element.getName();
-					System.out.println("fieldName: " + fieldName);
-					System.out.println("And the previous data has: " + Joiner.on(", ").join(currentRow.getPreviousData().getData().keySet()));
-					ParticipantDataValue pdv = currentRow.getPreviousData().getData().get(fieldName);
-					Map<String,String> values = element.getStringConverter().convert(fieldName, pdv);
-					if (values != null) {
-						System.out.println("Keys in previous data " + Joiner.on(", ").join(values.keySet()));
-						dynamicForm.getValuesMap().putAll(values);
-						defaultedFields.addAll(values.keySet());
+					
+					if (adapter.getValuesMap().get(fieldName) != null) {
+						dynamicForm.getValuesMap().put(fieldName, adapter.getValuesMap().get(fieldName));	
+						defaultedFields.add(fieldName);
 					}
 				}
 			}
 		}
 		return defaultedFields;
 	}
-
 }

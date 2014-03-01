@@ -102,9 +102,9 @@ public class TrackerEditPage {
 		// You can't set the field directly to bypass the fact that it is hidden, because this generates no 
 		// key events and the key events are being constrained. Here you must force the element to be 
 		// visible so WebDriver can interact with it.
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"').setAttribute('style','display:block!important;visibility:visible!important')");
-		facade.enterField("#"+field.name().toLowerCase(), value);
-		String actual = facade.getFieldValue("#"+field.name().toLowerCase());
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-entered').setAttribute('style','display:block!important;visibility:visible!important')");
+		facade.enterField("#"+field.name().toLowerCase()+"-entered", value);
+		String actual = facade.getFieldValue("#"+field.name().toLowerCase()+"-entered");
 		Assert.assertEquals("Value constrained", expected, actual);
 	}
 	
