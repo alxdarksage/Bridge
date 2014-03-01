@@ -1,12 +1,9 @@
 package org.sagebionetworks.bridge.webapp;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
@@ -21,7 +18,6 @@ import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
 /**

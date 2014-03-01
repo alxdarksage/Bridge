@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Date;
-
 import java.util.Map;
 
 import org.joda.time.DateTime;

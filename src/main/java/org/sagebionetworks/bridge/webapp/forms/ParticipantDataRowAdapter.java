@@ -4,7 +4,6 @@ package org.sagebionetworks.bridge.webapp.forms;
 import java.util.List;
 import java.util.Map;
 
-import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
