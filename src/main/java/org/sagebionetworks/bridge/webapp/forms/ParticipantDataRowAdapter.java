@@ -1,6 +1,5 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
-
 import java.util.List;
 import java.util.Map;
 
