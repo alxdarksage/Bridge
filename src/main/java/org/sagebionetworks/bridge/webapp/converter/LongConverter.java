@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 
@@ -15,10 +16,11 @@ public class LongConverter implements FieldConverter<Map<String,String>, Partici
 			return null;
 		}
 		ParticipantDataLongValue pdv = new ParticipantDataLongValue();
-		try {
-			pdv.setValue(Long.parseLong(values.get(fieldName)));
-		} catch(NumberFormatException e) {
+		String value = values.get(fieldName);
+		if (StringUtils.isBlank(value)) {
+			return null;
 		}
+		pdv.setValue(Long.parseLong(value));
 		return pdv;
 	}	
 

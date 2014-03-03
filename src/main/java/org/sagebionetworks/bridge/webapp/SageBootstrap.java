@@ -183,7 +183,17 @@ public class SageBootstrap {
 		// Need to create it this way or it says it's different (although only trivially) when we update trackers
 		Specification spec = new MoodTracker();
 		String trackerId = createData(bridge, spec);
-		createDataEntry(bridge, trackerId, spec);
+
+		createDataEntry(bridge, trackerId, new String[] {
+				"date", "Mind", "Body"
+			}, new Object[] {
+				DateFormat.getDateInstance().parse("Nov 1, 2012"), .2, .2,
+				DateFormat.getDateInstance().parse("Jan 1, 2013"), .5, .2,
+				DateFormat.getDateInstance().parse("Feb 1, 2013"), .6, .5,
+				DateFormat.getDateInstance().parse("Apr 1, 2013"), .5, .3,
+				DateFormat.getDateInstance().parse("May 15, 2013"), .5, .8,
+				DateFormat.getDateInstance().parse("Jun 15, 2013"), .7, .9
+		});
 
 		spec = new CompleteBloodCount();
 		trackerId = createData(bridge, spec);

@@ -20,7 +20,8 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		$("#${medicationsIfChanged.id}-med").click( function() {
+		$("#${medicationsIfChanged.id}-med").click( function(event) {
+			event.preventDefault();
 	         $.ajax({
 	             success: function(data) {
 	            	 $("#${medicationsIfChanged.id}-med-span").fadeOut(1000);
