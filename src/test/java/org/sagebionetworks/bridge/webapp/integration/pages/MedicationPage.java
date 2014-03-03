@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.format.ISODateTimeFormat;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -58,10 +59,7 @@ public class MedicationPage {
 	private void setDate(String cssSelector, Date date) {
 		String value = "";
 		if (date != null) {
-			DateToISODateStringConverter converter = new DateToISODateStringConverter();
-			ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
-			pdv.setValue(date.getTime());
-			value = converter.convert("", pdv).get(0);
+			value = ISODateTimeFormat.date().print(date.getTime());
 		}
 		String hiddenDateFormSelector = cssSelector + " + input";
 		facade.executeJavaScript("document.querySelector('" + hiddenDateFormSelector + "').value = '" + value + "';");
