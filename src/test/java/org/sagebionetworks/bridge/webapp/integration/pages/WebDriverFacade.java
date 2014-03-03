@@ -158,6 +158,16 @@ public class WebDriverFacade implements WebDriver {
 			}
 		});	
 	}
+
+	public void waitUntilVisible(final String cssSelector) {
+		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver d) {
+				WebElement element = d.findElement(By.cssSelector(cssSelector));
+				return element != null && element.isDisplayed();
+			}
+		});
+	}
+
 	void waitForTitle(final String title) {
 		(new WebDriverWait(driver, TIMEOUT)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
