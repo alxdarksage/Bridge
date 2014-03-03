@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 
@@ -16,7 +17,7 @@ public class DoubleConverter implements FieldConverter<Map<String,String>, Parti
 		}
 		ParticipantDataDoubleValue pdv = new ParticipantDataDoubleValue();
 		String value = values.get(fieldName);
-		if (value == null || "".equals(value)) {
+		if (StringUtils.isBlank(value)) {
 			return null;
 		}
 		pdv.setValue(Double.parseDouble(values.get(fieldName)));
