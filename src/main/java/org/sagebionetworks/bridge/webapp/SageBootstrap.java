@@ -272,17 +272,6 @@ public class SageBootstrap {
 		}
 		return desc.getId();
 	}
-	
-	private void createDataEntry(BridgeClient client, String trackerId, Specification spec, String... values) throws Exception {
-		Map<String, String> map = Maps.newHashMap();
-		for (int i=0; i < values.length; i+=2) {
-			map.put(values[i], values[i+1]);
-		}
-		List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForCreate(spec, map);
-		client.appendParticipantData(trackerId, data);
-		ParticipantDataStatusList statuses = ParticipantDataUtils.getFinishedStatus(trackerId);
-		client.sendParticipantDataDescriptorUpdates(statuses);
-	}
 
 	private void createDataEntry(BridgeClient bridge, String id, String[] strings, Object[] objects) throws Exception {
 		for (int i = 0; i < objects.length; i += strings.length) {
