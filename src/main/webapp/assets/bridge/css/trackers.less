@@ -4,6 +4,15 @@
 .multi { 
 	white-space: nowrap; display: inline; 
 }
+/* Hide the spinner arrows in many browsers. */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+	-webkit-appearance: none; 
+	margin: 0; 
+}
+.step-controls {
+    display: none ! important;
+}
 
 /* This is all specific to trackers. */
 .form {

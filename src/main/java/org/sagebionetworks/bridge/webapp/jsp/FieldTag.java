@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.webapp.forms.HasValuesMap;
 import org.sagebionetworks.bridge.webapp.specs.DoubleFormField;
 import org.sagebionetworks.bridge.webapp.specs.EnumeratedFormField;
+import org.sagebionetworks.bridge.webapp.specs.LongFormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
 
 import com.google.common.base.Joiner;
@@ -81,13 +82,17 @@ public class FieldTag extends SpringAwareTag {
 		String value = getValue();
 		tb.startTag("input");
 		addDefaultAttributes(value);
-		if (field instanceof DoubleFormField) {
+		if (isNumberField()) {
 			addNumericAttributes((DoubleFormField)field);
 		} else {
 			tb.addAttribute("type", "text");
 		}
 		tb.addAttribute("value", value);
 		tb.endTag("input");
+	}
+	
+	private boolean isNumberField() {
+		return (field instanceof DoubleFormField || field instanceof LongFormField);
 	}
 	
 	private void renderEnumeration() {
@@ -125,6 +130,10 @@ public class FieldTag extends SpringAwareTag {
 		if (field.isDefaultable() && StringUtils.isNotBlank(currentValue) && defaultedFields != null && defaultedFields.contains(field.getName())) {
 			classes.add("defaulted");
 		}
+		if (isNumberField()) {
+			classes.add("hide-spinbtns");
+			classes.add("hide-inputbtns");
+		}
 		tb.addAttribute("id", field.getName());
 		tb.addAttribute("name", fieldName);
 		
@@ -144,7 +153,7 @@ public class FieldTag extends SpringAwareTag {
 	}
 	
 	private void addNumericAttributes(DoubleFormField numeric) {
-		tb.addAttribute("type", "number");  
+		tb.addAttribute("type", "number");
 		if (numeric.getMinValue() != null) {
 			tb.addAttribute("min", numeric.getMinValue().toString());
 		}

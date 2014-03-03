@@ -5,7 +5,7 @@
 		});
     });
 
-    function tabThroughDefaults(e, fields) {
+    function tabSkippingDefaults(e, fields) {
     	var array = $("#dynamicForm input, #dynamicForm select").toArray();
     	e.preventDefault();
     	e.stopPropagation(); // prevents html5 shim from doing stuff
@@ -34,17 +34,17 @@
     	}
         var keyCode = e.keyCode;
         if (keyCode === 9) {
-        	return tabThroughDefaults(e, fields);
+        	// Adjust tabs to skip defaults
+        	return tabSkippingDefaults(e, fields);
         } else if (keyCode === 13) {
+        	// Don't submit form on return
         	e.preventDefault();
         	return;
-        }
-        // Allow for ctrl-a/z/x/c/v
-        if ([65,67,86,88,90].indexOf(keyCode) > -1 && (e.metaKey || e.ctrlKey)) {
+        } else if ([65,67,86,88,90].indexOf(keyCode) > -1 && (e.metaKey || e.ctrlKey)) {
+            // Allow for ctrl-a/z/x/c/v
         	return;
-        }
-        // Allow for tab and shift tab, arrow keys, backspace, etc
-        if ([8, 16, 17, 18, 37, 38, 39, 40, 13, 27, 91, 93].indexOf(keyCode) > -1) {
+        } else if ([8, 16, 17, 18, 37, 38, 39, 40, 13, 27, 91, 93].indexOf(keyCode) > -1) {
+            // Allow for tab and shift tab, arrow keys, backspace, etc
         	return;
         }
         var dataType = e.target.getAttribute("data-type"),
