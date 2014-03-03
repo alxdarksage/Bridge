@@ -1030,6 +1030,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		row2.setValues(Lists.newArrayList("1233252343", "1.2"));
 		timeSeriesTable.setRows(Lists.newArrayList(row1, row2));
 		timeSeriesTable.setEvents(Lists.<ParticipantDataEventValue> newArrayList());
+		timeSeriesTable.setFirstDate(new Long(new Date().getTime() - 10000L));
 		return timeSeriesTable;
 	}
 	

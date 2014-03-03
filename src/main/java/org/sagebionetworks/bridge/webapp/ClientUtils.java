@@ -512,10 +512,7 @@ public class ClientUtils {
 		long timelineStart = new Date().getTime();
 		for (ParticipantDataDescriptor descriptor : descriptorsTimelines) {
 			TimeSeriesTable timeSeries = client.getTimeSeries(descriptor.getId(), null);
-			// This threw an NPE
-			if (timeSeries != null && timeSeries.getFirstDate() != null) {
-				timelineStart = Math.min(timelineStart, timeSeries.getFirstDate());
-			}
+			timelineStart = Math.min(timelineStart, timeSeries.getFirstDate());
 		}
 
 		model.addAttribute("descriptorsAlways", descriptorsWithDataAlways);
