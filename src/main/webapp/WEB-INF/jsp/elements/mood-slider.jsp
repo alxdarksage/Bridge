@@ -1,13 +1,13 @@
 <%@page import="org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue"%>
 <%@include file="../directives.jsp" %>
 <%
-	ParticipantDataDoubleValue currentValue = (ParticipantDataDoubleValue)request.getAttribute("previousValue");
-	ParticipantDataDoubleValue previousValue = (ParticipantDataDoubleValue)request.getAttribute("currentValue");
+	ParticipantDataDoubleValue currentValue = (ParticipantDataDoubleValue)request.getAttribute("currentValue");
+	ParticipantDataDoubleValue previousValue = (ParticipantDataDoubleValue)request.getAttribute("previousValue");
 	Double value = currentValue != null ? currentValue.getValue() : (previousValue != null ? previousValue.getValue() : 0.5);
 	boolean isCurrent = (currentValue != null);
 %>
 <c:set var="id" value="${trackerId}-${columnDescriptor.name}"/>
-${columnDescriptor.name}<span id="${id}-slider"></span>
+${columnDescriptor.name}:<span id="${id}-slider"></span>
 <input type="hidden" id="${id}-value" name="valuesMap['${columnDescriptor.name}']" value="<%= value %>"/>
 <div id="${id}-out"></div>
 <script type="text/javascript">
