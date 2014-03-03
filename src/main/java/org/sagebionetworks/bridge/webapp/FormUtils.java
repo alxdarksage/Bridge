@@ -1,18 +1,19 @@
 package org.sagebionetworks.bridge.webapp;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.model.data.ParticipantDataCurrentRow;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
+import org.sagebionetworks.bridge.webapp.forms.ParticipantDataRowAdapter;
 import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
 import org.sagebionetworks.bridge.webapp.forms.SignUpForm;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.bridge.webapp.specs.FormElement;
-import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -20,6 +21,7 @@ import org.sagebionetworks.repo.model.UserProfile;
 import org.sagebionetworks.repo.model.auth.NewUser;
 import org.sagebionetworks.repo.model.v2.wiki.V2WikiPage;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
 /**
@@ -70,21 +72,19 @@ public class FormUtils {
 		return profile;
 	}
 	
-	// TODO: These two methods have a lot in common but one is for new forms, the other for editing.
-	
-	public static Set<String> defaultsToDynamicForm(DynamicForm dynamicForm, BridgeClient client,
-			Specification spec, String trackerId) throws SynapseException {
+	public static Set<String> defaultsToDynamicForm(DynamicForm dynamicForm, BridgeClient client, Specification spec,
+			String trackerId) throws SynapseException {
+		
 		Set<String> defaultedFields = Sets.newHashSet();
 		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
 		if (currentRow.getPreviousData() != null) {
+			ParticipantDataRowAdapter adapter = new ParticipantDataRowAdapter(spec.getEditStructure(), currentRow.getPreviousData());
 			for (FormElement element : spec.getAllFormElements()) {
 				if (element.isDefaultable()) {
 					String fieldName = element.getName();
-					ParticipantDataValue pdv = currentRow.getPreviousData().getData().get(fieldName);
-					List<String> values = element.getStringConverter().convert(pdv);
-					String value = ParticipantDataUtils.getOneValue(values);
-					if (values != null) {
-						dynamicForm.getValuesMap().put(fieldName, value);
+					
+					if (adapter.getValuesMap().get(fieldName) != null) {
+						dynamicForm.getValuesMap().put(fieldName, adapter.getValuesMap().get(fieldName));	
 						defaultedFields.add(fieldName);
 					}
 				}
@@ -92,5 +92,4 @@ public class FormUtils {
 		}
 		return defaultedFields;
 	}
-
 }

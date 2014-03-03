@@ -1,6 +1,7 @@
 package org.sagebionetworks.bridge.webapp.specs.builder;
 
 import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
@@ -10,15 +11,17 @@ import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.DateToLongFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.DoubleConverter;
 import org.sagebionetworks.bridge.webapp.converter.DoubleToStringConverter;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateTimeConverter;
+import org.sagebionetworks.bridge.webapp.converter.LabConverter;
+import org.sagebionetworks.bridge.webapp.converter.LabToStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.LongConverter;
 import org.sagebionetworks.bridge.webapp.converter.LongToStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.StringConverter;
 import org.sagebionetworks.bridge.webapp.converter.StringToStringConverter;
 import org.sagebionetworks.bridge.webapp.specs.FormField;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
-import org.springframework.core.convert.converter.Converter;
 
 public class FormFieldBuilder {
 
@@ -55,8 +58,8 @@ public class FormFieldBuilder {
 		return asValue(StringConverter.INSTANCE, StringToStringConverter.INSTANCE);
 	}
 	
-	public FormFieldBuilder asValue(Converter<List<String>, ParticipantDataValue> pdvConverter,
-			Converter<ParticipantDataValue, List<String>> stringConverter) {
+	public FormFieldBuilder asValue(FieldConverter<Map<String,String>, ParticipantDataValue> pdvConverter,
+			FieldConverter<ParticipantDataValue, Map<String,String>> stringConverter) {
 		if (field != null) {
 			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
 		}
@@ -157,6 +160,27 @@ public class FormFieldBuilder {
 		return this;
 	}
 	
+	public FormFieldBuilder asLab() {
+		if (field != null) {
+			throw new IllegalArgumentException(NOT_NULL_MESSAGE);
+		}
+		field = new FormField();
+		field.setExportable();
+		field.getDataColumn().setColumnType(ParticipantDataColumnType.LAB);
+		field.setType(UIType.LAB_ROW);
+		field.setStringConverter(LabToStringConverter.INSTANCE);
+		field.setParticipantDataValueConverter(LabConverter.INSTANCE);
+		return this;
+	}
+	
+	public FormFieldBuilder compoundField() {
+		if (field == null) {
+			throw new IllegalArgumentException(NULL_MESSAGE);
+		}
+		field.setIsCompoundField(true);
+		return this;
+	}
+	
 	public FormFieldBuilder type(String type) {
 		if (field == null) {
 			throw new IllegalArgumentException(NULL_MESSAGE);
@@ -213,7 +237,7 @@ public class FormFieldBuilder {
 		return this;
 	}	
 	
-	public FormFieldBuilder stringConverter(Converter<ParticipantDataValue, List<String>> converter) {
+	public FormFieldBuilder stringConverter(FieldConverter<ParticipantDataValue, Map<String,String>> converter) {
 		if (field == null) {
 			throw new IllegalArgumentException(NULL_MESSAGE);
 		}
@@ -221,7 +245,7 @@ public class FormFieldBuilder {
 		return this;
 	}
 	
-	public FormFieldBuilder dataConverter(Converter<List<String>, ParticipantDataValue> converter) {
+	public FormFieldBuilder dataConverter(FieldConverter<Map<String,String>, ParticipantDataValue> converter) {
 		if (field == null) {
 			throw new IllegalArgumentException(NULL_MESSAGE);
 		}

@@ -1,22 +1,26 @@
 package org.sagebionetworks.bridge.webapp.converter;
 
-import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLongValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
 
-public class LongConverter implements Converter<List<String>, ParticipantDataValue> {
+public class LongConverter implements FieldConverter<Map<String,String>, ParticipantDataValue> {
 	
 	public static final LongConverter INSTANCE = new LongConverter();
 	
 	@Override
-	public ParticipantDataValue convert(List<String> values) {
-		if (values == null || values.isEmpty() || values.get(0) == null) {
+	public ParticipantDataValue convert(String fieldName, Map<String,String> values) {
+		if (values == null || values.isEmpty() || values.get(fieldName) == null) {
 			return null;
 		}
 		ParticipantDataLongValue pdv = new ParticipantDataLongValue();
-		pdv.setValue(Long.parseLong(values.get(0)));
+		String value = values.get(fieldName);
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		pdv.setValue(Long.parseLong(value));
 		return pdv;
 	}	
 

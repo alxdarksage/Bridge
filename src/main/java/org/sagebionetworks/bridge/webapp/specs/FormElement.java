@@ -1,11 +1,12 @@
 package org.sagebionetworks.bridge.webapp.specs;
 
 import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnType;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.webapp.converter.FieldConverter;
 
 public interface FormElement {
 
@@ -21,8 +22,16 @@ public interface FormElement {
 	
 	public void setDataColumn(ParticipantDataColumnDescriptor column);
 	
-	public ParticipantDataColumnType getDataType();
+	public boolean isCompoundField();
 	
+	public void setIsCompoundField(boolean compoundField);
+	
+	/**
+	 * shorthand for getDataColumn().getColumnType()
+	 * @return
+	 */
+	public ParticipantDataColumnType getDataType();
+
 	/**
 	 * The form name, and the name of the field in the table where the information is saved.
 	 * @return
@@ -77,9 +86,9 @@ public interface FormElement {
 	 * Converters to convert back and forth between a string and native representation.
 	 * @return
 	 */
-	public Converter<List<String>,ParticipantDataValue> getParticipantDataValueConverter();
+	public FieldConverter<Map<String,String>, ParticipantDataValue> getParticipantDataValueConverter();
 	
-	public Converter<ParticipantDataValue,List<String>> getStringConverter();
+	public FieldConverter<ParticipantDataValue, Map<String,String>> getStringConverter();
 	
 	public List<FormElement> getChildren();
 	

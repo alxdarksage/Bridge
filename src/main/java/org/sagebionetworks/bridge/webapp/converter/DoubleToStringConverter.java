@@ -1,20 +1,18 @@
 package org.sagebionetworks.bridge.webapp.converter;
 
 import java.text.DecimalFormat;
-import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataDoubleValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 
-import com.google.common.collect.Lists;
-
-public class DoubleToStringConverter implements Converter<ParticipantDataValue, List<String>> {
+public class DoubleToStringConverter implements FieldConverter<ParticipantDataValue, Map<String,String>> {
 
 	public static final DoubleToStringConverter INSTANCE = new DoubleToStringConverter();
 
 	@Override
-	public List<String> convert(ParticipantDataValue source) {
+	public Map<String,String> convert(String fieldName, ParticipantDataValue source) {
 		if (source == null) {
 			return null;
 		}
@@ -22,7 +20,7 @@ public class DoubleToStringConverter implements Converter<ParticipantDataValue, 
 		if (d == null) {
 			return null;
 		}
-		return Lists.newArrayList(format(d));
+		return ParticipantDataUtils.getMapForValue(fieldName, format(d));
 	}
 
 	public String format(Double d) {

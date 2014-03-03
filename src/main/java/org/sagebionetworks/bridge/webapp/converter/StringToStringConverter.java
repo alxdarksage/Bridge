@@ -1,19 +1,17 @@
 package org.sagebionetworks.bridge.webapp.converter;
 
-import java.util.List;
+import java.util.Map;
 
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataStringValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
-import org.springframework.core.convert.converter.Converter;
+import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 
-import com.google.common.collect.Lists;
-
-public class StringToStringConverter implements Converter<ParticipantDataValue, List<String>> {
+public class StringToStringConverter implements FieldConverter<ParticipantDataValue, Map<String,String>> {
 
 	public static final StringToStringConverter INSTANCE = new StringToStringConverter();
 	
 	@Override
-	public List<String> convert(ParticipantDataValue pdv) {
+	public Map<String,String> convert(String fieldName, ParticipantDataValue pdv) {
 		if (pdv == null) {
 			return null;
 		}
@@ -21,7 +19,7 @@ public class StringToStringConverter implements Converter<ParticipantDataValue, 
 		if (value == null) {
 			return null;
 		}
-		return Lists.newArrayList(value);
+		return ParticipantDataUtils.getMapForValue(fieldName, value);
 	}
 
 }

@@ -15,12 +15,9 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatus;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataEventValue;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.bridge.webapp.converter.ISODateTimeConverter;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
-import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.springframework.stereotype.Controller;
@@ -110,6 +107,7 @@ public class AjaxMedicationController {
 			@ModelAttribute DynamicForm dynamicForm, ModelAndView model) throws SynapseException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 
+		// ParticipantDataValue end = ISODateTimeConverter.INSTANCE.convert(MedicationTracker.END_DATE_FIELD, dynamicForm.getValuesMap());
 		String value = dynamicForm.getValuesMap().get("medication-end");
 		DateTimeFormatter formatter;
 		if (value.indexOf('T') >= 0) {

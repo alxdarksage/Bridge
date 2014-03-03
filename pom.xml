@@ -9,7 +9,7 @@
 	<name>Bridge Web Application</name>
 	
 	<properties>
-        <bridgeVersion>${version}</bridgeVersion>
+        <bridgeVersion>${project.version}</bridgeVersion>
 	    
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		

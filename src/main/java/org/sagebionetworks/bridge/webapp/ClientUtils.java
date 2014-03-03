@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -47,7 +47,6 @@ import org.sagebionetworks.bridge.webapp.specs.FormLayout;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationResolver;
-import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
 import org.sagebionetworks.bridge.webapp.specs.trackers.MedicationTracker;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
@@ -556,37 +555,42 @@ public class ClientUtils {
 			logr.info(" ---- value map ---- ");
 			for (Map.Entry<String, ParticipantDataValue> entry : values.entrySet()) {
 				ParticipantDataValue value = entry.getValue();
-				String truncated = value.toString().split(" value=")[1];
-				logr.info( String.format("key: %s, value: %s", entry.getKey(), truncated.substring(0, truncated.length()-2)) );
+				logr.info( String.format("%s: %s", entry.getKey(), value.toString()) );
 			}
 		}
 	}
 	
-	public static void exportParticipantData(HttpServletResponse response, Specification spec,
-			PaginatedResults<ParticipantDataRow> paginatedRowSet) throws IOException {
+	public static void exportParticipantData(HttpServletResponse response, ParticipantDataDescriptor descriptor,
+			List<ParticipantDataColumnDescriptor> columns, PaginatedResults<ParticipantDataRow> paginatedRowSet)
+			throws IOException {
 		
-		Map<String,FormElement> map = SpecificationUtils.toMapByName(spec.getAllFormElements());
-		// There's a Spring way to do this, but until we do another CSV export, it's really not worth it 
 		response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename="+spec.getName()+".csv");
-        Set<String> headers = Sets.newTreeSet();
-        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			headers.addAll(row.getData().keySet());
-		}
+        response.setHeader("Content-Disposition", "attachment; filename="+descriptor.getName()+".csv");
         CSVWriter writer = new CSVWriter(response.getWriter());
-		writer.writeNext(headers.toArray(new String[] {}));
-        for (ParticipantDataRow row : paginatedRowSet.getResults()) {
-			List<String> values = Lists.newArrayListWithCapacity(headers.size());
-			for (String header : headers) {
-				List<String> fieldValues = map.get(header).getStringConverter().convert(row.getData().get(header));
-				String fieldValue = ParticipantDataUtils.getOneValue(fieldValues);
-				values.add(fieldValue);
+
+        // This will now export every column whether in the UI or not
+        boolean writeTitles = true;
+        Map<String,String> values = Maps.newHashMap();
+        SortedSet<String> columnNames = Sets.newTreeSet();
+        
+		for (ParticipantDataRow row : paginatedRowSet.getResults()) {
+			for (ParticipantDataColumnDescriptor column : columns) {
+				ParticipantDataValue input = row.getData().get(column.getName());
+				ValueTranslator.transformToStrings(input, values, column, columnNames);
+				if (writeTitles) {
+					writer.writeNext(columnNames.toArray(new String[] {}));
+					writeTitles = false;
+				}
+				List<String> rowValues = Lists.newArrayList();
+				for (String colName : columnNames) {
+					rowValues.add(values.get(colName));
+				}
+				writer.writeNext(rowValues.toArray(new String[] {}));
 			}
-			writer.writeNext( values.toArray(new String[] {}));
 		}
 		writer.flush();
 		writer.close();
-		response.flushBuffer();
+		response.flushBuffer();		
 	}
 
 	public static ParticipantDataRow createRowFromForm(ParticipantDataDescriptorWithColumns dwc, Map<String, String> valuesMap) {

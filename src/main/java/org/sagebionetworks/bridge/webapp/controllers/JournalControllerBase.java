@@ -104,7 +104,7 @@ public class JournalControllerBase {
 		
 		// Not passing the result object into the method is the equivalent of saying there's no 
 		// UI on the request, it's an Ajax request and the client will take care of the results.
-		
+
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
 		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);

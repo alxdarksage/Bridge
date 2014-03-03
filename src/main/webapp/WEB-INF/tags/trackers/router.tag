@@ -23,6 +23,9 @@
     <c:when test="${element.UIType == 'TABULAR'}">
         <sage:tabular element="${element}"/>
     </c:when>
+    <c:when test="${element.UIType == 'LAB_ROW'}">
+        <sage:lab-row element="${element}"/>
+    </c:when>
     <c:when test="${element.UIType == 'VALUE'}">
         <sage:value valuesMapHolder="${dynamicForm}" field="${element}"/>
     </c:when>

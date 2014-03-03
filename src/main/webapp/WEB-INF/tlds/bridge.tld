@@ -35,6 +35,10 @@
         <path>/WEB-INF/tags/footer.tag</path>
     </tag-file>
     <tag-file>
+        <name>notice</name>
+        <path>/WEB-INF/tags/notice.tag</path>
+    </tag-file>
+    <tag-file>
         <name>oauth</name>
         <path>/WEB-INF/tags/oauth.tag</path>
     </tag-file>
@@ -67,6 +71,10 @@
     <tag-file>
         <name>group</name>
         <path>/WEB-INF/tags/trackers/group.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>lab-row</name>
+        <path>/WEB-INF/tags/trackers/lab-row.tag</path>
     </tag-file>
     <tag-file>
         <name>range</name>

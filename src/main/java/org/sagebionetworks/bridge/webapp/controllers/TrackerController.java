@@ -119,8 +119,7 @@ public class TrackerController extends JournalControllerBase {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
 		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
 		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, null);
-		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, null);
-		ClientUtils.exportParticipantData(response, spec, paginatedRowSet);
+		ClientUtils.exportParticipantData(response, dwc.getDescriptor(), dwc.getColumns(), paginatedRowSet);
 	}
 
 	@RequestMapping(value = "/journal/{participantId}/trackers/{trackerId}", method = RequestMethod.POST, params = "delete=delete")

@@ -190,10 +190,10 @@ public class MedicationTracker implements Specification {
 	public void setSystemSpecifiedValues(Map<String, String> values) {
 		// It should also be the case that start date is never after end date...
 		if (StringUtils.isNotBlank(values.get(END_DATE_FIELD)) && StringUtils.isNotBlank(values.get(START_DATE_FIELD))) {
-			ParticipantDataValue pdv = ISODateConverter.INSTANCE.convert(Collections.singletonList(values.get(START_DATE_FIELD)));
+			ParticipantDataValue pdv = ISODateConverter.INSTANCE.convert(START_DATE_FIELD, values);
 			long start = ((ParticipantDataDatetimeValue)pdv).getValue();
 			
-			pdv = ISODateConverter.INSTANCE.convert(Collections.singletonList(values.get(END_DATE_FIELD)));
+			pdv = ISODateConverter.INSTANCE.convert(END_DATE_FIELD, values);
 			long end = ((ParticipantDataDatetimeValue)pdv).getValue();
 			
 			if (start > end) {
