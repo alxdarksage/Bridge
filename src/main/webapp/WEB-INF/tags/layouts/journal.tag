@@ -10,7 +10,7 @@
                 <ul class="list-group">
                     <c:forEach var="descriptor" items="${descriptors}">
 	                    <li class="list-group-item">
-	                        <a href="/bridge/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html">
+	                        <a href="<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html"/>">
 	                           ${(not empty descriptor.name) ? descriptor.name : descriptor.description}
                            </a>
 	                    </li>

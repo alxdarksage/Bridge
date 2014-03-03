@@ -4,30 +4,47 @@
 			$(this).val('').removeClass('defaulted');
 		});
     });
+
+    function tabSkippingDefaults(e, fields) {
+    	var array = $("#dynamicForm input, #dynamicForm select").toArray();
+    	e.preventDefault();
+    	e.stopPropagation(); // prevents html5 shim from doing stuff
+    	
+    	var index = array.indexOf(e.target);
+    	var delta = (e.shiftKey) ? -1 : 1;
+    	
+    	var nextElement = array[index+delta];
+    	while( !$(nextElement).is(":visible") || $(nextElement).hasClass("defaulted") ) {
+    		index = index + delta;
+    		index = (index > array.length-1) ? 0 : (index < 0) ? (array.length-1) : index; 
+    		nextElement = array[index];
+    	}
+    	nextElement.focus();
+    }
     
     // With the inclusion of number fields, the arrow keys adjust the numbers,
     // and this doesn't work anymore. Currently abandoning.
 
     var LONG_REGEX = /\d/,
-        fields = $("#dynamicForm input, #dynamicForm select");
-    
-    if (fields.size() === 0) {
-        return;
-    }
-    
-    fields.get(0).focus();
+    	fields = $("#dynamicForm input, #dynamicForm select");
     
     $(document.documentElement).on('keydown', function(e) {
-        if (e.target.nodeName !== "INPUT") {
-            return;
-        }
+    	if (fields.size() == 0 || (e.target.nodeName !== "INPUT" && e.target.nodeName !== "SELECT")) {
+    		return;
+    	}
         var keyCode = e.keyCode;
-        // Allow for ctrl-a/z/x/c/v
-        if ([65,67,86,88,90].indexOf(keyCode) > -1 && (e.metaKey || e.ctrlKey)) {
+        if (keyCode === 9) {
+        	// Adjust tabs to skip defaults
+        	return tabSkippingDefaults(e, fields);
+        } else if (keyCode === 13) {
+        	// Don't submit form on return
+        	e.preventDefault();
         	return;
-        }
-        // Allow for tab and shift tab, arrow keys, backspace, etc
-        if ([8, 9, 16, 17, 18, 37, 38, 39, 40, 13, 27, 91, 93].indexOf(keyCode) > -1) {
+        } else if ([65,67,86,88,90].indexOf(keyCode) > -1 && (e.metaKey || e.ctrlKey)) {
+            // Allow for ctrl-a/z/x/c/v
+        	return;
+        } else if ([8, 16, 17, 18, 37, 38, 39, 40, 13, 27, 91, 93].indexOf(keyCode) > -1) {
+            // Allow for tab and shift tab, arrow keys, backspace, etc
         	return;
         }
         var dataType = e.target.getAttribute("data-type"),
