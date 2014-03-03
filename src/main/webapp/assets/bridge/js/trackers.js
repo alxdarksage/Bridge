@@ -35,6 +35,9 @@
         var keyCode = e.keyCode;
         if (keyCode === 9) {
         	return tabThroughDefaults(e, fields);
+        } else if (keyCode === 13) {
+        	e.preventDefault();
+        	return;
         }
         // Allow for ctrl-a/z/x/c/v
         if ([65,67,86,88,90].indexOf(keyCode) > -1 && (e.metaKey || e.ctrlKey)) {
