@@ -20,7 +20,7 @@ public class LongConverter implements FieldConverter<Map<String,String>, Partici
 		if (StringUtils.isBlank(value)) {
 			return null;
 		}
-		pdv.setValue(Long.parseLong(values.get(fieldName)));
+		pdv.setValue(Long.parseLong(value));
 		return pdv;
 	}	
 

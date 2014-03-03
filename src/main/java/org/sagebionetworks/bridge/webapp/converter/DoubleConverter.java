@@ -20,7 +20,7 @@ public class DoubleConverter implements FieldConverter<Map<String,String>, Parti
 		if (StringUtils.isBlank(value)) {
 			return null;
 		}
-		pdv.setValue(Double.parseDouble(values.get(fieldName)));
+		pdv.setValue(Double.parseDouble(value));
 		return pdv;
 	}	
 
