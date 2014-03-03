@@ -67,10 +67,12 @@ public class MedicationPage {
 	}
 
 	public void clickSubmitNewDoseButton() {
+		facade.waitUntilVisible("#change-dose .ok");
 		facade.click("#change-dose .ok");
 	}
 
 	public void clickSubmitEndMedButton() {
+		facade.waitUntilVisible("#end-med .ok");
 		facade.click("#end-med .ok");
 	}
 
