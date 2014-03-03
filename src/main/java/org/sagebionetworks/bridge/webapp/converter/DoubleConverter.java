@@ -15,10 +15,11 @@ public class DoubleConverter implements FieldConverter<Map<String,String>, Parti
 			return null;
 		}
 		ParticipantDataDoubleValue pdv = new ParticipantDataDoubleValue();
-		try {
-			pdv.setValue(Double.parseDouble(values.get(fieldName)));	
-		} catch(NumberFormatException t){
+		String value = values.get(fieldName);
+		if (value == null || "".equals(value)) {
+			return null;
 		}
+		pdv.setValue(Double.parseDouble(values.get(fieldName)));
 		return pdv;
 	}	
 

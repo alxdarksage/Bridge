@@ -15,10 +15,11 @@ public class LongConverter implements FieldConverter<Map<String,String>, Partici
 			return null;
 		}
 		ParticipantDataLongValue pdv = new ParticipantDataLongValue();
-		try {
-			pdv.setValue(Long.parseLong(values.get(fieldName)));
-		} catch(NumberFormatException e) {
+		String value = values.get(fieldName);
+		if (value == null || "".equals(value)) {
+			return null;
 		}
+		pdv.setValue(Long.parseLong(values.get(fieldName)));
 		return pdv;
 	}	
 
