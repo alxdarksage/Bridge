@@ -44,7 +44,7 @@
 	        var hasEvents = data.events != null && data.events.length > 0;
 	        var series = [];
 			var vAxes = [{}];
-			var height = 500;
+			var height = -1;
 
 	        for(var i = 0; i < data.cols.length; i++) {
 	        	dataTable.addColumn(data.cols[i].type, data.cols[i].name);

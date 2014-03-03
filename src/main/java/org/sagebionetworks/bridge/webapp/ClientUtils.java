@@ -376,6 +376,7 @@ public class ClientUtils {
 		List<ParticipantDataDescriptor> descriptorsTimelines = Lists.newArrayListWithExpectedSize(20);
 		ParticipantDataDescriptor medicationsIfChanged = null;
 		List<ParticipantDataRow> medications = null;
+		ParticipantDataDescriptor events = null;
 		
 		Date now = new Date();
 		Calendar lastMonth = Calendar.getInstance();
@@ -420,7 +421,7 @@ public class ClientUtils {
 			}
 
 			// Medications will show as long as yes or no is not clicked
-			if (descriptor.getName().equals(MedicationTracker.MEDICATIONS_NAME)) {
+			if ("medication".equals(descriptor.getType())) {
 				if (shouldPrompt || repeatDue) {
 					medicationsIfChanged = descriptor;
 					medications = client.getCurrentRows(descriptor.getId());
@@ -429,6 +430,10 @@ public class ClientUtils {
 				}
 				descriptorsTimelines.add(descriptor);
 				continue;
+			}
+
+			if ("event".equals(descriptor.getType())) {
+				events = descriptor;
 			}
 
 			List<ParticipantDataDescriptor> promptList = null;
@@ -525,6 +530,7 @@ public class ClientUtils {
 		model.addAttribute("timelineStart", timelineStart);
 		model.addAttribute("medicationsIfChanged", medicationsIfChanged);
 		model.addAttribute("medications", medications);
+		model.addAttribute("events", events);
 	}
 
 	public static String getSynapseSessionCookie(BridgeRequest request) {
