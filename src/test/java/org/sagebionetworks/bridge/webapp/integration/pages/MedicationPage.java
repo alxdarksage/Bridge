@@ -11,14 +11,13 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.format.ISODateTimeFormat;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.sagebionetworks.bridge.model.data.value.ParticipantDataDatetimeValue;
-import org.sagebionetworks.bridge.webapp.converter.DateToISODateStringConverter;
 
 import com.google.common.collect.Lists;
 
@@ -27,7 +26,6 @@ public class MedicationPage {
 	private static final Logger logger = LogManager.getLogger(MedicationPage.class.getName());
 
 	public static final String HEADER = "Medication Tracker";
-	private static final long WAIT_PERIOD = 600L;
 
 	protected WebDriverFacade facade;
 	protected DataTableInPage activeTable;
@@ -43,7 +41,6 @@ public class MedicationPage {
 		if (startDate != null) {
 			setDate(".dataRows .date-picker", startDate);
 		}
-		facade.waitFor(WAIT_PERIOD);
 	}
 
 	public void enterChangeDose(String dose, Date startDate) {
@@ -58,10 +55,7 @@ public class MedicationPage {
 	private void setDate(String cssSelector, Date date) {
 		String value = "";
 		if (date != null) {
-			DateToISODateStringConverter converter = new DateToISODateStringConverter();
-			ParticipantDataDatetimeValue pdv = new ParticipantDataDatetimeValue();
-			pdv.setValue(date.getTime());
-			value = converter.convert("", pdv).get(0);
+			value = ISODateTimeFormat.date().print(date.getTime());
 		}
 		String hiddenDateFormSelector = cssSelector + " + input";
 		facade.executeJavaScript("document.querySelector('" + hiddenDateFormSelector + "').value = '" + value + "';");
@@ -83,11 +77,13 @@ public class MedicationPage {
 	public void clickChangeDose(String newMedName) {
 		WebElement currentMedRow = getCurrentMedicationRow(newMedName);
 		currentMedRow.findElement(By.cssSelector(".med-change-dose")).click();
+		facade.waitUntilVisible("#change-dose");
 	}
 
 	public void clickEndMed(String newMedName) {
 		WebElement currentMedRow = getCurrentMedicationRow(newMedName);
 		currentMedRow.findElement(By.cssSelector(".med-end-med")).click();
+		facade.waitUntilVisible("#end-med");
 	}
 
 	public WebElement getCurrentMedicationRow(String newMedName) {
