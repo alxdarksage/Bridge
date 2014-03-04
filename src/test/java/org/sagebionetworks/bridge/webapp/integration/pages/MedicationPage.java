@@ -68,6 +68,17 @@ public class MedicationPage {
 
 	public void clickSubmitNewDoseButton() {
 		facade.waitUntilVisible("#change-dose .ok");
+		logger.error("clickSubmitNewDoseButton");
+		List<WebElement> findElements = facade.findElements(By.cssSelector(".ok"));
+		for (WebElement webElement : findElements) {
+			logger.error(webElement.getTagName() + ":" + webElement.isDisplayed() + ":" + webElement.getAttribute("class") + ":"
+					+ webElement.getCssValue("display"));
+		}
+		findElements = facade.findElements(By.cssSelector("#change-dose"));
+		for (WebElement webElement : findElements) {
+			logger.error(webElement.getTagName() + ":" + webElement.isDisplayed() + ":" + webElement.getAttribute("class") + ":"
+					+ webElement.getCssValue("display"));
+		}
 		facade.click("#change-dose .ok");
 	}
 
