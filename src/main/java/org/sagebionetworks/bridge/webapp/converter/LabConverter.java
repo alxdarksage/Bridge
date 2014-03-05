@@ -2,17 +2,14 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.util.StringUtils;
+import org.sagebionetworks.bridge.model.data.units.Measure;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLabValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 
 public class LabConverter implements FieldConverter<Map<String,String>, ParticipantDataValue> {
 	
-	private static final Logger logger = LogManager.getLogger(LabConverter.class.getName());
-
 	public static final LabConverter INSTANCE = new LabConverter();
 	
 	@Override
@@ -21,22 +18,40 @@ public class LabConverter implements FieldConverter<Map<String,String>, Particip
 			return null;
 		}
 		ParticipantDataLabValue pdv = new ParticipantDataLabValue();
-		pdv.setEnteredValue(values.get(fieldName+ValueTranslator.LABRESULT_ENTERED));
-		pdv.setUnits(values.get(fieldName+ValueTranslator.LABRESULT_UNITS));
-		String v = values.get(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MIN);
-		if (StringUtils.isNotEmpty(v)) {
-			pdv.setNormalizedMin(Double.parseDouble(v));	
+		
+		// If there's no unit string, then a lot of these conversions will just fail.
+		// In fact we don't know the starting units and can't convert. In that case, 
+		// right now, we're just persisting the value as entered so it isn't lost.
+		
+		String unitString = values.get(fieldName+ValueTranslator.LABRESULT_UNITS);
+		pdv.setUnits(unitString);
+		
+		String valueString = values.get(fieldName + ValueTranslator.LABRESULT_ENTERED);
+		pdv.setEnteredValue(valueString);
+		Measure value = Measure.measureFromStrings(valueString, unitString);
+		if (value != null) {
+			pdv.setNormalizedValue(value.convertToNormalized().getAmount());
+		} else if (StringUtils.isNotBlank(valueString)) {
+			pdv.setNormalizedValue( Double.parseDouble(valueString) );
 		}
-		v = values.get(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MAX);
-		if (StringUtils.isNotEmpty(v)) {
-			pdv.setNormalizedMax(Double.parseDouble(v));
+		
+		String minValue = values.get(fieldName + ValueTranslator.LABRESULT_NORMALIZED_MIN);
+		Measure min = Measure.measureFromStrings(minValue, unitString);
+		if (min != null) {
+			pdv.setNormalizedMin(min.convertToNormalized().getAmount());
+		} else if (StringUtils.isNotBlank(minValue)) {
+			pdv.setNormalizedMin( Double.parseDouble(minValue) );
 		}
-		v = values.get(fieldName+ValueTranslator.LABRESULT_NORMALIZED_VALUE);
-		if (StringUtils.isNotEmpty(v)) {
-			pdv.setNormalizedValue(Double.parseDouble(v));	
+		
+		String maxValue = values.get(fieldName + ValueTranslator.LABRESULT_NORMALIZED_MAX);
+		Measure max = Measure.measureFromStrings(maxValue, unitString);
+		if (max != null) {
+			pdv.setNormalizedMax(max.convertToNormalized().getAmount());
+		} else if (StringUtils.isNotBlank(maxValue)) {
+			pdv.setNormalizedMax( Double.parseDouble(maxValue) );
 		}
+		
 		return pdv;
 	}
-	
 	
 }

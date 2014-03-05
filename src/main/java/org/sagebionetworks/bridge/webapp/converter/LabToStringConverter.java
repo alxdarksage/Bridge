@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
+import org.sagebionetworks.bridge.model.data.units.Units;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLabValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
@@ -12,8 +13,6 @@ public class LabToStringConverter implements FieldConverter<ParticipantDataValue
 	
 	public static final LabToStringConverter INSTANCE = new LabToStringConverter();
 
-	public DoubleToStringConverter doubleConverter = new DoubleToStringConverter();
-	
 	@Override
 	public Map<String,String> convert(String fieldName, ParticipantDataValue source) {
 		if (source == null) {
@@ -27,15 +26,29 @@ public class LabToStringConverter implements FieldConverter<ParticipantDataValue
 		if (pdv.getUnits() != null) {
 			map.put(fieldName+ValueTranslator.LABRESULT_UNITS, pdv.getUnits());	
 		}
+		Units unit = Units.unitFromString(pdv.getUnits());
 		if (pdv.getNormalizedMin() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MIN, doubleConverter.format(pdv.getNormalizedMin()));	
+			addToMap(map, fieldName + ValueTranslator.LABRESULT_NORMALIZED_MIN, pdv.getNormalizedMin(), unit);
 		}
 		if (pdv.getNormalizedMax() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MAX, doubleConverter.format(pdv.getNormalizedMax()));
+			addToMap(map, fieldName + ValueTranslator.LABRESULT_NORMALIZED_MAX, pdv.getNormalizedMax(), unit);
 		}
 		if (pdv.getNormalizedValue() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_VALUE, doubleConverter.format(pdv.getNormalizedValue()));	
+			map.put(fieldName + ValueTranslator.LABRESULT_NORMALIZED_VALUE,
+					DoubleToStringConverter.INSTANCE.format(pdv.getNormalizedValue()));
 		}
 		return map;
+	}
+	
+	private void addToMap(Map<String,String> map, String fieldName, double amount, Units unit) {
+		if (unit != null) {
+			map.put(fieldName, DoubleToStringConverter.INSTANCE.format(denormalize(amount, unit)));
+		} else {
+			map.put(fieldName, DoubleToStringConverter.INSTANCE.format(amount));
+		}
+	}
+	
+	private double denormalize(double amount, Units unit) {
+		return unit.convertFromNormalized(amount).getAmount();
 	}
 }
