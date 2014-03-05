@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Random;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sagebionetworks.bridge.webapp.integration.WebDriverBase;
 import org.sagebionetworks.bridge.webapp.integration.pages.MedicationPage;
@@ -28,6 +29,7 @@ public class ITMedicationsTracker extends WebDriverBase {
 	}
 
 	@Test
+	@Ignore
 	public void canCreateNewMedication() throws Exception {
 		String newMedName = "med" + new Random().nextInt();
 		medPage.enterNewMedication(newMedName, "10mg", START_DATE);
@@ -47,6 +49,7 @@ public class ITMedicationsTracker extends WebDriverBase {
 	}
 
 	@Test
+	@Ignore
 	public void cannotCreateNewMedicationWithoutName() throws Exception {
 		medPage.enterNewMedication("", "10mg", START_DATE);
 		medPage.clickSubmitNewMedButton();
