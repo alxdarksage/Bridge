@@ -43,7 +43,7 @@ h3.auth {
 }
 .footer-break {
 	border-top: 1px solid #aaa;
-	padding-top: 10px;
+	padding: 10px;
 	margin-left: -15px !important;
-	margin-right: -15px !important; 
+	margin-right: -15px !important;
 }

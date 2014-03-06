@@ -2,7 +2,6 @@
 <groups xmlns="http://www.isdc.ro/wro"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
-        
     <!-- 
     	This file describes combination/minification policies for wro4j.
     	You can link to these processed output files in your JSPs.
@@ -25,6 +24,7 @@
         <css>/assets/bridge/css/trackers.less</css>
         <css>/assets/bridge/css/range-norm-bar.less</css>
         <css>/assets/bridge/css/print.less</css>
+        <css>/assets/snap/snap-1.9.2.css</css>
     </group>
 
 	<group name="footer">
@@ -36,8 +36,9 @@
         <js>/assets/bridge/js/metrics.js</js>
         <js>/assets/bridge/js/range-norm-bar.js</js>
         <js>/assets/bootstrap/js/bootstrap.js</js>
+        <js>/assets/snap/snap-1.9.2.js</js>
 	</group>
-	
+
     <group name="trackers">
         <js>/assets/bridge/js/trackers.js</js>
     </group>

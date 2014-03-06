@@ -9,7 +9,7 @@
                 <form:errors htmlEscape="false"></form:errors>
             </div>
         </spring:hasBindErrors>
-        
+
         <div class="row">
             <div class="col-sm-6">
 		        <b><spring:message code="PhotoOrAvatar"/></b>
