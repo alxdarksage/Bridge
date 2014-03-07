@@ -20,35 +20,24 @@ public class LabToStringConverter implements FieldConverter<ParticipantDataValue
 		}
 		ParticipantDataLabValue pdv = (ParticipantDataLabValue)source;
 		Map<String,String> map = Maps.newHashMap();
-		if (pdv.getEnteredValue() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_ENTERED, pdv.getEnteredValue());	
+		if (pdv.getValue() != null) {
+			map.put(fieldName + ValueTranslator.LABRESULT_VALUE,
+					DoubleToStringConverter.INSTANCE.format(pdv.getValue()));
 		}
 		if (pdv.getUnits() != null) {
 			map.put(fieldName+ValueTranslator.LABRESULT_UNITS, pdv.getUnits());	
 		}
-		Units unit = Units.unitFromString(pdv.getUnits());
-		if (pdv.getNormalizedMin() != null) {
-			addToMap(map, fieldName + ValueTranslator.LABRESULT_NORMALIZED_MIN, pdv.getNormalizedMin(), unit);
+		if (pdv.getMinNormal() != null) {
+			addToMap(map, fieldName + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE, pdv.getMinNormal());
 		}
-		if (pdv.getNormalizedMax() != null) {
-			addToMap(map, fieldName + ValueTranslator.LABRESULT_NORMALIZED_MAX, pdv.getNormalizedMax(), unit);
-		}
-		if (pdv.getNormalizedValue() != null) {
-			map.put(fieldName + ValueTranslator.LABRESULT_NORMALIZED_VALUE,
-					DoubleToStringConverter.INSTANCE.format(pdv.getNormalizedValue()));
+		if (pdv.getMaxNormal() != null) {
+			addToMap(map, fieldName + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE, pdv.getMaxNormal());
 		}
 		return map;
 	}
 	
-	private void addToMap(Map<String,String> map, String fieldName, double amount, Units unit) {
-		if (unit != null) {
-			map.put(fieldName, DoubleToStringConverter.INSTANCE.format(denormalize(amount, unit)));
-		} else {
-			map.put(fieldName, DoubleToStringConverter.INSTANCE.format(amount));
-		}
+	private void addToMap(Map<String,String> map, String fieldName, double amount) {
+		map.put(fieldName, DoubleToStringConverter.INSTANCE.format(amount));
 	}
 	
-	private double denormalize(double amount, Units unit) {
-		return unit.convertFromNormalized(amount).getAmount();
-	}
 }

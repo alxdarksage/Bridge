@@ -79,7 +79,7 @@ public class AjaxMedicationController {
 		newEvent.setGrouping(newEvent.getName());
 
 		// first close old row and then create new one
-		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId);
+		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId, false);
 		ParticipantDataEventValue oldEvent = (ParticipantDataEventValue) oldRow.getData().get(dwc.getDescriptor().getEventColumnName());
 		oldEvent.setEnd(newEvent.getStart());
 		client.updateParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(oldRow));
@@ -119,7 +119,7 @@ public class AjaxMedicationController {
 		Date endDate = DateTime.parse(value, formatter).toDate();
 
 		// close old row
-		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId);
+		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId, false);
 		ParticipantDataEventValue oldEvent = (ParticipantDataEventValue) oldRow.getData().get("medication");
 		oldEvent.setEnd(endDate.getTime());
 		client.updateParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(oldRow));

@@ -37,15 +37,15 @@ public class SpecificationBasedValidatorTest {
 		dynamicForm.getValuesMap().put("modified_on", "test bad value");
 		messages.add("modified_on.invalid_datetime");
 		
-		dynamicForm.getValuesMap().put("lymphocytes_perc-entered", "test bad value");
-		messages.add("lymphocytes_perc-entered.invalid_double");
+		dynamicForm.getValuesMap().put("lymphocytes_perc-value", "test bad value");
+		messages.add("lymphocytes_perc-value.invalid_double");
 		
 		// Value out of range
-		dynamicForm.getValuesMap().put("monocytes_perc-entered", "-20");
-		messages.add("monocytes_perc-entered.too_small");
+		dynamicForm.getValuesMap().put("monocytes_perc-value", "-20");
+		messages.add("monocytes_perc-value.too_small");
 		
-		dynamicForm.getValuesMap().put("hct-entered", "220");
-		messages.add("hct-entered.too_large");
+		dynamicForm.getValuesMap().put("hct-value", "220");
+		messages.add("hct-value.too_large");
 		
 		// test required: not including the collected_on value.
 		messages.add("collected_on.required");

@@ -86,25 +86,25 @@ public class TrackerEditPage {
 		Assert.assertEquals("Correct value", expectedValue, valueInForm);
 	}
 	private void setValue(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-entered').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-value').value = '"+value+"'");
 	}
 	private void setUnits(FieldNames field, String value) {
 		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-units').value = '"+value+"'");
 	}
 	private void setLowRange(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-normalizedMin').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-minNormal').value = '"+value+"'");
 	}
 	private void setHighRange(FieldNames field, String value) {
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-normalizedMax').value = '"+value+"'");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-maxNormal').value = '"+value+"'");
 	}
 	
 	public void assertFieldConstrained(FieldNames field, String value, String expected) {
 		// You can't set the field directly to bypass the fact that it is hidden, because this generates no 
 		// key events and the key events are being constrained. Here you must force the element to be 
 		// visible so WebDriver can interact with it.
-		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-entered').setAttribute('style','display:block!important;visibility:visible!important')");
-		facade.enterField("#"+field.name().toLowerCase()+"-entered", value);
-		String actual = facade.getFieldValue("#"+field.name().toLowerCase()+"-entered");
+		facade.executeJavaScript("document.querySelector('#"+field.name().toLowerCase()+"-value').setAttribute('style','display:block!important;visibility:visible!important')");
+		facade.enterField("#"+field.name().toLowerCase()+"-value", value);
+		String actual = facade.getFieldValue("#"+field.name().toLowerCase()+"-value");
 		Assert.assertEquals("Value constrained", expected, actual);
 	}
 	
@@ -129,23 +129,23 @@ public class TrackerEditPage {
 		if (field.getUnit() != null) {
 			facade.assertCssClass(cssSelector+"-units", "defaulted");
 			assertUnits(field, field.getUnit());
-			facade.assertCssClass(cssSelector+"-normalizedMin", "defaulted");
+			facade.assertCssClass(cssSelector+"-minNormal", "defaulted");
 			assertLowRange(field, Integer.toString(base+2));
-			facade.assertCssClass(cssSelector+"-normalizedMax", "defaulted");
+			facade.assertCssClass(cssSelector+"-maxNormal", "defaulted");
 			assertHighRange(field, Integer.toString(base+3));
 		}
 	}
 	
 	private void assertValue(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase()+"-entered", value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-value", value);
 	}
 	private void assertUnits(FieldNames field, String value) {
 		facade.assertFieldValue("#"+field.name().toLowerCase()+"-units", value);
 	}
 	private void assertLowRange(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase()+"-normalizedMin", value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-minNormal", value);
 	}
 	private void assertHighRange(FieldNames field, String value) {
-		facade.assertFieldValue("#"+field.name().toLowerCase()+"-normalizedMax", value);
+		facade.assertFieldValue("#"+field.name().toLowerCase()+"-maxNormal", value);
 	}
 }

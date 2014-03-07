@@ -72,7 +72,7 @@ public class FormUtils {
 			String trackerId) throws SynapseException {
 		
 		Set<String> defaultedFields = Sets.newHashSet();
-		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId);
+		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(trackerId, false);
 		if (currentRow.getPreviousData() != null) {
 			ParticipantDataRowAdapter adapter = new ParticipantDataRowAdapter(spec.getEditStructure(), currentRow.getPreviousData());
 			for (FormElement element : spec.getAllFormElements()) {

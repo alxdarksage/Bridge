@@ -75,7 +75,7 @@ public class TrackerRowController extends JournalControllerBase {
 		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("rowId", rowId);
 		
-		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
+		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId, false);
 		ClientUtils.logSensitive(logger, row.getData());
 		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getShowStructure(), row));
 		
@@ -93,7 +93,7 @@ public class TrackerRowController extends JournalControllerBase {
 		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		model.addObject("rowId", rowId);
 		
-		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId);
+		ParticipantDataRow row = client.getParticipantDataRow(trackerId, rowId, false);
 		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getEditStructure(), row));
 		
 		model.setViewName("journal/trackers/edit");
@@ -119,7 +119,7 @@ public class TrackerRowController extends JournalControllerBase {
 		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, model);
 		Specification spec = ClientUtils.prepareSpecification(specResolver, dwc, model);
 		
-		ParticipantDataRow row = client.getCurrentParticipantData(trackerId).getCurrentData();
+		ParticipantDataRow row = client.getCurrentParticipantData(trackerId, false).getCurrentData();
 		model.addObject("rowId", row.getRowId());
 		model.addObject("dynamicForm", new ParticipantDataRowAdapter(spec.getEditStructure(), row));
 		

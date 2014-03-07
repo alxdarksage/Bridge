@@ -79,7 +79,7 @@ public class AjaxEventController {
 		Date endDate = DateTime.parse(value, formatter).toDate();
 
 		// close old row
-		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId);
+		ParticipantDataRow oldRow = client.getParticipantDataRow(trackerId, rowId, false);
 		ParticipantDataEventValue oldEvent = (ParticipantDataEventValue) oldRow.getData().get("event");
 		oldEvent.setEnd(endDate.getTime());
 		client.updateParticipantData(trackerId, Collections.<ParticipantDataRow> singletonList(oldRow));

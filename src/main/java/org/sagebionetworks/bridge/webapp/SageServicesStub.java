@@ -43,6 +43,7 @@ import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseAdminClient;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
+import org.sagebionetworks.client.exceptions.SynapseClientException;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
@@ -283,7 +284,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public Community getCommunity(String communityId) throws SynapseException {
 		Community community = communitiesById.get(communityId);
 		if (community == null) {
-			throw new SynapseException(new NotFoundException());
+			throw new SynapseClientException(new NotFoundException());
 		}
 		return community;
 	}
@@ -333,7 +334,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public Session login(String userName, String password) throws SynapseException {
 		UserSessionData data = usersById.get(userName);
 		if (data == null) {
-			throw new SynapseException();
+			throw new SynapseClientException();
 		}
 		currentUserData = data;
 		Session session = data.getSession();
@@ -353,7 +354,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public UserSessionData getUserSessionData() throws SynapseException {
 		if (currentUserData == null) {
-			throw new SynapseException();
+			throw new SynapseClientException();
 		}
 		return currentUserData;
 	}
@@ -370,7 +371,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			markdown = FileUtils.readFileToString(temp);
 		}
 		if (markdown == null) {
-			throw new SynapseException(new NotFoundException());
+			throw new SynapseClientException(new NotFoundException());
 		}
 		S3FileHandle handle = new S3FileHandle();
 		String id = newId();
@@ -392,7 +393,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 				FileHandle handle = createFileHandle(file, mimeType);
 				handles.add(handle);
 			} catch(IOException ioe) {
-				throw new SynapseException(ioe);
+				throw new SynapseClientException(ioe);
 			}
 		}
 		FileHandleResults results = new FileHandleResults();
@@ -473,7 +474,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public V2WikiPage getV2WikiPage(WikiPageKey key) throws JSONObjectAdapterException, SynapseException {
 		String realId = key.getWikiPageId();
 		if (!wikiPagesById.containsKey(realId)) {
-			throw new SynapseException("Wiki page not found");
+			throw new SynapseClientException("Wiki page not found");
 		}
 		return wikiPagesById.get(realId);
 	}
@@ -482,7 +483,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public V2WikiPage updateV2WikiPage(String ownerId, ObjectType ownerType, V2WikiPage page)
 			throws JSONObjectAdapterException, SynapseException {
 		if (!wikiPagesById.containsKey(page.getId())) {
-			throw new SynapseException("Wiki page does not yet exist");
+			throw new SynapseClientException("Wiki page does not yet exist");
 		}
 		wikiPagesById.put(page.getId(), page);
 		return page;
@@ -493,11 +494,11 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 		// The invisible root wiki page is stored under the community key.
 		Community community = communitiesById.get(ownerId);
 		if (community == null) {
-			throw new SynapseException("Wiki page's community not found");
+			throw new SynapseClientException("Wiki page's community not found");
 		}
 		String communityId = community.getId();
 		if (!wikiPagesById.containsKey(communityId)) {
-			throw new SynapseException("Wiki page not found");
+			throw new SynapseClientException("Wiki page not found");
 		}
 		return wikiPagesById.get(communityId);
 	}
@@ -506,7 +507,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public FileHandleResults getV2WikiAttachmentHandles(WikiPageKey key) throws JSONObjectAdapterException,
 			SynapseException {
 		if (!wikiPagesById.containsKey(key.getWikiPageId())) {
-			throw new SynapseException("Wiki not found");
+			throw new SynapseClientException("Wiki not found");
 		}
 		FileHandleResults results = new FileHandleResults();
 		V2WikiPage page = wikiPagesById.get(key.getWikiPageId());
@@ -566,7 +567,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public Team getTeam(String id) throws SynapseException {
 		if (!teamsById.keySet().contains(id)) {
-			throw new SynapseException("Team not found");
+			throw new SynapseClientException("Team not found");
 		}
 		return teamsById.get(id);
 	}
@@ -610,13 +611,13 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	@Override
 	public void createUser(NewUser user) throws SynapseException {
 		if (usersById.get(user.getUserName()) != null) {
-			throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User '"+user.getUserName()+"' already exists\n\"}");
+			throw new SynapseClientException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User '"+user.getUserName()+"' already exists\n\"}");
 		}
 		// Check email too
 		for (UserSessionData data : usersById.values()) {
 			String email = emailByUserId.get(data.getProfile().getOwnerId());
 			if (user.getEmail().equals(email)) {
-				throw new SynapseException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User email '"+email+"' already exists\n\"}");
+				throw new SynapseClientException("Service Error(409): FAILURE: Got HTTP status 409 for  Response Content: {\"reason\":\"User email '"+email+"' already exists\n\"}");
 			}
 		}
 
@@ -742,7 +743,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			}
 		}
 		if (admins.size() < 2 && admins.contains(userId)) {
-			throw new SynapseException("Service Error(401): {\"reason\":\"Need at least one admin.\n\"}");
+			throw new SynapseClientException("Service Error(401): {\"reason\":\"Need at least one admin.\n\"}");
 		}
 		for (ResourceAccess ra : acl.getResourceAccess()) {
 			if (ra.getPrincipalId().toString().equals(userId)) {
@@ -809,7 +810,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 			throws SynapseException {
 		List<ParticipantDataRow> existingData = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (existingData == null) {
-			throw new SynapseException("cannot update " + participantDataDescriptorId);
+			throw new SynapseClientException("cannot update " + participantDataDescriptorId);
 		}
 
 		for (ParticipantDataRow dataRow : data) {
@@ -824,8 +825,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public PaginatedResults<ParticipantDataRow> getRawParticipantData(String participantDataDescriptorId, long limit, long offset)
-			throws SynapseException {
+	public PaginatedResults<ParticipantDataRow> getRawParticipantData(String participantDataDescriptorId, long limit,
+			long offset, boolean normalizeData) throws SynapseException {
 		List<ParticipantDataRow> data = participantDataByDescriptorId.get(participantDataDescriptorId);
 		if (data == null) {
 			data = Collections.emptyList();
@@ -872,7 +873,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public ParticipantDataRow getParticipantDataRow(String participantDataDescriptorId, Long rowId)
+	public ParticipantDataRow getParticipantDataRow(String participantDataDescriptorId, Long rowId, boolean normalizeData)
 			throws SynapseException {
 		if (participantDataDescriptorId == null || rowId == null) {
 			throw new IllegalArgumentException("participantDataDescriptorId or rowId is null");
@@ -887,7 +888,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 	
 	@Override
-	public ParticipantDataCurrentRow getCurrentParticipantData(String participantDataDescriptorId)
+	public ParticipantDataCurrentRow getCurrentParticipantData(String participantDataDescriptorId, boolean normalizeData)
 			throws SynapseException {
 		
 		String compoundKey = currentUserData.getProfile().getOwnerId() + ":" + participantDataDescriptorId;
@@ -926,8 +927,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public List<ParticipantDataRow> getCurrentRows(String participantDataDescriptorId) throws SynapseException {
-		List<ParticipantDataRow> result = Lists.newArrayList(getHistoryRows(participantDataDescriptorId, null, null));
+	public List<ParticipantDataRow> getCurrentRows(String participantDataDescriptorId, boolean normalizeData) throws SynapseException {
+		List<ParticipantDataRow> result = Lists.newArrayList(getHistoryRows(participantDataDescriptorId, null, null, false));
 		ParticipantDataDescriptor descriptor = descriptorsById.get(participantDataDescriptorId);
 		for (Iterator<ParticipantDataRow> iterator = result.iterator(); iterator.hasNext();) {
 			ParticipantDataRow row = iterator.next();
@@ -939,7 +940,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public List<ParticipantDataRow> getHistoryRows(String participantDataDescriptorId, Date begin, Date end) throws SynapseException {
+	public List<ParticipantDataRow> getHistoryRows(String participantDataDescriptorId, Date begin, Date end,
+			boolean normalizeData) throws SynapseException {
 		List<ParticipantDataRow> rows = participantDataByDescriptorId.get(participantDataDescriptorId);
 		return rows;
 	}
@@ -948,7 +950,7 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public ParticipantDataColumnDescriptor createParticipantDataColumnDescriptor(
 			ParticipantDataColumnDescriptor column) throws SynapseException {
 		if (column.getParticipantDataDescriptorId() == null) {
-			throw new SynapseException("You must include a ParticipantDataDescriptor id before creating this column");
+			throw new SynapseClientException("You must include a ParticipantDataDescriptor id before creating this column");
 		}
 		column.setId(newId());
 		columnsByDescriptorById.put(column.getParticipantDataDescriptorId(), column);
@@ -1019,7 +1021,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	}
 
 	@Override
-	public TimeSeriesTable getTimeSeries(String participantDataDescriptorId, List<String> columnNames) throws SynapseException {
+	public TimeSeriesTable getTimeSeries(String participantDataDescriptorId, List<String> columnNames,
+			boolean normalizeData) throws SynapseException {
 		TimeSeriesTable timeSeriesTable = new TimeSeriesTable();
 		timeSeriesTable.setDateIndex(0L);
 		timeSeriesTable.setColumns(Lists.newArrayList("date", "nothing"));

@@ -2,8 +2,7 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
-import org.codehaus.plexus.util.StringUtils;
-import org.sagebionetworks.bridge.model.data.units.Measure;
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLabValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
@@ -19,36 +18,22 @@ public class LabConverter implements FieldConverter<Map<String,String>, Particip
 		}
 		ParticipantDataLabValue pdv = new ParticipantDataLabValue();
 		
-		// If there's no unit string, then a lot of these conversions will just fail.
-		// In fact we don't know the starting units and can't convert. In that case, 
-		// right now, we're just persisting the value as entered so it isn't lost.
-		
 		String unitString = values.get(fieldName+ValueTranslator.LABRESULT_UNITS);
 		pdv.setUnits(unitString);
 		
-		String valueString = values.get(fieldName + ValueTranslator.LABRESULT_ENTERED);
-		pdv.setEnteredValue(valueString);
-		Measure value = Measure.measureFromStrings(valueString, unitString);
-		if (value != null) {
-			pdv.setNormalizedValue(value.convertToNormalized().getAmount());
-		} else if (StringUtils.isNotBlank(valueString)) {
-			pdv.setNormalizedValue( Double.parseDouble(valueString) );
+		String value = values.get(fieldName + ValueTranslator.LABRESULT_VALUE);
+		if (StringUtils.isNotBlank(value)) {
+			pdv.setValue( Double.parseDouble(value) );
 		}
 		
-		String minValue = values.get(fieldName + ValueTranslator.LABRESULT_NORMALIZED_MIN);
-		Measure min = Measure.measureFromStrings(minValue, unitString);
-		if (min != null) {
-			pdv.setNormalizedMin(min.convertToNormalized().getAmount());
-		} else if (StringUtils.isNotBlank(minValue)) {
-			pdv.setNormalizedMin( Double.parseDouble(minValue) );
+		String minValue = values.get(fieldName + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE);
+		if (StringUtils.isNotBlank(minValue)) {
+			pdv.setMinNormal( Double.parseDouble(minValue) );
 		}
 		
-		String maxValue = values.get(fieldName + ValueTranslator.LABRESULT_NORMALIZED_MAX);
-		Measure max = Measure.measureFromStrings(maxValue, unitString);
-		if (max != null) {
-			pdv.setNormalizedMax(max.convertToNormalized().getAmount());
-		} else if (StringUtils.isNotBlank(maxValue)) {
-			pdv.setNormalizedMax( Double.parseDouble(maxValue) );
+		String maxValue = values.get(fieldName + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE);
+		if (StringUtils.isNotBlank(maxValue)) {
+			pdv.setMaxNormal( Double.parseDouble(maxValue) );
 		}
 		
 		return pdv;

@@ -248,8 +248,8 @@ public class CompleteBloodCount implements Specification {
 	}
 	
 	private FormElement createViewableLab(String name, String description) {
-		return new RangeNormBar(description, name, ValueTranslator.LABRESULT_ENTERED, ValueTranslator.LABRESULT_UNITS,
-				ValueTranslator.LABRESULT_NORMALIZED_MIN, ValueTranslator.LABRESULT_NORMALIZED_MAX);
+		return new RangeNormBar(description, name, ValueTranslator.LABRESULT_VALUE, ValueTranslator.LABRESULT_UNITS,
+				ValueTranslator.LABRESULT_MIN_NORMAL_VALUE, ValueTranslator.LABRESULT_MAX_NORMAL_VALUE);
 	}
 	
 	private FormField createEditableLab(List<String> unitEnumeration, String name, String description) {
@@ -257,7 +257,7 @@ public class CompleteBloodCount implements Specification {
 		
 		FormField labField = builder.asLab().name(name).label(description).create();
 		
-		FormField field = builder.asDouble().minValue(0D).name(name + ValueTranslator.LABRESULT_ENTERED)
+		FormField field = builder.asDouble().minValue(0D).name(name + ValueTranslator.LABRESULT_VALUE)
 				.label(description).compoundField().create();
 		labField.getChildren().add(field);
 		
@@ -271,10 +271,10 @@ public class CompleteBloodCount implements Specification {
 			labField.getChildren().add(units);
 		}
 		
-		FormField low = builder.asDouble().name(name + ValueTranslator.LABRESULT_NORMALIZED_MIN)
+		FormField low = builder.asDouble().name(name + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE)
 				.label("Low " + description).defaultable().compoundField().create();
 
-		FormField high = builder.asDouble().name(name + ValueTranslator.LABRESULT_NORMALIZED_MAX)
+		FormField high = builder.asDouble().name(name + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE)
 				.label("High " + description).defaultable().compoundField().create();
 		FormGroup range = new FormGroup(UIType.RANGE, "Range");
 		range.addField(low);
@@ -289,18 +289,19 @@ public class CompleteBloodCount implements Specification {
 		
 		FormField labField = builder.asLab().name(name).label(description).create();
 		
-		FormField field = builder.asDouble().minValue(0D).maxValue(100D).name(name + ValueTranslator.LABRESULT_ENTERED).label(description).compoundField().create();
+		FormField field = builder.asDouble().minValue(0D).maxValue(100D).name(name + ValueTranslator.LABRESULT_VALUE)
+				.label(description).compoundField().create();
 		labField.getChildren().add(field);
 		
 		FormField units = builder.asText("%").name(name + ValueTranslator.LABRESULT_UNITS).label("Units").readonly().compoundField().create();
 		labField.getChildren().add(units);
 		
 		FormField low = builder.asDouble().minValue(0D).maxValue(100D)
-				.name(name + ValueTranslator.LABRESULT_NORMALIZED_MIN).label("Low " + description).defaultable()
+				.name(name + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE).label("Low " + description).defaultable()
 				.compoundField().create();
 
 		FormField high = builder.asDouble().minValue(0D).maxValue(100D)
-				.name(name + ValueTranslator.LABRESULT_NORMALIZED_MAX).label("High " + description).defaultable()
+				.name(name + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE).label("High " + description).defaultable()
 				.compoundField().create();
 		
 		FormGroup range = new FormGroup(UIType.RANGE, "Range");
