@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,8 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptorWithColumns;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
+import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
+import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
@@ -85,6 +88,13 @@ public class JournalControllerBase {
 			return null;
 		} else {
 			List<ParticipantDataRow> data = ParticipantDataUtils.getRowsForCreate(spec, dynamicForm.getValuesMap());
+			
+			for (ParticipantDataRow row : data) {
+				for (Map.Entry<String, ParticipantDataValue> entry : row.getData().entrySet()) {
+					logger.info(entry.getKey() + ", " + ValueTranslator.toString(entry.getValue()));
+				}
+			}
+			
 			data = client.appendParticipantData(trackerId, data);
 			client.sendParticipantDataDescriptorUpdates(statuses);
 			// These are harmless to the Ajax call.

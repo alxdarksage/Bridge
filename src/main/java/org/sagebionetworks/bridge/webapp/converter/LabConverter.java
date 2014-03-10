@@ -2,17 +2,13 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLabValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 
 public class LabConverter implements FieldConverter<Map<String,String>, ParticipantDataValue> {
 	
-	private static final Logger logger = LogManager.getLogger(LabConverter.class.getName());
-
 	public static final LabConverter INSTANCE = new LabConverter();
 	
 	@Override
@@ -21,22 +17,26 @@ public class LabConverter implements FieldConverter<Map<String,String>, Particip
 			return null;
 		}
 		ParticipantDataLabValue pdv = new ParticipantDataLabValue();
-		pdv.setEnteredValue(values.get(fieldName+ValueTranslator.LABRESULT_ENTERED));
-		pdv.setUnits(values.get(fieldName+ValueTranslator.LABRESULT_UNITS));
-		String v = values.get(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MIN);
-		if (StringUtils.isNotEmpty(v)) {
-			pdv.setNormalizedMin(Double.parseDouble(v));	
+		
+		String unitString = values.get(fieldName+ValueTranslator.LABRESULT_UNITS);
+		pdv.setUnits(unitString);
+		
+		String value = values.get(fieldName + ValueTranslator.LABRESULT_VALUE);
+		if (StringUtils.isNotBlank(value)) {
+			pdv.setValue( Double.parseDouble(value) );
 		}
-		v = values.get(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MAX);
-		if (StringUtils.isNotEmpty(v)) {
-			pdv.setNormalizedMax(Double.parseDouble(v));
+		
+		String minValue = values.get(fieldName + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE);
+		if (StringUtils.isNotBlank(minValue)) {
+			pdv.setMinNormal( Double.parseDouble(minValue) );
 		}
-		v = values.get(fieldName+ValueTranslator.LABRESULT_NORMALIZED_VALUE);
-		if (StringUtils.isNotEmpty(v)) {
-			pdv.setNormalizedValue(Double.parseDouble(v));	
+		
+		String maxValue = values.get(fieldName + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE);
+		if (StringUtils.isNotBlank(maxValue)) {
+			pdv.setMaxNormal( Double.parseDouble(maxValue) );
 		}
+		
 		return pdv;
 	}
-	
 	
 }
