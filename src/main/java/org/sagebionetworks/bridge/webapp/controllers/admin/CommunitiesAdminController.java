@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.bridge.webapp.forms.SignInForm;
+import org.sagebionetworks.bridge.webapp.controllers.NonAjaxControllerBase;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
@@ -22,29 +22,24 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/admin")
-public class CommunitiesAdminController {
+public class CommunitiesAdminController extends NonAjaxControllerBase {
 	
 	private static Logger logger = LogManager.getLogger(CommunityAdminController.class.getName());
 
-	@ModelAttribute("signInForm")
-	public SignInForm signInForm() {
-		return new SignInForm();
-	}
-	
 	@ModelAttribute("communities")
 	public List<Community> communities(BridgeRequest request) throws SynapseException {
-		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<Community> results = client.getAllCommunities(ClientUtils.LIMIT, 0);
-		
-		List<Community> communities = Lists.newArrayList();
-		for (Community community : results.getResults()) {
-			UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
-			if (permits.getCanEdit()) {
-				communities.add(community);
-			}
-		}
-		return communities;
-	}
+	        BridgeClient client = request.getBridgeUser().getBridgeClient();
+	        PaginatedResults<Community> results = client.getAllCommunities(ClientUtils.LIMIT, 0);
+
+	        List<Community> communities = Lists.newArrayList();
+	        for (Community community : results.getResults()) {
+	                UserEntityPermissions permits = ClientUtils.getPermits(request, community.getId());
+	                if (permits.getCanEdit()) {
+	                        communities.add(community);
+	                }
+	        }
+	        return communities;
+	}	
 	
 	@RequestMapping(value = "/communities/index", method = RequestMethod.GET)
 	public String viewCommunities(BridgeRequest request,

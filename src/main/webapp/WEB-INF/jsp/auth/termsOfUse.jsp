@@ -1,5 +1,5 @@
 <%@ include file="../directives.jsp" %>
-<sage:minimal code="TermsOfUse" boxSize="90%">
+<sage:minimal code="TermsOfUse" boxSize="90%" mobile="false">
     <div class="tou">
         ${termsOfUseForm.termsOfUse}
     </div>

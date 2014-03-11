@@ -9,9 +9,9 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
+import org.sagebionetworks.bridge.webapp.controllers.NonAjaxControllerBase;
 import org.sagebionetworks.bridge.webapp.forms.CheckboxItem;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
-import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
@@ -33,15 +33,10 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/admin")
-public class CommunityAdminController {
+public class CommunityAdminController extends NonAjaxControllerBase {
 	
 	private static Logger logger = LogManager.getLogger(CommunityAdminController.class.getName());
 
-	@ModelAttribute("signInForm")
-	public SignInForm signInForm() {
-		return new SignInForm();
-	}
-	
 	@ModelAttribute("communityForm")
 	public CommunityForm communityForm() {
 		return new CommunityForm();

@@ -13,8 +13,8 @@
             <title>Bridge - Sage Bionetworks</title>
         </c:otherwise>
     </c:choose>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
     <c:url var="styleUrl" value="/assets/header.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Archivo+Narrow" type="text/css" />
     <link rel="stylesheet" href="${styleUrl}" type="text/css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

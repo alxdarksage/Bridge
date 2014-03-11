@@ -1,7 +1,6 @@
 package org.sagebionetworks.bridge.webapp.controllers.ajax;
 
 import java.util.Collections;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
