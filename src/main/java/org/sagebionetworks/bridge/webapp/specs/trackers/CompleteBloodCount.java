@@ -194,6 +194,11 @@ public class CompleteBloodCount implements Specification {
 	}
 	
 	@Override
+	public String getType() {
+		return "cbc";
+	}
+
+	@Override
 	public ParticipantDataRepeatType getRepeatType() {
 		return ParticipantDataRepeatType.IF_NEW;
 	}

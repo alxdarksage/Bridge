@@ -1,7 +1,6 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <div class="form-group">
 	<sage:reminders-due/>
-	<sage:reminders-direct/>
 	<sage:reminders-always/>
 	<sage:reminders-medication/>
 	<small>

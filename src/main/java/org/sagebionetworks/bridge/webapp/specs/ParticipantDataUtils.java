@@ -27,6 +27,7 @@ public class ParticipantDataUtils {
 		descriptor.setName(spec.getName());
 		descriptor.setDescription(spec.getDescription());
 		descriptor.setRepeatType(spec.getRepeatType());
+		descriptor.setType(spec.getType());
 		descriptor.setRepeatFrequency(spec.getRepeatFrequency());
 		descriptor.setDatetimeStartColumnName(spec.getDatetimeStartColumnName());
 		return descriptor;

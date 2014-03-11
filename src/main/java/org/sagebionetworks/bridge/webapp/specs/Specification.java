@@ -67,4 +67,6 @@ public interface Specification {
 	 * @param values
 	 */
 	public void setSystemSpecifiedValues(Map<String, String> values);
+
+	String getType();
 }

@@ -14,9 +14,9 @@ import org.springframework.ui.ModelMap;
 
 import com.google.common.collect.Lists;
 
-public class EventTracker implements Specification {
+public class QuestionTracker implements Specification {
 	
-	public EventTracker() {
+	public QuestionTracker() {
 	}
 	
 	@Override
@@ -25,7 +25,7 @@ public class EventTracker implements Specification {
 	
 	@Override
 	public String getName() {
-		return "Events";
+		return "Questions";
 	}
 
 	@Override

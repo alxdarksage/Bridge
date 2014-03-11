@@ -11,6 +11,7 @@
 	<group name="header">
 		<css>/assets/bootstrap/css/bootstrap.css</css>
 		<css>/assets/humane/original.css</css>
+        <css>/assets/slider/css/slider.css</css>
 		<css>/assets/bridge/css/main.css</css>
 		<css>/assets/bridge/css/navigation.less</css>
         <css>/assets/bridge/css/errors.less</css>
@@ -36,6 +37,7 @@
         <js>/assets/bridge/js/metrics.js</js>
         <js>/assets/bridge/js/range-norm-bar.js</js>
         <js>/assets/bootstrap/js/bootstrap.js</js>
+        <js>/assets/slider/js/bootstrap-slider.js</js>
 	</group>
 	
     <group name="trackers">

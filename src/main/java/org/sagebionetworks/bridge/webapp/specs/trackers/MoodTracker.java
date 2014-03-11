@@ -97,4 +97,10 @@ public class MoodTracker implements Specification {
 	public void postProcessParticipantDataRows(ModelMap map, List<ParticipantDataRow> rows) {
 		// noop
 	}
+
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
