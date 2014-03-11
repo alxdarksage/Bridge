@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRepeatType;
 import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
+import org.sagebionetworks.bridge.model.data.units.Units;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
 import org.sagebionetworks.bridge.webapp.converter.DateToShortFormatDateStringConverter;
 import org.sagebionetworks.bridge.webapp.converter.ISODateConverter;
@@ -24,7 +25,6 @@ import org.sagebionetworks.bridge.webapp.specs.RangeNormBar;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
 import org.sagebionetworks.bridge.webapp.specs.SpecificationUtils;
 import org.sagebionetworks.bridge.webapp.specs.UIType;
-import org.sagebionetworks.bridge.webapp.specs.Units;
 import org.sagebionetworks.bridge.webapp.specs.builder.FormFieldBuilder;
 import org.springframework.ui.ModelMap;
 
@@ -85,21 +85,15 @@ public class CompleteBloodCount implements Specification {
 	private static final String RBC_LABEL = "Red cells (Erythrocytes / RBC)";
 
 	private static final List<String> GRID_HEADERS = Lists.newArrayList("Value", "Units", "Normal Range");
-
-	private static long THOUSAND = 1000L;
-	private static long MILLION =  1000000L;
-	private static long BILLION =  1000000000L;
-	private static long TRILLION = 1000000000000L;
 	
-	private final List<String> THOUSANDS = SpecificationUtils.getSymbolsForUnits(Units.THOUSANDS_PER_MICROLITER, Units.BILLIONS_PER_LITER);
-	private final List<String> MILLIONS = SpecificationUtils.getSymbolsForUnits(Units.MILLIONS_PER_MICROLITER, Units.TRILLIONS_PER_LITER);
-	private final List<String> PERC = Units.PERCENTAGE.getSymbols();
-	// TODO: This needs to be converted.
-	private final List<String> DL = SpecificationUtils.getSymbolsForUnits(Units.DECILITER, Units.GRAMS_PER_LITER);
-	private final List<String> FL = Units.FEMTOLITER.getSymbols();
-	private final List<String> VARIATION = SpecificationUtils.getSymbolsForUnits(Units.CV_OR_SD);
+	private final List<String> THOUSANDS = SpecificationUtils.getLabelsForUnits(Units.THOUSANDS_PER_MICROLITER,
+			Units.BILLIONS_PER_LITER);
+	private final List<String> MILLIONS = SpecificationUtils.getLabelsForUnits(Units.MILLIONS_PER_MICROLITER,
+			Units.TRILLIONS_PER_LITER);
+	private final List<String> DL = SpecificationUtils.getLabelsForUnits(Units.DECILITER, Units.GRAMS_PER_LITER);
 	
-	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Stick", "Central Line", "Peripheral Stick (arm or leg)");
+	private final List<String> COLLECTION_METHODS = Lists.newArrayList("Finger Stick", "Central Line",
+			"Peripheral Stick (arm or leg)");
 
 	Map<String,FormElement> metadata = Maps.newHashMap();
 	List<FormElement> editRows = Lists.newArrayList();
@@ -126,11 +120,11 @@ public class CompleteBloodCount implements Specification {
 		rows = Lists.newArrayList();
 		rows.add( createEditableLab(MILLIONS, RBC_FIELD, RBC_LABEL) );
 		rows.add( createEditableLab(DL, HB_FIELD, HB_LABEL) ); 
-		rows.add( createEditablePercLab(PERC, HCT_FIELD, HCT_LABEL) );
-		rows.add( createEditableLab(FL, MCV_FIELD, MCV_LABEL) );
+		rows.add( createEditablePercLab(Units.PERCENTAGE.getLabels(), HCT_FIELD, HCT_LABEL) );
+		rows.add( createEditableLab(Units.FEMTOLITER.getLabels(), MCV_FIELD, MCV_LABEL) );
 		//rows.add( addEditRow(PG, MCH_FIELD, MCH_LABEL) );
-		rows.add( createEditablePercLab(VARIATION, RDW_FIELD, RDW_LABEL) );
-		rows.add( createEditablePercLab(PERC, RET_FIELD, RET_LABEL) ); // or 10e9/L
+		rows.add( createEditablePercLab(Units.PERCENTAGE_CV_OR_SD.getLabels(), RDW_FIELD, RDW_LABEL) );
+		rows.add( createEditablePercLab(Units.PERCENTAGE.getLabels(), RET_FIELD, RET_LABEL) ); // or 10e9/L
 		editRows.add( new GridGroup(RED_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
@@ -141,16 +135,16 @@ public class CompleteBloodCount implements Specification {
 		rows.add( createEditableLab(THOUSANDS, MONOCYTES_FIELD, MONOCYTES_LABEL) );
 		
 		// I just don't see consistency in the lab reports, and think we need to have both.
-        rows.add( createEditablePercLab(PERC, NEUTROPHIL_PERC_FIELD, NEUTROPHIL_PERC_LABEL) );
-        rows.add( createEditablePercLab(PERC, NEUTROPHIL_IMMATURE_PERC_FIELD, IMMATURE_NEUTROPHIL_PERC_LABEL) );
-        rows.add( createEditablePercLab(PERC, LYMPHOCYTES_PERC_FIELD, LYMPHOCYTES_PERC_LABEL) );
-        rows.add( createEditablePercLab(PERC, MONOCYTES_PERC_FIELD, MONOCYTES_PERC_LABEL) );		
+        rows.add( createEditablePercLab(Units.PERCENTAGE.getLabels(), NEUTROPHIL_PERC_FIELD, NEUTROPHIL_PERC_LABEL) );
+        rows.add( createEditablePercLab(Units.PERCENTAGE.getLabels(), NEUTROPHIL_IMMATURE_PERC_FIELD, IMMATURE_NEUTROPHIL_PERC_LABEL) );
+        rows.add( createEditablePercLab(Units.PERCENTAGE.getLabels(), LYMPHOCYTES_PERC_FIELD, LYMPHOCYTES_PERC_LABEL) );
+        rows.add( createEditablePercLab(Units.PERCENTAGE.getLabels(), MONOCYTES_PERC_FIELD, MONOCYTES_PERC_LABEL) );		
 		
 		editRows.add( new GridGroup(WHITE_BLOOD_CELLS_LABEL, rows, GRID_HEADERS) );
 		
 		rows = Lists.newArrayList();
 		rows.add( createEditableLab(THOUSANDS, PLT_FIELD, PLT_LABEL) );
-		rows.add( createEditableLab(FL, MPV_FIELD, MPV_LABEL) );
+		rows.add( createEditableLab(Units.FEMTOLITER.getLabels(), MPV_FIELD, MPV_LABEL) );
 		editRows.add( new GridGroup(PLATELETS_LABEL, rows, GRID_HEADERS) );
 		
 		// Show-only view
@@ -251,43 +245,11 @@ public class CompleteBloodCount implements Specification {
 			values.put(CREATED_ON_FIELD, datetime);
 		}
 		values.put(MODIFIED_ON_FIELD, datetime);
-		
-		// TODO: This all has to be pulled out when conversion is implemented
-		
-		// Convert values for fields that need standard values, only the researcher sees these columns
-		// (there are three)
-		//
-		// 1. multiply the number by the units per (e.g. billions per *)
-		// 2. divide my a million (liters to microliters) - it's a millionth of a liter
-		// 3. divide again by the new units per (e.g. K/* is a number in the thousands)
-		Units unit = Units.unitFromString( values.get(RBC_FIELD + ValueTranslator.LABRESULT_UNITS) );
-		if (unit == Units.TRILLIONS_PER_LITER) {
-			double value = (Double.parseDouble(values.get(RBC_FIELD)) * TRILLION) / MILLION / MILLION;
-			values.put(RBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, Double.toString(value));
-		} else {
-			values.put(RBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, values.get(RBC_FIELD));
-		}
-		
-		unit = Units.unitFromString( values.get(WBC_FIELD + ValueTranslator.LABRESULT_UNITS) );
-		if (unit == Units.BILLIONS_PER_LITER) {
-			double value = (Double.parseDouble(values.get(WBC_FIELD)) * BILLION) / MILLION / THOUSAND;
-			values.put(WBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, Double.toString(value));
-		} else {
-			values.put(WBC_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, values.get(WBC_FIELD));
-		}
-
-		unit = Units.unitFromString( values.get(PLT_FIELD + ValueTranslator.LABRESULT_UNITS) );
-		if (unit == Units.BILLIONS_PER_LITER) {
-			double value = (Double.parseDouble(values.get(PLT_FIELD)) * BILLION) / MILLION / THOUSAND;
-			values.put(PLT_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, Double.toString(value));
-		} else {
-			values.put(PLT_FIELD+ValueTranslator.LABRESULT_NORMALIZED_VALUE, values.get(PLT_FIELD));
-		}
 	}
 	
 	private FormElement createViewableLab(String name, String description) {
-		return new RangeNormBar(description, name, ValueTranslator.LABRESULT_ENTERED, ValueTranslator.LABRESULT_UNITS,
-				ValueTranslator.LABRESULT_NORMALIZED_MIN, ValueTranslator.LABRESULT_NORMALIZED_MAX);
+		return new RangeNormBar(description, name, ValueTranslator.LABRESULT_VALUE, ValueTranslator.LABRESULT_UNITS,
+				ValueTranslator.LABRESULT_MIN_NORMAL_VALUE, ValueTranslator.LABRESULT_MAX_NORMAL_VALUE);
 	}
 	
 	private FormField createEditableLab(List<String> unitEnumeration, String name, String description) {
@@ -295,7 +257,7 @@ public class CompleteBloodCount implements Specification {
 		
 		FormField labField = builder.asLab().name(name).label(description).create();
 		
-		FormField field = builder.asDouble().minValue(0D).name(name + ValueTranslator.LABRESULT_ENTERED)
+		FormField field = builder.asDouble().minValue(0D).name(name + ValueTranslator.LABRESULT_VALUE)
 				.label(description).compoundField().create();
 		labField.getChildren().add(field);
 		
@@ -309,10 +271,10 @@ public class CompleteBloodCount implements Specification {
 			labField.getChildren().add(units);
 		}
 		
-		FormField low = builder.asDouble().name(name + ValueTranslator.LABRESULT_NORMALIZED_MIN)
+		FormField low = builder.asDouble().name(name + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE)
 				.label("Low " + description).defaultable().compoundField().create();
 
-		FormField high = builder.asDouble().name(name + ValueTranslator.LABRESULT_NORMALIZED_MAX)
+		FormField high = builder.asDouble().name(name + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE)
 				.label("High " + description).defaultable().compoundField().create();
 		FormGroup range = new FormGroup(UIType.RANGE, "Range");
 		range.addField(low);
@@ -327,18 +289,19 @@ public class CompleteBloodCount implements Specification {
 		
 		FormField labField = builder.asLab().name(name).label(description).create();
 		
-		FormField field = builder.asDouble().minValue(0D).maxValue(100D).name(name + ValueTranslator.LABRESULT_ENTERED).label(description).compoundField().create();
+		FormField field = builder.asDouble().minValue(0D).maxValue(100D).name(name + ValueTranslator.LABRESULT_VALUE)
+				.label(description).compoundField().create();
 		labField.getChildren().add(field);
 		
 		FormField units = builder.asText("%").name(name + ValueTranslator.LABRESULT_UNITS).label("Units").readonly().compoundField().create();
 		labField.getChildren().add(units);
 		
 		FormField low = builder.asDouble().minValue(0D).maxValue(100D)
-				.name(name + ValueTranslator.LABRESULT_NORMALIZED_MIN).label("Low " + description).defaultable()
+				.name(name + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE).label("Low " + description).defaultable()
 				.compoundField().create();
 
 		FormField high = builder.asDouble().minValue(0D).maxValue(100D)
-				.name(name + ValueTranslator.LABRESULT_NORMALIZED_MAX).label("High " + description).defaultable()
+				.name(name + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE).label("High " + description).defaultable()
 				.compoundField().create();
 		
 		FormGroup range = new FormGroup(UIType.RANGE, "Range");

@@ -75,8 +75,8 @@ public class WebDriverBase {
 						takeScreenshot(frameworkMethod.getName());
 						throw t;
 					} finally {
-						_driver.close();
-						_driver.quit();
+						//_driver.close();
+						//_driver.quit();
 					}
 				}
 

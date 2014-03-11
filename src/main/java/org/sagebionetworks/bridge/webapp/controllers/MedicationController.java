@@ -29,7 +29,7 @@ public class MedicationController {
 	public void exportMedication(BridgeRequest request, HttpServletResponse response, @PathVariable("trackerId") String trackerId)
 			throws SynapseException, IOException {
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null);
+		List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null, false);
 		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, null);
 		ClientUtils.exportRows(historyRows, response, dwc);
 	}

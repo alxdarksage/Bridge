@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.sagebionetworks.bridge.model.data.units.Units;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -45,10 +47,12 @@ public class SpecificationUtils {
 		return sum;
 	}
 	
-	public static List<String> getSymbolsForUnits(Units... units) {
+	public static List<String> getLabelsForUnits(Units... units) {
 		List<String> symbols = Lists.newArrayList();
 		for (Units unit : units) {
-			symbols.addAll(unit.getSymbols());
+			for (String label : unit.getLabels()) {
+				symbols.add(label);
+			}
 		}
 		return symbols;
 	}

@@ -2,6 +2,7 @@ package org.sagebionetworks.bridge.webapp.converter;
 
 import java.util.Map;
 
+import org.sagebionetworks.bridge.model.data.units.Units;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataLabValue;
 import org.sagebionetworks.bridge.model.data.value.ParticipantDataValue;
 import org.sagebionetworks.bridge.model.data.value.ValueTranslator;
@@ -12,8 +13,6 @@ public class LabToStringConverter implements FieldConverter<ParticipantDataValue
 	
 	public static final LabToStringConverter INSTANCE = new LabToStringConverter();
 
-	public DoubleToStringConverter doubleConverter = new DoubleToStringConverter();
-	
 	@Override
 	public Map<String,String> convert(String fieldName, ParticipantDataValue source) {
 		if (source == null) {
@@ -21,21 +20,24 @@ public class LabToStringConverter implements FieldConverter<ParticipantDataValue
 		}
 		ParticipantDataLabValue pdv = (ParticipantDataLabValue)source;
 		Map<String,String> map = Maps.newHashMap();
-		if (pdv.getEnteredValue() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_ENTERED, pdv.getEnteredValue());	
+		if (pdv.getValue() != null) {
+			map.put(fieldName + ValueTranslator.LABRESULT_VALUE,
+					DoubleToStringConverter.INSTANCE.format(pdv.getValue()));
 		}
 		if (pdv.getUnits() != null) {
 			map.put(fieldName+ValueTranslator.LABRESULT_UNITS, pdv.getUnits());	
 		}
-		if (pdv.getNormalizedMin() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MIN, doubleConverter.format(pdv.getNormalizedMin()));	
+		if (pdv.getMinNormal() != null) {
+			addToMap(map, fieldName + ValueTranslator.LABRESULT_MIN_NORMAL_VALUE, pdv.getMinNormal());
 		}
-		if (pdv.getNormalizedMax() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_MAX, doubleConverter.format(pdv.getNormalizedMax()));
-		}
-		if (pdv.getNormalizedValue() != null) {
-			map.put(fieldName+ValueTranslator.LABRESULT_NORMALIZED_VALUE, doubleConverter.format(pdv.getNormalizedValue()));	
+		if (pdv.getMaxNormal() != null) {
+			addToMap(map, fieldName + ValueTranslator.LABRESULT_MAX_NORMAL_VALUE, pdv.getMaxNormal());
 		}
 		return map;
 	}
+	
+	private void addToMap(Map<String,String> map, String fieldName, double amount) {
+		map.put(fieldName, DoubleToStringConverter.INSTANCE.format(amount));
+	}
+	
 }

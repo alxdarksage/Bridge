@@ -61,13 +61,12 @@ public class ConvertersTest {
 		}
 		return pdv;
 	}
-	private ParticipantDataValue makePDV(String enteredValue, String units, Double min, Double max, Double normValue) {
+	private ParticipantDataValue makePDV(Double value, String units, Double min, Double max, Double normValue) {
 		ParticipantDataLabValue pdv = new ParticipantDataLabValue();
-		pdv.setEnteredValue(enteredValue);
+		pdv.setValue(value);
 		pdv.setUnits(units);
-		pdv.setNormalizedMin(min);
-		pdv.setNormalizedMax(max);
-		pdv.setNormalizedValue(normValue);
+		pdv.setMinNormal(min);
+		pdv.setMaxNormal(max);
 		return pdv;
 	}
 
@@ -246,39 +245,35 @@ public class ConvertersTest {
 		LabConverter converter = new LabConverter();
 		
 		Map<String,String> map = Maps.newHashMap();
-		map.put(TEST+ValueTranslator.LABRESULT_ENTERED, "2.3");
+		map.put(TEST+ValueTranslator.LABRESULT_VALUE, "2.3");
 		map.put(TEST+ValueTranslator.LABRESULT_UNITS, "K/ul");
-		map.put(TEST+ValueTranslator.LABRESULT_NORMALIZED_MIN, "0");
-		map.put(TEST+ValueTranslator.LABRESULT_NORMALIZED_MAX, "100.0");
-		map.put(TEST+ValueTranslator.LABRESULT_NORMALIZED_VALUE, "2.3");
+		map.put(TEST+ValueTranslator.LABRESULT_MIN_NORMAL_VALUE, "0");
+		map.put(TEST+ValueTranslator.LABRESULT_MAX_NORMAL_VALUE, "100.0");
 		
 		ParticipantDataLabValue pdv = (ParticipantDataLabValue)converter.convert(TEST, map);
 		
-		assertEquals("2.3", pdv.getEnteredValue());
+		assertEquals(2.3, pdv.getValue(), 0.0);
 		assertEquals("K/ul", pdv.getUnits());
-		assertEquals(new Double(0.0), pdv.getNormalizedMin());
-		assertEquals(new Double(100.0), pdv.getNormalizedMax());
-		assertEquals(new Double(2.3), pdv.getNormalizedValue());
+		assertEquals(new Double(0.0), pdv.getMinNormal());
+		assertEquals(new Double(100.0), pdv.getMaxNormal());
 	}
 	
 	@Test
 	public void labToStringConverter() {
 		LabToStringConverter converter = new LabToStringConverter();
 
-		Map<String,String> result = converter.convert(TEST, makePDV("2.3", "K/ul", 0.0, 100.0, 2.3));
-		assertEquals("2.3", result.get(TEST+ValueTranslator.LABRESULT_ENTERED));
+		Map<String,String> result = converter.convert(TEST, makePDV(2.3, "K/ul", 0.0, 100.0, 2.3));
+		assertEquals("2.3", result.get(TEST+ValueTranslator.LABRESULT_VALUE));
 		assertEquals("K/ul", result.get(TEST+ValueTranslator.LABRESULT_UNITS));
-		assertEquals("0", result.get(TEST+ValueTranslator.LABRESULT_NORMALIZED_MIN));
-		assertEquals("100", result.get(TEST+ValueTranslator.LABRESULT_NORMALIZED_MAX));
-		assertEquals("2.3", result.get(TEST+ValueTranslator.LABRESULT_NORMALIZED_VALUE));
+		assertEquals("0", result.get(TEST+ValueTranslator.LABRESULT_MIN_NORMAL_VALUE));
+		assertEquals("100", result.get(TEST+ValueTranslator.LABRESULT_MAX_NORMAL_VALUE));
 		
 		// They can all be nulls, that's okay.
 		result = converter.convert(TEST, makePDV(null, null, null, null, null));
-		assertNull(result.get(TEST+ValueTranslator.LABRESULT_ENTERED));
+		assertNull(result.get(TEST+ValueTranslator.LABRESULT_VALUE));
 		assertNull(result.get(TEST+ValueTranslator.LABRESULT_UNITS));
-		assertNull(result.get(TEST+ValueTranslator.LABRESULT_NORMALIZED_MIN));
-		assertNull(result.get(TEST+ValueTranslator.LABRESULT_NORMALIZED_MAX));
-		assertNull(result.get(TEST+ValueTranslator.LABRESULT_NORMALIZED_VALUE));
+		assertNull(result.get(TEST+ValueTranslator.LABRESULT_MIN_NORMAL_VALUE));
+		assertNull(result.get(TEST+ValueTranslator.LABRESULT_MAX_NORMAL_VALUE));
 		
 		result = converter.convert(TEST, null);
 		assertNull(result);

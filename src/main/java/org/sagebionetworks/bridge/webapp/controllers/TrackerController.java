@@ -63,7 +63,7 @@ public class TrackerController extends JournalControllerBase {
 		if ("medication".equals(dwc.getDescriptor().getType())) {
 			final String eventColumn = dwc.getDescriptor().getEventColumnName();
 
-			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId);
+			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId, false);
 			// sort by name?
 			Collections.sort(currentRows, new EventComparator(eventColumn) {
 				@Override
@@ -72,7 +72,7 @@ public class TrackerController extends JournalControllerBase {
 				}
 			});
 
-			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null);
+			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null, false);
 			Multimap<String, ParticipantDataRow> indexedHistoryRows = Multimaps.index(historyRows,
 					new Function<ParticipantDataRow, String>() {
 				@Override
@@ -88,9 +88,9 @@ public class TrackerController extends JournalControllerBase {
 		}
 
 		if ("event".equals(dwc.getDescriptor().getType())) {
-			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId);
+			List<ParticipantDataRow> currentRows = client.getCurrentRows(trackerId, false);
 
-			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null);
+			List<ParticipantDataRow> historyRows = client.getHistoryRows(trackerId, null, null, false);
 
 			model.addObject("current", currentRows);
 			model.addObject("past", historyRows);
@@ -110,7 +110,7 @@ public class TrackerController extends JournalControllerBase {
 			@PathVariable("trackerId") String trackerId) throws SynapseException, IOException {
 
 		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0);
+		PaginatedResults<ParticipantDataRow> paginatedRowSet = client.getRawParticipantData(trackerId, ClientUtils.LIMIT, 0, false);
 		ParticipantDataDescriptorWithColumns dwc = ClientUtils.prepareDescriptor(client, trackerId, null);
 		ClientUtils.exportParticipantData(response, dwc.getDescriptor(), dwc.getColumns(), paginatedRowSet);
 	}

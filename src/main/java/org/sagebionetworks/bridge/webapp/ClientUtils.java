@@ -282,8 +282,8 @@ public class ClientUtils {
 		
 		boolean mustHaveStarterRecord = (spec.getFormLayout() == FormLayout.ALL_RECORDS_ONE_PAGE_INLINE);
 		
-		List<ParticipantDataRow> rows = client.getRawParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0).getResults();
-		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(descriptor.getId());
+		List<ParticipantDataRow> rows = client.getRawParticipantData(descriptor.getId(), ClientUtils.LIMIT, 0, false).getResults();
+		ParticipantDataCurrentRow currentRow = client.getCurrentParticipantData(descriptor.getId(), false);
 		
 		if (currentRow.getCurrentData() == null || currentRow.getPreviousData() == null) { // it's or, not and...
 			if (mustHaveStarterRecord) {
@@ -312,7 +312,7 @@ public class ClientUtils {
 		client.appendParticipantData(descriptor.getId(), Lists.newArrayList(row));
 		client.sendParticipantDataDescriptorUpdates(ParticipantDataUtils.getInProcessStatus(descriptor.getId()));
 
-		return client.getCurrentParticipantData(descriptor.getId());
+		return client.getCurrentParticipantData(descriptor.getId(), false);
 	}
 	
 	private static ParticipantDataRow removeInProgressRow(ParticipantDataRow rowToRemove, List<ParticipantDataRow> allRows) {
@@ -418,7 +418,7 @@ public class ClientUtils {
 			if ("medication".equals(descriptor.getType())) {
 				if (shouldPrompt || repeatDue) {
 					medicationsIfChanged = descriptor;
-					medications = client.getCurrentRows(descriptor.getId());
+					medications = client.getCurrentRows(descriptor.getId(), false);
 				} else {
 					descriptorsNoPrompt.add(descriptor);
 				}
@@ -502,7 +502,7 @@ public class ClientUtils {
 					@Override
 					public ParticipantDataCurrentRow apply(ParticipantDataDescriptor descriptor) {
 						try {
-							return client.getCurrentParticipantData(descriptor.getId());
+							return client.getCurrentParticipantData(descriptor.getId(), false);
 						} catch (SynapseException e) {
 							throw new RuntimeException(e.getMessage(), e);
 						}
@@ -511,7 +511,7 @@ public class ClientUtils {
 
 		long timelineStart = new Date().getTime();
 		for (ParticipantDataDescriptor descriptor : descriptorsTimelines) {
-			TimeSeriesTable timeSeries = client.getTimeSeries(descriptor.getId(), null);
+			TimeSeriesTable timeSeries = client.getTimeSeries(descriptor.getId(), null, false);
 			timelineStart = Math.min(timelineStart, timeSeries.getFirstDate());
 		}
 
@@ -700,7 +700,7 @@ public class ClientUtils {
 	}
 
 	public static Data getTimeSeries(BridgeClient client, String series, List<String> columns) throws SynapseException {
-		TimeSeriesTable timeSeriesList = client.getTimeSeries(series, columns);
+		TimeSeriesTable timeSeriesList = client.getTimeSeries(series, columns, false);
 
 		int columnCount = timeSeriesList.getColumns().size();
 		int rowCount = timeSeriesList.getRows().size();
