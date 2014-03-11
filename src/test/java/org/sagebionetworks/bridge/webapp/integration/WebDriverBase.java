@@ -33,7 +33,11 @@ public class WebDriverBase {
 			_driver = createPhantomJSDriver();
 		}
 		Window window = _driver.manage().window();
-		window.setSize(new Dimension(1024,400));
+		// NOTE: With the introduction of a mobile drawer that slides out from the left (Snap.js),
+		// the viewport is fixed in height such that elements off the page appear to be "invisible"
+		// to WebDriver, and tests fail. So the screen has to be high enough to see everything on 
+		// the page.
+		window.setSize(new Dimension(1024,1400));
 		_driver.manage().deleteAllCookies();
 		_driver.manage().timeouts().pageLoadTimeout(300, TimeUnit.SECONDS);
 		return _driver;

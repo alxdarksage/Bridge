@@ -1,8 +1,6 @@
 package org.sagebionetworks.bridge.webapp.controllers;
 
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,7 +13,6 @@ import org.sagebionetworks.bridge.model.data.ParticipantDataRow;
 import org.sagebionetworks.bridge.model.data.ParticipantDataStatusList;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.forms.DynamicForm;
-import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
@@ -29,36 +26,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
-public class JournalControllerBase {
+public class JournalControllerBase extends NonAjaxControllerBase {
 
 	private static final Logger logger = LogManager.getLogger(JournalControllerBase.class.getName());
 	
 	@Resource(name = "specificationResolver")
 	protected SpecificationResolver specResolver;
 	
-	@ModelAttribute("signInForm")
-	public SignInForm signInForm() {
-		return new SignInForm();
-	}
-	
 	@ModelAttribute("dynamicForm")
 	public DynamicForm communityForm() {
 		return new DynamicForm();
-	}
-
-	@ModelAttribute("descriptors")
-	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
-		BridgeClient client = request.getBridgeUser().getBridgeClient();
-		List<ParticipantDataDescriptor> descriptors = client.getAllParticipantDataDescriptors(ClientUtils.LIMIT, 0L)
-				.getResults();
-		Collections.sort(descriptors, new Comparator<ParticipantDataDescriptor>() {
-			@Override
-			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
-				return pdd0.getName().compareTo(pdd1.getName());
-			}
-			
-		});
-		return descriptors;
 	}
 
 	@ModelAttribute

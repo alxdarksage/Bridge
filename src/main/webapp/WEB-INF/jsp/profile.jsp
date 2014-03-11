@@ -1,5 +1,5 @@
 <%@ include file="directives.jsp" %>
-<sage:minimal code="Profile">
+<sage:minimal code="Profile" mobile="true">
     <h3><spring:message code="ProfileFor"/> ${profileForm.userName}</h3>
     <sage:formErrors formName="profileForm"/>
     <c:url var="profileUrl" value="/profile.html"/>

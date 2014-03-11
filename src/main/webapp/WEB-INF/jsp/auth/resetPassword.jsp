@@ -1,6 +1,5 @@
 <%@ include file="../directives.jsp" %>
-<sage:minimal code="SetPassword" boxSize="30rem">
-    <%--This is a field in the form but it isn't present on the screen, so, all this. --%>
+<sage:minimal code="SetPassword" boxSize="30rem" mobile="true">
     <spring:bind path="resetPasswordForm.token">
         <c:if test="${not empty status.errorMessages}">
             <div class="alert alert-danger">

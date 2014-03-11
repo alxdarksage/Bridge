@@ -9,7 +9,7 @@
         <p>${messages}</p>
     </c:if>
     
-    <sage:table formId="trackersForm" action="/admin/trackers/index.html" itemId="id" items="${descriptors}" caption="Trackers">
+    <sage:table formId="trackersForm" action="/admin/trackers/index.html" itemId="id" items="${trackers}" caption="Trackers">
         <sage:table-button id="updateAct" type="primary" label="Update Trackers" action="/admin/trackers/update.html"/> 
         <sage:column label="Name" field="name" className="nowrap"/>
         <sage:column label="Description" field="description"/>

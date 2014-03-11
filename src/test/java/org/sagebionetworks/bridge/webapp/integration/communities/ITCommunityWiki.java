@@ -9,11 +9,6 @@ import org.sagebionetworks.bridge.webapp.integration.pages.CommunityPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.CommunityWikiPage;
 import org.sagebionetworks.bridge.webapp.integration.pages.WebDriverFacade;
 
-/**
- * 	None of these tests run in GhostDriver right now, so they are disabled. And they 
- * can fail occasionally in the Firefox driver, so there are timing issues.
- *
- */
 public class ITCommunityWiki extends WebDriverBase {
 
 	private WebDriverFacade driver;

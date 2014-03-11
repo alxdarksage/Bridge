@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.internal.seleniumemulation.GetText;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -98,15 +99,16 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	
 	public void assertThereIsNoScriptInEditor() {
 		waitForEditorToLoad();
-		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.getData()");
-		String value = facade.findElement(By.id("sageTestValue")).getText();
+		setSageTestValueToEditorData();
+		String value = getSageTestValue();
 		Assert.assertTrue("There is no script in editor", value.indexOf("script") == -1);
 	}
 	
 	public void assertThereIsLinkInEditor() {
 		waitForEditorToLoad();
-		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.getData()");
-		String value = facade.findElement(By.id("sageTestValue")).getText();
+		setSageTestValueToEditorData();
+		// String value = facade.findElement(By.id("sageTestValue")).getText();
+		String value = getSageTestValue();
 		Assert.assertTrue("There is a link in the text", value.indexOf("</a>") > -1);
 	}
 	
@@ -160,22 +162,42 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	
 	public void assertIndexToolbars() {
 		waitForEditorToLoad();
-		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.toolbar.length");
-		String value = facade.findElement(By.id("sageTestValue")).getText();
+		setSageTestValueToToolbarLength();
+		// Stopped working for reasons that aren't clear
+		// String value = facade.findElement(By.id("sageTestValue")).getText();
+		String value = getSageTestValue();
 		Assert.assertTrue("Toolbar has only 1 element", "1".equals(value));
 	}
 	
 	public void assertFullEditorToolbars() {
 		waitForEditorToLoad();
-		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.toolbar.length");
-		String value = facade.findElement(By.id("sageTestValue")).getText();
+		setSageTestValueToToolbarLength();
+		// Stopped working for reasons that aren't clear
+		// String value = facade.findElement(By.id("sageTestValue")).getText();
+		String value = getSageTestValue();
 		Assert.assertTrue("Toolbar has many elements", "7".equals(value));
+	}
+	
+	// Using the API for the next three methods just started failing, and after many hours I could not identify a cause;
+	
+	private String getSageTestValue() {
+		return facade.executeJavaScriptForString("return document.getElementById('sageTestValue').textContent;");
+	}
+	
+	private void setSageTestValueToToolbarLength() {
+		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.toolbar.length");
+	}
+	
+	private void setSageTestValueToEditorData() {
+		facade.executeJavaScript("document.getElementById('sageTestValue').textContent=CKEDITOR.instances.markdown.getData()");
 	}
 	
 	public void waitForEditorToLoad() {
 		(new WebDriverWait(facade, 10)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
-				String value = facade.findElement(By.id("sageEditorReady")).getText();
+				// For some reason this has stopped working.
+				//String value = facade.findElement(By.id("sageEditorReady")).getText();
+				String value = facade.executeJavaScriptForString("return document.getElementById('sageEditorReady').textContent");
 				return ("true".equals(value));
 			}
 		});			
@@ -184,7 +206,9 @@ public class CommunityWikiPage extends EmbeddedSignInPage {
 	public void waitForDialogToLoad() {
 		(new WebDriverWait(facade, 10)).until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver d) {
-				String value = facade.findElement(By.id("sageDialogOpen")).getText();
+				// Same here, stopped working reliably.
+				// String value = facade.findElement(By.id("sageDialogOpen")).getText();
+				String value = facade.executeJavaScriptForString("return document.getElementById('sageDialogOpen').textContent");
 				return ("true".equals(value));
 			}
 		});

@@ -9,6 +9,7 @@
     
 	<group name="header">
 		<css>/assets/bootstrap/css/bootstrap.css</css>
+        <css>/assets/snap/snap-1.9.2.css</css>
 		<css>/assets/humane/original.css</css>
 		<css>/assets/bridge/css/main.css</css>
 		<css>/assets/bridge/css/navigation.less</css>
@@ -24,19 +25,20 @@
         <css>/assets/bridge/css/trackers.less</css>
         <css>/assets/bridge/css/range-norm-bar.less</css>
         <css>/assets/bridge/css/print.less</css>
-        <css>/assets/snap/snap-1.9.2.css</css>
+        <css>/assets/bridge/css/mobile-nav.less</css>
     </group>
 
 	<group name="footer">
 	    <js>/assets/modernizr/modernizr-2.7.1.js</js>
 	    <js>/assets/humane/humane.js</js>
+        <js>/assets/bootstrap/js/bootstrap.js</js>
+        <js>/assets/snap/snap-1.9.2.js</js>
 		<js>/assets/bridge/js/main.js</js>
 		<js>/assets/bridge/js/data-table.js</js>
 		<!-- <js>/assets/bridge/js/compare.js</js> -->
         <js>/assets/bridge/js/metrics.js</js>
         <js>/assets/bridge/js/range-norm-bar.js</js>
-        <js>/assets/bootstrap/js/bootstrap.js</js>
-        <js>/assets/snap/snap-1.9.2.js</js>
+        <js>/assets/bridge/js/mobile-nav.js</js>
 	</group>
 
     <group name="trackers">

@@ -2,16 +2,16 @@
 <%@ attribute name="code" required="true" %>
 <%@ attribute name="content" required="true" fragment="true" %>
 <%@ attribute name="scripts" required="false" fragment="true" %>
-<sage:main code="${code}">
+<sage:main code="${code}" mobile="true">
     <jsp:attribute name="navigation">
         <div class="panel panel-default">
             <div class="panel-heading"><b><spring:message code="Trackers"/></b></div>
             <div class="panel-body">
                 <ul class="list-group">
-                    <c:forEach var="descriptor" items="${descriptors}">
+                    <c:forEach var="tracker" items="${trackers}">
 	                    <li class="list-group-item">
-	                        <a href="<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${descriptor.id}.html"/>">
-	                           ${(not empty descriptor.name) ? descriptor.name : descriptor.description}
+	                        <a href="<c:url value="/journal/${sessionScope.BridgeUser.ownerId}/trackers/${tracker.id}.html"/>">
+	                           ${(not empty tracker.name) ? tracker.name : tracker.description}
                            </a>
 	                    </li>
                     </c:forEach>

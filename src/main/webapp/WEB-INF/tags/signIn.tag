@@ -4,7 +4,7 @@
 		<c:url var="signOutUrl" value="/signOut.html"/>
 		<c:url var="editProfileUrl" value="/profile.html"/>
 		<c:url var="journalUrl" value="/journal.html"/>
-        <div id="profile-pane" class="panel panel-default hidden-sm">
+        <div id="profile-pane" class="panel panel-default hidden-xs">
             <div class="avatar-side">
                 <div class="avatar" style="background-image: url('<c:url value="/static/images/default_avatar.png"/>')">
                 </div>
