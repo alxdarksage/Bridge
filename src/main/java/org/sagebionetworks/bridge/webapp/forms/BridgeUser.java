@@ -1,5 +1,6 @@
 package org.sagebionetworks.bridge.webapp.forms;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +15,6 @@ import org.sagebionetworks.repo.model.PaginatedResults;
 import org.sagebionetworks.repo.model.UnauthorizedException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.collect.Lists;
 
 public class BridgeUser {
 
@@ -93,15 +92,15 @@ public class BridgeUser {
 	public List<Community> getCommunities() throws SynapseException {
 		if (!isAuthenticated()) {
 			throw new UnauthorizedException("The user must be authenticated");
-		}
+		}		
 		try {
 			BridgeClient client = getBridgeClient();
-			PaginatedResults<Community> memberships = client.getCommunities(ClientUtils.LIMIT, 0);
-			return memberships.getResults();
+			PaginatedResults<Community> results = client.getCommunities(ClientUtils.LIMIT, 0);
+			return results.getResults();
 		} catch(SynapseException e) {
 			logger.error(e);
-			return Lists.newArrayList();
 		}
+		return Collections.emptyList();
 	}
 
 	public SynapseClient getSynapseClient() {

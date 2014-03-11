@@ -15,6 +15,7 @@ import org.jsoup.safety.Whitelist;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
+import org.sagebionetworks.bridge.webapp.controllers.NonAjaxControllerBase;
 import org.sagebionetworks.bridge.webapp.forms.WikiForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.SynapseClient;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping(value = "/communities")
-public class CommunityWikiController {
+public class CommunityWikiController extends NonAjaxControllerBase {
 	
 	private static final String RELATIVE_URL_BASE = "https://localhost:8888/bridge";
 

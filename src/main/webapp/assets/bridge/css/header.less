@@ -1,6 +1,5 @@
 .header {
     background-color: rgb(118,172,105);
-    /*background-color: rgb(67,67,67);*/
     color: white;
     font-family: 'Archivo Narrow', sans-serif;
     letter-spacing: 1px;
@@ -8,44 +7,18 @@
     a, a:visited, a:active {
         color: white;
     } 
+
     .community-header {
         height: 5rem;
         font-size: 2.2rem;
         line-height: 5rem;
-    }
-    .portal-header {
-        font-family: 'Archivo Narrow', sans-serif;
         
-        .portal-subheader {
-            font-size: 1.4rem;
-        }
-        .portal-links {
-            color: rgb(42,120,81);
-            font-size: 1.1rem;
-            line-height:3rem;
-            margin-top: -.5rem;
-            
-            a {
-              padding: .5rem 0;
-            }
+        a {
+            display: inline-block ! important;              
         }
     }
-}
-
-/* TODO: Definitely 768px needs to be a variable. */
-@media (min-width: 768px) {
     .portal-header {
-        text-align: right;
-        height: 5rem;
         line-height: 5rem;
-        
-        .portal-subheader {
-            line-height: 2.5rem;
-        }
-        .portal-links {
-            color: rgb(42,120,81);
-            line-height: 2.5rem;
-            font-size: 1.1rem;
-        }
-    }
+        text-align: right;
+    }    
 }

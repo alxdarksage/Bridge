@@ -1,5 +1,5 @@
 <%@ include file="../directives.jsp" %>
-<sage:minimal code="ResetPassword" boxSize="30rem">
+<sage:minimal code="ResetPassword" boxSize="30rem" mobile="true">
     <sage:formErrors formName="requestResetPasswordForm"/>
     <c:url var="requestResetPasswordUrl" value="/requestResetPassword.html"/>
     <form:form role="form" modelAttribute="requestResetPasswordForm" method="post" action="${requestResetPasswordUrl}">

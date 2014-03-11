@@ -1,5 +1,5 @@
 <%@ include file="../directives.jsp" %>
-<sage:minimal code="SignUpForBridge" boxSize="40rem">
+<sage:minimal code="SignUpForBridge" boxSize="40rem" mobile="true">
     <p><spring:message code="SignUpWelcome"/></p>
     
     <sage:formErrors formName="signUpForm"/>

@@ -148,12 +148,7 @@
         tbody.dataRows {
             > tr {
 	            > td {
-	                padding: .5rem 0 .5rem 3rem ! important;
-	            }
-	            > td:first-child {
-	                position: absolute ! important;
-	                margin-left: -2rem;
-	                z-index: 1;
+	                padding: .2rem .5rem ! important;
 	            }
 	            > td:first-child:before {
 	                content: none;

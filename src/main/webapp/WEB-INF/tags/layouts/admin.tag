@@ -1,7 +1,7 @@
 <%@ include file="../../jsp/directives.jsp" %>
 <%@ attribute name="code" required="true" %>
 <%@ attribute name="active" required="false" %>
-<sage:main code="${code}">
+<sage:main code="${code}" mobile="false">
     <jsp:attribute name="navigation">
         <ul class="list-group">
             <c:choose>

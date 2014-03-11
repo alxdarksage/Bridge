@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class MedicationController {
+
 	private static final Logger logger = LogManager.getLogger(MedicationController.class.getName());
 
 	@RequestMapping(value = "/medication/{trackerId}/export", method = RequestMethod.GET)

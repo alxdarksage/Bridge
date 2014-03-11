@@ -12,7 +12,6 @@ import org.sagebionetworks.bridge.webapp.ClientUtils;
 import org.sagebionetworks.bridge.webapp.FormUtils;
 import org.sagebionetworks.bridge.webapp.forms.CheckboxItem;
 import org.sagebionetworks.bridge.webapp.forms.ProfileForm;
-import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
@@ -32,14 +31,9 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping(value = "/profile")
-public class ProfileController {
+public class ProfileController extends NonAjaxControllerBase {
 
 	private static final Logger logger = LogManager.getLogger(ProfileController.class.getName());
-	
-	@ModelAttribute("signInForm")
-	public SignInForm signInForm() {
-		return new SignInForm();
-	}
 	
 	@ModelAttribute("memberships")
 	public List<CheckboxItem> memberships(BridgeRequest request) throws SynapseException {

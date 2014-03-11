@@ -1,9 +1,6 @@
 package org.sagebionetworks.bridge.webapp.controllers.admin;
 
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.data.ParticipantDataColumnDescriptor;
 import org.sagebionetworks.bridge.model.data.ParticipantDataDescriptor;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
-import org.sagebionetworks.bridge.webapp.forms.SignInForm;
+import org.sagebionetworks.bridge.webapp.controllers.NonAjaxControllerBase;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.bridge.webapp.specs.ParticipantDataUtils;
 import org.sagebionetworks.bridge.webapp.specs.Specification;
@@ -23,7 +20,6 @@ import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.repo.model.PaginatedResults;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,7 +29,7 @@ import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/admin")
-public class TrackersAdminController {
+public class TrackersAdminController extends NonAjaxControllerBase {
 
 	private static Logger logger = LogManager.getLogger(TrackersAdminController.class.getName());
 	
@@ -43,24 +39,6 @@ public class TrackersAdminController {
 	@Resource(name = "bridgeClient")
 	protected BridgeClient client;
 	
-	@ModelAttribute("descriptors")
-	public List<ParticipantDataDescriptor> allDescriptors(BridgeRequest request, Model model) throws SynapseException, ParseException {
-		PaginatedResults<ParticipantDataDescriptor> allDescriptors = client.getAllParticipantDataDescriptors(ClientUtils.LIMIT, 0L);
-		Collections.sort(allDescriptors.getResults(), new Comparator<ParticipantDataDescriptor>() {
-			@Override
-			public int compare(ParticipantDataDescriptor pdd0, ParticipantDataDescriptor pdd1) {
-				return pdd0.getName().compareTo(pdd1.getName());
-			}
-			
-		});
-		return allDescriptors.getResults();
-	}
-	
-	@ModelAttribute("signInForm")
-	public SignInForm signInForm() {
-		return new SignInForm();
-	}
-
 	@RequestMapping(value = "/trackers/index", method = RequestMethod.GET)
 	public String viewTrackers() {
 		return "admin/trackers/index";

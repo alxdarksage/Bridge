@@ -11,8 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sagebionetworks.bridge.model.Community;
 import org.sagebionetworks.bridge.webapp.ClientUtils;
+import org.sagebionetworks.bridge.webapp.controllers.NonAjaxControllerBase;
 import org.sagebionetworks.bridge.webapp.forms.CommunityForm;
-import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.bridge.webapp.servlet.BridgeRequest;
 import org.sagebionetworks.client.BridgeClient;
 import org.sagebionetworks.client.SynapseClient;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class CommunityController {
+public class CommunityController extends NonAjaxControllerBase {
 	
 	private static Logger logger = LogManager.getLogger(CommunityController.class.getName());
 
@@ -47,11 +47,6 @@ public class CommunityController {
 
 	public void setSynapseClient(SynapseClient synapseClient) {
 		this.synapseClient = synapseClient;
-	}
-	
-	@ModelAttribute("signInForm")
-	public SignInForm signInForm() {
-		return new SignInForm();
 	}
 	
 	@ModelAttribute("communityForm")
