@@ -3,7 +3,7 @@ function SmileySlider(container, imgSrc) {
     if (!imgSrc)
         imgSrc = "/bridge/assets/smiley-slider-gh-pages/smiley-slider.png";
 
-    var width = 329;
+    var width = 186;
     var height = 37;
     
     var headWidth = 40;

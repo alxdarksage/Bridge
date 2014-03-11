@@ -6,7 +6,7 @@
 	        <a href="${journalUrl}"><spring:message code="MyJournal"/></a> &#187; 
 	    </div>
         <c:choose>
-            <c:when test="${not empty descriptor.type}">
+            <c:when test="${not empty descriptor.type && descriptor.type != 'cbc'}">
             	<jsp:include page="/WEB-INF/jsp/journal/trackers/${descriptor.type}.jsp"/>
             </c:when>
             <c:when test="${spec.formLayout == 'ALL_RECORDS_ONE_PAGE_INLINE'}">

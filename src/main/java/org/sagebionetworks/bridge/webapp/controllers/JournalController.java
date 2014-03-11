@@ -22,4 +22,11 @@ public class JournalController extends JournalControllerBase {
 		return model;
 	}
 
+	@RequestMapping(value = "/journal2", method = RequestMethod.GET)
+	public ModelAndView viewJournal2(BridgeRequest request, ModelAndView model) throws SynapseException {
+		// Force redirect to sign in
+		request.getBridgeUser().getBridgeClient();
+		model.setViewName("journal/index2");
+		return model;
+	}
 }

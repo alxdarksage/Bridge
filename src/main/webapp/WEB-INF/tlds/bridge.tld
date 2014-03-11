@@ -113,6 +113,14 @@
         <path>/WEB-INF/tags/trackers/reminders-event.tag</path>
     </tag-file>
     <tag-file>
+        <name>question</name>
+        <path>/WEB-INF/tags/trackers/question.tag</path>
+    </tag-file>
+    <tag-file>
+        <name>questionAnswered</name>
+        <path>/WEB-INF/tags/trackers/questionAnswered.tag</path>
+    </tag-file>
+    <tag-file>
         <name>timeseries</name>
         <path>/WEB-INF/tags/trackers/timeseries.tag</path>
     </tag-file>

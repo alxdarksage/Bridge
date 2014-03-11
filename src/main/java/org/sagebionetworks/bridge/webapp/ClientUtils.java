@@ -368,9 +368,12 @@ public class ClientUtils {
 		List<ParticipantDataDescriptor> descriptorsIfChanged = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsNoPrompt = Lists.newArrayListWithExpectedSize(20);
 		List<ParticipantDataDescriptor> descriptorsTimelines = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsQuestions = Lists.newArrayListWithExpectedSize(20);
+		List<ParticipantDataDescriptor> descriptorsQuestionsToAsk = Lists.newArrayListWithExpectedSize(20);
 		ParticipantDataDescriptor medicationsIfChanged = null;
 		List<ParticipantDataRow> medications = null;
 		ParticipantDataDescriptor events = null;
+		ParticipantDataDescriptor cbc = null;
 		
 		Date now = new Date();
 		Calendar lastMonth = Calendar.getInstance();
@@ -428,6 +431,17 @@ public class ClientUtils {
 
 			if ("event".equals(descriptor.getType())) {
 				events = descriptor;
+			}
+
+			if ("cbc".equals(descriptor.getType())) {
+				cbc = descriptor;
+			}
+
+			if (descriptor.getType() != null && descriptor.getType().startsWith("question")) {
+				descriptorsQuestions.add(descriptor);
+				if (shouldPrompt || repeatDue) {
+					descriptorsQuestionsToAsk.add(descriptor);
+				}
 			}
 
 			List<ParticipantDataDescriptor> promptList = null;
@@ -508,6 +522,28 @@ public class ClientUtils {
 						}
 					}
 				});
+		List<ParticipantDataCurrentRow> questionsWithData = Lists.transform(descriptorsQuestionsToAsk,
+				new Function<ParticipantDataDescriptor, ParticipantDataCurrentRow>() {
+					@Override
+					public ParticipantDataCurrentRow apply(ParticipantDataDescriptor descriptor) {
+						try {
+							return client.getCurrentParticipantData(descriptor.getId(), false);
+						} catch (SynapseException e) {
+							throw new RuntimeException(e.getMessage(), e);
+						}
+					}
+				});
+		List<ParticipantDataCurrentRow> descriptorsQuestionsWithData = Lists.transform(descriptorsQuestions,
+				new Function<ParticipantDataDescriptor, ParticipantDataCurrentRow>() {
+					@Override
+					public ParticipantDataCurrentRow apply(ParticipantDataDescriptor descriptor) {
+						try {
+							return client.getCurrentParticipantData(descriptor.getId(), false);
+						} catch (SynapseException e) {
+							throw new RuntimeException(e.getMessage(), e);
+						}
+					}
+				});
 
 		long timelineStart = new Date().getTime();
 		for (ParticipantDataDescriptor descriptor : descriptorsTimelines) {
@@ -525,6 +561,9 @@ public class ClientUtils {
 		model.addAttribute("medicationsIfChanged", medicationsIfChanged);
 		model.addAttribute("medications", medications);
 		model.addAttribute("events", events);
+		model.addAttribute("cbc", cbc);
+		model.addAttribute("descriptorsQuestionsToAsk", questionsWithData);
+		model.addAttribute("descriptorsQuestionsWithData", descriptorsQuestionsWithData);
 	}
 
 	public static String getSynapseSessionCookie(BridgeRequest request) {
@@ -715,9 +754,9 @@ public class ClientUtils {
 
 		// turn the timeSeries into a row column, where column 0 is date and other columns values
 		Column[] cols = new Column[columnCount];
-		cols[0] = new Column(timeSeriesList.getColumns().get(dateIndex), "datetime");
+		cols[0] = new Column(timeSeriesList.getColumns().get(dateIndex).getName(), "datetime");
 		for (int colIndex = 1; colIndex < columnCount; colIndex++) {
-			cols[colIndex] = new Column(timeSeriesList.getColumns().get(colIndex), "number");
+			cols[colIndex] = new Column(timeSeriesList.getColumns().get(colIndex).getName(), "number");
 		}
 
 		Object[][] rows = new Object[rowCount][];
@@ -736,8 +775,8 @@ public class ClientUtils {
 		return result;
 	}
 
-	private static void swap(List<String> list, int index1, int index2) {
-		String value1 = list.get(index1);
+	private static <T> void swap(List<T> list, int index1, int index2) {
+		T value1 = list.get(index1);
 		list.set(index1, list.get(index2));
 		list.set(0, value1);
 	}

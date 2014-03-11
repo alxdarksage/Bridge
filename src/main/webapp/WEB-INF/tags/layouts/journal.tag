@@ -5,6 +5,12 @@
 <sage:main code="${code}" mobile="true">
     <jsp:attribute name="navigation">
         <div class="panel panel-default">
+            <div class="panel-heading"><b>Today</b></div>
+            <div class="panel-body">
+            	<sage:reminders-direct/>
+            </div>
+        </div>    
+        <div class="panel panel-default">
             <div class="panel-heading"><b><spring:message code="Trackers"/></b></div>
             <div class="panel-body">
                 <ul class="list-group">
@@ -25,6 +31,9 @@
         <script src="<c:url value='/static/webshims-stable/js-webshim/minified/polyfiller.js'/>"></script>
         <script>
         $.webshims.polyfill('forms forms-ext');
+        $(function(){
+            $('.slider').slider();
+        });
         </script>
     </jsp:attribute>
 </sage:main>

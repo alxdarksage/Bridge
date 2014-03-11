@@ -180,6 +180,23 @@ public class SageBootstrap {
 						"Hospitalization", null), "acute",
 		});
 
+		createData(bridge, "Smoking Tracker", "Smoking check in", "question_smoking", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
+				new Column("collected_on", null, ParticipantDataColumnType.DATETIME),
+				new Column("ever_smoked", null, ParticipantDataColumnType.BOOLEAN),
+				new Column("what", null, ParticipantDataColumnType.STRING),
+				new Column("count_per_week", null, ParticipantDataColumnType.STRING),
+				new Column("how_long", null, ParticipantDataColumnType.STRING),
+				new Column("when_stopped", null, ParticipantDataColumnType.DATETIME));
+		createData(bridge, "Drinking Tracker", "Drinking check in", "question_drinking", ParticipantDataRepeatType.REPEATED, "0 0 4 * * ? *", null, null,
+				new Column("collected_on", null, ParticipantDataColumnType.DATETIME),
+				new Column("drinker", null, ParticipantDataColumnType.STRING),
+				new Column("count_per_drinking_day", null, ParticipantDataColumnType.STRING),
+				new Column("frequency", null, ParticipantDataColumnType.STRING),
+				new Column("kind", null, ParticipantDataColumnType.STRING),
+				new Column("how_long_in_months", null, ParticipantDataColumnType.LONG),
+				new Column("when_stopped", null, ParticipantDataColumnType.DATETIME),
+				new Column("other", null, ParticipantDataColumnType.STRING));
+
 		// Need to create it this way or it says it's different (although only trivially) when we update trackers
 		Specification spec = new MoodTracker();
 		String trackerId = createData(bridge, spec);
