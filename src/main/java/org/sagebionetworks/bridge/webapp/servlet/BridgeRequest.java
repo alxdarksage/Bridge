@@ -12,7 +12,7 @@ import org.sagebionetworks.bridge.webapp.forms.BridgeUser;
 import org.sagebionetworks.bridge.webapp.forms.SignInForm;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
+import org.sagebionetworks.repo.manager.team.TeamConstants;
 import org.sagebionetworks.repo.model.TeamMembershipStatus;
 
 import com.google.common.base.Throwables;
@@ -64,7 +64,7 @@ public class BridgeRequest extends HttpServletRequestWrapper {
 		try {
 			SynapseClient client = getBridgeUser().getSynapseClient();
 			String userId = getBridgeUser().getOwnerId();
-			TeamMembershipStatus status = client.getTeamMembershipStatus(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(),
+			TeamMembershipStatus status = client.getTeamMembershipStatus(TeamConstants.BRIDGE_ADMINISTRATORS.toString(),
 					userId);
 			getBridgeUser().setBridgeAdmin(status.getIsMember());
 			return status.getIsMember();

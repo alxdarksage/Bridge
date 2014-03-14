@@ -48,9 +48,9 @@ import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseClientException;
 import org.sagebionetworks.client.exceptions.SynapseException;
 import org.sagebionetworks.client.exceptions.SynapseNotFoundException;
+import org.sagebionetworks.repo.manager.team.TeamConstants;
 import org.sagebionetworks.repo.model.ACCESS_TYPE;
 import org.sagebionetworks.repo.model.AccessControlList;
-import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
 import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.IdList;
 import org.sagebionetworks.repo.model.ObjectType;
@@ -113,8 +113,8 @@ public abstract class SageServicesStub implements SynapseClient, BridgeClient, S
 	public SageServicesStub() {
 		logger.info("---------------------------- SageServicesStub CREATED");
 		Team team = new Team();
-		team.setId(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId());
-		teamsById.put(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(), team);
+		team.setId(TeamConstants.BRIDGE_ADMINISTRATORS.toString());
+		teamsById.put(TeamConstants.BRIDGE_ADMINISTRATORS.toString(), team);
 	}
 
 	private static SageServicesStub singleStub = null;

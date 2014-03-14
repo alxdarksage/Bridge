@@ -29,7 +29,7 @@ import org.sagebionetworks.client.SynapseAdminClientImpl;
 import org.sagebionetworks.client.SynapseClient;
 import org.sagebionetworks.client.SynapseClientImpl;
 import org.sagebionetworks.client.exceptions.SynapseException;
-import org.sagebionetworks.repo.model.AuthorizationConstants.BOOTSTRAP_TEAM;
+import org.sagebionetworks.repo.manager.team.TeamConstants;
 import org.sagebionetworks.repo.model.DomainType;
 import org.sagebionetworks.repo.model.UserSessionData;
 import org.sagebionetworks.repo.model.auth.NewIntegrationTestUser;
@@ -246,7 +246,7 @@ public class SageBootstrap {
 			}
 			if (isAdmin) {
 				UserSessionData data = synapse.getUserSessionData();
-				admin.addTeamMember(BOOTSTRAP_TEAM.BRIDGE_ADMINISTRATORS.getId(), data.getProfile().getOwnerId());
+				admin.addTeamMember(TeamConstants.BRIDGE_ADMINISTRATORS.toString(), data.getProfile().getOwnerId());
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
